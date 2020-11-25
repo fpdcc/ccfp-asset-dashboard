@@ -14,6 +14,11 @@ Build application containers:
 docker-compose build
 ```
 
+Load the fixtures for development:
+```
+docker-compose run --rm app python manage.py loaddata asset_dashboard/fixtures/development_data_simplified.json
+```
+
 Run the app:
 
 ```

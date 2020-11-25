@@ -1,0 +1,1492 @@
+[
+{
+  "model": "asset_dashboard.project",
+  "pk": 1,
+  "fields": {
+    "name": "Restoration - Distri",
+    "project_description": "Restoration - Districtwide managed by Resource Management Dept.",
+    "budget": 23000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 2,
+  "fields": {
+    "name": "Busse Woods Preserve",
+    "project_description": "Busse Woods Preserves - large-scale landscape restoration funded by Nicor license tree mitigation fees ($2.8M) + additional $400k donation received in 2020.",
+    "budget": 51000,
+    "zone": "Northwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 3,
+  "fields": {
+    "name": "Skokie Lagoons - add",
+    "project_description": "Skokie Lagoons - additional benefits donation for landscape restoration/algae management, subj to Winnetka license agreement anticipated by early 2021",
+    "budget": 76000,
+    "zone": "North "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 4,
+  "fields": {
+    "name": "Powderhorn Lake & Ma",
+    "project_description": "Powderhorn Lake & Marsh Outlet improvements funded by $807,000 federal (NOAA) grant approved in 2020.  2021: construction.  ",
+    "budget": 93000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 5,
+  "fields": {
+    "name": "Sweet Woods landscap",
+    "project_description": "Sweet Woods landscape restoration funded by $650,000 federal grant approved in 2020.  ",
+    "budget": 15000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 6,
+  "fields": {
+    "name": "Tinley Creek Ravines",
+    "project_description": "Tinley Creek Ravines - Restoration work funded by Oak Lawn water line mitigation funding",
+    "budget": 51000,
+    "zone": "Southwest "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 7,
+  "fields": {
+    "name": "Des Plaines Bike Tra",
+    "project_description": "Des Plaines Bike Trail -  new bridge over UP Railroad - Local match for construction starting late 2021. Total cost including construction engineering: $4.5M, funded by CMAQ ($2.2M), ICC ($1.3M) and MFT local match ($632k).  Assume 25% of match needed in 2021.  ",
+    "budget": 46000,
+    "zone": "North"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 8,
+  "fields": {
+    "name": "Sunset Bridge Meadow",
+    "project_description": "Sunset Bridge Meadow Trail connection (est. $130k), included in Site Amenities MFT North package below.",
+    "budget": 34000,
+    "zone": "Central"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 9,
+  "fields": {
+    "name": "Major Taylor Trail -",
+    "project_description": "Major Taylor Trail - new Connections at Dan Ryan Woods at 87th, 91st & 94th streets.  Est. $200k MFT incl. phase 3 engineering. New signs included in Site Ameities sign package. ",
+    "budget": 21000,
+    "zone": "South  "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 10,
+  "fields": {
+    "name": "I&M Trail repairs, p",
+    "project_description": "I&M Trail repairs, patching in 2020 funded by Illinois Tollway grant.  2022: repaving of 5.4-mile West Loop, est. $900k, potential add to Tollway contract in 2023 for rehabilitation of 3.2-mile black loop northeast of Willow Springs Road after completion of Mile Long Bridge work.",
+    "budget": 76000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 11,
+  "fields": {
+    "name": "Oak Forest Heritage ",
+    "project_description": "Oak Forest Heritage Preserve - Midlothian Meadows trail connection by IDOT.  Total cost est. $80k, including $64k grant.  Local match encumbered in 2020.",
+    "budget": 10000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 12,
+  "fields": {
+    "name": "Tinley Creek Trail R",
+    "project_description": "Tinley Creek Trail Repairs - rehabilitation of 3-mile portion of Red Loop (est. $870k) funded by MFT grant from CCDOTH. ",
+    "budget": 69000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 13,
+  "fields": {
+    "name": "Trail repairs - unpa",
+    "project_description": "Trail repairs - unpaved trail repairs at various locations (nature centers and locations requiring outside contractors), subject to engineering design & permitting in 2021.",
+    "budget": 16000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 14,
+  "fields": {
+    "name": "Trail repairs - misc",
+    "project_description": "Trail repairs - misc. emergency repairs, permitting, wayfinding/info signs or pavement markings. Horizon Farm preliminary trail cost.",
+    "budget": 96000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 15,
+  "fields": {
+    "name": "Caldwell Woods Sledd",
+    "project_description": "Caldwell Woods Sledding Hill Stair Repairs and new seating cubes and council ring (non-MFT) .  ",
+    "budget": 64000,
+    "zone": "North "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 16,
+  "fields": {
+    "name": "Schuth's Grove - new",
+    "project_description": "Schuth's Grove - new accessible canoe/kayak launch - included in site improvements package below, funded in part with $80k IDNR Boat Access grant.",
+    "budget": 46000,
+    "zone": "Central"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 17,
+  "fields": {
+    "name": "Swallow Cliff - nort",
+    "project_description": "Swallow Cliff - north - repairs to 1930s-era stairs, subject to Build Illinois grant funds from DCEO.",
+    "budget": 50000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 18,
+  "fields": {
+    "name": "Sagawau Canyon stair",
+    "project_description": "Sagawau Canyon stair repairs - subject to decision on future use and potential additional structural engineering analysis in 2021. ",
+    "budget": 32000,
+    "zone": "Southwest "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 19,
+  "fields": {
+    "name": "Spring Lake/Horizon ",
+    "project_description": "Spring Lake/Horizon Farm site improvements (incl. multi-use trail and other trailhead improvements), subject to further planning & engineering. ",
+    "budget": 83000,
+    "zone": "Northwest     "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 20,
+  "fields": {
+    "name": "Palos Trail System I",
+    "project_description": "Palos Trail System Infrastructure Upgrades, including Swallow Cliff, subject to Build Illinois Bond grant funds from DCEO ($10 million included in appropriation bill). ",
+    "budget": 99000,
+    "zone": "Southwest    "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 21,
+  "fields": {
+    "name": "Trail repairs - annu",
+    "project_description": "Trail repairs - annual maintenance to 155-mile paved trail system 2022-2025: extended repairs on 1/30th or 5.17 mi./yr.  Priority locations besides I&M Trail (above) TBD after evaluation of conditions data collected in 2020.  Funded with MFT grant funds in 2022-2024.",
+    "budget": 18000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 22,
+  "fields": {
+    "name": "Trail repairs - annu",
+    "project_description": "Trail repairs - annual maintenance to bridges & culverts District-wide:  estimated avg annual maintenance need for bridge & culvert repair based on past spending. ",
+    "budget": 9000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 23,
+  "fields": {
+    "name": "Chick Evans Golf Cou",
+    "project_description": "Chick Evans Golf Course - \"mission critical\" systems, including irrigation system, drainage, bunkers and cart path repairs (NGF est. $2.9M-$3.7M).",
+    "budget": 55000,
+    "zone": "North            "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 24,
+  "fields": {
+    "name": "Joe Louis Golf Cours",
+    "project_description": "Joe Louis Golf Course - high priority irrigation system and pump house replacement and drainage improvements detention and siphon systems (NGF est. $1.4M).",
+    "budget": 68000,
+    "zone": "South             "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 25,
+  "fields": {
+    "name": "River Oaks Golf Cour",
+    "project_description": "River Oaks Golf Course - key infrastructure repair such as irrigation system repairs, drainage, lake-bank collapses, cartpath bridge replacement or removal. NGF est. $2.7-$3M",
+    "budget": 48000,
+    "zone": "South            "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 26,
+  "fields": {
+    "name": "Villa Santa Maria - ",
+    "project_description": "Villa Santa Maria - site development -  new picnic shelter (est. $150k), following parking lot improvements in 2022 (included in site amenities).",
+    "budget": 74000,
+    "zone": "Southwest "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 27,
+  "fields": {
+    "name": "Dam & shoreline repa",
+    "project_description": "Dam & shoreline repairs at Saganshkee Slough in 2022 following engineering design in 2021, subject to future funding.",
+    "budget": 100000,
+    "zone": "Southwest  "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 28,
+  "fields": {
+    "name": "Dam & shoreline repa",
+    "project_description": "Dam & shoreline repairs on fishing lakes and ponds at various locations Countywide.  2023 priorities: Leaky Lake, Holy Family Villa Lake, Hidden Pond, Schiller Pond, Green Lake (est. $873k, subject to engineering design in 2022).  2024-2025 priorities TBD after additional inspections in 2022. Potential Build Illinois Bond funds for Skokie stormwater infrastructure. ",
+    "budget": 38000,
+    "zone": "Districtwide "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 29,
+  "fields": {
+    "name": "Spring Creek/165 Alg",
+    "project_description": "Spring Creek/165 Algonquin Road - site development including access road and parking area construction. MFT funds.",
+    "budget": 29000,
+    "zone": "Northwest "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 30,
+  "fields": {
+    "name": "Skokie RM/ Northeast",
+    "project_description": "Skokie RM/ Northeast Police HQ, pave parking lot expansion and add new driveway (support location not MFT eligible)",
+    "budget": 78000,
+    "zone": "North "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 31,
+  "fields": {
+    "name": "Schuth's Grove Site ",
+    "project_description": "Schuth's Grove Site Improvements - porous pavement parking lot retrofit, bioswales and new canoe/kayak launch, funded by MFT, MWRD ($203,107) and IDNR ($80,000) grants.",
+    "budget": 60000,
+    "zone": "Central "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 32,
+  "fields": {
+    "name": "Access road and park",
+    "project_description": "Access road and parking area repaving & reconstruction at high priority locations Countywide.  2021: five contracts for repaving at 25 locations. 2022:  16 MFT locations. 2023-2025: up to 10 non-MFT support locations. ",
+    "budget": 59000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 33,
+  "fields": {
+    "name": "Caldwell Woods - sit",
+    "project_description": "Caldwell Woods - site improvements (excl. recreation imp.'s - stair repairs and new seating) - new paths and ADA upgrades funded by MFT and IDNR grant (if awarded).",
+    "budget": 92000,
+    "zone": "North "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 34,
+  "fields": {
+    "name": "New entrance, wayfin",
+    "project_description": "New entrance, wayfinding & information signs, North & Northwest: 2021: new River Trail Nature Center entrance sign, new Spring Creek/Horizon Farm sign & other other trailhead signs ($100k); 2022: Busse Woods gateway signs ($225k).  ",
+    "budget": 75000,
+    "zone": "North & Northwest "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 35,
+  "fields": {
+    "name": "South & Southwest ga",
+    "project_description": "South & Southwest gateway site signs:  2021: Major Taylor Trail wayfinding and info signs   ($25k); Eggers Woods ($125k); 2022: Sauk Trail Woods ($150k); 2023: Oak Forest.",
+    "budget": 39000,
+    "zone": "South & Southwest "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 36,
+  "fields": {
+    "name": "Sign replacement and",
+    "project_description": "Sign replacement and new trailhead signs Countywide.  Replacement of old wood dedication signs with new  signs.  New trailhead information signs, incl. I&M Canal trailhead",
+    "budget": 46000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 37,
+  "fields": {
+    "name": "Access & drainage im",
+    "project_description": "Access & drainage improvements - access upgrades at 8-10 picnic groves included in 2021-2022 parking area repaving (est. $240k in MFT funds); design of site upgrades at Whealan Pool and new kayak launch at Schuths Grove.  2023-2025: $300k/yr",
+    "budget": 38000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 38,
+  "fields": {
+    "name": "Miscellaneous Site A",
+    "project_description": "Miscellaneous Site Amenities - emergency repairs or replacements, permits, change orders, small jobs, other site work, Spring Creek/Horizon Farm opening costs.",
+    "budget": 90000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 39,
+  "fields": {
+    "name": "Northwest Division -",
+    "project_description": "Northwest Division - Horizon Farm  access road and parking area improvements for support buildings. Excludes public trails.",
+    "budget": 42000,
+    "zone": "Northwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 40,
+  "fields": {
+    "name": "Ned Brown RC Model A",
+    "project_description": "Ned Brown RC Model Airplane field repaving, subject to updated \"compatible recreation\" evaluation in 2021. Parking lot repaving proposed in 2022 with MFT funds.",
+    "budget": 91000,
+    "zone": "Northwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 41,
+  "fields": {
+    "name": "Caldwell Woods Site ",
+    "project_description": "Caldwell Woods Site Amenities - new access path and sign upgrades. 2022: 25% match needed, subject to pending IDNR grant for 75% of estimated $420k cost. ",
+    "budget": 47000,
+    "zone": "North "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 42,
+  "fields": {
+    "name": "Salt Creek - Possum ",
+    "project_description": "Salt Creek - Possum Hollow Site Improvements - removal and restoration of roughly half of existing lot, porous pavement parking lot retrofit and picnic shelter access, subject to MWRD Green Infrastructure grant.",
+    "budget": 42000,
+    "zone": "Central "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 43,
+  "fields": {
+    "name": "Tinley Creek Divisio",
+    "project_description": "Tinley Creek Division - Villa Santa Maria Site Development - access, parking, trail & signage improvements at newly acquired site. Acquisition grant requirement (est. $350k)",
+    "budget": 35000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 44,
+  "fields": {
+    "name": "I&M Canal Trail patc",
+    "project_description": "I&M Canal Trail patching funded in part by $35k Illinois Tollway grant funds received in 2020. ",
+    "budget": 6000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 45,
+  "fields": {
+    "name": "Asphalt patching, pa",
+    "project_description": "Asphalt patching, paving & landscape equipment and materials, including drainage/sewer materials and materials and equipment for new landscape installations. ",
+    "budget": 31000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 46,
+  "fields": {
+    "name": "Busse Forest North -",
+    "project_description": "Busse Forest North - Comfort Station beam and roof repairs (Bldg. #302; est. $75k) ",
+    "budget": 4000,
+    "zone": "Northwest "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 47,
+  "fields": {
+    "name": "Northwest Resource M",
+    "project_description": "Northwest Resource Management HQ - Barn Roof reshingle (Bldg. #470; est. $130k) ",
+    "budget": 80000,
+    "zone": "Northwest "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 48,
+  "fields": {
+    "name": "Indian Boundary Main",
+    "project_description": "Indian Boundary Maintenance Garage - metal roof structure repair (Bldg. #99; est. $25k) ",
+    "budget": 42000,
+    "zone": "Northwest "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 49,
+  "fields": {
+    "name": "Billy Caldwell Golf ",
+    "project_description": "Billy Caldwell Golf Course - Concession Building re-roof (Bldg. #39), 2020 award pending (est. $150k, funded by rollover) ",
+    "budget": 59000,
+    "zone": "North"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 50,
+  "fields": {
+    "name": "Glen Grove Stables -",
+    "project_description": "Glen Grove Stables - masonry repairs and other renovation of stables (est. $150k) ",
+    "budget": 87000,
+    "zone": "North"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 51,
+  "fields": {
+    "name": "Central Maintenance ",
+    "project_description": "Central Maintenance Compound - masonry and other exterior repairs.  2021: Main Garage (#358) - east windows (est. $450k), west masonry & windows (est. $200k).  2022: masonry repairs at other garages (#363, #365), Paint Shop/Garage Building H (#463) & Sign ShopShop/HVAC Building E (#367) & Central Warehouse Building G (#467), est. $300k.",
+    "budget": 95000,
+    "zone": "Central"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 52,
+  "fields": {
+    "name": "Salt Creek Resource ",
+    "project_description": "Salt Creek Resource Management HQ - masonry and other exterior repairs for three buildings (est. $150k)",
+    "budget": 82000,
+    "zone": "Central"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 53,
+  "fields": {
+    "name": "Southeast Police HQ ",
+    "project_description": "Southeast Police HQ roof replacement (est. $350k)",
+    "budget": 19000,
+    "zone": "South "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 54,
+  "fields": {
+    "name": "Picnic Shelter Repai",
+    "project_description": "Picnic Shelter Repairs -  2021: structural repairs at Midlothian Meadows groves #1, #2, #3 & #4 + Kings Grove #1.  2022:  Busse #32 & #27, #7, Bunker Hill #3,#4; Harms #5, #3; 2023: roof replacement - 16 shelters (est. $500k); 2024-2025: misc repairs.",
+    "budget": 15000,
+    "zone": "Districtwide "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 55,
+  "fields": {
+    "name": "Picnic Shelter Repai",
+    "project_description": "Picnic Shelter Repairs - rounds 3 & 4 at various locations. Round 3 COMPLETED - Sauk Trail  + Teason's Woods. Round 4 - OUT FOR BID  Nicor funded: Busse Woods grove #24  (est. $55k).  + Busse Forest #17 (est. $37k)  + Busse Lake Biesner Rd. #32 (est. $33k) = $125k+plus Brezina Woods grove #2 (est. $42k), + Schiller Woods grove #14 (est. $37k)",
+    "budget": 56000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 56,
+  "fields": {
+    "name": "Exterior Repair Need",
+    "project_description": "Exterior Repair Needs - masonry, exterior walls, window & door replacement Districtwide - 2022-2025: masonry repairs & new windows at North Branch and Indian Boundary LM Office/Residence & other locations. Priorities TBD with Energy Consultant in 2021.  ",
+    "budget": 45000,
+    "zone": "Districtwide "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 57,
+  "fields": {
+    "name": "2020: masonry repair",
+    "project_description": "2020: masonry repairs: Pending TORI Construction - Crabtree Nature Center Nature Center & Garage (#55), + Glen Grove Stables Chimneys and Riding Arena",
+    "budget": 66000,
+    "zone": "Districtwide "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 58,
+  "fields": {
+    "name": "Golf Course Maintena",
+    "project_description": "Golf Course Maintenance garage repairs - 12 overhead door replacements @ 10,000 each @ Chick Evans (4), Billy Caldwell (2), Indian Boundary (2) & Highland Woods (4). Est. $120k.",
+    "budget": 41000,
+    "zone": "North & Northwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 59,
+  "fields": {
+    "name": "Central Maintenance ",
+    "project_description": "Central Maintenance Garage HVAC system upgrades - 2022: new vehicle exhaust system (est. $250k), Trombe wall and make-up air pre-heat system (est. $500k); 2023: high-speed overhead doors (est. $75k). Potential solar field in Table 3.",
+    "budget": 4000,
+    "zone": "Central"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 60,
+  "fields": {
+    "name": "Sagawau Environmenta",
+    "project_description": "Sagawau Environmental Learning Center Solar Panels- 2020 contract pending, funded in part by ICECF grant.",
+    "budget": 81000,
+    "zone": "Southwest "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 61,
+  "fields": {
+    "name": "Priority HVAC Equipm",
+    "project_description": "Priority HVAC Equipment Replacements - 2021: TBD with Energy Consultant in 2021.  Review requests for AC at  4 support locations (total est. $325k),  public golf course clubhouses (7 locations, est. $210k) and other 2023-2025 locations TBD. ",
+    "budget": 53000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 62,
+  "fields": {
+    "name": "Priority HVAC Equipm",
+    "project_description": "Priority HVAC Equipment Replacements - 2020 BID POST PENDING: GHQ Liebert (est $50k), Trailside HVAC (est $35k) & Sand Ridge NC (est. $55k).",
+    "budget": 71000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 63,
+  "fields": {
+    "name": "2019-2020: F&FM proj",
+    "project_description": "2019-2020: F&FM projects:  Glen Grove Stables - unit heater in indoor arena & hot water diffuser in front barn; Sagawau Farmhouse - unit heater; Sagawau workshop/garage - unit heater). ",
+    "budget": 45000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 64,
+  "fields": {
+    "name": "Salt Creek Landscape",
+    "project_description": "Salt Creek Landscape Maintenance Div. - demo and replacement of existing building.  2020 award to GMA pending for $2,081,906.  2022: garage addition to replace existing garage (est. $1.4M), subject to detailed design and funding.",
+    "budget": 4000,
+    "zone": "Central "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 65,
+  "fields": {
+    "name": "Sand Ridge Nature Ce",
+    "project_description": "Sand Ridge Nature Center Renovation - fabrication and installation of exhibits (2020 award to Fabex Technologies for $604,664). Classroom AV upgrades by in-house trades.",
+    "budget": 50000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 66,
+  "fields": {
+    "name": "Misc. Projects & Exp",
+    "project_description": "Misc. Projects & Expenses - permit and utility fees; survey & design for non-MFT access and parking lot projects; emergency repairs, FF&E (Salt Creek LM, Sand Ridge NC, Crabtree NC, Caldwell Wds WC, Salt Creek RM) + miscellenious change orders. ",
+    "budget": 85000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 67,
+  "fields": {
+    "name": "Crabtree Nature Cent",
+    "project_description": "Crabtree Nature Center Renovation - renovation of building interiors and selective exhibits, subject to A/E design & state grant funds. (est. $212,500 local 25% match x $850k est. construction cost)",
+    "budget": 50000,
+    "zone": "Northwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 68,
+  "fields": {
+    "name": "Caldwell Woods Warmi",
+    "project_description": "Caldwell Woods Warming Shelter Renovation - conversion to \"welcome center and wellness studio for year-round indoor recreation and information hub, est. $930k subject to potential 75% reimbursement from pending IDNR PARC grant.",
+    "budget": 41000,
+    "zone": "North "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 69,
+  "fields": {
+    "name": "Camp Dan Beard garag",
+    "project_description": "Camp Dan Beard garage - demolition & replacement with pre-fab storage shed, including data/electric upgrades (est. $200k, subject to design & permitting in 2021).   ",
+    "budget": 43000,
+    "zone": "North"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 70,
+  "fields": {
+    "name": "Salt Creek Resource ",
+    "project_description": "Salt Creek Resource Management Div.- new restroom addn (est. $650k). ",
+    "budget": 81000,
+    "zone": "Central"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 71,
+  "fields": {
+    "name": "Fleet - new and repl",
+    "project_description": "Fleet - new and replacement vehicles & other heavy equipment. ",
+    "budget": 75000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 72,
+  "fields": {
+    "name": "New \"green fleet\" ve",
+    "project_description": "New \"green fleet\" vehicles & equipment - electric, hybrid, biofuel, propane vehicles/equipment funded by 2019 bond issue.",
+    "budget": 78000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 73,
+  "fields": {
+    "name": "Demolition.  Various",
+    "project_description": "Demolition.  Various locations, est. $500k/yr, 2021-2023. Reduced ongoing need starting in 2023 after clearing backlog (est. $100k/yr.).  Some suburban locations by Sheriff's Office, some in-house disposal cost. ",
+    "budget": 31000,
+    "zone": "Districtwide "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 74,
+  "fields": {
+    "name": "Capital outlays for ",
+    "project_description": "Capital outlays for HVAC, electrical and plumbing equipment replacements, building materials & other capital equipment.  Fire alarm system upgrades at Central Warehouse (est. $70k).  Water filtration pilot projects (test in 2021).  Picnic grove well handpump replacements.",
+    "budget": 62000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 75,
+  "fields": {
+    "name": "Energy efficiency up",
+    "project_description": "Energy efficiency upgrades - including LED lighting replacements, wireless remote control systems and other energy saving building upgrades. (2019 bond total: $650k; remaining funds",
+    "budget": 24000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 76,
+  "fields": {
+    "name": "Crabtree Nature Cent",
+    "project_description": "Crabtree Nature Center renovation - A/E design services (est. 15%*$1M construction cost estimate. Subject to 75% Museum Grant, 25% match).",
+    "budget": 50000,
+    "zone": "Northwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 77,
+  "fields": {
+    "name": "Caldwell Warming She",
+    "project_description": "Caldwell Warming Shelter renovation - A/E design services (est. 19% of $930k construction cost estimate, with potential 75% reimbursement from pending IDNR grant.",
+    "budget": 63000,
+    "zone": "North"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 78,
+  "fields": {
+    "name": "Camp Dan Beard garag",
+    "project_description": "Camp Dan Beard garage renovation - A/E design services for demo & replacement of garage, including data/electric service upgrades (est $50k, 25%*200k project estimate).",
+    "budget": 74000,
+    "zone": "North"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 79,
+  "fields": {
+    "name": "Des Plaines Bike Tra",
+    "project_description": "Des Plaines Bike Trail - new bridge over UP Railroad tracks - Ph. 2 Engineering  - in process (2020 award to Terra Eng., funded grants.  2022: Phase 3 engineering (20% share).",
+    "budget": 14000,
+    "zone": "North"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 80,
+  "fields": {
+    "name": "Des Plaines Bike Tra",
+    "project_description": "Des Plaines Bike Trail Improvements - Bryn Mawr to Irving Park Road - Phase 2 engineering - 100% Segment 3 ($530k) + 20% Segment 4 ($70k) cost share to Village of Schiller Park. MFT funds. 2022-2023: Construction engineering svcs for Segment 3.",
+    "budget": 19000,
+    "zone": "North               "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 81,
+  "fields": {
+    "name": "Central Garage Life ",
+    "project_description": "Central Garage Life Safety & Energy Efficiency Upgrades.  Engineering services for new exhaust system (est. $111k); 2022: Trombe wall and make-up air system (est. $100k +$5k audit); 2023: high-speed OH doors (est. $11k + 5k audit)",
+    "budget": 83000,
+    "zone": "Central"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 82,
+  "fields": {
+    "name": "Salt Creek Landscape",
+    "project_description": "Salt Creek Landscape Maintenance Garage - detailed design and bid documents for demolition and replacement of existing garage (est. $50k) ",
+    "budget": 33000,
+    "zone": "Central"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 83,
+  "fields": {
+    "name": "Beaubien Woods Boat ",
+    "project_description": "Beaubien Woods Boat Launch - A/E design services for boat ramp repairs and new comfort station, shelter and interpretive signs",
+    "budget": 68000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 84,
+  "fields": {
+    "name": "Dan Ryan/ Major Tayl",
+    "project_description": "Dan Ryan/ Major Taylor Trail improvements - Phase 2 & 3 engineering for new connections at 87th, 91st and 94th Streets, funded by MFT.",
+    "budget": 56000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 85,
+  "fields": {
+    "name": "Tinley Creek Trail E",
+    "project_description": "Tinley Creek Trail Extension- Phase 2 engineering services (est. $85k), included in Districtwide transportation services. ",
+    "budget": 61000,
+    "zone": "South             "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 86,
+  "fields": {
+    "name": "A/E Services - Repai",
+    "project_description": "A/E Services - Repairs to Lakes and Dams.  2021: Saganashkee Slough (est. $285k); 2022: Leaky Lake, Holy Family Villa Lake, Hidden Pond, Schiller Pond, & Green  Lake (est. $260k).  2023:  another round of inspections (est. $75k)",
+    "budget": 32000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 87,
+  "fields": {
+    "name": "Engineering services",
+    "project_description": "Engineering services for transportation improvements Countywide. Access road, trail and parking area repaving & reconfiguration funded by CCDOTH MFT grant + some limited non-MFT (est. $50k).  Anticipated costs under 5-year master agreement awarded to CBBEL.",
+    "budget": 74000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 88,
+  "fields": {
+    "name": "Engineering services",
+    "project_description": "Engineering services - unpaved trail repairs at nature centers and other locations on Deer Grove, Des Plaines, Thorn Creek and other unpaved trails. ",
+    "budget": 51000,
+    "zone": "Districtwide "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 89,
+  "fields": {
+    "name": "Energy Consulting Se",
+    "project_description": "Energy Consulting Services for audits of mechanical and building envelope at high-energy use facilities and sample of more typical facilities and other services as needed over 2 yrs.",
+    "budget": 97000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 90,
+  "fields": {
+    "name": "A/E Services - Build",
+    "project_description": "A/E Services - Building Exterior Repair Specifications - for emergency roof and masonry repairs.  2020 award to KGH - rollover funds.",
+    "budget": 28000,
+    "zone": "Districtwide "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 91,
+  "fields": {
+    "name": "Specifications (2020",
+    "project_description": "Specifications (2020) - MASONRY - PENDING at Central Compound - Central Garage Building A (#??), Paint Shop Building H (#463), Sign Shop/HVAC Building E (#367) , Central Warehouse Building G (#467) - award to Kellermeyer Godfryt Hart $48.8K",
+    "budget": 62000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 92,
+  "fields": {
+    "name": "Specifications compl",
+    "project_description": "Specifications completed by AltusWorks - ROOFS - COMPLETED  George Dunne GC Garage/Office/Residence (#403), Garage (#404); BIDDING Billy Caldwell GC Clubhouse (#39); FUTURE NW RM barn (#470) MASONRY -  COMPLETED DESIGN & AWARDED CONSTRUCTION (TORI) Glen Grove Stables Chimneys & Riding Arena (#191) + Crabtree NC Natrue Center (#??) & Garage (#55) + COMPLETED DESIGN & FUTURE CONSTRUCTION  Salt Creek Resource Management Office/Garage (#210) + Garage (#549) + Garage (#550)",
+    "budget": 33000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 93,
+  "fields": {
+    "name": "HVAC & MEP consultan",
+    "project_description": "HVAC & MEP consultant services - inspections & replacement specs -  2021: design specs for priority EE or building envelope projects identified by energy consultant.",
+    "budget": 32000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 94,
+  "fields": {
+    "name": "2019 award to HOH En",
+    "project_description": "2019 award to HOH Engineering ($130k) for initial round of inspections at ... (locations with known replacement needs, incl. Sand Ridge, Trailside, GHQ, golf course clubhouses + Police and LM support locations).2020: HOH completed design specs for replacement of equipment at Sand Ridge, Trailside & GHQ.   Funds frozen for design specs for Police & LM AC systems (est. $64k, 20% of est. $320k replacement cost for 4 locations).HOLD on investment at golf courses pending renegotiation of concession contract in 2022.  NOTE estimated $170k needed to replace HVAC equipment at 4 golf course clubhouses (Chick Evans, Edgebrook, George Dunne & River Oaks) and ~ $32k needed to inspect 9 office/garage buildings at BC, BW, CE, GD, HW, IB, JL & ML (@ $3.5k per site).",
+    "budget": 8000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 95,
+  "fields": {
+    "name": "A/E Structural engin",
+    "project_description": "A/E Structural engineering pool - task orders to pre-qualified pool.",
+    "budget": 53000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 96,
+  "fields": {
+    "name": "CM/OR services - wat",
+    "project_description": "CM/OR services - water main work in the Tinley Preserves funded by Oak Lawn Water Consortium (NTE $200k) and in St Paul Woods by Morton Grove-Niles Water Comn ($63k)",
+    "budget": 2000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 97,
+  "fields": {
+    "name": "Cost estimating - ta",
+    "project_description": "Cost estimating - task orders to pre-qualified pool. ",
+    "budget": 26000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 98,
+  "fields": {
+    "name": "Environmental inspec",
+    "project_description": "Environmental inspections, oversight of abatement (award to EGSL in 2019 for up to $150k for 3 yrs)",
+    "budget": 40000,
+    "zone": "Districtwide "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 99,
+  "fields": {
+    "name": "Misc. A/E Design + c",
+    "project_description": "Misc. A/E Design + consulting services - increases, materials testing, small jobs < $25k",
+    "budget": 65000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 100,
+  "fields": {
+    "name": "Salt Creek Resource ",
+    "project_description": "Salt Creek Resource Management - A/E design services for Office/Training building renovation and restroom addition  (est. $130k = .2*$650k, incl. soil borings); Ecology Center master plan ($25k). ",
+    "budget": 42000,
+    "zone": "Central"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 101,
+  "fields": {
+    "name": "Deer Creek - North a",
+    "project_description": "Deer Creek - North acquisition (if successful).  Assessment of existing bridge to be used for trail at new acquisition Deer Creek Archdiocese (bid to Structural Engineering Pool)",
+    "budget": 89000,
+    "zone": "South        "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 102,
+  "fields": {
+    "name": "Bridge & Culvert ins",
+    "project_description": "Bridge & Culvert inspection services - update of 2012 inspection of 125 structures on FPCC trail system.",
+    "budget": 55000,
+    "zone": "Districtwide"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 103,
+  "fields": {
+    "name": "Busse Boating Center",
+    "project_description": "Busse Boating Center Accessible Restroom Addition - A/E concept design and cost estimates ",
+    "budget": 87000,
+    "zone": "Northwest "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 104,
+  "fields": {
+    "name": "Spring Creek/Horizon",
+    "project_description": "Spring Creek/Horizon Farm trail improvement plan - preliminary engineering services - concept plans and preliminary cost estimates",
+    "budget": 37000,
+    "zone": "Northwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 105,
+  "fields": {
+    "name": "Camp Dan Beard - A/E",
+    "project_description": "Camp Dan Beard - A/E services for Phase 2 Family Camp, est.  $1M (20% * $5M construction cost)",
+    "budget": 19000,
+    "zone": "North "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 106,
+  "fields": {
+    "name": "Skokie Boathouse & B",
+    "project_description": "Skokie Boathouse & Bathrooms - A/E services for new buildings on Tower Road, subject to grant support,  est.  $600k (13% * $4.6M)",
+    "budget": 52000,
+    "zone": "North"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 107,
+  "fields": {
+    "name": "Trailside Museum - n",
+    "project_description": "Trailside Museum - new pond pier feasibility study - flood data review, concept design options and preliminary cost estimates TBD.",
+    "budget": 68000,
+    "zone": "Central "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 108,
+  "fields": {
+    "name": "Solar Field at Centr",
+    "project_description": "Solar Field at Central Maintenance Compound (Net Zero Upgrades) -  solar consultant services. ",
+    "budget": 33000,
+    "zone": "Central"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 109,
+  "fields": {
+    "name": "Beaubien Woods inter",
+    "project_description": "Beaubien Woods interpretive sign content - writing and graphic design services for interpretive signs, est. $25k.",
+    "budget": 35000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 110,
+  "fields": {
+    "name": "Dan Ryan Woods - Sou",
+    "project_description": "Dan Ryan Woods - South - new nature center - A/E design, est. $1.5 million (15% * $10M construction cost)",
+    "budget": 34000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 111,
+  "fields": {
+    "name": "Eggers Woods - site ",
+    "project_description": "Eggers Woods - site improvements - A/E design following vision plan.",
+    "budget": 43000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 112,
+  "fields": {
+    "name": "Reimagining Public G",
+    "project_description": "Reimagining Public Golf in Southern Cook County - A/E design following planning for River Oaks & Burnham courses, est. (15% * $1M)",
+    "budget": 71000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 113,
+  "fields": {
+    "name": "Camp Sullivan- A/E s",
+    "project_description": "Camp Sullivan- A/E services for second smaller picnic/program shelter for CLIC program, est.  $40k (20% * $200k construction cost)",
+    "budget": 54000,
+    "zone": "Southwest "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 114,
+  "fields": {
+    "name": "George Dunne Banquet",
+    "project_description": "George Dunne Banquet Facility - A/E design (15%*$3M)",
+    "budget": 19000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 115,
+  "fields": {
+    "name": "I&M/Centennial Bike ",
+    "project_description": "I&M/Centennial Bike Trail - Willow Springs Rd to Chicago Portage - phase I & II engineering",
+    "budget": 91000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 116,
+  "fields": {
+    "name": "McGinnis Slough conn",
+    "project_description": "McGinnis Slough connection - LaGrange Rd & SW Highway to Wolf Rd & 135th (2.5 miles).  2022: phase I.  2023: phase II (20%*$75k).",
+    "budget": 52000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 117,
+  "fields": {
+    "name": "Tinley Creek trail c",
+    "project_description": "Tinley Creek trail connection - 167th & Central to Flossmoor & Cicero (5 miles).  phase I engineering; phase II engineering (20%*$150k); phase III engineering (20%*$125k) pending grant.",
+    "budget": 37000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 118,
+  "fields": {
+    "name": "Horizon Farm - new L",
+    "project_description": "Horizon Farm - new Landscape Maintenance garage at Old Sutton Road south entrance. ",
+    "budget": 88000,
+    "zone": "Northwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 119,
+  "fields": {
+    "name": "Carl Hansen Woods - ",
+    "project_description": "Carl Hansen Woods - new comfort station, est. $320k ",
+    "budget": 57000,
+    "zone": "Northwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 120,
+  "fields": {
+    "name": "Schiller Woods - 2nd",
+    "project_description": "Schiller Woods - 2nd new comfort station near grove #10, est. $350k ",
+    "budget": 71000,
+    "zone": "North"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 121,
+  "fields": {
+    "name": "Camp Dan Beard - Pha",
+    "project_description": "Camp Dan Beard - Phase 2 - new family campground with tent & RV sites south of existing group campground",
+    "budget": 68000,
+    "zone": "North"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 122,
+  "fields": {
+    "name": "Skokie Boathouse & B",
+    "project_description": "Skokie Boathouse & Bathrooms - new buildings on Tower Road, est. $4.6M, subject to major grant support",
+    "budget": 57000,
+    "zone": "North"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 123,
+  "fields": {
+    "name": "Central Maintenance ",
+    "project_description": "Central Maintenance Garage solar field - 50,000 sf solar field (est. $2.1M) to achieve Net Zero goal, subject to feasibility study",
+    "budget": 79000,
+    "zone": "Central"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 124,
+  "fields": {
+    "name": "Chicago Portage Nati",
+    "project_description": "Chicago Portage National Historic Site - visitors center & bathrooms. ",
+    "budget": 55000,
+    "zone": "Central      "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 125,
+  "fields": {
+    "name": "Beaubien Boat Launch",
+    "project_description": "Beaubien Boat Launch visitor amenities - new program shelter and interpretive signs (est. $300). Design funded in 2021. ",
+    "budget": 14000,
+    "zone": "South "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 126,
+  "fields": {
+    "name": "Camp Shabbona - New ",
+    "project_description": "Camp Shabbona - New office/store to replace temporary trailer. ",
+    "budget": 77000,
+    "zone": "South "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 127,
+  "fields": {
+    "name": "Dan Ryan Woods South",
+    "project_description": "Dan Ryan Woods South - new Nature Center incl. soft costs,  subject to cost-sharing with City of Chicago & Chicago PD.",
+    "budget": 8000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 128,
+  "fields": {
+    "name": "Joe Louis Golf Cours",
+    "project_description": "Joe Louis Golf Course - clubhouse repairs ($36k) and new outing pavilion ($100k).  NGF estimates.",
+    "budget": 71000,
+    "zone": "South      "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 129,
+  "fields": {
+    "name": "Wampum Lake - New co",
+    "project_description": "Wampum Lake - New comfort station, est. $350k",
+    "budget": 42000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 130,
+  "fields": {
+    "name": "George Dunne Golf Co",
+    "project_description": "George Dunne Golf Course Banquet Facility - new 10,000 s.f. banquet center (est. $3M).",
+    "budget": 40000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 131,
+  "fields": {
+    "name": "Sagawau ELC Farmhous",
+    "project_description": "Sagawau ELC Farmhouse - new addition with ADA restoom (est. $250k).",
+    "budget": 48000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 132,
+  "fields": {
+    "name": "New Picnic Shelters ",
+    "project_description": "New Picnic Shelters  at high demand or underserved locations:  Plank Rd Meadows, Thatcher Woods, Spring Creek, Wampum Lake @ $250k each. ",
+    "budget": 28000,
+    "zone": "Districtwide "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 133,
+  "fields": {
+    "name": "New Vehicle Garages ",
+    "project_description": "New Vehicle Garages at 4 locations @ $1.1M ea. 2021: Tinley Creek LM and RM divisions and 2024: NW Division and Kings Grove RM. ",
+    "budget": 87000,
+    "zone": "Districtwide "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 134,
+  "fields": {
+    "name": "Chicago Portage -  o",
+    "project_description": "Chicago Portage -  overflow parking and ADA path upgrades",
+    "budget": 73000,
+    "zone": "Central"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 135,
+  "fields": {
+    "name": "Major Taylor Trail -",
+    "project_description": "Major Taylor Trail - new wayfinding and interpretive signs",
+    "budget": 52000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 136,
+  "fields": {
+    "name": "Maple Lake East - mo",
+    "project_description": "Maple Lake East - mountain bike staging area trailhead amenities - new shelter with changing room facilities, funded in part by CAMBr grant.",
+    "budget": 46000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 137,
+  "fields": {
+    "name": "Des Plaines River Tr",
+    "project_description": "Des Plaines River Trail rebuilding - Bryn Mawr bridge to Lawrence Avenue, including new bridge over Lawrence Ave (est. $7.6M for construction + eng.). Local 20% est. $1.5M ",
+    "budget": 84000,
+    "zone": "North "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 138,
+  "fields": {
+    "name": "Des Plaines River Tr",
+    "project_description": "Des Plaines River Trail rebuilding - Lawrence to Irving Park Road (est. $3.8M for design & construction), subject to 80% fed grant funding.  ",
+    "budget": 59000,
+    "zone": "North "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 139,
+  "fields": {
+    "name": "Des Plaines River Tr",
+    "project_description": "Des Plaines River Trail rebuilding - Irving Park Road to Belmont (Segment 5) - estimate subject to decision on preferred alignment(s).",
+    "budget": 53000,
+    "zone": "North "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 140,
+  "fields": {
+    "name": "Beaubien Woods Boat ",
+    "project_description": "Beaubien Woods Boat Launch repairs including ADA upgrades for canoes/kayaks (est. $430k), subject to A/E design in 2021.",
+    "budget": 11000,
+    "zone": "South "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 141,
+  "fields": {
+    "name": "Major Taylor Trail -",
+    "project_description": "Major Taylor Trail - Whistler Woods - New River Overlook .  New scenic overlook south of bridge & art mural. Subject to grant funding, est. $140k. ",
+    "budget": 85000,
+    "zone": "South "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 142,
+  "fields": {
+    "name": "Major Taylor Trail -",
+    "project_description": "Major Taylor Trail - Dawes Park connection, subject to cost sharing with Chicago Park District, est. cost $250k",
+    "budget": 22000,
+    "zone": "South "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 143,
+  "fields": {
+    "name": "Major Taylor Trail -",
+    "project_description": "Major Taylor Trail - Whistler Woods loop trail. Est. cost: $1.6 M. ",
+    "budget": 92000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 144,
+  "fields": {
+    "name": "Torrence Ave Road Co",
+    "project_description": "Torrence Ave Road Connections.  Local cost for pedestrian bridge or intersection upgrades, subject to trail spur counts per feasibility study.",
+    "budget": 79000,
+    "zone": "South"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 145,
+  "fields": {
+    "name": "Centennial Bike Trai",
+    "project_description": "Centennial Bike Trail final link.  20% x total cost estimate of $6,987,000 subject to phase I & II engineering in 2023. ",
+    "budget": 55000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 146,
+  "fields": {
+    "name": "Tinley Creek Trail E",
+    "project_description": "Tinley Creek Trail Extension- Construction of Trail from Existing Tinley Creek Trail south to Villa Santa Maria. Look for grant or other funds.",
+    "budget": 64000,
+    "zone": "South             "
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 147,
+  "fields": {
+    "name": "Camp Kiwanis - new e",
+    "project_description": "Camp Kiwanis - new equestrian camp. 20 RV/trailer sites and utility improvements. ",
+    "budget": 22000,
+    "zone": "Southwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 148,
+  "fields": {
+    "name": "Rolling Knolls - Nat",
+    "project_description": "Rolling Knolls - Nature play area pad (est. $25k). ",
+    "budget": 89000,
+    "zone": "Northwest"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 149,
+  "fields": {
+    "name": "Trailside Museum nat",
+    "project_description": "Trailside Museum nature play enhancements - stone council ring",
+    "budget": 51000,
+    "zone": "Central"
+  }
+}
+]
