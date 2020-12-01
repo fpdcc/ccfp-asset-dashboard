@@ -1,12 +1,13 @@
 # Pin these requirements to the latest versions when you create a new project,
 # e.g. Django==3.0.2.
 Django
-psycopg2
+psycopg2-binary
 gunicorn
 dj-database-url
 whitenoise
 django-compressor
 sentry-sdk
+django-money
 
 # Testing requirements
 pytest
