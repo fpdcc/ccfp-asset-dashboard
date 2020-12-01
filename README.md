@@ -19,9 +19,9 @@ Run migrations:
 docker-compose run --rm app python manage.py migrate
 ```
 
-Load the fixtures for development:
+Load the dummy data for development:
 ```
-docker-compose run --rm app python manage.py loaddata asset_dashboard/fixtures/development_data_simplified.json
+docker-compose run --rm app python manage.py load_development_data
 ```
 
 Run the app:
