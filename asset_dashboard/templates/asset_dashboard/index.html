@@ -16,15 +16,26 @@
     <p>Welcome to your app!</p>
   </div>
 </div>
+<div class="container">
+  <div id="App">
+    <!-- Contents get replaced by mounted React.Component -->
+    <div class="text-center">
+      <i class="fa fa-lg fa-spinner fa-spin"></i><br><br>
+      <i class="pending">Loading dashboard...</i><br><br>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 {% load compress %}
-<!-- Example of how to use Django Compressor -->
+{{ props|json_script:"props" }}
+<script type="text/javascript">
+  window.props = JSON.parse(document.getElementById('props').textContent)
+  window.reactMount = document.getElementById('App')
+</script>
 {% compress js %}
+  <script type="text/jsx" src="{% static view.component %}"></script>
   <script type="module" src="{% static 'js/base.js' %}"></script>
-  <script type="module">
-    console.log('Hello, inline world!')
-  </script>
 {% endcompress %}
 {% endblock %}
