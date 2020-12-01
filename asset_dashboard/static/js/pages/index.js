@@ -8,7 +8,7 @@ import AddProjectToPlan from './AddProjectToPlan'
 const PortfolioPlanner = (props) => {  
   const [allProjects, setAllProjects] = useState([])
   const [potentialProject, setPotentialProject] = useState(null)
-  const [portfolio, setPortfolio] = useState({projects: []})
+  const [portfolio, setPortfolio] = useState({projects: [], totals: {}})
 
   useEffect(() => {
     // Parse the props JSON string into an array of objects, 
@@ -29,7 +29,17 @@ const PortfolioPlanner = (props) => {
   const addProjectToPortfolio = () => {
     // Make sure the project doesn't already exist before adding it to the portfolio.
     if (!portfolio.projects.includes(potentialProject)) {
-      setPortfolio({projects: portfolio.projects.concat(potentialProject)})
+      // Update the portfolio array with the new project.
+      const updatedPortfolio =  portfolio.projects.concat(potentialProject)
+
+      // Re-calculate the totals based on the updatedPortfolio.
+      const updatedTotals = {
+        budgetImpact: updatedPortfolio.reduce((total, project) => { return total + project.budget }, 0),
+        projectNames: updatedPortfolio.map(project => project.name),
+        projectZones: updatedPortfolio.map(project => project.zone)
+      }
+
+      setPortfolio({projects: updatedPortfolio, totals: updatedTotals})
     }
 
     // Reset the state so the AddPotentialProject component is removed from the DOM.
@@ -48,7 +58,6 @@ const PortfolioPlanner = (props) => {
           projects={allProjects} 
           onSelection={showPotentialProject} />
       </div>
-
       <div className="mb-5">
         {potentialProject && 
           <AddProjectToPlan 
@@ -60,7 +69,7 @@ const PortfolioPlanner = (props) => {
       {portfolio.projects.length > 0 ? 
         <div className="w-100">
           <PortfolioTable portfolio={portfolio.projects} /> 
-          <PortfolioTotals portfolio={portfolio.projects} />
+          <PortfolioTotals totals={portfolio.totals} />
         </div> : null
       }
     </div>
