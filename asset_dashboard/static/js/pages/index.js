@@ -5,7 +5,7 @@ import PortfolioTable from './PortfolioTable'
 import PortfolioTotals from './PortfolioTotals'
 import AddProjectToPlan from './AddProjectToPlan'
 
-const Dashboard = (props) => {  
+const PortfolioPlanner = (props) => {  
   const [allProjects, setAllProjects] = useState([])
   const [potentialProject, setPotentialProject] = useState(null)
   const [portfolio, setPortfolio] = useState({projects: []})
@@ -22,8 +22,8 @@ const Dashboard = (props) => {
   }, [setAllProjects])
 
   const showPotentialProject = (selectedProject) => {
-    const project = allProjects.filter(project => project.key == selectedProject.value)
-    setPotentialProject(project[0])
+    const project = allProjects.filter(project => project.key == selectedProject.value)[0]
+    setPotentialProject(project)
   }
 
   const addProjectToPortfolio = () => {
@@ -32,7 +32,7 @@ const Dashboard = (props) => {
       setPortfolio({projects: portfolio.projects.concat(potentialProject)})
     }
 
-    // Reset the state so the DOM removes the AddPotentialProject component.
+    // Reset the state so the AddPotentialProject component is removed from the DOM.
     setPotentialProject(null)
   }
 
@@ -68,6 +68,6 @@ const Dashboard = (props) => {
 )}
 
 ReactDOM.render(
-  React.createElement(Dashboard, window.props),
+  React.createElement(PortfolioPlanner, window.props),
   window.reactMount,
 )

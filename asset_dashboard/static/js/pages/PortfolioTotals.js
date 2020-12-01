@@ -6,14 +6,14 @@ const PortfolioTotals = ({ portfolio }) => {
         <div className="mt-5 col">
           <h3>Projects</h3>
           <ul>
-            {portfolio.map((project) => { return <li>{project.name || 'N/A'}</li> })}
+            {portfolio.map((project, index) => { return <li key={index}>{project.name || 'N/A'}</li> })}
           </ul>
         </div>
 
         <div className="mt-5 col">
           <h3>Zones</h3>
           <ul>
-            {portfolio.map(( project ) => { return <li>{project.zone || 'N/A'}</li> })}
+            {portfolio.map((project, index) => { return <li key={index}>{project.zone || 'N/A'}</li> })}
           </ul>
         </div>
         
