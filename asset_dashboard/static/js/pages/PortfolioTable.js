@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTable } from 'react-table'
 
-const PortfolioTable = ({ portfolio }) => {
+const PortfolioTable = ({ portfolio = [] }) => {
     const columns = React.useMemo(
       () => [
         {

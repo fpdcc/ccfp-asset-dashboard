@@ -10,6 +10,7 @@ const SearchProjects = ({ projects, onSelection }) => {
     })
   
       function onProjectSelection(project) {
+        // send the project back to the parent component
         onSelection(project)
       }
   
