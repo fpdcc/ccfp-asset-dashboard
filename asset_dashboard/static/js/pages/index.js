@@ -2,8 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 const Home = (props) => {
-  console.log('oolo react')
-  console.log(props)
   return (
   <>
     <div className="container-fluid mb-1 jumbotron">
