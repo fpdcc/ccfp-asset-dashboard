@@ -26,6 +26,14 @@ const PortfolioPlanner = (props) => {
     setPotentialProject(project)
   }
 
+  const calculateTotals = (portfolio) => {
+    return {
+      budgetImpact: portfolio.reduce((total, project) => { return total + project.budget }, 0),
+      projectNames: portfolio.map(project => project.name),
+      projectZones: portfolio.map(project => project.zone)
+    }
+  }
+
   const addProjectToPortfolio = () => {
     // Make sure the project doesn't already exist before adding it to the portfolio.
     if (!portfolio.projects.includes(potentialProject)) {
@@ -33,17 +41,43 @@ const PortfolioPlanner = (props) => {
       const updatedPortfolio =  portfolio.projects.concat(potentialProject)
 
       // Re-calculate the totals based on the updatedPortfolio.
-      const updatedTotals = {
-        budgetImpact: updatedPortfolio.reduce((total, project) => { return total + project.budget }, 0),
-        projectNames: updatedPortfolio.map(project => project.name),
-        projectZones: updatedPortfolio.map(project => project.zone)
-      }
+      const updatedTotals = calculateTotals(updatedPortfolio)
 
-      setPortfolio({projects: updatedPortfolio, totals: updatedTotals})
+      setPortfolio({
+        projects: updatedPortfolio, 
+        totals: updatedTotals
+      })
     }
 
     // Reset the state so the AddPotentialProject component is removed from the DOM.
     setPotentialProject(null)
+  }
+
+  const removeProjectFromPortfolio = (key) => {
+    // Filter the project out of the portfolios.
+    const updatedPortfolio = portfolio.projects.filter((project) => {
+      if (project.key !== key) {
+        return project
+      }
+    })
+
+    // Re-calculate the totals.
+    const updatedTotals = calculateTotals(updatedPortfolio)
+
+    // Reset state so the table and totals rerender.
+    setPortfolio({
+      projects: updatedPortfolio, 
+      totals: updatedTotals
+    })
+  }
+
+  function onRowClick({ original }) {
+    return {
+      onClick: e => {
+        e.preventDefault()
+        removeProjectFromPortfolio(original.key)
+      }
+    }
   }
 
   return (
@@ -68,7 +102,7 @@ const PortfolioPlanner = (props) => {
 
       {portfolio.projects.length > 0 ? 
         <div className="w-100">
-          <PortfolioTable portfolio={portfolio.projects} /> 
+          <PortfolioTable portfolio={portfolio.projects} getTrProps={onRowClick} /> 
           <PortfolioTotals totals={portfolio.totals} />
         </div> : null
       }

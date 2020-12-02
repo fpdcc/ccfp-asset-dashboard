@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTable } from 'react-table'
 
-const PortfolioTable = ({ portfolio = [] }) => {
+const PortfolioTable = ({ portfolio = [],  getTrProps = props => props }) => {
     const columns = React.useMemo(
       () => [
         {
@@ -26,7 +26,8 @@ const PortfolioTable = ({ portfolio = [] }) => {
         return {
           projectDescription: project.project_description || 'No description available.',
           score: project.score || 'N/A',
-          budget: project.budget || 0
+          budget: project.budget || 0,
+          key: project.key
         }
       }), [portfolio])
   
@@ -52,10 +53,10 @@ const PortfolioTable = ({ portfolio = [] }) => {
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-           {rows.map(row => {
+           {rows.map((row, i) => {
              prepareRow(row)
              return (
-               <tr {...row.getRowProps()}>
+               <tr {...getTrProps(row.getRowProps(row))} key={i}>
                  {row.cells.map(cell => {
                    return (
                      <td
