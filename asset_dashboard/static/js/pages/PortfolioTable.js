@@ -20,7 +20,7 @@ const PortfolioTable = ({ portfolio = [] }) => {
     )
   
     // Map the portfolio's projects to the array of rows.
-    // The accessor in the columns object ^ matches this object's key.
+    // The "accessor" value in the columns object ^ matches this object's keys.
     const data = React.useMemo(
       () => portfolio.map((project) => {
         return {
