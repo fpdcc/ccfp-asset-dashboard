@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import DataTable from 'react-data-table-component'
 import styled from 'styled-components';
 
@@ -39,7 +39,7 @@ const FilterComponent = ({ filterText, onFilter }) => {
   )
 }
 
-const PortfolioTable = ({ projects = [], onUpdatePortfolio }) => {
+const PortfolioTable = ({ projects = [], portfolio, onUpdatePortfolio, onRemoveProject }) => {
   const [filterText, setFilterText] = useState('')
   
   const columns = React.useMemo(
@@ -65,42 +65,68 @@ const PortfolioTable = ({ projects = [], onUpdatePortfolio }) => {
     ], []
   )
 
-  const data = React.useMemo(
-    () => projects.map((project) => {
-      return {
-        projectDescription: project.project_description || 'No description available.',
-        score: project.score || 'N/A',
-        budget: project.budget || 0,
-        key: project.key,
-        name: project.name,
-        zone: project.zone
-      }
-    }), [projects])
+  const data = projects.map((project) => {
+    return {
+      projectDescription: project.project_description || 'No description available.',
+      score: project.score || 'N/A',
+      budget: project.budget || 0,
+      key: project.key,
+      name: project.name,
+      zone: project.zone
+    }
+  })
 
   const filteredItems = data.filter(project => {
     return project.projectDescription.toLowerCase().includes(filterText.toLowerCase())
   })
 
+  const onSelectProject = (projects) => {
+    onUpdatePortfolio(projects)
+  }
+
+  const handleRemoveProject = (projects) => {
+    // work in progress...
+    if (projects.length === 1) {
+      onRemoveProject(projects[0])
+    }
+  }
+
   return (
     <>
+      <FilterComponent onFilter={e => setFilterText(e.target.value)} filterText={filterText} />
       <div className="table-responsive">
+        <DataTable 
+          columns={columns}
+          data={portfolio}
+          persistTableHead
+          noDataComponent={<p>Select projects to update the portfolio.</p>}
+          selectableRows
+          selectableRowsHighlight
+          onSelectedRowsChange={(row) => handleRemoveProject(row.selectedRows)}
+          noContextMenu
+          selectableRowDisabled={() => { return false }}
+        />
         <DataTable
           columns={columns}
           data={filteredItems}
           pagination
           keyField='key'
           striped
+          noHeader
+          noTableHead
           highlightOnHover
           pointerOnHover
-          subHeaderAlign='left'
-          subHeader
-          subHeaderComponent={<FilterComponent onFilter={e => setFilterText(e.target.value)} filterText={filterText} />}
+          //subHeaderAlign='left'
+          // subHeader
+          // subHeaderComponent={}
           selectableRows
           selectableRowsHighlight
           Clicked
           Selected
-          onSelectedRowsChange={(row) => onUpdatePortfolio(row.selectedRows)}
-          persistTableHead
+          onSelectedRowsChange={(row) => onSelectProject(row.selectedRows)}
+          onRowClicked={(row) => console.log('onrowclicked', row)}
+          // persistTableHead
+          
           customStyles={customStyles}
           noContextMenu
         />  

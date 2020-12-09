@@ -15,17 +15,17 @@ const inititalPortfolio = {
 const PortfolioPlanner = (props) => {  
   const [allProjects, setAllProjects] = useState([])
   const [portfolio, setPortfolio] = useState(inititalPortfolio)
+  const [remainingProjects, setRemainingProjects] = useState([])
 
   useEffect(() => {
-    // Parse the props JSON string into an array of objects, 
-    // then map each object to a new array.
     const projects = JSON.parse(props.projects).map((project) => ({
       ...project.fields,
       key: project.pk
     }))
 
     setAllProjects(projects)
-  }, [setAllProjects])
+    setRemainingProjects(projects)
+  }, [setAllProjects, setRemainingProjects])
 
   const calculateTotals = (portfolio) => {
     return {
@@ -35,25 +35,64 @@ const PortfolioPlanner = (props) => {
     }
   }
 
-  const updatePortfolio = (projects) => {
-    const totals = calculateTotals(projects)
+  // This function handles the big, "all projects" table.
+  // It executes anytime a row is selected or deselected.
+  // This is the only thing I need to calculate the portfolio.
+  const updatePortfolio = (projectsToAdd) => {
+    // filter out the projects from the remainingProjects state
+    // so the remainingProjects can update the main table
+    const updatedRemainingProjects = remainingProjects.filter((existingProject) => {
+      if (!projectsToAdd.includes(existingProject)) {
+        return existingProject
+      }
+    })
 
+    const totals = calculateTotals(projectsToAdd)
+
+    setRemainingProjects(updatedRemainingProjects)
     setPortfolio({
-      projects: projects, 
+      projects: projectsToAdd, 
       totals: totals
     })
+  }
+
+  // This manages the row selection for the "portfolio" table.
+  // It's doing almost the exact same as the updatePortfolio function,
+  // except I'm filtering different arrays and setting different elements of state.
+  // I have to update the other table and keep it in sync with this table.
+  // This is where it gets tricky and buggy. How do I update the state based on what's passed from this table?
+  // How do I keep it in sync with the portfolio calculator and the remainingProjects table?
+  // Currently, his works for one click and then the state gets all messed up.
+  // Also, i'm not sure how to make it appear "checked", and how to programmatically deselect the "checked" state 
+  // for this row in the other table
+  const removeProjectFromPortfolio = (projectToRemove) => {
+    const updatedPortfolioProjects = portfolio.projects.filter((project) => {
+      if (project.key !== projectToRemove.key) {
+        return project
+      }
+    })
+
+    const updatedTotals = calculateTotals(updatedPortfolioProjects)
+
+    setPortfolio({
+      projects: updatedPortfolioProjects,
+      totals: updatedTotals
+    })
+
+    setRemainingProjects([...remainingProjects, projectToRemove])
   }
 
   return (
   <div className="container">
     <div className="row">
       <div className="container col card mt-5 col-9">
-          <h1 className="pt-5 pl-3">Build a 5-Year Plan</h1>
+        <h1 className="pt-5 pl-3">Build a 5-Year Plan</h1>
         <div className="w-100">
           <PortfolioTable 
-            portfolio={portfolio}
-            projects={allProjects} 
-            onUpdatePortfolio={updatePortfolio} />
+            portfolio={portfolio.projects}
+            projects={remainingProjects} 
+            onUpdatePortfolio={updatePortfolio}
+            onRemoveProject={removeProjectFromPortfolio} />
         </div>
       </div>
       <div className="col">
