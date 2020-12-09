@@ -15,6 +15,149 @@ class Staff(models.Model):
                                 on_delete=models.SET_NULL)
 
 
+class Plan(models.Model):
+
+    name = models.TextField()
+    user = models.ForeignKey(Staff,
+                             on_delete=models.CASCADE,
+                             related_name='plans')
+
+    def total_budget(self):
+        ...
+
+    def other_aggregate_measures(self):
+        ...
+
+
+class Project(models.Model):
+
+    name = models.TextField()
+    description = models.TextField()
+    category = models.ForeignKey('ProjectCategory',
+                                 null=True,
+                                 on_delete=models.SET_NULL)
+    section_owner = models.ForeignKey(Section,
+                                      null=True,
+                                      on_delete=models.SET_NULL)
+    plan = models.ManyToManyField(Plan)
+
+    obligation = models.BooleanField(default=False)
+    phase_completion = models.BooleanField(default=False)
+    accessibility = models.BooleanField(default=False)
+    leverage_resource = models.BooleanField(default=False)
+
+    # Geographic Districts
+    @property
+    def zones(self):
+        'Which CCFP Zones intersect with the assets associated with this project'
+        # we'll start by doing a geo-intersect query, but we might want to
+        # end up caching that in table that gets updated when the assets
+        # that gets associated with a project gets updated
+        ...
+
+    @property
+    def senate_districts(self):
+        ...
+
+    @property
+    def house_districts(self):
+        ...
+
+    @property
+    def commissioner_districts(self):
+        ...
+
+
+class ProjectScore(models.Model):
+
+    project = models.OneToOneField(Project, on_delete=models.CASCADE)
+    core_mission_score = models.IntegerField(default=1,
+                                             validators=[MinValueValidator(1),
+                                                         MaxValueValidator(5)])
+    operations_impact_score = models.IntegerField(default=1,
+                                                  validators=[MinValueValidator(1),
+                                                              MaxValueValidator(5)])
+    sustainability_score = models.IntegerField(default=1,
+                                               validators=[MinValueValidator(1),
+                                                           MaxValueValidator(5)])
+    ease_score = models.IntegerField(default=1,
+                                     validators=[MinValueValidator(1),
+                                                 MaxValueValidator(5)])
+    geographic_distance_score = models.IntegerField(default=1,
+                                                    validators=[MinValueValidator(1),
+                                                                MaxValueValidator(5)])
+    social_equity_score = models.IntegerField(default=1,
+                                              validators=[MinValueValidator(1),
+                                                          MaxValueValidator(5)])
+
+    @property
+    def total_score(self):
+        '''return the total, weighted score'''
+        ...
+
+    def add_score_to_queryset(self):
+        '''we'll need to add the total scores to the queryset'''
+        ...
+
+
+class ProjectFinances(models.Model):
+
+    FUNDING_CHOICES = [
+        ('unfunded', 'Unfunded'),
+        ('partially funded', 'Partially Funded'),
+        ('future unfunded', 'Future Unfunded'),
+        ('funded', 'Funded')
+    ]
+
+    project = models.OneToOneField(Project, on_delete=models.CASCADE)
+    year = models.IntegerField()
+    bid_quarter = models.TextField()
+    funded = models.TextField(choices=FUNDING_CHOICES,
+                              null=True,
+                              blank=True)
+    high_priority = models.BooleanField(default=False)
+    rollover = MoneyField(default_currency='USD',
+                          default=0.00,
+                          max_digits=11)
+    bond = MoneyField(default_currency='USD',
+                      default=0.00,
+                      max_digits=11)
+    grant_funds = MoneyField(default_currency='USD',
+                             default=0.00,
+                             max_digits=11)
+    fees = MoneyField(default_currency='USD',
+                      default=0.00,
+                      max_digits=11)
+    budget = MoneyField(default_currency='USD',
+                        default=0.00,
+                        max_digits=11)
+
+
+class ProjectFundingYear(models.Model):
+
+    project = models.ForeignKey(Project,
+                                null=True,
+                                on_delete=models.CASCADE)
+    year = models.IntegerField()
+    funds = MoneyField(default_currency='USD',
+                       default=0.00,
+                       max_digits=11)
+
+
+class Asset(models.Model):
+
+    name = models.TextField()
+    location = models.GeometryField()
+    project = models.ManyToManyField(Project,
+                                     related_name='assets')
+
+
+class ProjectCategory(models.Model):
+
+    category = models.TextField(null=False)
+    subcategory = models.TextField(null=True)
+
+
 class HouseDistrict(models.Model):
     name = models.TextField()
     shape = models.PolygonField()
@@ -34,138 +177,6 @@ class CommissionerDistrict(models.Model):
 class Zone(models.Model):
     name = models.TextField(null=False)
     shape = models.PolygonField()
-
-
-class ProjectCategory(models.Model):
-
-    category = models.TextField(null=False)
-    subcategory = models.TextField(null=True)
-
-
-class Project(models.Model):
-    FUNDING_CHOICES = [
-        ('unfunded', 'Unfunded'),
-        ('partially funded', 'Partially Funded'),
-        ('future unfunded', 'Future Unfunded'),
-        ('funded', 'Funded')
-    ]
-
-    name = models.TextField()
-    description = models.TextField()
-    category = models.ForeignKey(ProjectCategory,
-                                 null=True,
-                                 on_delete=models.SET_NULL)
-    section_owner = models.ForeignKey(Section,
-                                      null=True,
-                                      on_delete=models.SET_NULL)
-
-    # don't love setting these by hand instead of computing
-    # them, but CCFP wants to do this by hand for now.
-    #
-    # if projects are long-lived then this is going to run
-    # into a problem when the disctricts change
-    #
-    # alternative might be to get them to put in a lat long
-    # I'll ask Garret about that.
-    zone = models.ForeignKey(Zone,
-                             null=True,
-                             on_delete=models.SET_NULL)
-    senate_district = models.ForeignKey(SenateDistrict,
-                                        null=True,
-                                        on_delete=models.SET_NULL)
-    house_district = models.ForeignKey(HouseDistrict,
-                                       null=True,
-                                       on_delete=models.SET_NULL)
-    commissioner_district = models.ForeignKey(CommissionerDistrict,
-                                              null=True,
-                                              on_delete=models.SET_NULL)
-    core_mission_score = models.IntegerField(default=1,
-                                             validators=[MinValueValidator(1),
-                                                         MaxValueValidator(5)])
-    operations_impact_score = models.IntegerField(default=1,
-                                                  validators=[MinValueValidator(1),
-                                                              MaxValueValidator(5)])
-    sustainability_score = models.IntegerField(default=1,
-                                               validators=[MinValueValidator(1),
-                                                           MaxValueValidator(5)])
-    ease_score = models.IntegerField(default=1,
-                                     validators=[MinValueValidator(1),
-                                                 MaxValueValidator(5)])
-    geographic_distance_score = models.IntegerField(default=1,
-                                                    validators=[MinValueValidator(1),
-                                                                MaxValueValidator(5)])
-    social_equity_score = models.IntegerField(default=1,
-                                              validators=[MinValueValidator(1),
-                                                          MaxValueValidator(5)])
-    obligation = models.BooleanField(default=False)
-    phase_completion = models.BooleanField(default=False)
-    accessibility = models.BooleanField(default=False)
-    leverage_resource = models.BooleanField(default=False)
-
-    bid_quarter = models.TextField()
-    funded = models.TextField(choices=FUNDING_CHOICES,
-                              null=True,
-                              blank=True)
-    high_priority = models.BooleanField(default=False)
-    rollover = MoneyField(default_currency='USD',
-                          default=0.00,
-                          max_digits=11)
-    bond = MoneyField(default_currency='USD',
-                      default=0.00,
-                      max_digits=11)
-    grant_funds = MoneyField(default_currency='USD',
-                             default=0.00,
-                             max_digits=11)
-    fees = MoneyField(default_currency='USD',
-                      default=0.00,
-                      max_digits=11)
-    year = models.IntegerField()
-    created_date = models.DateTimeField(auto_now_add=True)
-
-    budget = MoneyField(default_currency='USD',
-                        default=0.00,
-                        max_digits=11)
-
-    def score(self):
-        '''return the total, weighted score'''
-        ...
-
-    def add_score_to_queryset(self):
-        '''we'll need to add the total scores to the queryset'''
-        ...
-
-
-class ProjectFundingYear(models.Model):
-
-    project = models.ForeignKey(Project,
-                                null=True,
-                                on_delete=models.CASCADE)
-    year = models.IntegerField()
-    funds = MoneyField(default_currency='USD',
-                       default=0.00,
-                       max_digits=11)
-
-
-class Asset(models.Model):
-
-    name = models.TextField()
-    location = models.PointField()
-    project = models.ManyToManyField(Project,
-                                     related_name='assets')
-
-
-class CapitalPlan(models.Model):
-
-    name = models.TextField()
-    user = models.ForeignKey(User,
-                             on_delete=models.CASCADE,
-                             related_name='plans')
-
-    def total_budget(self):
-        ...
-
-    def other_aggregate_measures(self):
-        ...
 
 
 class ScoreWeights(models.Model):
