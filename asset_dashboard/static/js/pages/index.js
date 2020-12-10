@@ -35,7 +35,7 @@ class PortfolioPlanner extends React.Component {
     })
   }
 
-  addToPortfolio(projectsToAdd) {
+  addToPortfolio = (projectsToAdd) => {
     const updatedRemainingProjects = this.state.remainingProjects.filter((existingProject) => {
       if (!projectsToAdd.includes(existingProject)) {
         return existingProject
@@ -53,7 +53,7 @@ class PortfolioPlanner extends React.Component {
     })
   }
 
-  removeProjectFromPortfolio(projectsToRemove) {
+  removeProjectFromPortfolio = (projectsToRemove) => {
     console.log('removeProjectFromPortfolio', projectsToRemove)
     
     // remove the projects from the portfolio
@@ -85,8 +85,8 @@ class PortfolioPlanner extends React.Component {
               <PortfolioTable 
                 portfolio={this.state.portfolio.projects}
                 projects={this.state.remainingProjects} 
-                onAddToPortfolio={(projects) => this.addToPortfolio(projects)}
-                onRemoveProject={(project) => this.removeProjectFromPortfolio(project)}
+                onAddToPortfolio={this.addToPortfolio}
+                onRemoveProject={this.removeProjectFromPortfolio}
                  />
             </div>
           </div>
