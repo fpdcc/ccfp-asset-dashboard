@@ -39,7 +39,7 @@ const FilterComponent = ({ filterText, onFilter }) => {
   )
 }
 
-const PortfolioTable = ({ projects = [], portfolio, addToPortfolio, onRemoveProject }) => {
+const PortfolioTable = ({ projects = [], portfolio, onAddToPortfolio, onRemoveProject }) => {
   const [filterText, setFilterText] = useState('')
   
   const columns = React.useMemo(
@@ -85,11 +85,11 @@ const PortfolioTable = ({ projects = [], portfolio, addToPortfolio, onRemoveProj
   }
 
   const handleRemoveProject = (projects) => {
-    // work in progress...
-    if (projects.length === 1) {
-      onRemoveProject(projects[0])
-    }
+    console.log('handleRemoveProjects', projects)
+    onRemoveProject(projects.selectedRows)
   }
+
+  console.log('portfolio', portfolio)
 
   return (
     <>
@@ -102,9 +102,9 @@ const PortfolioTable = ({ projects = [], portfolio, addToPortfolio, onRemoveProj
           noDataComponent={<p>Select projects to update the portfolio.</p>}
           selectableRows
           selectableRowsHighlight
-          onSelectedRowsChange={(row) => handleRemoveProject(row.selectedRows)}
+          Selected={true}
+          onSelectedRowsChange={(rows) => handleRemoveProject(rows)}
           noContextMenu
-          selectableRowDisabled={() => { return false }}
         />
         <DataTable
           columns={columns}
@@ -123,7 +123,7 @@ const PortfolioTable = ({ projects = [], portfolio, addToPortfolio, onRemoveProj
           selectableRowsHighlight
           Clicked
           Selected
-          onSelectedRowsChange={(row) => addToPortfolio(row.selectedRows)}
+          onSelectedRowsChange={(row) => onAddToPortfolio(row.selectedRows)}
           onRowClicked={(row) => console.log('onrowclicked', row)}
           // persistTableHead
           customStyles={customStyles}
