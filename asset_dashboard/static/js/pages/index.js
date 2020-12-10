@@ -54,20 +54,9 @@ class PortfolioPlanner extends React.Component {
   }
 
   removeProjectFromPortfolio(projectToRemove) {
-    const updatedPortfolioProjects = this.portfolio.projects.filter((project) => {
-      if (project.key !== projectToRemove.key) {
-        return project
-      }
-    })
-
-    const updatedTotals = calculateTotals(updatedPortfolioProjects)
-
-    setPortfolio({
-      projects: updatedPortfolioProjects,
-      totals: updatedTotals
-    })
-
-    setRemainingProjects([...remainingProjects, projectToRemove])
+    // remove the projects from the portfolio
+    // recalculate portfolio total
+    // add the projects back to the remaining projects
   }
 
   render() {
