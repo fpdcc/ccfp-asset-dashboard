@@ -31,7 +31,7 @@ services:
 
   postgres:
     container_name: ccfp-asset-dashboard-postgres
-    image: postgres:12
+    image: postgis/postgis:12-3.0-alpine
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
