@@ -39,7 +39,7 @@ const FilterComponent = ({ filterText, onFilter }) => {
   )
 }
 
-const PortfolioTable = ({ projects = [], portfolio, onUpdatePortfolio, onRemoveProject }) => {
+const PortfolioTable = ({ projects = [], portfolio, addToPortfolio, onRemoveProject }) => {
   const [filterText, setFilterText] = useState('')
   
   const columns = React.useMemo(
@@ -123,10 +123,9 @@ const PortfolioTable = ({ projects = [], portfolio, onUpdatePortfolio, onRemoveP
           selectableRowsHighlight
           Clicked
           Selected
-          onSelectedRowsChange={(row) => onSelectProject(row.selectedRows)}
+          onSelectedRowsChange={(row) => addToPortfolio(row.selectedRows)}
           onRowClicked={(row) => console.log('onrowclicked', row)}
           // persistTableHead
-          
           customStyles={customStyles}
           noContextMenu
         />  
