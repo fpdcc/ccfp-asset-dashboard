@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.core import serializers
-from .models import Project
+from .models import DummyProject
 
 
 class Home(TemplateView):
@@ -11,7 +11,7 @@ class Home(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        projects = serializers.serialize('json', Project.objects.all())
+        projects = serializers.serialize('json', DummyProject.objects.all())
         context['props'] = {'projects': projects}
         return context
 

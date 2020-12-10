@@ -1,7 +1,7 @@
 import csv
 import os
 from django.core.management.base import BaseCommand, CommandError
-from asset_dashboard.models import Project
+from asset_dashboard.models import DummyProject
 
 class Command(BaseCommand):
     help = 'Loads in dummy data for local development'
@@ -13,7 +13,7 @@ class Command(BaseCommand):
             count = 0
 
             for row in reader:
-                p = Project.objects.create(
+                p = DummyProject.objects.create(
                     name=row['name'],
                     project_description=row['project_description'],
                     budget=row['budget'],
