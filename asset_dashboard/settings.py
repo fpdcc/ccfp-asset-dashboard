@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'asset_dashboard.wsgi.application'
 DATABASES = {}
 
 DATABASES['default'] = dj_database_url.parse(
-    os.getenv('DATABASE_URL', 'postgres://postgres:postgres@postgres:5432/database'),
+    os.getenv('DATABASE_URL', 'postgis://postgres:postgres@postgres:5432/database'),
     conn_max_age=600,
     ssl_require=True if os.getenv('POSTGRES_REQUIRE_SSL') else False
 )
