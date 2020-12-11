@@ -93,7 +93,8 @@ DATABASES = {}
 DATABASES['default'] = dj_database_url.parse(
     os.getenv('DATABASE_URL', 'postgis://postgres:postgres@postgres:5432/database'),
     conn_max_age=600,
-    ssl_require=True if os.getenv('POSTGRES_REQUIRE_SSL') else False
+    ssl_require=True if os.getenv('POSTGRES_REQUIRE_SSL') else False,
+    engine='django.contrib.gis.db.backends.postgis'
 )
 
 # Caching
