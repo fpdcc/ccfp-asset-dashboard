@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom'
 import ProjectsTable from './components/ProjectsTable'
 import PortfolioTable from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
-// import calculateTotals from './helpers/calculateTotals.js'
 import SearchInput from './components/FilterComponent'
 
 class PortfolioPlanner extends React.Component {
