@@ -41,6 +41,7 @@ class PortfolioPlanner extends React.Component {
         }
       ],
       filterText: '',
+      filteredRows: []
     }
 
     this.updatePortfolio = this.updatePortfolio.bind(this)
@@ -61,11 +62,11 @@ class PortfolioPlanner extends React.Component {
 
     this.setState({
       allProjects: projects,
+      filteredRows: projects
     })
   }
 
   updatePortfolio(projectsInPortfolio) {
-    // Recalculate totals based on the new array of projectsInPortfolio
     const totals = calculateTotals(projectsInPortfolio)
 
     this.setState({
@@ -76,11 +77,19 @@ class PortfolioPlanner extends React.Component {
     })
   }
 
-  render() {
-    const filteredItems = this.state.allProjects && this.state.allProjects.filter(project => {
-      return project.projectDescription.toLowerCase().includes(this.state.filterText.toLowerCase())
+  searchProjects(e) {
+    const filterText = e.target.value
+    const filteredRows = this.state.allProjects && this.state.allProjects.filter(project => {
+      return project.projectDescription.toLowerCase().includes(filterText.toLowerCase())
     })
 
+    this.setState({
+      filterText: filterText,
+      filteredRows: filteredRows
+    })
+  }
+
+  render() {
     return (
       <div className="container">
         <div className="row">
@@ -88,16 +97,16 @@ class PortfolioPlanner extends React.Component {
             <h1 className="pt-5 pl-3">Build a 5-Year Plan</h1>
             <div className="w-100">
               <SearchInput 
-                onFilter={e => this.setState({filterText: e.target.value})} 
+                onFilter={e => this.searchProjects(e)} 
                 filterText={this.state.filterText} />
               <div className="table-responsive">
                 <PortfolioTable 
                   portfolioProjects={this.state.portfolio.projects} 
                   columns={this.state.columns} />
                 <ProjectsTable 
-                  allProjects={filteredItems}
-                  onPortfolioChange={this.updatePortfolio}
-                  columns={this.state.columns} />
+                  allProjects={this.state.filteredRows}
+                  columns={this.state.columns}
+                  onPortfolioChange={this.updatePortfolio} />
               </div>
             </div>
           </div>

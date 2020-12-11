@@ -1,12 +1,6 @@
 import React from 'react'
 import DataTable from 'react-data-table-component'
 
-const customTableStyles = {
-  header: {
-    width: '50%'
-  }
-}
-
 class ProjectsTable extends React.Component {
   constructor(props) {
     super(props)
@@ -16,7 +10,7 @@ class ProjectsTable extends React.Component {
 
   onSelectedChange({ selectedRows }) {
     // This event returns an array of all selected rows.
-    // Any selected row will be in the portfolio table.
+    // Any selected row will be added to the portfolio.
     // Iterate through the rows and change isDisabled
     // so that the portfolio table will know to render the row
     // as isDisabled.
@@ -48,7 +42,6 @@ class ProjectsTable extends React.Component {
           selectableRows
           selectableRowsHighlight
           onSelectedRowsChange={this.onSelectedChange}
-          customStyles={customTableStyles}
           noContextMenu
         />
     </>
