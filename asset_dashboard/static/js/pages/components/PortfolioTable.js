@@ -1,6 +1,13 @@
 import React from 'react'
 import DataTable from 'react-data-table-component'
 
+const tableStyles = {
+    header: {
+        style: {
+          minHeight: '10px',
+        }
+}}
+
 const PortfolioTable = ({ portfolioProjects, columns }) => {
     return (
         <>
@@ -13,6 +20,7 @@ const PortfolioTable = ({ portfolioProjects, columns }) => {
                 selectableRows
                 selectableRowDisabled={row => row.isDisabled}
                 noContextMenu
+                customStyles={tableStyles}
             />
         </>
     )
