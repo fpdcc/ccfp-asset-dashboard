@@ -20,29 +20,30 @@ class PortfolioPlanner extends React.Component {
           projectZones: []
         }
       },
-      columns: [
-        {
-          name: 'Project Description',
-          selector: 'projectDescription', 
-          sortable: true,
-          maxWidth: '550px'
-        },
-        {
-          name: 'Total Score',
-          selector: 'score',
-          sortable: true,
-          maxWidth: '50px',
-        },
-        {
-          name: 'Total Budget',
-          selector: 'budget',
-          sortable: true,
-          maxWidth: '75px'
-        }
-      ],
       filterText: '',
       filteredRows: []
-    }
+    },
+
+    this.columns = [
+      {
+        name: 'Project Description',
+        selector: 'projectDescription', 
+        sortable: true,
+        maxWidth: '550px'
+      },
+      {
+        name: 'Total Score',
+        selector: 'score',
+        sortable: true,
+        maxWidth: '50px',
+      },
+      {
+        name: 'Total Budget',
+        selector: 'budget',
+        sortable: true,
+        maxWidth: '75px'
+      }
+    ],
 
     this.updatePortfolio = this.updatePortfolio.bind(this)
   }
@@ -102,10 +103,10 @@ class PortfolioPlanner extends React.Component {
               <div className="table-responsive">
                 <PortfolioTable 
                   portfolioProjects={this.state.portfolio.projects} 
-                  columns={this.state.columns} />
+                  columns={this.columns} />
                 <ProjectsTable 
                   allProjects={this.state.filteredRows}
-                  columns={this.state.columns}
+                  columns={this.columns}
                   onPortfolioChange={this.updatePortfolio} />
               </div>
             </div>
