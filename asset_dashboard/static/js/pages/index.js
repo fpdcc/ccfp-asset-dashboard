@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import ProjectsTable from './components/ProjectsTable'
 import PortfolioTable from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
-import calculateTotals from './helpers/calculateTotals.js'
+// import calculateTotals from './helpers/calculateTotals.js'
 import SearchInput from './components/FilterComponent'
 
 class PortfolioPlanner extends React.Component {
@@ -67,8 +67,16 @@ class PortfolioPlanner extends React.Component {
     })
   }
 
+  calculateTotals(portfolio) {
+    return {
+      budgetImpact: portfolio.reduce((total, project) => { return total + project.budget }, 0),
+      projectNames: portfolio.map(project => project.name),
+      projectZones: portfolio.map(project => project.zone)
+    }
+  }
+
   updatePortfolio(projectsInPortfolio) {
-    const totals = calculateTotals(projectsInPortfolio)
+    const totals = this.calculateTotals(projectsInPortfolio)
 
     this.setState({
       portfolio: {
