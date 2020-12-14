@@ -99,14 +99,20 @@ class PortfolioPlanner extends React.Component {
       }
     })
 
-    // add the project back to the remainingProjects
-    this.setState(prevState => ({
+    // reset the list of remainingProjects, based on the updated portfolio
+    const remainingProjects = this.state.allProjects.filter(project => {
+      if (!updatedPortfolio.includes(project)) {
+        return project
+      }
+    })
+
+    this.setState({
       portfolio: {
         projects: updatedPortfolio,
         totals: this.calculateTotals(updatedPortfolio)
       },
-      remainingProjects: [...prevState.remainingProjects, row]
-    }))
+      remainingProjects: remainingProjects
+    })
   }
 
   searchProjects(e) {
@@ -127,7 +133,7 @@ class PortfolioPlanner extends React.Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="container col card mt-5 col-9">
+          <div className="container col card border-2 mt-5 col-9">
             <h1 className="pt-5 pl-3">Build a 5-Year Plan</h1>
             <div className="w-100">
               <SearchInput
