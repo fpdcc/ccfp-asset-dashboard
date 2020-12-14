@@ -11,6 +11,7 @@ class PortfolioPlanner extends React.Component {
 
     this.state = {
       allProjects: [],
+      remainingProjects: [],
       portfolio: {
         projects: [],
         totals: {
@@ -19,32 +20,27 @@ class PortfolioPlanner extends React.Component {
           projectZones: []
         }
       },
-      filterText: '',
-      filteredRows: []
+      filterText: ''
     },
 
     this.columns = [
       {
-        name: 'Project Description',
-        selector: 'projectDescription', 
-        sortable: true,
-        maxWidth: '550px'
+        Header: 'Project Description',
+        accessor: 'projectDescription', 
       },
       {
-        name: 'Total Score',
-        selector: 'score',
-        sortable: true,
-        maxWidth: '50px',
+        Header: 'Total Score',
+        accessor: 'score',
       },
       {
-        name: 'Total Budget',
-        selector: 'budget',
-        sortable: true,
-        maxWidth: '75px'
+        Header: 'Total Budget',
+        accessor: 'budget',
       }
     ],
 
-    this.updatePortfolio = this.updatePortfolio.bind(this)
+    this.addProjectToPortfolio = this.addProjectToPortfolio.bind(this)
+    this.removeProjectFromPortfolio = this.removeProjectFromPortfolio.bind(this)
+    this.searchProjects = this.searchProjects.bind(this)
   }
 
   componentDidMount() {
@@ -56,13 +52,12 @@ class PortfolioPlanner extends React.Component {
         budget: project.fields.budget || 0,
         name: project.fields.name,
         zone: project.fields.zone,
-        isDisabled: false
       }
     })
 
     this.setState({
       allProjects: projects,
-      filteredRows: projects
+      remainingProjects: projects
     })
   }
 
@@ -74,47 +69,85 @@ class PortfolioPlanner extends React.Component {
     }
   }
 
-  updatePortfolio(projectsInPortfolio) {
-    const totals = this.calculateTotals(projectsInPortfolio)
+  addProjectToPortfolio(row) {
+    // add the row to the existing portfolio
+    const updatedProjectsInPortfolio = [...this.state.portfolio.projects, row]
+
+    const updatedTotals =this.calculateTotals(updatedProjectsInPortfolio)
+
+    // remove the row from the remaining projects
+    const updatedRemainingProjects = this.state.remainingProjects.filter((project) => {
+      if (project.key !== row.key) {
+        return project
+      }
+    })
 
     this.setState({
       portfolio: {
-        projects: projectsInPortfolio,
-        totals: totals
+        projects: updatedProjectsInPortfolio,
+        totals: updatedTotals
+      },
+      remainingProjects: updatedRemainingProjects
+    })
+  }
+
+  removeProjectFromPortfolio(row) {
+    // remove the row from the existing portfolio
+    const updatedPortfolio = this.state.portfolio.projects.filter((project) => {
+      if (project.key != row.key) {
+        return project
       }
+    })
+
+    // reset the list of remainingProjects, based on the updated portfolio
+    const remainingProjects = this.state.allProjects.filter(project => {
+      if (!updatedPortfolio.includes(project)) {
+        return project
+      }
+    })
+
+    this.setState({
+      portfolio: {
+        projects: updatedPortfolio,
+        totals: this.calculateTotals(updatedPortfolio)
+      },
+      remainingProjects: remainingProjects
     })
   }
 
   searchProjects(e) {
     const filterText = e.target.value
-    const filteredRows = this.state.allProjects && this.state.allProjects.filter(project => {
-      return project.projectDescription.toLowerCase().includes(filterText.toLowerCase())
-    })
 
     this.setState({
-      filterText: filterText,
-      filteredRows: filteredRows
+      filterText: filterText
     })
   }
 
   render() {
+    // This filters on every re-render, so that this.state.remainingProjects can be the source of truth.
+    // Could also chain filtering here for other things (like "department" from the wireframe).
+    const filteredRows = this.state.remainingProjects && this.state.remainingProjects.filter(project => {
+      return project.projectDescription.toLowerCase().includes(this.state.filterText.toLowerCase())
+    })
+
     return (
       <div className="container">
         <div className="row">
-          <div className="container col card mt-5 col-9">
+          <div className="container col card border-2 mt-5 col-9">
             <h1 className="pt-5 pl-3">Build a 5-Year Plan</h1>
             <div className="w-100">
-              <SearchInput 
-                onFilter={e => this.searchProjects(e)} 
+              <SearchInput
+                onFilter={this.searchProjects} 
                 filterText={this.state.filterText} />
               <div className="table-responsive">
                 <PortfolioTable 
                   portfolioProjects={this.state.portfolio.projects} 
-                  columns={this.columns} />
+                  columns={this.columns} 
+                  onRemoveFromPortfolio={this.removeProjectFromPortfolio} />
                 <ProjectsTable 
-                  allProjects={this.state.filteredRows}
+                  allProjects={filteredRows}
                   columns={this.columns}
-                  onPortfolioChange={this.updatePortfolio} />
+                  onAddToPortfolio={this.addProjectToPortfolio} />
               </div>
             </div>
           </div>
