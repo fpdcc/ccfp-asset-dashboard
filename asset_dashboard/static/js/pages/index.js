@@ -20,8 +20,7 @@ class PortfolioPlanner extends React.Component {
           projectZones: []
         }
       },
-      filterText: '',
-      filteredRows: []
+      filterText: ''
     },
 
     this.columns = [
@@ -58,8 +57,7 @@ class PortfolioPlanner extends React.Component {
 
     this.setState({
       allProjects: projects,
-      remainingProjects: projects,
-      filteredRows: projects
+      remainingProjects: projects
     })
   }
 
