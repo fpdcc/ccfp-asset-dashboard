@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactTable from './ReactTable'
+import ReactTable from './BaseTable'
 
 const PortfolioTable = ({ portfolioProjects, columns, onRemoveFromPortfolio }) => {
   const onRowClick = ({ original }) => {

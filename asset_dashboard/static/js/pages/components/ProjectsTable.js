@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactTable from './ReactTable'
+import ReactTable from './BaseTable'
 
 const ProjectsTable = ({ allProjects, columns, onAddToPortfolio }) => {
   const onRowClick = ({ original }) => {

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTable, usePagination } from 'react-table'
 
-const ReactTable = ({ columns = [], rows = [],  getTrProps = props => props }) => {
+const BaseTable = ({ columns = [], rows = [],  getTrProps = props => props }) => {
   const data = React.useMemo(
     () => rows.map((project) => {
       return project
@@ -115,4 +115,4 @@ const ReactTable = ({ columns = [], rows = [],  getTrProps = props => props }) =
   )
 }
 
-export default ReactTable
+export default BaseTable
