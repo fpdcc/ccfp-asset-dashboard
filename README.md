@@ -42,7 +42,7 @@ docker-compose exec app npm run-script develop
 docker-compose run --rm app npm run-script develop
 
 # Add your changes to version control
-git add cdi/static/css/bootstrap.custom.css
+git add asset_dashboard/static/css/bootstrap.custom.css
 git commit -m "Update custom Bootstrap build"
 ```
 

@@ -29,7 +29,7 @@ const PortfolioTable = ({ portfolioProjects, columns, onRemoveFromPortfolio }) =
         selector={() => {
           return (
             <span>
-              <i className="fa fa-minus-square"></i>
+              <i className="fa fa-minus-square bg-"></i>
             </span>
           )
         }}
