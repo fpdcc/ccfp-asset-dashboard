@@ -25,6 +25,10 @@ class PortfolioPlanner extends React.Component {
 
     this.columns = [
       {
+        Header: '',
+        accessor: 'selector'
+      },
+      {
         Header: 'Project Description',
         accessor: 'projectDescription', 
       },
@@ -133,13 +137,13 @@ class PortfolioPlanner extends React.Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="container col card border-2 mt-5 col-9">
+          <div className="container col card border-2 border-secondary border-3 mt-5 col-9">
             <h1 className="pt-5 pl-3">Build a 5-Year Plan</h1>
             <div className="w-100">
               <SearchInput
                 onFilter={this.searchProjects} 
                 filterText={this.state.filterText} />
-              <div className="table-responsive">
+              <div>
                 <PortfolioTable 
                   portfolioProjects={this.state.portfolio.projects} 
                   columns={this.columns} 
