@@ -9,6 +9,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         dummy_projects = DummyProject.objects.all()
         
+        print(len(dummy_projects))
+
         if len(dummy_projects) > 0:
             with open('raw/simplified.csv', newline='') as csv_file:
                 reader = csv.DictReader(csv_file)
