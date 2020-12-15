@@ -44,7 +44,7 @@ const BaseTable = ({ columns = [], rows = [],  getTrProps = props => props }) =>
             {page.map((row, i) => {
               prepareRow(row)
               return (
-                <tr {...getTrProps(row.getRowProps(row))} key={i}>
+                <tr {...getTrProps(row.getRowProps(row))} key={i} className='cursor-pointer'>
                   {row.cells.map(cell => {
                     return (
                       <td {...cell.getCellProps()}>

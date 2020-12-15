@@ -4,8 +4,8 @@
 {% block title %}Home{% endblock %}
 
 {% block body %}
-<div class="container bg-light">
-  <div id="App">
+<div class="bg-primary">
+  <div id="App" class="container bg-light">
     <!-- Contents get replaced by mounted React.Component -->
     <div class="text-center">
       <i class="fa fa-lg fa-spinner fa-spin"></i><br><br>
@@ -24,6 +24,5 @@
 </script>
 {% compress js %}
   <script type="text/jsx" src="{% static view.component %}"></script>
-  <script type="module" src="{% static 'js/base.js' %}"></script>
 {% endcompress %}
 {% endblock %}
