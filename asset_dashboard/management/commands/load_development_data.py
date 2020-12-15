@@ -11,7 +11,7 @@ class Command(BaseCommand):
         
         print(len(dummy_projects))
 
-        if len(dummy_projects) > 0:
+        if len(dummy_projects) == 0:
             with open('raw/simplified.csv', newline='') as csv_file:
                 reader = csv.DictReader(csv_file)
                 
