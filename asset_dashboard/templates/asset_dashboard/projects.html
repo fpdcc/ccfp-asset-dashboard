@@ -1,0 +1,37 @@
+{% extends "asset_dashboard/base.html" %}
+
+{% block title %}Capital Projects{% endblock %}
+
+{% block body %}
+  <div class="container">
+    <div class="row">
+      <h1 class="col-10">Hey, user!</h1>
+      <div class="col-2 d-flex justify-content-center">
+        <div>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectForm">Add
+            Project</button>
+        </div>
+      </div>
+    </div>
+
+    {% include "asset_dashboard/partials/add_edit_project_form.html" %}
+
+    <h3>Capital Projects</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for project in projects %}
+        <tr>
+          <td>{{ project.name }}</td>
+          <td>{{ project.description }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
