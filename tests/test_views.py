@@ -32,11 +32,8 @@ def test_add_project_view(client):
     assert successful_response.status_code == 302
 
     # the new project's detail page should be at this route: /projects/<pk:int>
-    # so make sure the new project PK is in the form's redirect url
+    # so make sure the new project PK is in the response's redirect url
     assert str(new_project_from_form.pk) in successful_response.url
-
-    #assert assertTemplateUsed(successful_response, 'asset_dashboard/project_detail.html')
-    print(successful_response.__dict__)
 
     invalid_form_data = [
         {'name': '', 'description': ''},
