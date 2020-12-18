@@ -41,7 +41,7 @@ class ProjectListView(ListView):
         return context
 
 
-class AddEditProjectForm(FormView):
+class AddEditProjectFormView(FormView):
     template_name = 'asset_dashboard/partials/add_edit_project_form.html'
     form_class = ProjectForm
 
