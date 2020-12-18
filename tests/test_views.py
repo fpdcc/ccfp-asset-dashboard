@@ -58,4 +58,4 @@ def test_project_detail_view(client, project):
     # test bad url
     bad_url = reverse('project-detail', kwargs={'pk': 1234556873459})
     bad_response = client.get(bad_url)
-    assert response.status_code == 404
+    assert bad_response.status_code == 404
