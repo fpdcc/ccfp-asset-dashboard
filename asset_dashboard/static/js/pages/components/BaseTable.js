@@ -29,8 +29,6 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
     ], []
   )
 
- 
-
   const {
     getTableProps,
     getTableBodyProps,
