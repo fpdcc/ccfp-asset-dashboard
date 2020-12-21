@@ -1,13 +1,11 @@
 import React from 'react'
 import { useTable, usePagination } from 'react-table'
 
-const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, selector, children }) => {
+const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, selector }) => {
   const data = React.useMemo(
     () => rows.map((project) => {
       return project
     }), [rows])
-
-  console.log(columns)
 
   const columns = React.useMemo(
     () => [

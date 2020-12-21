@@ -10,14 +10,6 @@ const PortfolioTable = ({ portfolioProjects, columns, onRemoveFromPortfolio }) =
     }
   }
 
-  const SelectorComponent = () => {
-    return (
-      <span>
-        <i className="fas fa-minus"></i>
-      </span>
-    )
-  }
-
   return (
     <div className="mb-5 mt-5">
       <h3>Portfolio</h3>

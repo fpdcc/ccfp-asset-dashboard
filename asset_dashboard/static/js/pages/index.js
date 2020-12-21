@@ -21,26 +21,7 @@ class PortfolioPlanner extends React.Component {
         }
       },
       filterText: ''
-    },
-
-    this.columns = [
-      {
-        Header: '',
-        accessor: 'selector'
-      },
-      {
-        Header: 'Project Description',
-        accessor: 'projectDescription', 
-      },
-      {
-        Header: 'Total Score',
-        accessor: 'score',
-      },
-      {
-        Header: 'Total Budget',
-        accessor: 'budget',
-      }
-    ],
+    }
 
     this.addProjectToPortfolio = this.addProjectToPortfolio.bind(this)
     this.removeProjectFromPortfolio = this.removeProjectFromPortfolio.bind(this)
@@ -146,11 +127,9 @@ class PortfolioPlanner extends React.Component {
               <div>
                 <PortfolioTable 
                   portfolioProjects={this.state.portfolio.projects} 
-                  columns={this.columns} 
                   onRemoveFromPortfolio={this.removeProjectFromPortfolio} />
                 <ProjectsTable 
                   allProjects={filteredRows}
-                  columns={this.columns}
                   onAddToPortfolio={this.addProjectToPortfolio} />
               </div>
             </div>
