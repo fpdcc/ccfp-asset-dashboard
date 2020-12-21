@@ -28,6 +28,30 @@ docker-compose up
 The app will be available at http://localhost:8000. The database will be exposed
 on port 32001.
 
+### Compiling Sass to CSS
+
+This project uses Sass to compile a custom Bootstrap build with house styles.
+Making changes to the Sass? Use our `develop` script to auto-compile your
+changes to CSS and commit your changes.
+
+```bash
+# On a running app container
+docker-compose exec app npm run-script develop
+
+# OR, in a one-off container
+docker-compose run --rm app npm run-script develop
+
+# Add your changes to version control
+git add asset_dashboard/static/css/bootstrap.custom.css
+git commit -m "Update custom Bootstrap build"
+```
+
+Note that you only need to update the Sass to override base Bootstrap styles.
+See [the Bootstrap documentation on theming](https://getbootstrap.com/docs/4.5/getting-started/theming/)
+for more information.
+
+To extend Bootstrap styles and add new styles, edit `app.css` directly.
+
 ### Running tests
 
 Run tests with Docker Compose:

@@ -1,0 +1,15 @@
+$trees: #2b491c;
+$words: #203700;
+$path: #7e9137;
+$maroon: #9e0b0f;
+$grass: #d8c114;
+
+$theme-colors: (
+    "primary": $trees,
+    "secondary": #acacac,
+    "info": $path,
+    "light": #f7f7f7,
+);
+
+
+@import '/app/node_modules/bootstrap/scss/bootstrap';

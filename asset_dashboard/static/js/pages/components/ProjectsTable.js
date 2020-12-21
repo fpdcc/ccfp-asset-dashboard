@@ -11,12 +11,20 @@ const ProjectsTable = ({ allProjects, columns, onAddToPortfolio }) => {
   }
 
   return (
-    <>
+    <div className="mt-4">
+      <h3>All Projects</h3>
       <ReactTable
         rows={allProjects}
         columns={columns}
-        getTrProps={onRowClick} />
-    </>
+        getTrProps={onRowClick}
+        selector={() => {
+          return (
+            <span>
+              <i className="fas fa-plus-square"></i>
+            </span>
+          )
+        }} />
+    </div>
   )
 }
 

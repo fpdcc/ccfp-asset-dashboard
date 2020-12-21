@@ -9,13 +9,17 @@
     "@babel/preset-react": "^7.9.4",
     "babel-preset-env": "^1.7.0",
     "babelify": "^10.0.0",
+    "bootstrap": "^4.5.3",
     "browserify": "^16.5.0",
     "react": "^16.13.1",
     "react-data-table-component": "^6.11.6",
     "react-dom": "^16.13.1",
     "react-select": "^3.1.1",
     "react-table": "^7.6.2",
+    "sass": "^1.30.0",
     "styled-components": "^5.2.1"
   },
-  "devDependencies": {}
+  "scripts": {
+    "develop": "sass --watch /app/asset_dashboard/static/scss/custom.scss:/app/asset_dashboard/static/css/bootstrap.custom.css"
+  }
 }

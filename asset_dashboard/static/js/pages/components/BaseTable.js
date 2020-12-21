@@ -1,11 +1,33 @@
 import React from 'react'
 import { useTable, usePagination } from 'react-table'
 
-const BaseTable = ({ columns = [], rows = [],  getTrProps = props => props }) => {
+const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, selector }) => {
   const data = React.useMemo(
     () => rows.map((project) => {
       return project
     }), [rows])
+
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: () => null,
+        id: 'selector',
+        Cell: selector ? selector : <span></span>
+      },
+      {
+        Header: 'Project Description',
+        accessor: 'projectDescription', 
+      },
+      {
+        Header: 'Total Score',
+        accessor: 'score',
+      },
+      {
+        Header: 'Total Budget',
+        accessor: 'budget',
+      }
+    ], []
+  )
 
   const {
     getTableProps,
@@ -26,11 +48,11 @@ const BaseTable = ({ columns = [], rows = [],  getTrProps = props => props }) =>
 
   return (
     <div className="table-responsive">
-      <table {...getTableProps()} className='table table-striped table-bordered table-hover'>
+      <table {...getTableProps()} className='table table-striped table-hover'>
 
         <thead>
           {headerGroups.map(headerGroup => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
+            <tr {...headerGroup.getHeaderGroupProps()} className='col'>
               {headerGroup.headers.map(column => (
                 <th {...column.getHeaderProps()}>
                   {column.render('Header')}
@@ -44,7 +66,8 @@ const BaseTable = ({ columns = [], rows = [],  getTrProps = props => props }) =>
             {page.map((row, i) => {
               prepareRow(row)
               return (
-                <tr {...getTrProps(row.getRowProps(row))} key={i}>
+                <tr {...getTrProps(row.getRowProps(row))} 
+                    key={i} className={rowClassNames ? `${rowClassNames} cursor-pointer` : 'cursor-pointer'}>
                   {row.cells.map(cell => {
                     return (
                       <td {...cell.getCellProps()}>
