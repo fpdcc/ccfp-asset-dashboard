@@ -5,6 +5,7 @@ from django.core import serializers
 from django.urls import reverse
 from .models import DummyProject, Project
 from .forms import ProjectForm
+from django.contrib import messages
 
 
 class Home(TemplateView):
@@ -49,12 +50,9 @@ class AddProjectFormView(CreateView):
         form = self.form_class(request.POST)
 
         if form.is_valid():
-            print('form is valid!')
             project = Project.objects.create(**form.cleaned_data)
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
-            print(form.errors)
-            print('form is invalid :(')
             return HttpResponseBadRequest('Form is invalid.')
 
 
@@ -81,4 +79,5 @@ class ProjectDetailView(DetailView, edit.FormMixin):
         if form.is_valid():
 
             project = Project.objects.update(**form.cleaned_data)
+            messages.success(request, 'Project successfully updated!')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': kwargs['pk']}))
