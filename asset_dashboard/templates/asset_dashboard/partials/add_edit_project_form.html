@@ -1,0 +1,33 @@
+<!-- Modal Form -->
+<div class="modal fade" id="projectForm" tabindex="-1" role="dialog" aria-labelledby="projectFormLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title" id="projectFormLabel">Add Project</h1>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <div class="row">
+            <div class="w-100">
+              <form action="{% url 'add-edit-projects' %}" method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                  <div class="form-group">
+                    <label class="form-label" for="id_{{ field.name }}">{{ field.label }}</label>
+                    <input class="form-control" type="text" name="{{ field.name }}" required id="id_{{ field.name }}">
+                    <p class="help-text">{{ field.help_text }} </p>
+                  </div>
+                {% endfor %}
+                <input type="submit" value="Add Project" class="btn btn-primary">
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -7,7 +7,11 @@ def project():
     Creates and returns a single project.
     """
 
-    return models.Project.objects.create(name="Trail Maintenance", description="Fixing trail erosion.")
+    section_owner = models.Section.objects.create(name="Architecture")
+
+    return models.Project.objects.create(name="Trail Maintenance", 
+                                        description="Fixing trail erosion.", 
+                                        section_owner=section_owner)
 
 
 @pytest.fixture
@@ -16,9 +20,19 @@ def project_list():
     Creates and returns a QuerySet of all projects.
     """
 
+    section_owner = models.Section.objects.create(name="Civil Engineering")
+
     for index in range(10):
         name = f'project_{index}'
         description = f'description text for this project'
-        models.Project.objects.create(name=name, description=description)
+        models.Project.objects.create(name=name, description=description, section_owner=section_owner)
 
     return models.Project.objects.all()
+
+
+@pytest.fixture
+def section_owner():
+    """
+    Creates and returns a section owner.
+    """
+    return models.Section.objects.create(name="Architecture")

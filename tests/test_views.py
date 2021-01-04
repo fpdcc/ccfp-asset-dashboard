@@ -13,15 +13,19 @@ def test_project_list_view(client, project_list):
 
 
 @pytest.mark.django_db
-def test_add_project_view(client):
-    url = reverse('add-edit-projects')
+def test_add_project_view(client, section_owner):
+    url = reverse('add-project')
 
     valid_form_data = {
         'name': 'trail maintenance project',
-        'description': 'We need to clean the trail and fix some washouts.'
+        'description': 'We need to clean the trail and fix some washouts.',
+        'section_owner': section_owner.pk
     }
 
+    print(section_owner.pk)
+
     successful_response = client.post(url, data=valid_form_data)
+    print(successful_response)
 
     # assert that the new project saved successfully
     new_project_from_form = Project.objects.filter(name=valid_form_data['name'])[0]
@@ -49,7 +53,7 @@ def test_add_project_view(client):
 
 
 @pytest.mark.django_db
-def test_project_detail_view(client, project):
+def test_project_detail_view(client, project, section_owner):
     url = reverse('project-detail', kwargs={'pk': project.pk})
     response = client.get(url)
     assert response.status_code == 200
@@ -59,3 +63,14 @@ def test_project_detail_view(client, project):
     bad_url = reverse('project-detail', kwargs={'pk': 1234556873459})
     bad_response = client.get(bad_url)
     assert bad_response.status_code == 404
+
+    # test that the detail page can update the model instance
+    valid_form_data = {
+        'name': 'trail improvement project',
+        'description': 'We need to clean the trail, fix some washouts, and build a bathroom.',
+        'section_owner': section_owner.pk
+    }
+    successful_response = client.post(url, data=valid_form_data)
+    updated_project = Project.objects.filter(name=valid_form_data['name'])[0]
+    assert updated_project.name == valid_form_data['name']
+    assert updated_project.description == valid_form_data['description']
