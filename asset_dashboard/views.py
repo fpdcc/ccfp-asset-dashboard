@@ -1,9 +1,5 @@
 from django.shortcuts import render
-<<<<<<< HEAD
 from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView
-=======
-from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView, edit
->>>>>>> added basic detail view with update abilities
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.core import serializers
 from django.urls import reverse
@@ -54,9 +50,12 @@ class AddProjectFormView(CreateView):
         form = self.form_class(request.POST)
 
         if form.is_valid():
+            print('form is valid!')
             project = Project.objects.create(**form.cleaned_data)
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
+            print(form.errors)
+            print('form is invalid :(')
             return HttpResponseBadRequest('Form is invalid.')
 
 
