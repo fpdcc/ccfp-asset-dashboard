@@ -1,5 +1,9 @@
 from django.shortcuts import render
+<<<<<<< HEAD
 from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView
+=======
+from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView, edit
+>>>>>>> added basic detail view with update abilities
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.core import serializers
 from django.urls import reverse
