@@ -22,10 +22,7 @@ def test_add_project_view(client, section_owner):
         'section_owner': section_owner.pk
     }
 
-    print(section_owner.pk)
-
     successful_response = client.post(url, data=valid_form_data)
-    print(successful_response)
 
     # assert that the new project saved successfully
     new_project_from_form = Project.objects.filter(name=valid_form_data['name'])[0]
