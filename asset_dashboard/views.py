@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, ListView, FormView, DetailView
+from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView, edit
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.core import serializers
 from django.urls import reverse
@@ -41,22 +41,41 @@ class ProjectListView(ListView):
         return context
 
 
-class AddEditProjectFormView(FormView):
-    template_name = 'asset_dashboard/partials/add_edit_project_form.html'
+class AddProjectFormView(CreateView):
+    template_name = 'asset_dashboard/partials/add_project_modal_form.html'
     form_class = ProjectForm
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
 
         if form.is_valid():
-            self.fcc_form = form.save()
-           
-            # redirect to the new Project's detail page
-            return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': self.fcc_form.id}))
+            project = Project.objects.create(**form.cleaned_data)
+            return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
-            return HttpResponseBadRequest('Form data was invalid.')
+            return HttpResponseBadRequest('Form is invalid.')
 
 
-class ProjectDetailView(DetailView):
+class ProjectDetailView(DetailView, edit.FormMixin):
     template_name = 'asset_dashboard/project_detail.html'
     model = Project
+    form_class = ProjectForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = ProjectForm(initial={
+            'name': self.object.name,
+            'description': self.object.description,
+            'section_owner': self.object.section_owner.pk
+        })
+        return context
+
+    # How to make this "put" instead of "post" ?
+    # The HTML standard dictates that an HTML form can have
+    # only post and get requests, so a put fails here. 
+    # See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form#attr-method
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+
+            project = Project.objects.update(**form.cleaned_data)
+            return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': kwargs['pk']}))

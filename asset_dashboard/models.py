@@ -7,6 +7,9 @@ from django.contrib.gis.db import models
 class Section(models.Model):
     name = models.TextField()
 
+    def __str__(self):
+        return self.name
+
 
 class Staff(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -66,6 +69,9 @@ class Project(models.Model):
     @property
     def commissioner_districts(self):
         ...
+
+    def __str__(self):
+        return self.name
 
 
 class ProjectScore(models.Model):
@@ -156,6 +162,9 @@ class ProjectCategory(models.Model):
 
     category = models.TextField(null=False)
     subcategory = models.TextField(null=True)
+
+    def __str__(self):
+        return self.category
 
 
 class HouseDistrict(models.Model):

@@ -81,7 +81,7 @@
     </nav>
 
     <main id="main-body" role="main">
-      <div class="mt-3 mt-lg-5 mb-5">
+      <div class="mt-3 mt-lg-5 mb-5 container">
         {% block body %}{% endblock %}
       </div>
     </main>
@@ -110,6 +110,7 @@
 
     <!-- Load external scripts -->
     <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     <script src="{% static 'js/fontawesome.min.js' %}"></script>
     <script src="{% static 'js/solid.min.js' %}"></script>
 
