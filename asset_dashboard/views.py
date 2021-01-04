@@ -50,12 +50,9 @@ class AddProjectFormView(CreateView):
         form = self.form_class(request.POST)
 
         if form.is_valid():
-            print('form is valid!')
             project = Project.objects.create(**form.cleaned_data)
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
-            print(form.errors)
-            print('form is invalid :(')
             return HttpResponseBadRequest('Form is invalid.')
 
 
