@@ -1,5 +1,5 @@
 import pytest
-from pytest_django.asserts import assertTemplateUsed, assertHTMLEqual
+from pytest_django.asserts import assertTemplateUsed, assertHTMLEqual, assertContains
 from django.urls import reverse
 from asset_dashboard.models import Project
 
@@ -74,16 +74,8 @@ def test_project_update_view(client, project, project_list, section_owner):
 
     # test that the project updated and renders the updated data to the project ListView
     response = client.get(reverse('projects'))
-    updated_project_name = Project.objects.filter(name=valid_form_data['name'])[0].name
-    name_submitted_with_form = valid_form_data['name']
-    assertHTMLEqual(
-        f'<td>{name_submitted_with_form}</td>',
-        f'<td>{updated_project_name}</td>'
-    )
+    assert valid_form_data['name'] in str(response.context)
 
     # test that the project UpdateView did not overwrite any of the other projects
-    existing_project_name = Project.objects.filter(name='project_0')[0].name
-    assertHTMLEqual(
-        f'<td>{existing_project_name}</td>',
-        f'<td>project_0</td>'
-    )
+    existing_project_name = 'project_0'
+    assert existing_project_name in str(response.context)
