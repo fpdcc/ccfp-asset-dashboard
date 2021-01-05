@@ -1,5 +1,4 @@
 import pytest
-from pytest_django.asserts import assertTemplateUsed, assertHTMLEqual, assertContains
 from django.urls import reverse
 from asset_dashboard.models import Project
 
