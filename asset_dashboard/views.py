@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, edit
+from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.core import serializers
 from django.urls import reverse
@@ -56,27 +56,14 @@ class AddProjectFormView(CreateView):
             return HttpResponseBadRequest('Form is invalid.')
 
 
-class ProjectDetailView(DetailView, edit.FormMixin):
-    template_name = 'asset_dashboard/project_detail.html'
+class ProjectUpdateView(UpdateView):
     model = Project
+    template_name = 'asset_dashboard/project_detail.html'
     form_class = ProjectForm
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['form'] = ProjectForm(initial={
-                'name': self.object.name,
-                'description': self.object.description,
-                'section_owner': self.object.section_owner.pk
-            })
-        return context
+    def get_success_url(self):
+        return reverse('project-detail', kwargs={'pk': self.kwargs['pk']})
 
-    # How to make this "put" instead of "post" ?
-    # The HTML standard dictates that an HTML form can have
-    # only post and get requests, so a put fails here. 
-    # See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form#attr-method
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            project = Project.objects.update(**form.cleaned_data)
-            messages.success(request, 'Project successfully updated!')
-            return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': kwargs['pk']}))
+    def form_valid(self, form):
+        messages.success(self.request, 'Project successfully updated!')
+        return super().form_valid(form)

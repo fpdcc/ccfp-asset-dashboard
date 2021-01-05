@@ -1,8 +1,12 @@
-from django.forms import ModelForm, Form, CharField
+from django.forms import ModelForm, CharField
 from django import forms
 from .models import Project, Section
 
-class ProjectForm(Form):
-    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
-    description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}))
-    section_owner = forms.ModelChoiceField(queryset=Section.objects.all())
+class ProjectForm(ModelForm):
+    class Meta:
+        model = Project
+        fields = ['name', 'description', 'section_owner']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control'})
+        }
