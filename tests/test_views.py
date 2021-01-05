@@ -68,9 +68,15 @@ def test_project_update_view(client, project, project_list, section_owner):
         'section_owner': section_owner.pk
     }
     successful_response = client.post(url, data=valid_form_data)
-    updated_project = Project.objects.filter(name=valid_form_data['name'])[0]
-    assert updated_project.name == valid_form_data['name']
-    assert updated_project.description == valid_form_data['description']
+    assert successful_response.status_code == 302
+
+    # test that the form saved the project with correct data
+    updated_project = Project.objects.filter(name=valid_form_data['name'])
+    assert updated_project[0].name == valid_form_data['name']
+    assert updated_project[0].description == valid_form_data['description']
+
+    # test that only one project was updated
+    assert updated_project.count() == 1
 
     # test that the project updated and renders the updated data to the project ListView
     response = client.get(reverse('projects'))
