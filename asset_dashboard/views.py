@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView, edit
+from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, edit
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.core import serializers
 from django.urls import reverse
@@ -77,7 +77,6 @@ class ProjectDetailView(DetailView, edit.FormMixin):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
         if form.is_valid():
-
             project = Project.objects.update(**form.cleaned_data)
             messages.success(request, 'Project successfully updated!')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': kwargs['pk']}))
