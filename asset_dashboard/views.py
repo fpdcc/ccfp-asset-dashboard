@@ -1,10 +1,11 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, ListView, FormView, DetailView
+from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.core import serializers
 from django.urls import reverse
 from .models import DummyProject, Project
 from .forms import ProjectForm
+from django.contrib import messages
 
 
 class Home(TemplateView):
@@ -41,22 +42,28 @@ class ProjectListView(ListView):
         return context
 
 
-class AddEditProjectFormView(FormView):
-    template_name = 'asset_dashboard/partials/add_edit_project_form.html'
+class AddProjectFormView(CreateView):
+    template_name = 'asset_dashboard/partials/add_project_modal_form.html'
     form_class = ProjectForm
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
 
         if form.is_valid():
-            self.fcc_form = form.save()
-           
-            # redirect to the new Project's detail page
-            return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': self.fcc_form.id}))
+            project = Project.objects.create(**form.cleaned_data)
+            return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
-            return HttpResponseBadRequest('Form data was invalid.')
+            return HttpResponseBadRequest('Form is invalid.')
 
 
-class ProjectDetailView(DetailView):
-    template_name = 'asset_dashboard/project_detail.html'
+class ProjectUpdateView(UpdateView):
     model = Project
+    template_name = 'asset_dashboard/project_detail.html'
+    form_class = ProjectForm
+
+    def get_success_url(self):
+        return reverse('project-detail', kwargs={'pk': self.kwargs['pk']})
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Project successfully updated!')
+        return super().form_valid(form)
