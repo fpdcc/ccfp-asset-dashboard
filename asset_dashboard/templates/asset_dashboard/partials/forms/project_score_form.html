@@ -1,0 +1,5 @@
+<form method="post" action="{% url 'project-score-update' project.projectscore.id %}">
+    {% csrf_token %}
+    {{ project_score_form }}
+    <input type="submit" value="Save Score" class="btn btn-primary">
+</form>

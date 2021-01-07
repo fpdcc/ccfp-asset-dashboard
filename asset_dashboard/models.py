@@ -105,6 +105,8 @@ class ProjectScore(models.Model):
         '''we'll need to add the total scores to the queryset'''
         ...
 
+    def __str__(self):
+        return self.project.name
 
 class ProjectFinances(models.Model):
 

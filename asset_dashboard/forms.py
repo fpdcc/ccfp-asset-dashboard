@@ -1,6 +1,6 @@
 from django.forms import ModelForm, CharField
 from django import forms
-from .models import Project, Section
+from .models import Project, Section, ProjectScore
 
 class ProjectForm(ModelForm):
     class Meta:
@@ -10,3 +10,16 @@ class ProjectForm(ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'})
         }
+
+
+class ProjectScoreForm(ModelForm):
+    class Meta:
+        model = ProjectScore
+        fields = [
+            'core_mission_score',
+            'operations_impact_score',
+            'sustainability_score',
+            'ease_score',
+            'geographic_distance_score',
+            'social_equity_score'
+        ]

@@ -1,0 +1,5 @@
+<form method="post" action="{% url 'project-update' project.id %}"> 
+    {% csrf_token %}
+    {{ project_form }}
+    <input type="submit" value="Save Project" class="btn btn-primary">
+</form>

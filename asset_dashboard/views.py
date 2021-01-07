@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView
+from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView, edit
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.core import serializers
 from django.urls import reverse
-from .models import DummyProject, Project
-from .forms import ProjectForm
+from .models import DummyProject, Project, ProjectScore
+from .forms import ProjectForm, ProjectScoreForm
 from django.contrib import messages
 
 
@@ -56,14 +56,49 @@ class AddProjectFormView(CreateView):
             return HttpResponseBadRequest('Form is invalid.')
 
 
-class ProjectUpdateView(UpdateView):
+class ProjectDetailView(DetailView):
     model = Project
     template_name = 'asset_dashboard/project_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        project = {
+            'name': self.object.name,
+            'description': self.object.description,
+            'section_owner': self.object.section_owner.pk
+        }
+
+        context.update({
+            'project_form': ProjectForm(initial=project),
+            'project_score_form': ProjectScoreForm(initial={'project': self.object.projectscore})
+        })
+
+        return context
+
+
+class ProjectUpdateView(UpdateView):
+    model = Project
+    template_name = 'asset_dashboard/partials/forms/project_form.html'
     form_class = ProjectForm
 
     def get_success_url(self):
         return reverse('project-detail', kwargs={'pk': self.kwargs['pk']})
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Project successfully saved!')
+        return super().form_valid(form)
+
+
+class ProjectScoreUpdateView(UpdateView):
+    model = ProjectScore
+    template_name = 'asset_dashboard/partials/forms/project_score_form.html'
+    form_class = ProjectScoreForm
+
+    def get_success_url(self):
+        project = Project.objects.get(projectscore=self.kwargs['pk'])
+        return reverse('project-detail', kwargs={'pk': project.pk})
 
     def form_valid(self, form):
-        messages.success(self.request, 'Project successfully updated!')
+        messages.success(self.request, 'Project score successfully saved!')
         return super().form_valid(form)

@@ -16,13 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from asset_dashboard.views import ProjectListView, Home, AddProjectFormView, ProjectUpdateView
+from asset_dashboard.views import ProjectListView, Home, AddProjectFormView, ProjectDetailView, ProjectUpdateView, ProjectScoreUpdateView
 
 urlpatterns = [
     path('', Home.as_view(), name='home'),
     path('projects/', ProjectListView.as_view(), name='projects'),
     path('projects/add-project/', AddProjectFormView.as_view(), name='add-project'),
-    path('projects/<int:pk>/update/', ProjectUpdateView.as_view(), name='project-detail'),
+    path('projects/<int:pk>/', ProjectDetailView.as_view(), name='project-detail'),
+    path('projects/<int:pk>/update/', ProjectUpdateView.as_view(), name='project-update'),
+    path('projects/score/<int:pk>/update/', ProjectScoreUpdateView.as_view(), name='project-score-update'),
     path('admin/', admin.site.urls),
 ]
 
