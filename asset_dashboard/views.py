@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView, edit
+from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView, edit, base
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.core import serializers
 from django.urls import reverse
@@ -51,27 +51,35 @@ class AddProjectFormView(CreateView):
 
         if form.is_valid():
             project = Project.objects.create(**form.cleaned_data)
+            project_score = ProjectScore.objects.get_or_create(project=project)
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
             return HttpResponseBadRequest('Form is invalid.')
 
 
-class ProjectDetailView(DetailView):
+class ProjectScoreContextMixin(base.ContextMixin):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        project_score = self.object if isinstance(self.object, ProjectScore) else self.object.projectscore
+
+        context.update({
+            'project_score_form': ProjectScoreForm(instance=project_score),
+            'project_score_pk': project_score.id
+        })
+
+        return context
+
+
+class ProjectDetailView(ProjectScoreContextMixin, DetailView):
     model = Project
     template_name = 'asset_dashboard/project_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        project = {
-            'name': self.object.name,
-            'description': self.object.description,
-            'section_owner': self.object.section_owner.pk
-        }
-
         context.update({
-            'project_form': ProjectForm(initial=project),
-            'project_score_form': ProjectScoreForm(initial={'project': self.object.projectscore})
+            'project_form': ProjectForm(instance=self.object)
         })
 
         return context
@@ -84,13 +92,13 @@ class ProjectUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse('project-detail', kwargs={'pk': self.kwargs['pk']})
-    
+
     def form_valid(self, form):
         messages.success(self.request, 'Project successfully saved!')
         return super().form_valid(form)
 
 
-class ProjectScoreUpdateView(UpdateView):
+class ProjectScoreUpdateView(ProjectScoreContextMixin, UpdateView):
     model = ProjectScore
     template_name = 'asset_dashboard/partials/forms/project_score_form.html'
     form_class = ProjectScoreForm
@@ -102,3 +110,6 @@ class ProjectScoreUpdateView(UpdateView):
     def form_valid(self, form):
         messages.success(self.request, 'Project score successfully saved!')
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
