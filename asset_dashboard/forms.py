@@ -1,6 +1,5 @@
 from django.forms import ModelForm, CharField, TextInput, Textarea
 from .models import Project, Section, ProjectScore
-from django.core.validators import MaxValueValidator, MinValueValidator
 
 class ProjectForm(ModelForm):
     class Meta:
@@ -33,5 +32,3 @@ class ProjectScoreForm(ModelForm):
         for field_name, field in self.fields.items():
             field.widget.attrs['min'] = min_value
             field.widget.attrs['max'] = max_value
-            # field.validators.append(MaxValueValidator(max_value))
-            # field.validators.append(MinValueValidator(min_value))
