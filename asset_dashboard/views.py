@@ -3,8 +3,10 @@ from django.views.generic import TemplateView, ListView, FormView, DetailView, C
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.core import serializers
 from django.urls import reverse
-from .models import DummyProject, Project, ProjectScore
+from .models import DummyProject, Project, ProjectScore, ProjectCategory
 from .forms import ProjectForm, ProjectScoreForm
+from django.forms import inlineformset_factory
+from django.db import transaction
 from django.contrib import messages
 
 
@@ -42,7 +44,7 @@ class ProjectListView(ListView):
         return context
 
 
-class AddProjectFormView(CreateView):
+class CreateProjectView(CreateView):
     template_name = 'asset_dashboard/partials/add_project_modal_form.html'
     form_class = ProjectForm
 
@@ -52,64 +54,43 @@ class AddProjectFormView(CreateView):
         if form.is_valid():
             project = Project.objects.create(**form.cleaned_data)
             project_score = ProjectScore.objects.get_or_create(project=project)
+            project_category = ProjectCategory.objects.get_or_create(project=project, category='N\/A')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
             return HttpResponseBadRequest('Form is invalid.')
 
 
-class ProjectScoreContextMixin(base.ContextMixin):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        project_score = self.object if isinstance(self.object, ProjectScore) else self.object.projectscore
-
-        context.update({
-            'project_score_form': ProjectScoreForm(instance=project_score),
-            'project_score_pk': project_score.id
-        })
-
-        return context
-
-
-class ProjectDetailView(ProjectScoreContextMixin, DetailView):
+class ProjectDetailView(UpdateView):
+    """
+    Detail view that updates a Project and all related models.
+    """
     model = Project
     template_name = 'asset_dashboard/project_detail.html'
-
+    form_class = ProjectForm
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context.update({
-            'project_form': ProjectForm(instance=self.object)
-        })
+        formset_fields = list(ProjectScoreForm.base_fields.keys())
+        ProjectScoreFormSet = inlineformset_factory(Project, ProjectScore, fields=formset_fields, form=ProjectScoreForm)
+
+        if self.request.POST:
+            context['score_formset'] = ProjectScoreFormSet(self.request.POST, instance=self.object)
+        else:
+            context['score_formset'] = ProjectScoreFormSet(instance=self.object)
 
         return context
-
-
-class ProjectUpdateView(UpdateView):
-    model = Project
-    template_name = 'asset_dashboard/partials/forms/project_form.html'
-    form_class = ProjectForm
 
     def get_success_url(self):
         return reverse('project-detail', kwargs={'pk': self.kwargs['pk']})
 
     def form_valid(self, form):
-        messages.success(self.request, 'Project successfully saved!')
+        context = self.get_context_data()
+        score_formset = context['score_formset']
+        with transaction.atomic():
+            self.object = form.save()
+            if score_formset.is_valid():
+                score_formset.instance = self.object
+                score_formset.save()
+                messages.success(self.request, 'Project successfully saved!')
         return super().form_valid(form)
-
-
-class ProjectScoreUpdateView(ProjectScoreContextMixin, UpdateView):
-    model = ProjectScore
-    template_name = 'asset_dashboard/partials/forms/project_score_form.html'
-    form_class = ProjectScoreForm
-
-    def get_success_url(self):
-        project = Project.objects.get(projectscore=self.kwargs['pk'])
-        return reverse('project-detail', kwargs={'pk': project.pk})
-
-    def form_valid(self, form):
-        messages.success(self.request, 'Project score successfully saved!')
-        return super().form_valid(form)
-
-    def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(form=form))
