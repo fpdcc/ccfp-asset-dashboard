@@ -94,5 +94,9 @@ class ProjectDetailView(UpdateView):
         else:
             # how to send back both forms in case one is invalid?
             # this only sends "form" and not "score_form"
-            return super().form_invalid(form)
+            return self.form_invalid(form, score_form)
 
+    def form_invalid(self, form, score_form):
+        print('form invalid')
+        print(form)
+        print(score_form)
