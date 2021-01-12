@@ -71,13 +71,10 @@ class ProjectDetailView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        formset_fields = list(ProjectScoreForm.base_fields.keys())
-        ProjectScoreFormSet = inlineformset_factory(Project, ProjectScore, fields=formset_fields, form=ProjectScoreForm)
-
         if self.request.POST:
-            context['score_formset'] = ProjectScoreFormSet(self.request.POST, instance=self.object)
+            context['score_form'] = ProjectScoreForm(self.request.POST, instance=self.object.projectscore)
         else:
-            context['score_formset'] = ProjectScoreFormSet(instance=self.object)
+            context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
 
         return context
 
@@ -86,11 +83,14 @@ class ProjectDetailView(UpdateView):
 
     def form_valid(self, form):
         context = self.get_context_data()
-        score_formset = context['score_formset']
-        with transaction.atomic():
-            self.object = form.save()
-            if score_formset.is_valid():
-                score_formset.instance = self.object
-                score_formset.save()
-                messages.success(self.request, 'Project successfully saved!')
-        return super().form_valid(form)
+
+        score_form = context['score_form']
+        project_form = context['form']
+        
+        if form.is_valid() and score_form.is_valid():
+            form.save()
+            score_form.save()
+            messages.success(self.request, 'Project successfully saved!')
+            return super().form_valid(form)
+        else:
+            return super().form_invalid(form, score_form)
