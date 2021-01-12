@@ -54,7 +54,6 @@ class CreateProjectView(CreateView):
         if form.is_valid():
             project = Project.objects.create(**form.cleaned_data)
             project_score = ProjectScore.objects.get_or_create(project=project)
-            project_category = ProjectCategory.objects.get_or_create(project=project, category='N\/A')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
             return HttpResponseBadRequest('Form is invalid.')
