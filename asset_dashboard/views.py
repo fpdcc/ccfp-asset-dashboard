@@ -86,11 +86,14 @@ class ProjectDetailView(UpdateView):
 
         score_form = context['score_form']
         project_form = context['form']
-        
+
         if form.is_valid() and score_form.is_valid():
             form.save()
             score_form.save()
             messages.success(self.request, 'Project successfully saved!')
             return super().form_valid(form)
         else:
-            return super().form_invalid(form, score_form)
+            # how to send back both forms in case one is invalid?
+            # this only sends "form" and not "score_form"
+            return super().form_invalid(context)
+
