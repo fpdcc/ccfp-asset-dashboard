@@ -85,7 +85,6 @@ class ProjectDetailView(UpdateView):
         context = self.get_context_data()
 
         score_form = context['score_form']
-        project_form = context['form']
 
         if form.is_valid() and score_form.is_valid():
             form.save()
