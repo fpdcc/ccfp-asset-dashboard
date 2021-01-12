@@ -7,10 +7,12 @@ def project():
     Creates and returns a single project.
     """
     section_owner = models.Section.objects.create(name="Architecture")
+    category = models.ProjectCategory.objects.create(category='maintenance')
 
     project = models.Project.objects.create(name="Trail Maintenance", 
                                         description="Fixing trail erosion.", 
-                                        section_owner=section_owner)
+                                        section_owner=section_owner,
+                                        category=category)
     
     project_score = models.ProjectScore.objects.create(project=project)
 
@@ -30,8 +32,7 @@ def project_list():
         description = f'description text for this project'
         project = models.Project.objects.create(name=name, description=description, section_owner=section_owner)
         project_score = models.ProjectScore.objects.create(project=project)
-        print('project score')
-        print(project_score)
+        category = models.ProjectCategory.objects.create(project=project, category='improvement')
 
     return models.Project.objects.all()
 
@@ -42,3 +43,7 @@ def section_owner():
     Creates and returns a section owner.
     """
     return models.Section.objects.create(name="Architecture")
+
+@pytest.fixture
+def project_category():
+    return models.ProjectCategory.objects.create(category='improvement')

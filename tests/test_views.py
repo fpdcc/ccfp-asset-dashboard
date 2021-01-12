@@ -13,13 +13,14 @@ def test_project_list_view(client, project_list):
 
 
 @pytest.mark.django_db
-def test_add_project_view(client, section_owner):
+def test_add_project_view(client, section_owner, project_category):
     url = reverse('add-project')
 
     valid_form_data = {
         'name': 'trail maintenance project',
         'description': 'We need to clean the trail and fix some washouts.',
-        'section_owner': section_owner.pk
+        'section_owner': section_owner.pk,
+        'category': project_category.pk
     }
 
     successful_response = client.post(url, data=valid_form_data)
@@ -55,40 +56,48 @@ def test_add_project_view(client, section_owner):
 
 
 @pytest.mark.django_db
-def test_project_update_view(client, project, project_list, section_owner):
-    url = reverse('project-detail', kwargs={'pk': project.pk})
-    response = client.get(url)
+def test_project_detail_view(client, project, project_list, section_owner):
+    project_detail_url = reverse('project-detail', kwargs={'pk': project.pk})
+    response = client.get(project_detail_url)
     assert response.status_code == 200
-    assert response.context['project'] == project
 
-    # test bad url does not exist
-    bad_url = reverse('project-detail', kwargs={'pk': 1234556873459})
-    bad_response = client.get(bad_url)
-    assert bad_response.status_code == 404
+    project_from_response = response.context['project']
+    project_score_from_response = response.context['project'].projectscore
 
-    # test that the project UpdateView can update the model instance
-    valid_form_data = {
-        'name': 'trail improvement project',
-        'description': 'We need to clean the trail, fix some washouts, and build a bathroom.',
-        'section_owner': section_owner.pk
-    }
-    update_url = reverse('project-update', kwargs={'pk': project.pk})
-    successful_response = client.post(update_url, data=valid_form_data)
+    assert project_from_response == project
+    assert project_score_from_response == project.projectscore
+
+    # prepare the data to be submitted via form
+    valid_update_form = dict()
+    valid_update_form.update(model_to_dict(project_from_response))
+    valid_update_form.update(model_to_dict(project_score_from_response))
+    
+    # update some of the fields
+    valid_update_form.update({
+        'name': 'trail maintenance',
+        'description': 'fixing erosion',
+        'core_mission_score': 2
+    })
+
+    # test the form submission
+    successful_response = client.post(project_detail_url, data=valid_update_form)
     assert successful_response.status_code == 302
 
-    # test that the form saved the project with correct data
-    updated_project = Project.objects.filter(name=valid_form_data['name'])
-    assert updated_project[0].name == valid_form_data['name']
-    assert updated_project[0].description == valid_form_data['description']
+    # test that the update form saved the project with correct data
+    updated_project = Project.objects.filter(name=valid_update_form['name'])
+    assert updated_project[0].name == valid_update_form['name']
+    assert updated_project[0].description == valid_update_form['description']
 
     # test that only one project was updated
     assert updated_project.count() == 1
 
     # test that the project updated and renders the updated data to the project ListView
+    # this is to ensure a bug doesn't creep back in
     response = client.get(reverse('projects'))
-    assert valid_form_data['name'] in str(response.context)
+    assert valid_update_form['name'] in str(response.context)
 
     # test that the project UpdateView did not overwrite any of the other projects
+    # this is to ensure a bug doesn't creep back in
     existing_project_name = 'project_0'
     assert existing_project_name in str(response.context)
 
@@ -102,39 +111,10 @@ def test_project_update_view(client, project, project_list, section_owner):
     ]
 
     for form_data in invalid_form_data:
-        invalid_response = client.post(update_url, data=form_data)
+        invalid_response = client.post(project_detail_url, data=form_data)
         assert invalid_response.context['form'].errors
 
-
-@pytest.mark.django_db
-def test_project_score_update_view(client, project):
-    project_score = project.projectscore
-
-    # test that a user can get the form
-    url = reverse('project-score-update', kwargs={'pk': project_score.pk})
-    response = client.get(url)
-    assert response.status_code == 200
-    assert response.context['projectscore'] == project_score
-
-    # test that a user can update a project score
-    project_score_dict = model_to_dict(project_score)
-    project_score_dict.update({
-        'operations_impact_score': 2
-    })
-
-    valid_update = client.post(url, data=project_score_dict)
-    assert valid_update.status_code == 302
-
-    # test that the form won't accept a number less than 1
-    project_score_dict.update({
-        'operations_impact_score': 0
-    })
-    invalid_update = client.post(url, data=project_score_dict)
-    assert invalid_update.context['form'].errors
-    
-    # test that the form won't accept a number greater than 5
-    project_score_dict.update({
-        'operations_impact_score': 6
-    })
-    invalid_update = client.post(url, data=project_score_dict)
-    assert invalid_update.context['form'].errors
+    # test bad url does not exist
+    bad_url = reverse('project-detail', kwargs={'pk': 1234556873459})
+    bad_response = client.get(bad_url)
+    assert bad_response.status_code == 404
