@@ -4,9 +4,9 @@ from .models import Project, Section, ProjectScore
 class ProjectForm(ModelForm):
     class Meta:
         model = Project
-        fields = ['name', 'description', 'section_owner']
+        fields = ['name', 'description', 'section_owner', 'category']
         widgets = {
-            'name': TextInput(attrs={'class': 'form-control'}),
+            'name': TextInput(attrs={'class': 'form-control w-50'}),
             'description': Textarea(attrs={'class': 'form-control'})
         }
 
