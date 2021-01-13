@@ -26,9 +26,7 @@ class ProjectScoreForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(ProjectScoreForm, self).__init__(*args, **kwargs)
 
-        min_value = 1
-        max_value = 5
-        
         for field_name, field in self.fields.items():
-            field.widget.attrs['min'] = min_value
-            field.widget.attrs['max'] = max_value
+            field.widget.attrs['min'] = ProjectScore.min_value
+            field.widget.attrs['max'] = ProjectScore.max_value
+            field.widget.attrs['class'] = 'form-control'

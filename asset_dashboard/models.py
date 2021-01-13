@@ -75,26 +75,28 @@ class Project(models.Model):
 
 
 class ProjectScore(models.Model):
+    min_value = 1
+    max_value = 5
 
     project = models.OneToOneField(Project, on_delete=models.CASCADE)
     core_mission_score = models.IntegerField(default=1,
-                                             validators=[MinValueValidator(1),
-                                                         MaxValueValidator(5)])
+                                             validators=[MinValueValidator(min_value),
+                                                         MaxValueValidator(max_value)])
     operations_impact_score = models.IntegerField(default=1,
-                                                  validators=[MinValueValidator(1),
-                                                              MaxValueValidator(5)])
+                                                  validators=[MinValueValidator(min_value),
+                                                              MaxValueValidator(max_value)])
     sustainability_score = models.IntegerField(default=1,
-                                               validators=[MinValueValidator(1),
-                                                           MaxValueValidator(5)])
+                                               validators=[MinValueValidator(min_value),
+                                                           MaxValueValidator(max_value)])
     ease_score = models.IntegerField(default=1,
-                                     validators=[MinValueValidator(1),
-                                                 MaxValueValidator(5)])
+                                     validators=[MinValueValidator(min_value),
+                                                 MaxValueValidator(max_value)])
     geographic_distance_score = models.IntegerField(default=1,
-                                                    validators=[MinValueValidator(1),
-                                                                MaxValueValidator(5)])
+                                                    validators=[MinValueValidator(min_value),
+                                                                MaxValueValidator(max_value)])
     social_equity_score = models.IntegerField(default=1,
-                                              validators=[MinValueValidator(1),
-                                                          MaxValueValidator(5)])
+                                              validators=[MinValueValidator(min_value),
+                                                          MaxValueValidator(max_value)])
 
     @property
     def total_score(self):
