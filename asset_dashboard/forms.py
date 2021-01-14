@@ -24,9 +24,14 @@ class ProjectScoreForm(ModelForm):
         ]
 
     def __init__(self, *args, **kwargs):
-        super(ProjectScoreForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
+
+        model = self.Meta.model
 
         for field_name, field in self.fields.items():
-            field.widget.attrs['min'] = ProjectScore.__dict__[field_name].field.validators[0].limit_value
-            field.widget.attrs['max'] = ProjectScore.__dict__[field_name].field.validators[1].limit_value
+            model_field = model._meta.get_field(field_name)
+            min_validator, max_validator = model_field.validators
+
+            field.widget.attrs['min'] = min_validator.limit_value
+            field.widget.attrs['max'] = max_validator.limit_value
             field.widget.attrs['class'] = 'form-control'
