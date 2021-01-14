@@ -2,17 +2,5 @@
 
 {% block body %}
   <h1>{{ project.name }}</h1>
-  <nav class="nav">
-    <a class="nav-link active" href="#">Overview</a>
-    <a class="nav-link" href="#">Priority Scoring</a>
-    <a class="nav-link" href="#">Funding</a>
-    <a class="nav-link" href="#">Places</a>
-  </nav>
-  <div class="container card">
-    <form method="post">
-      {% csrf_token %}
-      {{ form }}
-      <input type="submit" value="Update Project" class="btn btn-primary">
-    </form>
-  </div>
+  {% include "asset_dashboard/partials/project_detail_nav_tabs.html" %}
 {% endblock %}
