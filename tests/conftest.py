@@ -2,17 +2,26 @@ import pytest
 from asset_dashboard import models
 
 @pytest.fixture
-def project():
+def section_owner():
+    """
+    Creates and returns a section owner.
+    """
+    return models.Section.objects.create(name="Architecture")
+
+@pytest.fixture
+def project_category():
+    return models.ProjectCategory.objects.create(category='improvement')
+
+@pytest.fixture
+def project(section_owner, project_category):
     """
     Creates and returns a single project.
     """
-    section_owner = models.Section.objects.create(name="Architecture")
-    category = models.ProjectCategory.objects.create(category='maintenance')
 
     project = models.Project.objects.create(name="Trail Maintenance", 
-                                        description="Fixing trail erosion.", 
-                                        section_owner=section_owner,
-                                        category=category)
+                                            description="Fixing trail erosion.", 
+                                            section_owner=section_owner,
+                                            category=project_category)
     
     project_score = models.ProjectScore.objects.create(project=project)
 
@@ -20,7 +29,7 @@ def project():
 
 
 @pytest.fixture
-def project_list():
+def project_list(project):
     """
     Creates and returns a QuerySet of all projects.
     """
@@ -35,15 +44,3 @@ def project_list():
         category = models.ProjectCategory.objects.create(project=project, category='improvement')
 
     return models.Project.objects.all()
-
-
-@pytest.fixture
-def section_owner():
-    """
-    Creates and returns a section owner.
-    """
-    return models.Section.objects.create(name="Architecture")
-
-@pytest.fixture
-def project_category():
-    return models.ProjectCategory.objects.create(category='improvement')

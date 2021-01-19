@@ -1,7 +1,79 @@
 <form method="post"> 
     {% csrf_token %}
-    {{ score_formset.management_form }}
-    {{ form }}
-    {{ score_form }}
-    <input type="submit" value="Save Project" class="btn btn-primary">
+
+    <div class="container p-4">
+        {{ form.errors }}
+        <div class="row mb-4">
+            <div class="col-6">
+                <strong>Project Name</strong>
+                {{ form.name }}
+            </div>
+            
+            <div class="col-4">
+                <strong>Section Owner</strong>
+                {{ form.section_owner }}
+            </div>
+
+            
+            <div class="col-2 d-flex justify-content-center">
+                <div>
+                    <input type="submit" value="Save Project" class="btn btn-primary">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                {{ form.description }}
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-6">
+                <table >
+                    {{ score_form }}
+                </table>
+            </div>
+            <div class="col-3">
+                <strong>Project Category</strong>
+                <!-- {% for field in category_form %}
+                    
+                    <div>
+                        {{ field.errors }}
+                        <select id="{{ field.id_for_label }}" name="category">
+
+                            {% for choice in field.choices %}
+                                <option value="{{ choice }}"{% if form.fields.customer.value == x %} selected{% endif %}>{{ choice }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if field.help_text %}
+                            <p class="help">{{ field.help_text|safe }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %} -->
+                <!-- {{ category_form.category }}
+                {{ category_form.subcategory }} -->
+                <!-- {{ form.category }}
+                {{ form.category.subcategory }} -->
+                <div class="text-warning"><i>todo: add sub category here</i></div>
+            </div>
+            <div class="col-3">
+                <strong>Phase Completed?</strong>
+                {{ form.phase_completion }}
+            </div>
+        </div>
+        <div class="row m-4">
+            <div class="col border">
+                <strong>zones</strong>
+                - <div class="text-warning"><i>todo: figure out zones</i></div>
+                - zone 1 <br>
+                - zone 2
+            </div>
+            <div class="col border">
+                <strong>political districts</strong>
+                <div class="text-warning"><i>todo: figure out district</i></div>
+                - district 1 <br>
+                - district 2
+            </div>
+        </div>
+    </div>
 </form>

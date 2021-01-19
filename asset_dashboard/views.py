@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.core import serializers
 from django.urls import reverse
 from .models import DummyProject, Project, ProjectScore, ProjectCategory
-from .forms import ProjectForm, ProjectScoreForm
+from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm
 from django.forms import inlineformset_factory
 from django.db import transaction
 from django.contrib import messages
@@ -44,7 +44,7 @@ class ProjectListView(ListView):
         return context
 
 
-class CreateProjectView(CreateView):
+class ProjectCreateView(CreateView):
     template_name = 'asset_dashboard/partials/add_project_modal_form.html'
     form_class = ProjectForm
 
@@ -59,9 +59,9 @@ class CreateProjectView(CreateView):
             return HttpResponseBadRequest('Form is invalid.')
 
 
-class ProjectDetailView(UpdateView):
+class ProjectUpdateView(UpdateView):
     """
-    Detail view that updates a Project and all related models.
+    Updated view that updates a Project and all related models.
     """
     model = Project
     template_name = 'asset_dashboard/project_detail.html'
@@ -71,9 +71,13 @@ class ProjectDetailView(UpdateView):
         context = super().get_context_data(**kwargs)
 
         if self.request.POST:
-            context['score_form'] = ProjectScoreForm(self.request.POST, instance=self.object.projectscore)
+            # instantiate the forms with data from the post request
+            request_data = self.request.POST
+            context['score_form'] = ProjectScoreForm(request_data, instance=self.object.projectscore)
+            context['category_form'] = ProjectCategoryForm(request_data, instance=self.object.category)
         else:
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
+            context['category_form'] = ProjectCategoryForm(instance=self.object.category)
 
         return context
 
@@ -91,4 +95,4 @@ class ProjectDetailView(UpdateView):
             messages.success(self.request, 'Project successfully saved!')
             return super().form_valid(form)
         else:
-            return super().form_invalid(self, form)
+            return super().form_invalid(form)

@@ -107,7 +107,8 @@ def test_project_detail_view(client, project, project_list, section_owner):
         {'name': ''},
         {'description': ''},
         {'name': 'name without description'},
-        {'description': 'description without name'}
+        {'description': 'description without name'},
+        valid_update_form.update({'core_mission_score': 0}) # ensure the ProjectScore form validation works
     ]
 
     for form_data in invalid_form_data:
