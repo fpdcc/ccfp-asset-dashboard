@@ -1,7 +1,7 @@
 import csv
 import os
 from django.core.management.base import BaseCommand, CommandError
-from asset_dashboard.models import DummyProject, Project
+from asset_dashboard.models import DummyProject, Project, ProjectCategory, Section
 
 class Command(BaseCommand):
     help = 'Loads in dummy data for local development'
@@ -22,3 +22,19 @@ class Command(BaseCommand):
                 )
 
             print(f'{count} objects saved to your local database. Happy development!')
+
+
+        categories = ProjectCategory.objects.all().delete()
+
+        with open('raw/2021CIPTablesDRAFT10.28.2020updated_GW_clean.csv') as csv_file:
+            reader = csv.DictReader(csv_file)
+
+            for count, row in enumerate(reader):
+                category = ProjectCategory.objects.get_or_create(category=row['category'])
+
+        
+        # hard code section_owners for development
+        Section.objects.all().delete()
+        Section.objects.create(name='Architecture')
+        Section.objects.create(name='Landscaping')
+        Section.objects.create(name='Civil Engineering')
