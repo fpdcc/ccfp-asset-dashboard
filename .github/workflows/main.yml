@@ -18,4 +18,4 @@ jobs:
       - name: Build containers and run tests
         run: docker-compose -f docker-compose.yml -f tests/docker-compose.yml run --rm app
       - name: Run flake8
-        run: docker-compose --rm app flake8 asset_dashboard
+        run: docker-compose run --rm app flake8 asset_dashboard
