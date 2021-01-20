@@ -1,9 +1,21 @@
-from django.forms import ModelForm, TextInput
+from django.forms import ModelForm, TextInput, Form, BaseInlineFormSet
 from .models import Project, ProjectScore, ProjectCategory, SenateDistrict, HouseDistrict, CommissionerDistrict, Zone
 from django.forms import inlineformset_factory
 
 
-class ProjectForm(ModelForm):
+class StyledFormMixin(object):
+    """
+    Generic mixin to consistently style each form field's html <input> element.
+    """
+    
+    def __init__(self, *args, **kwargs):
+        super(StyledFormMixin, self).__init__(*args, **kwargs)
+        
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+
+class ProjectForm(StyledFormMixin, ModelForm):
     class Meta:
         model = Project
         fields = ['name', 'description', 'section_owner', 'category', 'phase_completion']
@@ -11,14 +23,8 @@ class ProjectForm(ModelForm):
             'name': TextInput(),
         }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
-        for field_name, field in self.fields.items():
-            field.widget.attrs['class'] = 'form-control'
-
-
-class ProjectScoreForm(ModelForm):
+class ProjectScoreForm(StyledFormMixin, ModelForm):
     class Meta:
         model = ProjectScore
         fields = [
@@ -41,10 +47,9 @@ class ProjectScoreForm(ModelForm):
 
             field.widget.attrs['min'] = min_validator.limit_value
             field.widget.attrs['max'] = max_validator.limit_value
-            field.widget.attrs['class'] = 'form-control'
 
 
-class ProjectCategoryForm(ModelForm):
+class ProjectCategoryForm(StyledFormMixin, ModelForm):
     class Meta:
         model = ProjectCategory
         fields = [
@@ -53,26 +58,49 @@ class ProjectCategoryForm(ModelForm):
         ]
 
 
-SenateDistrictFormset = inlineformset_factory(Project,
-                                              SenateDistrict,
-                                              fields=('name',),
-                                              extra=1,
-                                              widgets={'name': TextInput(attrs={'class': 'form-control'})})
+class SenateDistrictForm(StyledFormMixin, ModelForm):
+    class Meta:
+        model = SenateDistrict
+        fields = ('name',)
+        widgets = {
+            'name': TextInput()
+        }
 
-HouseDistrictFormset = inlineformset_factory(Project,
-                                             HouseDistrict,
-                                             fields=('name',),
-                                             extra=1,
-                                             widgets={'name': TextInput(attrs={'class': 'form-control'})})
 
-CommissionerDistrictFormset = inlineformset_factory(Project,
-                                                    CommissionerDistrict,
-                                                    fields=('name',),
-                                                    extra=1,
-                                                    widgets={'name': TextInput(attrs={'class': 'form-control'})})
+class HouseDistrictForm(StyledFormMixin, ModelForm):
+    class Meta:
+        model = HouseDistrict
+        fields = ('name',)
+        widgets = {
+            'name': TextInput()
+        }
 
-ZoneFormset = inlineformset_factory(Project,
-                                    Zone,
-                                    fields=('name',),
-                                    extra=1,
-                                    widgets={'name': TextInput(attrs={'class': 'form-control'})})
+
+class CommissionerDistrictForm(StyledFormMixin, ModelForm):
+    class Meta:
+        model = CommissionerDistrict
+        fields = ('name',)
+        widgets = {
+            'name': TextInput()
+        }
+
+
+class ZoneForm(StyledFormMixin, ModelForm):
+    class Meta:
+        model = Zone
+        fields = ('name',)
+        widgets = {
+            'name': TextInput()
+        }
+
+
+SenateDistrictFormset = inlineformset_factory(Project, SenateDistrict, form=SenateDistrictForm)
+
+
+HouseDistrictFormset = inlineformset_factory(Project, HouseDistrict, form=HouseDistrictForm)
+
+
+CommissionerDistrictFormset = inlineformset_factory(Project, CommissionerDistrict, form=CommissionerDistrictForm)
+
+
+ZoneFormset = inlineformset_factory(Project, Zone, form=ZoneForm)
