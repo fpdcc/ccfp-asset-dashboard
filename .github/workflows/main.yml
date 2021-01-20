@@ -17,3 +17,5 @@ jobs:
       - uses: actions/checkout@v1
       - name: Build containers and run tests
         run: docker-compose -f docker-compose.yml -f tests/docker-compose.yml run --rm app
+      - name: Run flake8
+        run: docker-compose --rm app flake8 asset_dashboard
