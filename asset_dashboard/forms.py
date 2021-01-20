@@ -94,13 +94,13 @@ class ZoneForm(StyledFormMixin, ModelForm):
         }
 
 
-SenateDistrictFormset = inlineformset_factory(Project, SenateDistrict, form=SenateDistrictForm)
+SenateDistrictFormset = inlineformset_factory(Project, SenateDistrict, form=SenateDistrictForm, extra=0)
 
 
-HouseDistrictFormset = inlineformset_factory(Project, HouseDistrict, form=HouseDistrictForm)
+HouseDistrictFormset = inlineformset_factory(Project, HouseDistrict, form=HouseDistrictForm, extra=1)
 
 
-CommissionerDistrictFormset = inlineformset_factory(Project, CommissionerDistrict, form=CommissionerDistrictForm)
+CommissionerDistrictFormset = inlineformset_factory(Project, CommissionerDistrict, form=CommissionerDistrictForm, extra=1)
 
 
-ZoneFormset = inlineformset_factory(Project, Zone, form=ZoneForm)
+ZoneFormset = inlineformset_factory(Project, Zone, form=ZoneForm, extra=1)

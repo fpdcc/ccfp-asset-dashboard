@@ -65,7 +65,7 @@
         </div>
 
         <div class="row m-4 p-4 border">
-            <div class="col text-center">
+            <div class="col text-center" id="senate-formset-container">
                 <div class="d-flex justify-content-between p-2">
                     <strong>Senate Districts</strong>
                     <small class="text-secondary">delete?</small>
@@ -73,13 +73,23 @@
 
                 {{ senate_district_formset.management_form }}
                 {% for senate_form in senate_district_formset %}
-                    <div class="m-2 d-flex justify-content-between">
+                    <div class="m-2 d-flex justify-content-between" id="senate-form-{{ forloop.counter0 }}">
                         {{ senate_form.id }}
                         {{ senate_form.name }}
                         {{ senate_form.DELETE }}
                     </div>
                     <p class="text-warning">{{ senate_form.errors.as_text }}</p>
                 {% endfor %}
+
+                <!-- setup for dynamically adding fields -->
+                <script type="text/html" id="senate-form-template">
+                    <div id="senate_district_formset-__prefix__">
+                        {{ senate_district_formset.empty_form }}
+                    </div>
+                </script>
+                <div class="p-2">
+                    <a href="#" id="add-senate-button" class="text-info add-senate"><strong>+</strong> Add District</a>
+                </div>
             </div>
 
             <div class="col text-center">
@@ -118,3 +128,27 @@
         </div>
     </div>
 </form>
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.add-senate').click(function(event) {
+            event.preventDefault();
+
+            // create the form HTML for the formset
+            var count = $('#senate-formset-container').children().length;
+            var tmplMarkup = $('#senate-form-template').html();
+            var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+
+            // only show the input field
+            const inputField = $(compiledTmpl).find(':text,textarea,select').filter(':first')
+
+            // add the form field to the DOM
+            $('div#senate-formset-container').append(inputField);
+    
+            // update form count
+            $('#id_senatedistrict_set-TOTAL_FORMS').attr('value', count+1);
+        });
+    });
+</script>
+    
