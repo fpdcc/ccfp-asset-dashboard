@@ -1,4 +1,4 @@
-from django.forms import ModelForm, TextInput, Form, BaseInlineFormSet
+from django.forms import ModelForm, TextInput
 from .models import Project, ProjectScore, ProjectCategory, SenateDistrict, HouseDistrict, CommissionerDistrict, Zone
 from django.forms import inlineformset_factory
 
