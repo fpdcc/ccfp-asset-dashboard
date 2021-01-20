@@ -166,28 +166,47 @@ class ProjectCategory(models.Model):
     subcategory = models.TextField(null=True)
 
     def __str__(self):
-        return self.category
+        return f'{self.category} -- {self.subcategory}'
 
 
 class HouseDistrict(models.Model):
     name = models.TextField()
-    shape = models.PolygonField()
+    project = models.ForeignKey(Project, 
+                                null=True, 
+                                on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.name
 
 
 class SenateDistrict(models.Model):
     name = models.TextField()
-    shape = models.PolygonField()
+    project = models.ForeignKey(Project, 
+                                null=True, 
+                                on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.name
 
 
 class CommissionerDistrict(models.Model):
-
     name = models.TextField()
-    shape = models.PolygonField()
+    project = models.ForeignKey(Project, 
+                                null=True, 
+                                on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.name
 
 
 class Zone(models.Model):
     name = models.TextField(null=False)
-    shape = models.PolygonField()
+    project = models.ForeignKey(Project, 
+                                null=True, 
+                                on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return self.name
 
 
 class ScoreWeights(models.Model):

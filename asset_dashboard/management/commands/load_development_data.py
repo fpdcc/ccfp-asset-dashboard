@@ -8,8 +8,15 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        dummy_projects = DummyProject.objects.all().delete()
+        # clean up all the data
+        DummyProject.objects.all().delete()
+        Section.objects.all().delete()
+        ProjectCategory.objects.all().delete()
+        SenateDistrict.objects.all().delete()
+        HouseDistrict.objects.all().delete()
+        CommissionerDistrict.objects.all().delete()
 
+        # create dummy projects
         with open('raw/simplified.csv', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
 
@@ -18,23 +25,19 @@ class Command(BaseCommand):
                     name=row['name'],
                     project_description=row['project_description'],
                     budget=row['budget'],
-                    zone=row['zone']
+                    zone=row['zone'],
                 )
-
-            print(f'{count} objects saved to your local database. Happy development!')
-
-
-        categories = ProjectCategory.objects.all().delete()
-
+                
+        # create project categories
         with open('raw/2021CIPTablesDRAFT10.28.2020updated_GW_clean.csv') as csv_file:
             reader = csv.DictReader(csv_file)
 
             for count, row in enumerate(reader):
-                category = ProjectCategory.objects.get_or_create(category=row['category'])
-
+                category = ProjectCategory.objects.get_or_create(category=row['category'], subcategory=row['subcategory'])
         
-        # hard code section_owners for development
-        Section.objects.all().delete()
+        # create section_owners
         Section.objects.create(name='Architecture')
         Section.objects.create(name='Landscaping')
         Section.objects.create(name='Civil Engineering')
+
+        print(f'Test data saved to your local database. Happy development.')

@@ -28,6 +28,11 @@ docker-compose up
 The app will be available at http://localhost:8000. The database will be exposed
 on port 32001.
 
+Run the app with a debugger:
+```
+docker-compose run --rm -p 8000:8000 app
+```
+
 ### Compiling Sass to CSS
 
 This project uses Sass to compile a custom Bootstrap build with house styles.

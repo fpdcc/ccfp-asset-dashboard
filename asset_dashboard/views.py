@@ -3,8 +3,8 @@ from django.views.generic import TemplateView, ListView, FormView, DetailView, C
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.core import serializers
 from django.urls import reverse
-from .models import DummyProject, Project, ProjectScore, ProjectCategory
-from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm
+from .models import DummyProject, Project, ProjectScore, ProjectCategory, SenateDistrict
+from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, SenateDistrictFormset, HouseDistrictFormset, CommissionerDistrictFormset, ZoneFormset
 from django.forms import inlineformset_factory
 from django.db import transaction
 from django.contrib import messages
@@ -73,11 +73,20 @@ class ProjectUpdateView(UpdateView):
         if self.request.POST:
             # instantiate the forms with data from the post request
             request_data = self.request.POST
+
             context['score_form'] = ProjectScoreForm(request_data, instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(request_data, instance=self.object.category)
+            context['senate_district_formset'] = SenateDistrictFormset(request_data, instance=self.object)
+            context['house_district_formset'] = HouseDistrictFormset(request_data, instance=self.object)
+            context['commissioner_district_formset'] = CommissionerDistrictFormset(request_data, instance=self.object)
+            context['zone_formset'] = ZoneFormset(request_data, instance=self.object)
         else:
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
+            context['senate_district_formset'] = SenateDistrictFormset(instance=self.object)
+            context['house_district_formset'] = HouseDistrictFormset(instance=self.object)
+            context['commissioner_district_formset'] = CommissionerDistrictFormset(instance=self.object)
+            context['zone_formset'] = ZoneFormset(instance=self.object)
 
         return context
 
@@ -87,12 +96,22 @@ class ProjectUpdateView(UpdateView):
     def form_valid(self, form):
         context = self.get_context_data()
 
-        score_form = context['score_form']
+        forms = {
+            'project': form,
+            'score': context['score_form'],
+            'senate_district': context['senate_district_formset'],
+            'house_district': context['house_district_formset'],
+            'commissioner_district': context['commissioner_district_formset'],
+            'zone_formset': context['zone_formset']
+        }
 
-        if form.is_valid() and score_form.is_valid():
-            form.save()
-            score_form.save()
-            messages.success(self.request, 'Project successfully saved!')
-            return super().form_valid(form)
-        else:
-            return super().form_invalid(form)
+        for form_instance in forms:
+            form_to_save = forms[form_instance]
+
+            if form_to_save.is_valid():
+                form_to_save.save()
+            else:
+                return super().form_invalid(form)
+
+        messages.success(self.request, 'Project successfully saved!')
+        return super().form_valid(form)
