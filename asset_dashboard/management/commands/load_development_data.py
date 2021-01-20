@@ -20,7 +20,7 @@ class Command(BaseCommand):
         with open('raw/simplified.csv', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
 
-            for row in enumerate(reader):
+            for count, row in enumerate(reader):
                 DummyProject.objects.create(
                     name=row['name'],
                     project_description=row['project_description'],
@@ -32,7 +32,7 @@ class Command(BaseCommand):
         with open('raw/2021CIPTablesDRAFT10.28.2020updated_GW_clean.csv') as csv_file:
             reader = csv.DictReader(csv_file)
 
-            for row in enumerate(reader):
+            for count, row in enumerate(reader):
                 ProjectCategory.objects.get_or_create(category=row['category'], subcategory=row['subcategory'])
 
         # create section_owners
