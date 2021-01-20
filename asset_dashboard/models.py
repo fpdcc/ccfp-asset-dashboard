@@ -108,6 +108,7 @@ class ProjectScore(models.Model):
     def __str__(self):
         return self.project.name
 
+
 class ProjectFinances(models.Model):
 
     FUNDING_CHOICES = [
@@ -171,8 +172,8 @@ class ProjectCategory(models.Model):
 
 class HouseDistrict(models.Model):
     name = models.TextField()
-    project = models.ForeignKey(Project, 
-                                null=True, 
+    project = models.ForeignKey(Project,
+                                null=True,
                                 on_delete=models.SET_NULL)
 
     def __str__(self):
@@ -181,8 +182,8 @@ class HouseDistrict(models.Model):
 
 class SenateDistrict(models.Model):
     name = models.TextField()
-    project = models.ForeignKey(Project, 
-                                null=True, 
+    project = models.ForeignKey(Project,
+                                null=True,
                                 on_delete=models.SET_NULL)
 
     def __str__(self):
@@ -191,8 +192,8 @@ class SenateDistrict(models.Model):
 
 class CommissionerDistrict(models.Model):
     name = models.TextField()
-    project = models.ForeignKey(Project, 
-                                null=True, 
+    project = models.ForeignKey(Project,
+                                null=True,
                                 on_delete=models.SET_NULL)
 
     def __str__(self):
@@ -201,8 +202,8 @@ class CommissionerDistrict(models.Model):
 
 class Zone(models.Model):
     name = models.TextField(null=False)
-    project = models.ForeignKey(Project, 
-                                null=True, 
+    project = models.ForeignKey(Project,
+                                null=True,
                                 on_delete=models.SET_NULL)
 
     def __str__(self):

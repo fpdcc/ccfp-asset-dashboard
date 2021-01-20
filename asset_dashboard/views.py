@@ -1,12 +1,10 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView, edit, base
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.core import serializers
 from django.urls import reverse
-from .models import DummyProject, Project, ProjectScore, ProjectCategory, SenateDistrict
+from .models import DummyProject, Project, ProjectScore
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, SenateDistrictFormset, HouseDistrictFormset, CommissionerDistrictFormset, ZoneFormset
-from django.forms import inlineformset_factory
-from django.db import transaction
 from django.contrib import messages
 
 
@@ -53,7 +51,7 @@ class ProjectCreateView(CreateView):
 
         if form.is_valid():
             project = Project.objects.create(**form.cleaned_data)
-            project_score = ProjectScore.objects.get_or_create(project=project)
+            ProjectScore.objects.get_or_create(project=project)
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
             return HttpResponseBadRequest('Form is invalid.')
@@ -66,7 +64,7 @@ class ProjectUpdateView(UpdateView):
     model = Project
     template_name = 'asset_dashboard/project_detail.html'
     form_class = ProjectForm
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 

@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 
 from asset_dashboard.views import ProjectListView, Home, ProjectCreateView, ProjectUpdateView
 
@@ -28,4 +28,3 @@ urlpatterns = [
 
 handler404 = 'asset_dashboard.views.page_not_found'
 handler500 = 'asset_dashboard.views.server_error'
-

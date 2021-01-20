@@ -1,6 +1,7 @@
-from django.forms import ModelForm, CharField, TextInput, Textarea, Select, CheckboxInput
-from .models import Project, Section, ProjectScore, ProjectCategory, SenateDistrict, HouseDistrict, CommissionerDistrict, Zone
+from django.forms import ModelForm, TextInput
+from .models import Project, ProjectScore, ProjectCategory, SenateDistrict, HouseDistrict, CommissionerDistrict, Zone
 from django.forms import inlineformset_factory
+
 
 class ProjectForm(ModelForm):
     class Meta:
@@ -52,17 +53,17 @@ class ProjectCategoryForm(ModelForm):
         ]
 
 
-SenateDistrictFormset = inlineformset_factory(Project, 
-                                                SenateDistrict,
-                                                fields=('name',), 
-                                                extra=1, 
-                                                widgets={'name': TextInput(attrs={'class': 'form-control'})})
+SenateDistrictFormset = inlineformset_factory(Project,
+                                              SenateDistrict,
+                                              fields=('name',),
+                                              extra=1,
+                                              widgets={'name': TextInput(attrs={'class': 'form-control'})})
 
-HouseDistrictFormset = inlineformset_factory(Project, 
-                                                HouseDistrict, 
-                                                fields=('name',), 
-                                                extra=1, 
-                                                widgets={'name': TextInput(attrs={'class': 'form-control'})})
+HouseDistrictFormset = inlineformset_factory(Project,
+                                             HouseDistrict,
+                                             fields=('name',),
+                                             extra=1,
+                                             widgets={'name': TextInput(attrs={'class': 'form-control'})})
 
 CommissionerDistrictFormset = inlineformset_factory(Project,
                                                     CommissionerDistrict,
