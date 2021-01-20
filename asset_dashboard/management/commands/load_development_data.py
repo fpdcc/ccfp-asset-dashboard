@@ -1,7 +1,7 @@
 import csv
 import os
 from django.core.management.base import BaseCommand, CommandError
-from asset_dashboard.models import DummyProject, Project, ProjectCategory, Section
+from asset_dashboard.models import DummyProject, Project, ProjectCategory, Section, SenateDistrict, HouseDistrict, CommissionerDistrict, Zone
 
 class Command(BaseCommand):
     help = 'Loads in dummy data for local development'
