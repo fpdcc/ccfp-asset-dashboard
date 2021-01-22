@@ -45,7 +45,7 @@ class Project(models.Model):
     section_owner = models.ForeignKey(Section,
                                       null=True,
                                       on_delete=models.SET_NULL)
-    plan = models.ManyToManyField(Plan)
+    plan = models.ManyToManyField(Plan, blank=True)
 
     obligation = models.BooleanField(default=False)
     phase_completion = models.BooleanField(default=False)
