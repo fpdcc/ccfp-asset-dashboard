@@ -170,9 +170,6 @@ class SenateDistrict(models.Model):
 
 class CommissionerDistrict(models.Model):
     name = models.TextField()
-    # project = models.ForeignKey(Project,
-    #                             null=True,
-    #                             on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
