@@ -1,5 +1,5 @@
 from django.forms import ModelForm, TextInput
-from .models import Project, ProjectScore, ProjectCategory, SenateDistrict, HouseDistrict, CommissionerDistrict, Zone
+from .models import Project, ProjectScore, ProjectCategory
 
 
 class StyledFormMixin(object):
