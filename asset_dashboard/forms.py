@@ -1,6 +1,5 @@
 from django.forms import ModelForm, TextInput
 from .models import Project, ProjectScore, ProjectCategory, SenateDistrict, HouseDistrict, CommissionerDistrict, Zone
-from django.forms import inlineformset_factory
 
 
 class StyledFormMixin(object):
@@ -9,7 +8,7 @@ class StyledFormMixin(object):
     """
 
     def __init__(self, *args, **kwargs):
-        super(StyledFormMixin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
@@ -18,7 +17,15 @@ class StyledFormMixin(object):
 class ProjectForm(StyledFormMixin, ModelForm):
     class Meta:
         model = Project
-        fields = ['name', 'description', 'section_owner', 'category', 'phase_completion']
+        fields = ['name',
+                  'description',
+                  'section_owner',
+                  'category',
+                  'phase_completion',
+                  'senate_districts',
+                  'house_districts',
+                  'commissioner_districts',
+                  'zones']
         widgets = {
             'name': TextInput(),
         }
@@ -56,51 +63,3 @@ class ProjectCategoryForm(StyledFormMixin, ModelForm):
             'category',
             'subcategory'
         ]
-
-
-class SenateDistrictForm(StyledFormMixin, ModelForm):
-    class Meta:
-        model = SenateDistrict
-        fields = ('name',)
-        widgets = {
-            'name': TextInput()
-        }
-
-
-class HouseDistrictForm(StyledFormMixin, ModelForm):
-    class Meta:
-        model = HouseDistrict
-        fields = ('name',)
-        widgets = {
-            'name': TextInput()
-        }
-
-
-class CommissionerDistrictForm(StyledFormMixin, ModelForm):
-    class Meta:
-        model = CommissionerDistrict
-        fields = ('name',)
-        widgets = {
-            'name': TextInput()
-        }
-
-
-class ZoneForm(StyledFormMixin, ModelForm):
-    class Meta:
-        model = Zone
-        fields = ('name',)
-        widgets = {
-            'name': TextInput()
-        }
-
-
-SenateDistrictFormset = inlineformset_factory(Project, SenateDistrict, form=SenateDistrictForm, extra=0)
-
-
-HouseDistrictFormset = inlineformset_factory(Project, HouseDistrict, form=HouseDistrictForm, extra=1)
-
-
-CommissionerDistrictFormset = inlineformset_factory(Project, CommissionerDistrict, form=CommissionerDistrictForm, extra=1)
-
-
-ZoneFormset = inlineformset_factory(Project, Zone, form=ZoneForm, extra=1)

@@ -1,6 +1,6 @@
 import csv
 from django.core.management.base import BaseCommand
-from asset_dashboard.models import DummyProject, ProjectCategory, Section, SenateDistrict, HouseDistrict, CommissionerDistrict
+from asset_dashboard.models import DummyProject, ProjectCategory, Section, SenateDistrict, HouseDistrict, CommissionerDistrict, Zone
 
 
 class Command(BaseCommand):
@@ -15,6 +15,7 @@ class Command(BaseCommand):
         SenateDistrict.objects.all().delete()
         HouseDistrict.objects.all().delete()
         CommissionerDistrict.objects.all().delete()
+        Zone.objects.all().delete()
 
         # create dummy projects
         with open('raw/simplified.csv', newline='') as csv_file:
@@ -39,5 +40,13 @@ class Command(BaseCommand):
         Section.objects.create(name='Architecture')
         Section.objects.create(name='Landscaping')
         Section.objects.create(name='Civil Engineering')
+
+        # create geographic districts
+        for index in range(6):
+            fake_district_name = f'District {index+1}'
+            SenateDistrict.objects.create(name=fake_district_name)
+            HouseDistrict.objects.create(name=fake_district_name)
+            CommissionerDistrict.objects.create(name=fake_district_name)
+            Zone.objects.create(name=f'Zone {index+1}')
 
         print('Test data saved to your local database. Happy development.')

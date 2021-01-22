@@ -49,26 +49,10 @@ class Project(models.Model):
     accessibility = models.BooleanField(default=False)
     leverage_resource = models.BooleanField(default=False)
 
-    # Geographic Districts
-    @property
-    def zones(self):
-        'Which CCFP Zones intersect with the assets associated with this project'
-        # we'll start by doing a geo-intersect query, but we might want to
-        # end up caching that in table that gets updated when the assets
-        # that gets associated with a project gets updated
-        ...
-
-    @property
-    def senate_districts(self):
-        ...
-
-    @property
-    def house_districts(self):
-        ...
-
-    @property
-    def commissioner_districts(self):
-        ...
+    house_districts = models.ManyToManyField('HouseDistrict', blank=True)
+    senate_districts = models.ManyToManyField('SenateDistrict', blank=True)
+    commissioner_districts = models.ManyToManyField('CommissionerDistrict', blank=True)
+    zones = models.ManyToManyField('Zone', blank=True)
 
     def __str__(self):
         return self.name
@@ -172,9 +156,6 @@ class ProjectCategory(models.Model):
 
 class HouseDistrict(models.Model):
     name = models.TextField()
-    project = models.ForeignKey(Project,
-                                null=True,
-                                on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
@@ -182,9 +163,6 @@ class HouseDistrict(models.Model):
 
 class SenateDistrict(models.Model):
     name = models.TextField()
-    project = models.ForeignKey(Project,
-                                null=True,
-                                on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
@@ -192,9 +170,9 @@ class SenateDistrict(models.Model):
 
 class CommissionerDistrict(models.Model):
     name = models.TextField()
-    project = models.ForeignKey(Project,
-                                null=True,
-                                on_delete=models.SET_NULL)
+    # project = models.ForeignKey(Project,
+    #                             null=True,
+    #                             on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
@@ -202,9 +180,6 @@ class CommissionerDistrict(models.Model):
 
 class Zone(models.Model):
     name = models.TextField(null=False)
-    project = models.ForeignKey(Project,
-                                null=True,
-                                on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name

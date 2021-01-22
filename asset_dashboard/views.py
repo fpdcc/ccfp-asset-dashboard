@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponseRedirect
 from django.core import serializers
 from django.urls import reverse
 from .models import DummyProject, Project, ProjectScore
-from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, SenateDistrictFormset, HouseDistrictFormset, CommissionerDistrictFormset, ZoneFormset
+from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm
 from django.contrib import messages
 
 
@@ -46,15 +46,24 @@ class ProjectCreateView(CreateView):
     template_name = 'asset_dashboard/partials/add_project_modal_form.html'
     form_class = ProjectForm
 
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-
+    def form_valid(self, form):
         if form.is_valid():
-            project = Project.objects.create(**form.cleaned_data)
+            project_data = {
+                'name': form.cleaned_data['name'],
+                'description': form.cleaned_data['description'],
+                'section_owner': form.cleaned_data['section_owner'],
+                'category': form.cleaned_data['category']
+            }
+
+            project = Project.objects.create(**project_data)
             ProjectScore.objects.get_or_create(project=project)
+
+            messages.success(self.request, 'Project successfully created!')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
-            return HttpResponseBadRequest('Form is invalid.')
+            print('form invalid')
+            print(form.errors)
+            return super().form_invalid(form)
 
 
 class ProjectUpdateView(UpdateView):
@@ -74,17 +83,9 @@ class ProjectUpdateView(UpdateView):
 
             context['score_form'] = ProjectScoreForm(request_data, instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(request_data, instance=self.object.category)
-            context['senate_district_formset'] = SenateDistrictFormset(request_data, instance=self.object)
-            context['house_district_formset'] = HouseDistrictFormset(request_data, instance=self.object)
-            context['commissioner_district_formset'] = CommissionerDistrictFormset(request_data, instance=self.object)
-            context['zone_formset'] = ZoneFormset(request_data, instance=self.object)
         else:
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
-            context['senate_district_formset'] = SenateDistrictFormset(instance=self.object)
-            context['house_district_formset'] = HouseDistrictFormset(instance=self.object)
-            context['commissioner_district_formset'] = CommissionerDistrictFormset(instance=self.object)
-            context['zone_formset'] = ZoneFormset(instance=self.object)
 
         return context
 
@@ -97,10 +98,6 @@ class ProjectUpdateView(UpdateView):
         forms = {
             'project': form,
             'score': context['score_form'],
-            'senate_district': context['senate_district_formset'],
-            'house_district': context['house_district_formset'],
-            'commissioner_district': context['commissioner_district_formset'],
-            'zone_formset': context['zone_formset']
         }
 
         for form_instance in forms:

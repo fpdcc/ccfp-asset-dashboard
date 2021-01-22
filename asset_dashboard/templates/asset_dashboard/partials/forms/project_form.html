@@ -35,19 +35,11 @@
 
                 <div class="row">
                     <div class="col m-4">
-                        <div class="d-flex justify-content-between p-2">
+                        <div class="p-2">
                             <strong>Zones</strong>
-                            <small class="text-secondary">delete?</small>
                         </div>
-                        {{ zone_formset.management_form }}
-                        {% for zone_form in zone_formset %}
-                            <div class="m-2 d-flex justify-content-between">
-                                {{ zone_form.id }}
-                                {{ zone_form.name }}
-                                {{ zone_form.DELETE }}
-                            </div>
-                            <p class="text-warning">{{ zone_form.errors.as_text }}</p>
-                        {% endfor %}
+
+                        {{ form.zones }}
                     </div>
 
                     <div class="col d-flex justify-content-around m-4">
@@ -65,90 +57,30 @@
         </div>
 
         <div class="row m-4 p-4 border">
-            <div class="col text-center" id="senate-formset-container">
-                <div class="d-flex justify-content-between p-2">
+            <div class="col">
+                <div class="p-2 text-center">
                     <strong>Senate Districts</strong>
-                    <small class="text-secondary">delete?</small>
                 </div>
 
-                {{ senate_district_formset.management_form }}
-                {% for senate_form in senate_district_formset %}
-                    <div class="m-2 d-flex justify-content-between" id="senate-form-{{ forloop.counter0 }}">
-                        {{ senate_form.id }}
-                        {{ senate_form.name }}
-                        {{ senate_form.DELETE }}
-                    </div>
-                    <p class="text-warning">{{ senate_form.errors.as_text }}</p>
-                {% endfor %}
-
-                <!-- setup for dynamically adding fields -->
-                <script type="text/html" id="senate-form-template">
-                    <div id="senate_district_formset-__prefix__">
-                        {{ senate_district_formset.empty_form }}
-                    </div>
-                </script>
-                <div class="p-2">
-                    <a href="#" id="add-senate-button" class="text-info add-senate"><strong>+</strong> Add District</a>
-                </div>
-            </div>
-
-            <div class="col text-center">
-                <div class="d-flex justify-content-between p-2">
-                    <strong>House Districts</strong>
-                    <small class="text-secondary">delete?</small>
-                </div>
-                
-                {{ house_district_formset.management_form }}
-                {% for house_district in house_district_formset %}
-                    <div class="m-2 d-flex justify-content-between">
-                        {{ house_district.id }}
-                        {{ house_district.name }}
-                        {{ house_district.DELETE }}
-                    </div>
-                    <p class="text-warning">{{ house_district.errors.as_text }}</p>
-                {% endfor %}
+                {{ form.senate_districts }}
             </div>
 
             <div class="col">
-                <div class="d-flex justify-content-between p-2">
-                    <strong>Commissioner Districts</strong>
-                    <small class="text-secondary">delete?</small>
+                <div class="p-2 text-center">
+                    <strong>House Districts</strong>
                 </div>
-                
-                {{ commissioner_district_formset.management_form }}
-                {% for commissioner_district in commissioner_district_formset %}
-                    <div class="m-2 d-flex justify-content-between">
-                        {{ commissioner_district.id }}
-                        {{ commissioner_district.name }}
-                        {{ commissioner_district.DELETE }}
-                    </div>
-                    <p class="text-warning">{{ commissioner_district.errors.as_text }}</p>
-                {% endfor %}
+
+                {{ form.house_districts }}
+            </div>
+
+            <div class="col">
+                <div class="p-2 text-center">
+                    <strong>Commissioner Districts</strong>
+                </div>
+
+                {{ form.commissioner_districts }}
             </div>
         </div>
     </div>
 </form>
-
-<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('.add-senate').click(function(event) {
-            event.preventDefault();
-
-            // create the form HTML for the formset
-            var count = $('#senate-formset-container').children().length;
-            var tmplMarkup = $('#senate-form-template').html();
-            var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
-
-            // only show the input field
-            const inputField = $(compiledTmpl).find(':text,textarea,select').filter(':first')
-
-            // add the form field to the DOM
-            $('div#senate-formset-container').append(inputField);
-    
-            // update form count
-            $('#id_senatedistrict_set-TOTAL_FORMS').attr('value', count+1);
-        });
-    });
-</script>
     
