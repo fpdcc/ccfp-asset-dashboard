@@ -1,7 +1,86 @@
 <form method="post"> 
     {% csrf_token %}
-    {{ score_formset.management_form }}
-    {{ form }}
-    {{ score_form }}
-    <input type="submit" value="Save Project" class="btn btn-primary">
+
+    <div class="container p-4">
+        {{ form.errors }}
+        <div class="row mb-4">
+            <div class="col-6">
+                <strong>Project Name</strong>
+                {{ form.name }}
+            </div>
+            
+            <div class="col-4">
+                <strong>Section Owner</strong>
+                {{ form.section_owner }}
+            </div>
+            
+            <div class="col-2 d-flex justify-content-center">
+                <div>
+                    <input type="submit" value="Save Project" class="btn btn-primary">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                {{ form.description }}
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col">
+                <div class="m-4">
+                    <strong>Project Category</strong>
+                    {{ form.category }}
+                </div>
+
+                <div class="row">
+                    <div class="col m-4">
+                        <div class="p-2">
+                            <strong>Zones</strong>
+                        </div>
+
+                        {{ form.zones }}
+                    </div>
+
+                    <div class="col d-flex justify-content-around m-4">
+                        <strong>Phase Completed?</strong>
+                        {{ form.phase_completion }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4 m-4">
+                <table >
+                    {{ score_form }}
+                </table>
+            </div>
+        </div>
+
+        <div class="row m-4 p-4 border">
+            <div class="col">
+                <div class="p-2 text-center">
+                    <strong>Senate Districts</strong>
+                </div>
+
+                {{ form.senate_districts }}
+            </div>
+
+            <div class="col">
+                <div class="p-2 text-center">
+                    <strong>House Districts</strong>
+                </div>
+
+                {{ form.house_districts }}
+            </div>
+
+            <div class="col">
+                <div class="p-2 text-center">
+                    <strong>Commissioner Districts</strong>
+                </div>
+
+                {{ form.commissioner_districts }}
+            </div>
+        </div>
+    </div>
 </form>
+    

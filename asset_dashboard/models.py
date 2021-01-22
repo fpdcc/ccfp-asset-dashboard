@@ -49,26 +49,10 @@ class Project(models.Model):
     accessibility = models.BooleanField(default=False)
     leverage_resource = models.BooleanField(default=False)
 
-    # Geographic Districts
-    @property
-    def zones(self):
-        'Which CCFP Zones intersect with the assets associated with this project'
-        # we'll start by doing a geo-intersect query, but we might want to
-        # end up caching that in table that gets updated when the assets
-        # that gets associated with a project gets updated
-        ...
-
-    @property
-    def senate_districts(self):
-        ...
-
-    @property
-    def house_districts(self):
-        ...
-
-    @property
-    def commissioner_districts(self):
-        ...
+    house_districts = models.ManyToManyField('HouseDistrict', blank=True)
+    senate_districts = models.ManyToManyField('SenateDistrict', blank=True)
+    commissioner_districts = models.ManyToManyField('CommissionerDistrict', blank=True)
+    zones = models.ManyToManyField('Zone', blank=True)
 
     def __str__(self):
         return self.name
@@ -107,6 +91,7 @@ class ProjectScore(models.Model):
 
     def __str__(self):
         return self.project.name
+
 
 class ProjectFinances(models.Model):
 
@@ -166,28 +151,35 @@ class ProjectCategory(models.Model):
     subcategory = models.TextField(null=True)
 
     def __str__(self):
-        return self.category
+        return f'{self.category} -- {self.subcategory}'
 
 
 class HouseDistrict(models.Model):
     name = models.TextField()
-    shape = models.PolygonField()
+
+    def __str__(self):
+        return self.name
 
 
 class SenateDistrict(models.Model):
     name = models.TextField()
-    shape = models.PolygonField()
+
+    def __str__(self):
+        return self.name
 
 
 class CommissionerDistrict(models.Model):
-
     name = models.TextField()
-    shape = models.PolygonField()
+
+    def __str__(self):
+        return self.name
 
 
 class Zone(models.Model):
     name = models.TextField(null=False)
-    shape = models.PolygonField()
+
+    def __str__(self):
+        return self.name
 
 
 class ScoreWeights(models.Model):

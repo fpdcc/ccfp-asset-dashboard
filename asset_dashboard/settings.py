@@ -156,8 +156,10 @@ STATICFILES_FINDERS = (
 
 # Django Compressor configs
 COMPRESS_PRECOMPILERS = (
-    ('module', 'export NODE_PATH=/app/node_modules && npx browserify {infile} -t [ babelify --presets [ @babel/preset-env ] ] > {outfile}'),
-    ('text/jsx', 'export NODE_PATH=/app/node_modules && npx browserify {infile} -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ] > {outfile}'),
+    ('module',
+     'export NODE_PATH=/app/node_modules && npx browserify {infile} -t [ babelify --presets [ @babel/preset-env ] ] > {outfile}'),
+    ('text/jsx',
+     'export NODE_PATH=/app/node_modules && npx browserify {infile} -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ] > {outfile}'),
 )
 
 COMPRESS_OUTPUT_DIR = 'compressor'

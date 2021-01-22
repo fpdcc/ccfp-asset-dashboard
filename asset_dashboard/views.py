@@ -1,12 +1,10 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, ListView, FormView, DetailView, CreateView, UpdateView, edit, base
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView
+from django.http import HttpResponseRedirect
 from django.core import serializers
 from django.urls import reverse
-from .models import DummyProject, Project, ProjectScore, ProjectCategory
-from .forms import ProjectForm, ProjectScoreForm
-from django.forms import inlineformset_factory
-from django.db import transaction
+from .models import DummyProject, Project, ProjectScore
+from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm
 from django.contrib import messages
 
 
@@ -44,36 +42,50 @@ class ProjectListView(ListView):
         return context
 
 
-class CreateProjectView(CreateView):
+class ProjectCreateView(CreateView):
     template_name = 'asset_dashboard/partials/add_project_modal_form.html'
     form_class = ProjectForm
 
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-
+    def form_valid(self, form):
         if form.is_valid():
-            project = Project.objects.create(**form.cleaned_data)
-            project_score = ProjectScore.objects.get_or_create(project=project)
+            project_data = {
+                'name': form.cleaned_data['name'],
+                'description': form.cleaned_data['description'],
+                'section_owner': form.cleaned_data['section_owner'],
+                'category': form.cleaned_data['category']
+            }
+
+            project = Project.objects.create(**project_data)
+            ProjectScore.objects.get_or_create(project=project)
+
+            messages.success(self.request, 'Project successfully created!')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
-            return HttpResponseBadRequest('Form is invalid.')
+            print('form invalid')
+            print(form.errors)
+            return super().form_invalid(form)
 
 
-class ProjectDetailView(UpdateView):
+class ProjectUpdateView(UpdateView):
     """
-    Detail view that updates a Project and all related models.
+    Updated view that updates a Project and all related models.
     """
     model = Project
     template_name = 'asset_dashboard/project_detail.html'
     form_class = ProjectForm
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         if self.request.POST:
-            context['score_form'] = ProjectScoreForm(self.request.POST, instance=self.object.projectscore)
+            # instantiate the forms with data from the post request
+            request_data = self.request.POST
+
+            context['score_form'] = ProjectScoreForm(request_data, instance=self.object.projectscore)
+            context['category_form'] = ProjectCategoryForm(request_data, instance=self.object.category)
         else:
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
+            context['category_form'] = ProjectCategoryForm(instance=self.object.category)
 
         return context
 
@@ -83,12 +95,18 @@ class ProjectDetailView(UpdateView):
     def form_valid(self, form):
         context = self.get_context_data()
 
-        score_form = context['score_form']
+        forms = {
+            'project': form,
+            'score': context['score_form'],
+        }
 
-        if form.is_valid() and score_form.is_valid():
-            form.save()
-            score_form.save()
-            messages.success(self.request, 'Project successfully saved!')
-            return super().form_valid(form)
-        else:
-            return super().form_invalid(self, form)
+        for form_instance in forms:
+            form_to_save = forms[form_instance]
+
+            if form_to_save.is_valid():
+                form_to_save.save()
+            else:
+                return super().form_invalid(form)
+
+        messages.success(self.request, 'Project successfully saved!')
+        return super().form_valid(form)

@@ -1,17 +1,37 @@
-from django.forms import ModelForm, CharField, TextInput, Textarea
-from .models import Project, Section, ProjectScore
+from django.forms import ModelForm, TextInput
+from .models import Project, ProjectScore, ProjectCategory
 
-class ProjectForm(ModelForm):
+
+class StyledFormMixin(object):
+    """
+    Generic mixin to consistently style each form field's html <input> element.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+
+class ProjectForm(StyledFormMixin, ModelForm):
     class Meta:
         model = Project
-        fields = ['name', 'description', 'section_owner', 'category']
+        fields = ['name',
+                  'description',
+                  'section_owner',
+                  'category',
+                  'phase_completion',
+                  'senate_districts',
+                  'house_districts',
+                  'commissioner_districts',
+                  'zones']
         widgets = {
-            'name': TextInput(attrs={'class': 'form-control w-50'}),
-            'description': Textarea(attrs={'class': 'form-control'})
+            'name': TextInput(),
         }
 
 
-class ProjectScoreForm(ModelForm):
+class ProjectScoreForm(StyledFormMixin, ModelForm):
     class Meta:
         model = ProjectScore
         fields = [
@@ -34,4 +54,12 @@ class ProjectScoreForm(ModelForm):
 
             field.widget.attrs['min'] = min_validator.limit_value
             field.widget.attrs['max'] = max_validator.limit_value
-            field.widget.attrs['class'] = 'form-control'
+
+
+class ProjectCategoryForm(StyledFormMixin, ModelForm):
+    class Meta:
+        model = ProjectCategory
+        fields = [
+            'category',
+            'subcategory'
+        ]
