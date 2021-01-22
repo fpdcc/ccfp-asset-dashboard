@@ -16,7 +16,7 @@ class Staff(models.Model):
     section = models.ForeignKey(Section,
                                 null=True,
                                 on_delete=models.SET_NULL)
-    
+
     class Meta:
         verbose_name_plural = 'Staff'
 
@@ -94,7 +94,7 @@ class ProjectScore(models.Model):
 
     def __str__(self):
         return self.project.name
-    
+
     class Meta:
         verbose_name_plural = 'Project Scores'
 
@@ -158,7 +158,7 @@ class ProjectCategory(models.Model):
 
     def __str__(self):
         return f'{self.category} -- {self.subcategory}'
-    
+
     class Meta:
         verbose_name_plural = 'Project Categories'
 
@@ -168,7 +168,7 @@ class HouseDistrict(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
         verbose_name_plural = 'House Districts'
 
@@ -178,7 +178,7 @@ class SenateDistrict(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     class Meta:
         verbose_name_plural = 'Senate Districts'
 
