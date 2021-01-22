@@ -3,6 +3,8 @@ from django.urls import reverse
 from asset_dashboard.models import Project, ProjectScore
 from django.forms.models import model_to_dict
 
+from pprint import pprint
+
 @pytest.mark.django_db
 def test_project_list_view(client, project_list):
     url = reverse('projects')
@@ -52,50 +54,17 @@ def test_add_project_view(client, section_owner, project_category):
 
     for form_data in invalid_form_data:
         invalid_response = client.post(url, data=form_data)
-        assert invalid_response.status_code == 400
-
-def create_formset_data(formset, new_form_data=None):
-    """
-    Creates formset data from a response's context.
-    See https://stackoverflow.com/questions/1630754/django-formset-unit-test/64354805.
-    """
-    if new_form_data is None:
-        new_form_data = []
-
-    # setup the formset
-    form_data = {}
-    prefix_template = formset.empty_form.prefix
-    form_data_list = formset.initial or []
-    form_data_list.extend(new_form_data)
-    
-    # add management fields to the form_data
-    management_data = formset.management_form.initial
-    management_data['TOTAL_FORMS'] = len(form_data_list)
-    for key, value in management_data.items():
-        prefix = prefix_template.replace('__prefix__', '')
-        form_data[prefix + key] = value
-
-    # populate each form within the formset
-    for index, data in enumerate(form_data_list):
-        for key, value in data.items():
-            prefix = prefix_template.replace('__prefix__', f'{index}-')
-            form_data[prefix + key] = value
-    
-    return form_data
+        assert invalid_response.context['form'].errors
     
 
 @pytest.mark.django_db
-def test_project_detail_view(client, project, project_list, section_owner):
+def test_project_detail_view(client, project, project_list, section_owner, districts, project_category):
     project_detail_url = reverse('project-detail', kwargs={'pk': project.pk})
     response = client.get(project_detail_url)
     assert response.status_code == 200
 
     project_from_response = response.context['project']
     project_score_from_response = response.context['project'].projectscore
-    senate_district_from_response = response.context['senate_district_formset']
-    house_district_from_response = response.context['house_district_formset']
-    commissioner_district_from_response = response.context['commissioner_district_formset']
-    zones_from_response = response.context['zone_formset']
 
     assert project_from_response == project
     assert project_score_from_response == project.projectscore
@@ -109,30 +78,48 @@ def test_project_detail_view(client, project, project_list, section_owner):
     valid_form_data.update({
         'name': 'trail maintenance',
         'description': 'fixing erosion',
-        'core_mission_score': 2
+        'category': project_category.id,
+        'section_owner': section_owner.id,
+        'core_mission_score': 2,
+        'operations_impact_score': 3,
+        'sustainability_score': 4,
+        'ease_score': 4,
+        'geographic_distance_score': 1,
+        'social_equity_score': 3,
+        'phase_completion': 'on',
+        'senate_districts': [districts[0][0].id],
+        'house_districts': [districts[1][0].id],
+        'commissioner_districts': [districts[2][0].id],
+        'zones': [districts[3][0].id]
     })
-    
-    # populate the fields for all of the formsets
-    senate_district_formset = create_formset_data(senate_district_from_response, new_form_data=[{'name': 'district 1'}])
-    valid_form_data.update(senate_district_formset)
-    
-    house_district_formset = create_formset_data(house_district_from_response, new_form_data=[{'name': 'district 2'}])
-    valid_form_data.update(house_district_formset)
-    
-    commissioner_district_formset = create_formset_data(commissioner_district_from_response, new_form_data=[{'name': 'district 11'}])
-    valid_form_data.update(commissioner_district_formset)
-    
-    zone_formset = create_formset_data(zones_from_response, new_form_data=[{'name': 'zone 2'}])
-    valid_form_data.update(zone_formset)
 
     # test the form submission
     successful_response = client.post(project_detail_url, data=valid_form_data)
     assert successful_response.status_code == 302
 
-    # test that the update form saved the project with correct data
+    # test that the form submission saved the project with correct data for all the fields
     updated_project = Project.objects.filter(name=valid_form_data['name'])
+    
+    # Project model
     assert updated_project[0].name == valid_form_data['name']
     assert updated_project[0].description == valid_form_data['description']
+    assert updated_project[0].phase_completion == True
+    assert updated_project[0].category_id == project_category.id
+    assert updated_project[0].section_owner_id == section_owner.id
+    
+    # ProjectScore model, related to Project
+    assert updated_project[0].projectscore.core_mission_score == valid_form_data['core_mission_score']
+    assert updated_project[0].projectscore.operations_impact_score == valid_form_data['operations_impact_score']
+    assert updated_project[0].projectscore.sustainability_score == valid_form_data['sustainability_score']
+    assert updated_project[0].projectscore.ease_score == valid_form_data['ease_score']
+    assert updated_project[0].projectscore.geographic_distance_score == valid_form_data['geographic_distance_score']
+    assert updated_project[0].projectscore.social_equity_score == valid_form_data['social_equity_score']
+    
+    # Districts, related to Project
+    assert updated_project[0].senate_districts.all()[0] == districts[0][0]
+    assert updated_project[0].house_districts.all()[0] == districts[1][0]
+    assert updated_project[0].commissioner_districts.all()[0] == districts[2][0]
+    assert updated_project[0].zones.all()[0] == districts[3][0]
 
     # test that only one project was updated
     assert updated_project.count() == 1
@@ -147,19 +134,14 @@ def test_project_detail_view(client, project, project_list, section_owner):
     existing_project_name = 'project_0'
     assert existing_project_name in str(response.context)
 
-    # test the unhappy path
-    invalid_form_data = [
-        valid_form_data.update({'name': '', 'description': ''}),
-        valid_form_data.update({'name': ''}),
-        valid_form_data.update({'description': ''}),
-        valid_form_data.update({'name': 'name without description'}),
-        valid_form_data.update({'description': 'description without name'}),
-        valid_form_data.update({'core_mission_score': 0}), # ensure the ProjectScore form validation works
-    ]
-
-    for form_data in invalid_form_data:
-        invalid_response = client.post(project_detail_url, data=form_data)
-        assert invalid_response.context['form'].errors
+    # test the unhappy path for some of the project fields
+    invalid_project_response = client.post(project_detail_url, data={**valid_form_data, **{'name': '', 'description': ''}})
+    assert invalid_project_response.context['form'].errors
+    
+    # test the ProjectScore validation
+    invalid_score_form = {**valid_form_data, **{'name': 'name', 'description': 'desc', 'core_mission_score': 0}}
+    invalid_score_response = client.post(project_detail_url, data=invalid_score_form)
+    assert invalid_score_response.context['score_form'].errors
 
     # test bad url does not exist
     bad_url = reverse('project-detail', kwargs={'pk': 1234556873459})

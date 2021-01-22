@@ -8,9 +8,11 @@ def section_owner():
     """
     return models.Section.objects.create(name="Architecture")
 
+
 @pytest.fixture
 def project_category():
-    return models.ProjectCategory.objects.create(category='improvement')
+    return models.ProjectCategory.objects.create(category='land improvement', subcategory='restoration')
+
 
 @pytest.fixture
 def project(section_owner, project_category):
@@ -29,7 +31,7 @@ def project(section_owner, project_category):
 
 
 @pytest.fixture
-def project_list(project):
+def project_list():
     """
     Creates and returns a QuerySet of all projects.
     """
@@ -41,6 +43,27 @@ def project_list(project):
         description = f'description text for this project'
         project = models.Project.objects.create(name=name, description=description, section_owner=section_owner)
         project_score = models.ProjectScore.objects.create(project=project)
-        category = models.ProjectCategory.objects.create(project=project, category='improvement')
+        category = models.ProjectCategory.objects.create(project=project, category=f'improvement {index}', subcategory=f'sub {index}')
 
     return models.Project.objects.all()
+
+
+@pytest.fixture
+def districts():
+    """
+    Creates the different geographic districts.
+    """
+    
+    for index in range(6):
+        fake_district_name = f'District {index+1}'
+        models.SenateDistrict.objects.create(name=fake_district_name)
+        models.HouseDistrict.objects.create(name=fake_district_name)
+        models.CommissionerDistrict.objects.create(name=fake_district_name)
+        models.Zone.objects.create(name=f'Zone {index+1}')
+
+    senate_districts = models.SenateDistrict.objects.all()
+    house_districts = models.HouseDistrict.objects.all()
+    commissioner_districts = models.CommissionerDistrict.objects.all()
+    zones = models.Zone.objects.all()
+    
+    return senate_districts, house_districts, commissioner_districts, zones
