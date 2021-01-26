@@ -1,4 +1,5 @@
 {% extends "asset_dashboard/base.html" %}
+{% load static %}
 
 {% block title %}Capital Projects{% endblock %}
 
@@ -17,22 +18,26 @@
 
     {% include "asset_dashboard/partials/add_project_modal_form.html" %}
 
-    <h3>Capital Projects</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for project in projects %}
-        <tr>
-          <td><a href="{% url 'project-detail' project.id %}">{{ project.name }}</a></td>
-          <td>{{ project.description }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <div class="card mt-5 p-4 col-12 col-lg-10 mx-auto card-shadow">
+      <h3>Capital Projects</h3>
+      <div class="card-body">
+        <table class="table table-striped table-border py-4" id="project-list-table" style="width:100%">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Section</th>
+              <th>Category</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script type="text/javascript" src="{% static 'js/projectDataTable.js' %}"></script>
 {% endblock %}

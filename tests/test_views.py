@@ -2,8 +2,7 @@ import pytest
 from django.urls import reverse
 from asset_dashboard.models import Project, ProjectScore
 from django.forms.models import model_to_dict
-
-from pprint import pprint
+import json
 
 @pytest.mark.django_db
 def test_project_list_view(client, project_list):
@@ -12,6 +11,66 @@ def test_project_list_view(client, project_list):
     assert response.status_code == 200
     assert list(project_list) == list(response.context['projects'])
     assert project_list[0] == response.context['projects'][0]
+
+
+@pytest.mark.django_db
+def test_project_list_json(client, project_list):
+    url = reverse('project-list-json')
+    response = client.get(url)
+    
+    assert response.status_code == 200
+    response_body = json.loads(response.content)
+    
+    # test that the response matches all of the fixtures
+    for index, project in enumerate(response_body['data']):
+        assert project[0] == project_list[index].name
+        
+    # test the filtering/searching
+    #
+    # a request to filter based on section will look like this multi-line url with query string parameters:
+    #
+    #   http://localhost:8000/projects/json?draw=2&columns[2][data]=2&columns[2][name]=section_owner
+    #                           &columns[2][searchable]=true&columns[2][orderable]=true
+    #                           &columns[2][search][value]=Architecture&columns[2][search][regex]=true
+    #
+    # that url might contain more fields to be filtered, but for demonstration, that is a basic request.
+    # 
+    # when a user searches or filters in the UI,
+    # a request is triggered with the query string parameters populated based on user input.
+    #
+    # this filtering is all handled by 
+    # 1) the django-datatables-view on the backend, which serves a json response
+    # 2) the datatables jquery plugin on the frontend, which requests and renders a json response
+    # 
+    # in the above example, the query string contains: columns[2][search][value]=Architecture
+    # so that request is filtering out the section named "Architecture".
+    # 
+    #
+    # with that knowledge, test that a request returns what we expect based on the filtering values
+    section_name = project_list[0]
+    url_with_params = f'/projects/json?draw=2&columns[2][data]=2&columns[2][name]=section_owner \
+                        &columns[2][searchable]=true&columns[2][orderable]=true \
+                        &columns[2][search][value]={section_name}&columns[2][search][regex]=true'
+
+    filtered_response = client.get(url_with_params)
+    assert filtered_response.status_code == 200
+    
+    response_data = json.loads(filtered_response.content)
+    
+    # test that the response matches the fixtures
+    for index, project in enumerate(response_data['data']):
+        assert project[2] == section_name
+                        
+    # test that the response returns no data if data doesn't exist (effectively filtering out everything)
+    nonexistent_section_name = 'nonexistent section'
+    params_for_nonexistent_section_name = f'/projects/json?draw=2&columns[2][data]=2&columns[2][name]=section_owner \
+                        &columns[2][searchable]=true&columns[2][orderable]=true \
+                        &columns[2][search][value]={nonexistent_section_name}&columns[2][search][regex]=true'
+                        
+    dataless_response = client.get(params_for_nonexistent_section_name)
+    assert dataless_response.status_code == 200
+    response_body = json.loads(dataless_response.content)
+    assert len(response_body['data']) == 0
 
 
 @pytest.mark.django_db

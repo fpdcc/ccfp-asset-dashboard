@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView
+from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.http import HttpResponseRedirect
 from django.core import serializers
 from django.urls import reverse
 from .models import DummyProject, Project, ProjectScore
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm
 from django.contrib import messages
+from django.db.models import Q
 
 
 class Home(TemplateView):
@@ -28,7 +30,7 @@ def server_error(request, template_name='asset_dashboard/500.html'):
     return render(request, template_name, status=500)
 
 
-class ProjectListView(ListView):
+class ProjectList(ListView):
     template_name = 'asset_dashboard/projects.html'
     queryset = Project.objects.all()
     context_object_name = 'projects'
@@ -40,6 +42,34 @@ class ProjectListView(ListView):
         form = ProjectForm()
         context['form'] = form
         return context
+
+
+class ProjectListJson(BaseDatatableView):
+    model = Project
+    columns = ['name', 'description', 'section_owner', 'category']
+    order_columns = ['name', 'description', 'section_owner', 'category']
+    max_display_length = 500
+
+    def filter_queryset(self, qs):
+        search = self.request.GET.get('search[value]', None)
+        section = self.request.GET.get('columns[2][search][value]', None)
+        category = self.request.GET.get('columns[3][search][value]')
+
+        if search:
+            qs = qs.filter(Q(name__icontains=search) | Q(description__icontains=search))
+
+        if section:
+            qs = qs.filter(section_owner__name__icontains=section)
+
+        if category:
+            # a category's __str__ is formatted like: category + subcategory
+            # and the query params don't properly decode.
+            # so, split the string to get each field.
+            category_name = category.split('\+')[0].strip()
+            subcategory_name = category.split('\+')[1].strip()
+            qs = qs.filter(Q(category__category__icontains=category_name) & Q(category__subcategory__icontains=subcategory_name))
+
+        return qs
 
 
 class ProjectCreateView(CreateView):
@@ -61,8 +91,6 @@ class ProjectCreateView(CreateView):
             messages.success(self.request, 'Project successfully created!')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
-            print('form invalid')
-            print(form.errors)
             return super().form_invalid(form)
 
 

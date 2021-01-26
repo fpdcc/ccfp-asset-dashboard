@@ -151,7 +151,7 @@ class ProjectCategory(models.Model):
     subcategory = models.TextField(null=True)
 
     def __str__(self):
-        return f'{self.category} -- {self.subcategory}'
+        return f'{self.category} + {self.subcategory}'
 
 
 class HouseDistrict(models.Model):
