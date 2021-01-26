@@ -30,7 +30,7 @@ def server_error(request, template_name='asset_dashboard/500.html'):
     return render(request, template_name, status=500)
 
 
-class ProjectListView(ListView):
+class ProjectList(ListView):
     template_name = 'asset_dashboard/projects.html'
     queryset = Project.objects.all()
     context_object_name = 'projects'
