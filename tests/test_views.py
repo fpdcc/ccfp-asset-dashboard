@@ -27,23 +27,23 @@ def test_project_list_json(client, project_list):
         
     # test the filtering/searching
     #
-    # a request to filter based on section will look like this multi-line url with query string parameters:
+    # a request to filter based on "section" will have a query string like this:
     #
     #   http://localhost:8000/projects/json?draw=2&columns[2][data]=2&columns[2][name]=section_owner
     #                           &columns[2][searchable]=true&columns[2][orderable]=true
     #                           &columns[2][search][value]=Architecture&columns[2][search][regex]=true
     #
-    # that url might contain more fields to be filtered, but for demonstration, that is a basic request.
+    # that query string might contain more fields to be filtered, but for demonstration, that is a basic request.
     # 
     # when a user searches or filters in the UI,
-    # a request is triggered with the query string parameters populated based on user input.
+    # a request is triggered with the query string parameters. the params are built based on user input.
     #
-    # this filtering is all handled by 
-    # 1) the django-datatables-view on the backend, which serves a json response
-    # 2) the datatables jquery plugin on the frontend, which requests and renders a json response
+    # this is all handled by 
+    # 1) the datatables jquery plugin on the frontend, which requests and renders a json response
+    # 2) the django-datatables-view on the backend, which parses the query string and returns a json response
     # 
     # in the above example, the query string contains: columns[2][search][value]=Architecture
-    # so that request is filtering out the section named "Architecture".
+    # so that request gets all of the projects with the section named "Architecture".
     # 
     #
     # with that knowledge, test that a request returns what we expect based on the filtering values
@@ -63,11 +63,11 @@ def test_project_list_json(client, project_list):
                         
     # test that the response returns no data if data doesn't exist (effectively filtering out everything)
     nonexistent_section_name = 'nonexistent section'
-    params_for_nonexistent_section_name = f'/projects/json?draw=2&columns[2][data]=2&columns[2][name]=section_owner \
+    url_params_for_nonexistent_section = f'/projects/json?draw=2&columns[2][data]=2&columns[2][name]=section_owner \
                         &columns[2][searchable]=true&columns[2][orderable]=true \
                         &columns[2][search][value]={nonexistent_section_name}&columns[2][search][regex]=true'
                         
-    dataless_response = client.get(params_for_nonexistent_section_name)
+    dataless_response = client.get(url_params_for_nonexistent_section)
     assert dataless_response.status_code == 200
     response_body = json.loads(dataless_response.content)
     assert len(response_body['data']) == 0
