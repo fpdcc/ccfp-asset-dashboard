@@ -1,7 +1,7 @@
 $(document).ready(function() {
-    var table = $('#project-list-table').dataTable({
+    var table = $('#project-list-table').DataTable({
         serverSide: true,
-        ajax: "json",
+        ajax: 'json',
         columns: [
             {
                 name: 'name',
@@ -38,52 +38,31 @@ $(document).ready(function() {
 
         // custom styles on some parts of the table
         // see https://datatables.net/reference/option/dom
-        dom: "<f>" +
-          "<'row'<'col-sm-12'tr>>" +
-          "<'row'<'col'l><'col'i><'col'p>>",
+        dom: "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col'l><'col'i><'col'p>>",
 
-        // hide the search input label and add the text as placeholder
-        language: {
-          search: "",
-          searchPlaceholder: "Search projects"
-        },
-
-        // render the select widgets for filtering
+        // add callback functions to the select widgets for filtering
         initComplete: function () {
             this.api().columns().every( function () {
                 let column = this;
-
                 let columnHeaderName = column.header().textContent
 
                 if (columnHeaderName === 'Section' || columnHeaderName === 'Category') {
-                  // create the html <select> tag
-                  var selectWidget = $(`<select class="form-control-sm col-4 m-1">
-                                          <option value="" disabled selected>
-                                            Filter by ${columnHeaderName}
-                                          </option>
-                                        </select>`)
+                    const idSelectorName = columnHeaderName.toLowerCase()
 
-                    // add it to the DOM
-                    .appendTo($('#project-list-table_filter'))
-                    .on('change', function() {
-                      var val = $.fn.dataTable.util.escapeRegex(
+                    // add a callback to the html page's existing <select> 
+                    $(`#${idSelectorName}-select`).on('change', function() {
+                      let val = $.fn.dataTable.util.escapeRegex(
                         $(this).val()
                       );
 
-                      column
-                        .search(val ? val : '', true, false)
-                        .draw();
-                    });
-                    
-                    // add the available <options>
-                    column.data().unique().sort().each(function (fieldText) {
-                      selectWidget.append(`<option value="${fieldText}">${fieldText}</option>`)
+                      return column.search(val ? val : '', true, false).draw();
                     });
                 }
             });
         },
         
-        // make each row clickable in order to redirect to the detail page
+        // make each row clickable for redirecting to the detail page
         fnRowCallback: function (row, data) {
             const projectId = data[4]
 
@@ -96,18 +75,20 @@ $(document).ready(function() {
 
             return row
         }
-        
     });
 
-    // add the click event in order to redirect to a project detail page
+    // listen to click event for redirecting to a project detail page
     $('#project-list-table tbody').on('click', 'tr', function () {
         const id = $(this).data('project-id')
         window.location = '/projects/' + id
     })
 
-    // configure styling for some of the table components
-    $('div.dataTables_filter').addClass('row');
-    $('div.dataTables_filter label').addClass('col-3 m-1');
+    // callback function for the search text input
+    $('#search-filter').on('keyup', function() {
+        table.search(this.value).draw();
+    });
+
+    // styling configuration for the table's pagination components
     $('div.dataTables_length').addClass('pt-3');
     $('div.dataTables_length label').addClass('d-flex flex-row');
     $('div.dataTables_paginate').addClass('pt-1');

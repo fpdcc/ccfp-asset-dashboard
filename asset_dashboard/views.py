@@ -4,7 +4,7 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.http import HttpResponseRedirect
 from django.core import serializers
 from django.urls import reverse
-from .models import DummyProject, Project, ProjectScore
+from .models import DummyProject, Project, ProjectCategory, ProjectScore, Section
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm
 from django.contrib import messages
 from django.db.models import Q
@@ -41,6 +41,11 @@ class ProjectList(ListView):
         # send the form to a modal in this view
         form = ProjectForm()
         context['form'] = form
+        
+        # need all of the Sections and Categories for filtering the table
+        context['sections'] = [s.name for s in Section.objects.all()]
+        context['categories'] = [c.__str__ for c in ProjectCategory.objects.all()]
+
         return context
 
 

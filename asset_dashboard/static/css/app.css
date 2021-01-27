@@ -5,3 +5,7 @@
 input[type="checkbox"] {
     width: 40px;
 }
+
+.dataTables_filter {
+    display: none;
+}
