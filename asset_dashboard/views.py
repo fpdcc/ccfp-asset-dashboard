@@ -46,14 +46,14 @@ class ProjectList(ListView):
 
 class ProjectListJson(BaseDatatableView):
     model = Project
-    columns = ['name', 'description', 'section_owner', 'category']
+    columns = ['name', 'description', 'section_owner', 'category', 'id']
     order_columns = ['name', 'description', 'section_owner', 'category']
     max_display_length = 500
 
     def filter_queryset(self, qs):
         search = self.request.GET.get('search[value]', None)
         section = self.request.GET.get('columns[2][search][value]', None)
-        category = self.request.GET.get('columns[3][search][value]')
+        category = self.request.GET.get('columns[3][search][value]', None)
 
         if search:
             qs = qs.filter(Q(name__icontains=search) | Q(description__icontains=search))
@@ -65,8 +65,8 @@ class ProjectListJson(BaseDatatableView):
             # a category's __str__ is formatted like: category + subcategory
             # and the query params don't properly decode.
             # so, split the string to get each field.
-            category_name = category.split('\+')[0].strip()
-            subcategory_name = category.split('\+')[1].strip()
+            category_name = category.split('&')[0].strip()
+            subcategory_name = category.split('&')[1].strip()
             qs = qs.filter(Q(category__category__icontains=category_name) & Q(category__subcategory__icontains=subcategory_name))
 
         return qs

@@ -1,32 +1,39 @@
 $(document).ready(function() {
     var table = $('#project-list-table').dataTable({
         "serverSide": true,
-        "ajax": "json",
+        ajax: "json",
         columnDefs: [
-          {
-            name: 'name',
-            orderable: true,
-            searchable: true,
-            targets: [0]
-          },
-          {
-            name: 'description',
-            orderable: true,
-            searchable: true,
-            targets: [1]
-          },
-          {
-            name: 'section_owner',
-            orderable: true,
-            searchable: true,
-            targets: [2]
-          },
-          {
-            name: 'category',
-            orderable: true,
-            searchable: true,
-            targets: [3]
-          }
+            {
+                name: 'name',
+                orderable: true,
+                searchable: true,
+                targets: [0]
+            },
+            {
+                name: 'description',
+                orderable: true,
+                searchable: true,
+                targets: [1]
+            },
+            {
+                name: 'section_owner',
+                orderable: true,
+                searchable: true,
+                targets: [2]
+            },
+            {
+                name: 'category',
+                orderable: true,
+                searchable: true,
+                targets: [3]
+            },
+            {
+                name: 'id',
+                orderable: false,
+                searchable: false,
+                visible: false,
+                targets: [4]
+            },
         ],
 
         // custom styles on some parts of the table
@@ -41,6 +48,7 @@ $(document).ready(function() {
           searchPlaceholder: "Search projects"
         },
 
+        // render the select widgets for filtering
         initComplete: function () {
             this.api().columns().every( function () {
                 let column = this;
@@ -72,14 +80,34 @@ $(document).ready(function() {
                     });
                 }
             });
+        },
+        
+        // make each row clickable in order to redirect to the detail page
+        fnRowCallback: function (row, data) {
+            const projectId = data[4]
+
+            // add the id as an attribute to the <tr> element
+            $(row).data('project-id', projectId)
+
+            // show the cursor pointer when a user hovers over the row
+            // so they know they can click on it
+            $(row).addClass('cursor-pointer')
+
+            return row
         }
         
     });
+
+    // add the click event in order to redirect to a project detail page
+    $('#project-list-table tbody').on('click', 'tr', function () {
+        const id = $(this).data('project-id')
+        window.location = '/projects/' + id
+    })
+
+    // configure styling for some of the table components
     $('div.dataTables_filter').addClass('row');
     $('div.dataTables_filter label').addClass('col-3 m-1');
     $('div.dataTables_length').addClass('pt-3');
-    $('div.dataTables_length select').addClass('text-secondary');
     $('div.dataTables_length label').addClass('d-flex flex-row');
     $('div.dataTables_paginate').addClass('pt-1');
-    $('label').add('text-secondary')
   });
