@@ -41,7 +41,7 @@ class ProjectList(ListView):
         # send the form to a modal in this view
         form = ProjectForm()
         context['form'] = form
-        
+
         # need all of the Sections and Categories for filtering the table
         context['sections'] = [s.name for s in Section.objects.all()]
         context['categories'] = [c.__str__ for c in ProjectCategory.objects.all()]
