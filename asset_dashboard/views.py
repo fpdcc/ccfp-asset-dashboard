@@ -47,7 +47,7 @@ class ProjectList(ListView):
 class ProjectListJson(BaseDatatableView):
     model = Project
     columns = ['name', 'description', 'section_owner', 'category', 'id']
-    order_columns = ['name', 'description', 'section_owner', 'category']
+    order_columns = ['name', 'description', 'section_owner__name', 'category__category']
     max_display_length = 500
 
     def filter_queryset(self, qs):

@@ -1,8 +1,8 @@
 $(document).ready(function() {
     var table = $('#project-list-table').dataTable({
-        "serverSide": true,
+        serverSide: true,
         ajax: "json",
-        columnDefs: [
+        columns: [
             {
                 name: 'name',
                 orderable: true,
@@ -13,18 +13,18 @@ $(document).ready(function() {
                 name: 'description',
                 orderable: true,
                 searchable: true,
-                targets: [1]
+                targets: [1],
             },
             {
                 name: 'section_owner',
                 orderable: true,
-                searchable: true,
+                searchable: false,
                 targets: [2]
             },
             {
                 name: 'category',
                 orderable: true,
-                searchable: true,
+                searchable: false,
                 targets: [3]
             },
             {
@@ -56,13 +56,14 @@ $(document).ready(function() {
                 let columnHeaderName = column.header().textContent
 
                 if (columnHeaderName === 'Section' || columnHeaderName === 'Category') {
-                  // create the select widget and add it to the DOM
+                  // create the html <select> tag
                   var selectWidget = $(`<select class="form-control-sm col-4 m-1">
                                           <option value="" disabled selected>
                                             Filter by ${columnHeaderName}
                                           </option>
                                         </select>`)
 
+                    // add it to the DOM
                     .appendTo($('#project-list-table_filter'))
                     .on('change', function() {
                       var val = $.fn.dataTable.util.escapeRegex(
@@ -74,7 +75,7 @@ $(document).ready(function() {
                         .draw();
                     });
                     
-                    // add the available options
+                    // add the available <options>
                     column.data().unique().sort().each(function (fieldText) {
                       selectWidget.append(`<option value="${fieldText}">${fieldText}</option>`)
                     });
