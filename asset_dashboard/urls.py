@@ -16,14 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from asset_dashboard.views import ProjectListView, Home, ProjectCreateView, ProjectUpdateView, ProjectListJson
+from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreateView, ProjectUpdateView, ProjectListJson
 
 urlpatterns = [
-    path('', Home.as_view(), name='home'),
-    path('projects/', ProjectListView.as_view(), name='projects'),
+    path('', ProjectListView.as_view(), name='projects'),
     path('projects/json', ProjectListJson.as_view(), name='project-list-json'),
     path('projects/add-project/', ProjectCreateView.as_view(), name='add-project'),
     path('projects/<int:pk>/', ProjectUpdateView.as_view(), name='project-detail'),
+    path('cip-planner', CipPlannerView.as_view(), name='cip-planner'),
     path('admin/', admin.site.urls),
 ]
 
