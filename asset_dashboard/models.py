@@ -149,9 +149,19 @@ class ProjectCategory(models.Model):
 
     category = models.TextField(null=False)
     subcategory = models.TextField(null=True)
+    slug = models.SlugField(max_length=250, null=True, blank=True)
 
     def __str__(self):
-        return f'{self.category} & {self.subcategory}'
+        return self.slug
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            if self.subcategory:
+                self.slug = f'{self.category} > {self.subcategory}'
+            else:
+                self.slug = self.category
+
+        super().save(*args, **kwargs)
 
 
 class HouseDistrict(models.Model):

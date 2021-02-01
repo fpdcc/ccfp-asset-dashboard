@@ -67,12 +67,14 @@ class ProjectListJson(BaseDatatableView):
             qs = qs.filter(section_owner__name__icontains=section)
 
         if category:
-            # a category's __str__ is formatted like: category & subcategory
-            # and the query params don't properly decode.
+            # a category's __str__ is formatted like: category > subcategory
             # so, split the string to get each field.
-            category_name = category.split('&')[0].strip()
-            subcategory_name = category.split('&')[1].strip()
-            qs = qs.filter(Q(category__category__icontains=category_name) & Q(category__subcategory__icontains=subcategory_name))
+            # category_name = category.split('>')[0].strip()
+            # subcategory_name = category.split('>')[1].strip()
+            print('category')
+            print(category)
+            #qs = qs.filter(Q(category__category__icontains=category_name) & Q(category__subcategory__icontains=subcategory_name))
+            qs = qs.filter(Q(category__slug=category))
 
         return qs
 
