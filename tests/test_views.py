@@ -1,8 +1,9 @@
 import pytest
 from django.urls import reverse
-from asset_dashboard.models import Project, ProjectScore
+from asset_dashboard.models import Project, ProjectScore, ProjectCategory
 from django.forms.models import model_to_dict
 import json
+from django.utils.html import escape
 
 @pytest.mark.django_db
 def test_project_list_view(client, project_list):
@@ -47,19 +48,38 @@ def test_project_list_json(client, project_list):
     # 
     #
     # with that knowledge, test that a request returns what we expect based on the filtering values
-    section_name = project_list[0]
-    url_with_params = f'/projects/json?draw=2&columns[2][data]=2&columns[2][name]=section_owner \
-                        &columns[2][searchable]=true&columns[2][orderable]=true \
-                        &columns[2][search][value]={section_name}&columns[2][search][regex]=true'
 
-    filtered_response = client.get(url_with_params)
-    assert filtered_response.status_code == 200
-    
-    response_data = json.loads(filtered_response.content)
-    
-    # test that the response matches the fixtures
-    for index, project in enumerate(response_data['data']):
-        assert project[2] == section_name
+    # test the section filter
+    #
+    # iterate through the project_list to get each project's section owner
+    for project in project_list:
+        section = project.section_owner
+        url_with_section_params = f'/projects/json?draw=2&columns[2][data]=2&columns[2][name]=section_owner \
+                            &columns[2][searchable]=true&columns[2][orderable]=true \
+                            &columns[2][search][value]={section.name}&columns[2][search][regex]=true'
+
+        filtered_response = client.get(url_with_section_params)
+        assert filtered_response.status_code == 200
+        
+        response_data = json.loads(filtered_response.content)
+        
+        # test that the response matches the fixtures
+        for index, row in enumerate(response_data['data']):
+            assert row[2] == section.name
+
+    # test the filtering for a project category
+    for category in ProjectCategory.objects.all():
+        url_with_category_filter = f'/projects/json?draw=3&columns[3][data]=3&columns[3][name]=category \
+                                    &columns[3][searchable]=false&columns[3][orderable]=true \
+                                    &columns[3][search][value]={category}&columns[3][search][regex]=true'
+
+        filtered_category_response = client.get(url_with_category_filter)
+        assert filtered_category_response.status_code == 200
+        
+        response_data = json.loads(filtered_category_response.content)
+
+        for index, project in enumerate(response_data['data']):
+            assert project[3] == escape(category.slug)
                         
     # test that the response returns no data if data doesn't exist (effectively filtering out everything)
     nonexistent_section_name = 'nonexistent section'

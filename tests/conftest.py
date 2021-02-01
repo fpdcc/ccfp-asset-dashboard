@@ -40,9 +40,9 @@ def project_list():
         name = f'project_{index}'
         description = f'description text for this project'
         section_owner = models.Section.objects.create(name=f'Section{index}')
-        project = models.Project.objects.create(name=name, description=description, section_owner=section_owner)
+        category = models.ProjectCategory.objects.create(category=f'category {index}', subcategory=f'subcategory {index}')
+        project = models.Project.objects.create(name=name, description=description, section_owner=section_owner, category=category)
         project_score = models.ProjectScore.objects.create(project=project)
-        category = models.ProjectCategory.objects.create(project=project, category=f'category {index}', subcategory=f'subcategory {index}')
 
     return models.Project.objects.all()
 
