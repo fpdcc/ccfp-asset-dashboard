@@ -64,7 +64,7 @@ class ProjectListJson(BaseDatatableView):
             qs = qs.filter(Q(name__icontains=search) | Q(description__icontains=search))
 
         if section:
-            qs = qs.filter(section_owner__name__icontains=section)
+            qs = qs.filter(section_owner__name=section)
 
         if category:
             qs = qs.filter(Q(category__slug=category))
