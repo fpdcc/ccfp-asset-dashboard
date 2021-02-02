@@ -149,7 +149,7 @@ class ProjectCategory(models.Model):
 
     category = models.TextField(null=False)
     subcategory = models.TextField(null=True)
-    name = models.TextField(null=True, blank=True)
+    name = models.TextField(null=False, default='project category')
 
     def __str__(self):
         return self.name
