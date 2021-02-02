@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import CommissionerDistrict, HouseDistrict, Plan, Project, ProjectCategory, ProjectScore, Section, SenateDistrict, Staff, Zone
 
+
 class ProjectCategoryAdmin(admin.ModelAdmin):
     exclude = ('name',)
 
