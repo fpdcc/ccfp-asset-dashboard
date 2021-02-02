@@ -79,7 +79,7 @@ def test_project_list_json(client, project_list):
         response_data = json.loads(filtered_category_response.content)
 
         for index, project in enumerate(response_data['data']):
-            assert project[3] == escape(category.slug)
+            assert project[3] == escape(category.name)
                         
     # test that the response returns no data if data doesn't exist (effectively filtering out everything)
     nonexistent_section_name = 'nonexistent section'

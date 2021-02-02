@@ -44,7 +44,7 @@ class ProjectListView(ListView):
 
         # need all of the Sections and Categories for filtering the table
         context['sections'] = [s.name for s in Section.objects.all().order_by('name')]
-        context['categories'] = [c.slug for c in ProjectCategory.objects.all().order_by('slug')]
+        context['categories'] = [c.name for c in ProjectCategory.objects.all().order_by('name')]
 
         return context
 
@@ -67,7 +67,7 @@ class ProjectListJson(BaseDatatableView):
             qs = qs.filter(section_owner__name=section)
 
         if category:
-            qs = qs.filter(Q(category__slug=category))
+            qs = qs.filter(Q(category__name=category))
 
         return qs
 
