@@ -35,28 +35,21 @@
     {% block extra_css %}{% endblock %}
   </head>
 
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light pl-2 pl-md-4 justify-content-between">
-      <div class="justify-content-left va-container">
-        {% block navbar_brand %}
-          <a class="navbar-brand" href="{% url 'projects' %}">
-            <div id="navbar-title" class="d-inline-block">
-              <span class="d-none d-sm-inline navbar-title-text">
-                Forest Preserves of Cook County
-              </span>
-            </div>
-          </a>
-        {% endblock %}
-      </div>
+  <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light justify-content-between border-bottom shadow-sm bg-info">
+      
+      <a class="navbar-brand text-light" href="{% url 'projects' %}">
+        Forest Preserves of Cook County
+      </a>
       <div class="nav-item dropdown justify-content-right">
-        <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span class="d-none d-sm-inline navbar-title-text">
-            Home
-          </span>
+        <a class="nav-link dropdown-toggle text-light" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Home
         </a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="{% url 'projects' %}">Projects</a>
-          <a class="dropdown-item" href="{% url 'cip-planner' %}">CIP Planner</a>
+          <a class="dropdown-item text-primary" href="{% url 'projects' %}">Projects</a>
+          <a class="dropdown-item text-primary" href="{% url 'cip-planner' %}">CIP Planner</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item text-primary" href="{% url 'admin:index' %}">Admin</a>
       </div>
     </nav>
 

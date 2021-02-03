@@ -73,7 +73,7 @@ class ProjectListJson(BaseDatatableView):
 
 
 class ProjectCreateView(CreateView):
-    template_name = 'asset_dashboard/partials/add_project_modal_form.html'
+    template_name = 'asset_dashboard/partials/forms/add_project_modal_form.html'
     form_class = ProjectForm
 
     def form_valid(self, form):
