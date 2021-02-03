@@ -155,9 +155,19 @@ class ProjectCategory(models.Model):
 
     category = models.TextField(null=False)
     subcategory = models.TextField(null=True)
+    name = models.TextField(null=False, default='project category')
 
     def __str__(self):
-        return f'{self.category} -- {self.subcategory}'
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            if self.subcategory:
+                self.name = f'{self.category} > {self.subcategory}'
+            else:
+                self.name = self.category
+
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = 'Project Categories'

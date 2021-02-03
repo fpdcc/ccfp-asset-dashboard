@@ -36,14 +36,13 @@ def project_list():
     Creates and returns a QuerySet of all projects.
     """
 
-    section_owner = models.Section.objects.create(name="Civil Engineering")
-
     for index in range(10):
         name = f'project_{index}'
         description = f'description text for this project'
-        project = models.Project.objects.create(name=name, description=description, section_owner=section_owner)
+        section_owner = models.Section.objects.create(name=f'Section{index}')
+        category = models.ProjectCategory.objects.create(category=f'category {index}', subcategory=f'subcategory {index}')
+        project = models.Project.objects.create(name=name, description=description, section_owner=section_owner, category=category)
         project_score = models.ProjectScore.objects.create(project=project)
-        category = models.ProjectCategory.objects.create(project=project, category=f'improvement {index}', subcategory=f'sub {index}')
 
     return models.Project.objects.all()
 

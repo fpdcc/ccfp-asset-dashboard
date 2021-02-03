@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView
+from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.http import HttpResponseRedirect
 from django.core import serializers
 from django.urls import reverse
-from .models import DummyProject, Project, ProjectScore
+from .models import DummyProject, Project, ProjectCategory, ProjectScore, Section
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm
 from django.contrib import messages
+from django.db.models import Q
 
 
 class Home(TemplateView):
@@ -39,7 +41,35 @@ class ProjectListView(ListView):
         # send the form to a modal in this view
         form = ProjectForm()
         context['form'] = form
+
+        # need all of the Sections and Categories for filtering the table
+        context['sections'] = [s.name for s in Section.objects.all().order_by('name')]
+        context['categories'] = [c.name for c in ProjectCategory.objects.all().order_by('name')]
+
         return context
+
+
+class ProjectListJson(BaseDatatableView):
+    model = Project
+    columns = ['name', 'description', 'section_owner', 'category', 'id']
+    order_columns = ['name', 'description', 'section_owner__name', 'category__category']
+    max_display_length = 500
+
+    def filter_queryset(self, qs):
+        search = self.request.GET.get('search[value]', None)
+        section = self.request.GET.get('columns[2][search][value]', None)
+        category = self.request.GET.get('columns[3][search][value]', None)
+
+        if search:
+            qs = qs.filter(Q(name__icontains=search) | Q(description__icontains=search))
+
+        if section:
+            qs = qs.filter(section_owner__name=section)
+
+        if category:
+            qs = qs.filter(Q(category__name=category))
+
+        return qs
 
 
 class ProjectCreateView(CreateView):
@@ -61,8 +91,6 @@ class ProjectCreateView(CreateView):
             messages.success(self.request, 'Project successfully created!')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
-            print('form invalid')
-            print(form.errors)
             return super().form_invalid(form)
 
 

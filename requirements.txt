@@ -8,6 +8,7 @@ whitenoise
 django-compressor
 sentry-sdk
 django-money
+django-datatables-view
 
 # Testing requirements
 pytest
