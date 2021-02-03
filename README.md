@@ -65,12 +65,17 @@ Run tests with Docker Compose:
 docker-compose -f docker-compose.yml -f tests/docker-compose.yml run --rm app
 ```
 
-### Fixture data
+### Dumping and Loading Fixture Data
 Dump the data:
-```
-heroku run python manage.py dumpdata --natural-foreign --indent 2 \
+```bash
+docker-compose run --rm app python manage.py dumpdata --natural-foreign --indent 2 \
 -e contenttypes \
 -e sessions \
 asset_dashboard \ 
 auth > fixtures/data.json
+```
+
+Load the data:
+```bash
+docker-compose run --rm app python manage.py loaddata asset_dashboard/fixtures/data.json
 ```
