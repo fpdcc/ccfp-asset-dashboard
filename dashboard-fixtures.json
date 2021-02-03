@@ -1,0 +1,1934 @@
+[
+{
+  "model": "asset_dashboard.section",
+  "pk": 13,
+  "fields": {
+    "name": "Planning"
+  }
+},
+{
+  "model": "asset_dashboard.section",
+  "pk": 14,
+  "fields": {
+    "name": "Surveyor"
+  }
+},
+{
+  "model": "asset_dashboard.section",
+  "pk": 15,
+  "fields": {
+    "name": "GIS"
+  }
+},
+{
+  "model": "asset_dashboard.section",
+  "pk": 16,
+  "fields": {
+    "name": "Building Architecture"
+  }
+},
+{
+  "model": "asset_dashboard.section",
+  "pk": 17,
+  "fields": {
+    "name": "Landscape Architecture"
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 1,
+  "fields": {
+    "name": "trail construction",
+    "description": "trail construction example. blah blah blah blah blah blah",
+    "category": null,
+    "section_owner": null,
+    "obligation": false,
+    "phase_completion": false,
+    "accessibility": false,
+    "leverage_resource": false,
+    "plan": [],
+    "house_districts": [],
+    "senate_districts": [],
+    "commissioner_districts": [],
+    "zones": []
+  }
+},
+{
+  "model": "asset_dashboard.project",
+  "pk": 2,
+  "fields": {
+    "name": "building repairs",
+    "description": "test test test",
+    "category": null,
+    "section_owner": null,
+    "obligation": false,
+    "phase_completion": false,
+    "accessibility": false,
+    "leverage_resource": false,
+    "plan": [],
+    "house_districts": [],
+    "senate_districts": [],
+    "commissioner_districts": [],
+    "zones": []
+  }
+},
+{
+  "model": "asset_dashboard.projectscore",
+  "pk": 1,
+  "fields": {
+    "project": 1,
+    "core_mission_score": 4,
+    "operations_impact_score": 1,
+    "sustainability_score": 2,
+    "ease_score": 3,
+    "geographic_distance_score": 1,
+    "social_equity_score": 1
+  }
+},
+{
+  "model": "asset_dashboard.projectscore",
+  "pk": 2,
+  "fields": {
+    "project": 2,
+    "core_mission_score": 1,
+    "operations_impact_score": 5,
+    "sustainability_score": 2,
+    "ease_score": 2,
+    "geographic_distance_score": 1,
+    "social_equity_score": 1
+  }
+},
+{
+  "model": "asset_dashboard.projectcategory",
+  "pk": 27,
+  "fields": {
+    "category": "land improvements",
+    "subcategory": "restoration",
+    "name": "land improvements > restoration"
+  }
+},
+{
+  "model": "asset_dashboard.projectcategory",
+  "pk": 28,
+  "fields": {
+    "category": "land improvements",
+    "subcategory": "trail repairs and improvements",
+    "name": "land improvements > trail repairs and improvements"
+  }
+},
+{
+  "model": "asset_dashboard.projectcategory",
+  "pk": 29,
+  "fields": {
+    "category": "land improvements",
+    "subcategory": "recreation improvements",
+    "name": "land improvements > recreation improvements"
+  }
+},
+{
+  "model": "asset_dashboard.projectcategory",
+  "pk": 30,
+  "fields": {
+    "category": "land improvements",
+    "subcategory": "site amenities",
+    "name": "land improvements > site amenities"
+  }
+},
+{
+  "model": "asset_dashboard.projectcategory",
+  "pk": 31,
+  "fields": {
+    "category": "capital outlays",
+    "subcategory": "landscape maintenance",
+    "name": "capital outlays > landscape maintenance"
+  }
+},
+{
+  "model": "asset_dashboard.projectcategory",
+  "pk": 32,
+  "fields": {
+    "category": "building improvements",
+    "subcategory": "exterior repairs",
+    "name": "building improvements > exterior repairs"
+  }
+},
+{
+  "model": "asset_dashboard.projectcategory",
+  "pk": 33,
+  "fields": {
+    "category": "building improvements",
+    "subcategory": "",
+    "name": "building improvements"
+  }
+},
+{
+  "model": "asset_dashboard.projectcategory",
+  "pk": 34,
+  "fields": {
+    "category": "building improvements",
+    "subcategory": "hvac",
+    "name": "building improvements > hvac"
+  }
+},
+{
+  "model": "asset_dashboard.projectcategory",
+  "pk": 35,
+  "fields": {
+    "category": "building improvements",
+    "subcategory": "renovations",
+    "name": "building improvements > renovations"
+  }
+},
+{
+  "model": "asset_dashboard.projectcategory",
+  "pk": 36,
+  "fields": {
+    "category": "building improvements",
+    "subcategory": "misc urgent repairs",
+    "name": "building improvements > misc urgent repairs"
+  }
+},
+{
+  "model": "asset_dashboard.projectcategory",
+  "pk": 37,
+  "fields": {
+    "category": "capital outlays",
+    "subcategory": "fleet and facilities",
+    "name": "capital outlays > fleet and facilities"
+  }
+},
+{
+  "model": "asset_dashboard.projectcategory",
+  "pk": 38,
+  "fields": {
+    "category": "planning",
+    "subcategory": "general consulting",
+    "name": "planning > general consulting"
+  }
+},
+{
+  "model": "asset_dashboard.projectcategory",
+  "pk": 39,
+  "fields": {
+    "category": "building improvements",
+    "subcategory": "general",
+    "name": "building improvements > general"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 72,
+  "fields": {
+    "name": "District 85"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 73,
+  "fields": {
+    "name": "District 82"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 74,
+  "fields": {
+    "name": "District 80"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 75,
+  "fields": {
+    "name": "District 78"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 76,
+  "fields": {
+    "name": "District 77"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 77,
+  "fields": {
+    "name": "District 59"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 78,
+  "fields": {
+    "name": "District 58"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 79,
+  "fields": {
+    "name": "District 57"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 80,
+  "fields": {
+    "name": "District 56"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 81,
+  "fields": {
+    "name": "District 55"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 82,
+  "fields": {
+    "name": "District 54"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 83,
+  "fields": {
+    "name": "District 53"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 84,
+  "fields": {
+    "name": "District 52"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 85,
+  "fields": {
+    "name": "District 51"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 86,
+  "fields": {
+    "name": "District 49"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 87,
+  "fields": {
+    "name": "District 47"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 88,
+  "fields": {
+    "name": "District 45"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 89,
+  "fields": {
+    "name": "District 44"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 90,
+  "fields": {
+    "name": "District 43"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 91,
+  "fields": {
+    "name": "District 40"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 92,
+  "fields": {
+    "name": "District 39"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 93,
+  "fields": {
+    "name": "District 38"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 94,
+  "fields": {
+    "name": "District 37"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 95,
+  "fields": {
+    "name": "District 36"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 96,
+  "fields": {
+    "name": "District 35"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 97,
+  "fields": {
+    "name": "District 34"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 98,
+  "fields": {
+    "name": "District 33"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 99,
+  "fields": {
+    "name": "District 32"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 100,
+  "fields": {
+    "name": "District 31"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 101,
+  "fields": {
+    "name": "District 30"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 102,
+  "fields": {
+    "name": "District 29"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 103,
+  "fields": {
+    "name": "District 28"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 104,
+  "fields": {
+    "name": "District 27"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 105,
+  "fields": {
+    "name": "District 26"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 106,
+  "fields": {
+    "name": "District 25"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 107,
+  "fields": {
+    "name": "District 24"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 108,
+  "fields": {
+    "name": "District 23"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 109,
+  "fields": {
+    "name": "District 22"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 110,
+  "fields": {
+    "name": "District 21"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 111,
+  "fields": {
+    "name": "District 20"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 112,
+  "fields": {
+    "name": "District 19"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 113,
+  "fields": {
+    "name": "District 18"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 114,
+  "fields": {
+    "name": "District 17"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 115,
+  "fields": {
+    "name": "District 16"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 116,
+  "fields": {
+    "name": "District 15"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 117,
+  "fields": {
+    "name": "District 14"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 118,
+  "fields": {
+    "name": "District 13"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 119,
+  "fields": {
+    "name": "District 12"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 120,
+  "fields": {
+    "name": "District 11"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 121,
+  "fields": {
+    "name": "District 10"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 122,
+  "fields": {
+    "name": "District 9"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 123,
+  "fields": {
+    "name": "District 8"
+  }
+},
+{
+  "model": "asset_dashboard.housedistrict",
+  "pk": 124,
+  "fields": {
+    "name": "District 7"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 46,
+  "fields": {
+    "name": "District 43"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 47,
+  "fields": {
+    "name": "District 41"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 48,
+  "fields": {
+    "name": "District 40"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 49,
+  "fields": {
+    "name": "District 39"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 50,
+  "fields": {
+    "name": "District 30"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 51,
+  "fields": {
+    "name": "District 29"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 52,
+  "fields": {
+    "name": "District 28"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 53,
+  "fields": {
+    "name": "District 27"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 54,
+  "fields": {
+    "name": "District 26"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 55,
+  "fields": {
+    "name": "District 25"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 56,
+  "fields": {
+    "name": "District 24"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 57,
+  "fields": {
+    "name": "District 23"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 58,
+  "fields": {
+    "name": "District 22"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 59,
+  "fields": {
+    "name": "District 20"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 60,
+  "fields": {
+    "name": "District 19"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 61,
+  "fields": {
+    "name": "District 18"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 62,
+  "fields": {
+    "name": "District 17"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 63,
+  "fields": {
+    "name": "District 16"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 64,
+  "fields": {
+    "name": "District 15"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 65,
+  "fields": {
+    "name": "District 14"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 66,
+  "fields": {
+    "name": "District 13"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 67,
+  "fields": {
+    "name": "District 12"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 68,
+  "fields": {
+    "name": "District 11"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 69,
+  "fields": {
+    "name": "District 10"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 70,
+  "fields": {
+    "name": "District 9"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 71,
+  "fields": {
+    "name": "District 8"
+  }
+},
+{
+  "model": "asset_dashboard.senatedistrict",
+  "pk": 72,
+  "fields": {
+    "name": "District 7"
+  }
+},
+{
+  "model": "asset_dashboard.commissionerdistrict",
+  "pk": 30,
+  "fields": {
+    "name": "District 17"
+  }
+},
+{
+  "model": "asset_dashboard.commissionerdistrict",
+  "pk": 31,
+  "fields": {
+    "name": "District 16"
+  }
+},
+{
+  "model": "asset_dashboard.commissionerdistrict",
+  "pk": 32,
+  "fields": {
+    "name": "District 15"
+  }
+},
+{
+  "model": "asset_dashboard.commissionerdistrict",
+  "pk": 33,
+  "fields": {
+    "name": "District 14"
+  }
+},
+{
+  "model": "asset_dashboard.commissionerdistrict",
+  "pk": 34,
+  "fields": {
+    "name": "District 13"
+  }
+},
+{
+  "model": "asset_dashboard.commissionerdistrict",
+  "pk": 35,
+  "fields": {
+    "name": "District 12"
+  }
+},
+{
+  "model": "asset_dashboard.commissionerdistrict",
+  "pk": 36,
+  "fields": {
+    "name": "District 11"
+  }
+},
+{
+  "model": "asset_dashboard.commissionerdistrict",
+  "pk": 37,
+  "fields": {
+    "name": "District 10"
+  }
+},
+{
+  "model": "asset_dashboard.commissionerdistrict",
+  "pk": 38,
+  "fields": {
+    "name": "District 9"
+  }
+},
+{
+  "model": "asset_dashboard.commissionerdistrict",
+  "pk": 39,
+  "fields": {
+    "name": "District 8"
+  }
+},
+{
+  "model": "asset_dashboard.commissionerdistrict",
+  "pk": 40,
+  "fields": {
+    "name": "District 7"
+  }
+},
+{
+  "model": "asset_dashboard.zone",
+  "pk": 19,
+  "fields": {
+    "name": "North"
+  }
+},
+{
+  "model": "asset_dashboard.zone",
+  "pk": 20,
+  "fields": {
+    "name": "Northwest"
+  }
+},
+{
+  "model": "asset_dashboard.zone",
+  "pk": 21,
+  "fields": {
+    "name": "Central"
+  }
+},
+{
+  "model": "asset_dashboard.zone",
+  "pk": 22,
+  "fields": {
+    "name": "South"
+  }
+},
+{
+  "model": "asset_dashboard.zone",
+  "pk": 23,
+  "fields": {
+    "name": "Southwest"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 1,
+  "fields": {
+    "name": "Can add log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "add_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 2,
+  "fields": {
+    "name": "Can change log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "change_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 3,
+  "fields": {
+    "name": "Can delete log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "delete_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 4,
+  "fields": {
+    "name": "Can view log entry",
+    "content_type": [
+      "admin",
+      "logentry"
+    ],
+    "codename": "view_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 5,
+  "fields": {
+    "name": "Can add permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "add_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 6,
+  "fields": {
+    "name": "Can change permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "change_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 7,
+  "fields": {
+    "name": "Can delete permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "delete_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 8,
+  "fields": {
+    "name": "Can view permission",
+    "content_type": [
+      "auth",
+      "permission"
+    ],
+    "codename": "view_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 9,
+  "fields": {
+    "name": "Can add group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "add_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 10,
+  "fields": {
+    "name": "Can change group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "change_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 11,
+  "fields": {
+    "name": "Can delete group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "delete_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 12,
+  "fields": {
+    "name": "Can view group",
+    "content_type": [
+      "auth",
+      "group"
+    ],
+    "codename": "view_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 13,
+  "fields": {
+    "name": "Can add user",
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "codename": "add_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 14,
+  "fields": {
+    "name": "Can change user",
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "codename": "change_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 15,
+  "fields": {
+    "name": "Can delete user",
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "codename": "delete_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 16,
+  "fields": {
+    "name": "Can view user",
+    "content_type": [
+      "auth",
+      "user"
+    ],
+    "codename": "view_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 17,
+  "fields": {
+    "name": "Can add content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "add_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 18,
+  "fields": {
+    "name": "Can change content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "change_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 19,
+  "fields": {
+    "name": "Can delete content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "delete_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 20,
+  "fields": {
+    "name": "Can view content type",
+    "content_type": [
+      "contenttypes",
+      "contenttype"
+    ],
+    "codename": "view_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 21,
+  "fields": {
+    "name": "Can add session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "add_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 22,
+  "fields": {
+    "name": "Can change session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "change_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 23,
+  "fields": {
+    "name": "Can delete session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "delete_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 24,
+  "fields": {
+    "name": "Can view session",
+    "content_type": [
+      "sessions",
+      "session"
+    ],
+    "codename": "view_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 25,
+  "fields": {
+    "name": "Can add dummy project",
+    "content_type": [
+      "asset_dashboard",
+      "dummyproject"
+    ],
+    "codename": "add_dummyproject"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 26,
+  "fields": {
+    "name": "Can change dummy project",
+    "content_type": [
+      "asset_dashboard",
+      "dummyproject"
+    ],
+    "codename": "change_dummyproject"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 27,
+  "fields": {
+    "name": "Can delete dummy project",
+    "content_type": [
+      "asset_dashboard",
+      "dummyproject"
+    ],
+    "codename": "delete_dummyproject"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 28,
+  "fields": {
+    "name": "Can view dummy project",
+    "content_type": [
+      "asset_dashboard",
+      "dummyproject"
+    ],
+    "codename": "view_dummyproject"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 29,
+  "fields": {
+    "name": "Can add commissioner district",
+    "content_type": [
+      "asset_dashboard",
+      "commissionerdistrict"
+    ],
+    "codename": "add_commissionerdistrict"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 30,
+  "fields": {
+    "name": "Can change commissioner district",
+    "content_type": [
+      "asset_dashboard",
+      "commissionerdistrict"
+    ],
+    "codename": "change_commissionerdistrict"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 31,
+  "fields": {
+    "name": "Can delete commissioner district",
+    "content_type": [
+      "asset_dashboard",
+      "commissionerdistrict"
+    ],
+    "codename": "delete_commissionerdistrict"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 32,
+  "fields": {
+    "name": "Can view commissioner district",
+    "content_type": [
+      "asset_dashboard",
+      "commissionerdistrict"
+    ],
+    "codename": "view_commissionerdistrict"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 33,
+  "fields": {
+    "name": "Can add house district",
+    "content_type": [
+      "asset_dashboard",
+      "housedistrict"
+    ],
+    "codename": "add_housedistrict"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 34,
+  "fields": {
+    "name": "Can change house district",
+    "content_type": [
+      "asset_dashboard",
+      "housedistrict"
+    ],
+    "codename": "change_housedistrict"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 35,
+  "fields": {
+    "name": "Can delete house district",
+    "content_type": [
+      "asset_dashboard",
+      "housedistrict"
+    ],
+    "codename": "delete_housedistrict"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 36,
+  "fields": {
+    "name": "Can view house district",
+    "content_type": [
+      "asset_dashboard",
+      "housedistrict"
+    ],
+    "codename": "view_housedistrict"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 37,
+  "fields": {
+    "name": "Can add plan",
+    "content_type": [
+      "asset_dashboard",
+      "plan"
+    ],
+    "codename": "add_plan"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 38,
+  "fields": {
+    "name": "Can change plan",
+    "content_type": [
+      "asset_dashboard",
+      "plan"
+    ],
+    "codename": "change_plan"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 39,
+  "fields": {
+    "name": "Can delete plan",
+    "content_type": [
+      "asset_dashboard",
+      "plan"
+    ],
+    "codename": "delete_plan"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 40,
+  "fields": {
+    "name": "Can view plan",
+    "content_type": [
+      "asset_dashboard",
+      "plan"
+    ],
+    "codename": "view_plan"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 41,
+  "fields": {
+    "name": "Can add project",
+    "content_type": [
+      "asset_dashboard",
+      "project"
+    ],
+    "codename": "add_project"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 42,
+  "fields": {
+    "name": "Can change project",
+    "content_type": [
+      "asset_dashboard",
+      "project"
+    ],
+    "codename": "change_project"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 43,
+  "fields": {
+    "name": "Can delete project",
+    "content_type": [
+      "asset_dashboard",
+      "project"
+    ],
+    "codename": "delete_project"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 44,
+  "fields": {
+    "name": "Can view project",
+    "content_type": [
+      "asset_dashboard",
+      "project"
+    ],
+    "codename": "view_project"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 45,
+  "fields": {
+    "name": "Can add project category",
+    "content_type": [
+      "asset_dashboard",
+      "projectcategory"
+    ],
+    "codename": "add_projectcategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 46,
+  "fields": {
+    "name": "Can change project category",
+    "content_type": [
+      "asset_dashboard",
+      "projectcategory"
+    ],
+    "codename": "change_projectcategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 47,
+  "fields": {
+    "name": "Can delete project category",
+    "content_type": [
+      "asset_dashboard",
+      "projectcategory"
+    ],
+    "codename": "delete_projectcategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 48,
+  "fields": {
+    "name": "Can view project category",
+    "content_type": [
+      "asset_dashboard",
+      "projectcategory"
+    ],
+    "codename": "view_projectcategory"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 49,
+  "fields": {
+    "name": "Can add score weights",
+    "content_type": [
+      "asset_dashboard",
+      "scoreweights"
+    ],
+    "codename": "add_scoreweights"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 50,
+  "fields": {
+    "name": "Can change score weights",
+    "content_type": [
+      "asset_dashboard",
+      "scoreweights"
+    ],
+    "codename": "change_scoreweights"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 51,
+  "fields": {
+    "name": "Can delete score weights",
+    "content_type": [
+      "asset_dashboard",
+      "scoreweights"
+    ],
+    "codename": "delete_scoreweights"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 52,
+  "fields": {
+    "name": "Can view score weights",
+    "content_type": [
+      "asset_dashboard",
+      "scoreweights"
+    ],
+    "codename": "view_scoreweights"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 53,
+  "fields": {
+    "name": "Can add section",
+    "content_type": [
+      "asset_dashboard",
+      "section"
+    ],
+    "codename": "add_section"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 54,
+  "fields": {
+    "name": "Can change section",
+    "content_type": [
+      "asset_dashboard",
+      "section"
+    ],
+    "codename": "change_section"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 55,
+  "fields": {
+    "name": "Can delete section",
+    "content_type": [
+      "asset_dashboard",
+      "section"
+    ],
+    "codename": "delete_section"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 56,
+  "fields": {
+    "name": "Can view section",
+    "content_type": [
+      "asset_dashboard",
+      "section"
+    ],
+    "codename": "view_section"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 57,
+  "fields": {
+    "name": "Can add senate district",
+    "content_type": [
+      "asset_dashboard",
+      "senatedistrict"
+    ],
+    "codename": "add_senatedistrict"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 58,
+  "fields": {
+    "name": "Can change senate district",
+    "content_type": [
+      "asset_dashboard",
+      "senatedistrict"
+    ],
+    "codename": "change_senatedistrict"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 59,
+  "fields": {
+    "name": "Can delete senate district",
+    "content_type": [
+      "asset_dashboard",
+      "senatedistrict"
+    ],
+    "codename": "delete_senatedistrict"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 60,
+  "fields": {
+    "name": "Can view senate district",
+    "content_type": [
+      "asset_dashboard",
+      "senatedistrict"
+    ],
+    "codename": "view_senatedistrict"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 61,
+  "fields": {
+    "name": "Can add zone",
+    "content_type": [
+      "asset_dashboard",
+      "zone"
+    ],
+    "codename": "add_zone"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 62,
+  "fields": {
+    "name": "Can change zone",
+    "content_type": [
+      "asset_dashboard",
+      "zone"
+    ],
+    "codename": "change_zone"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 63,
+  "fields": {
+    "name": "Can delete zone",
+    "content_type": [
+      "asset_dashboard",
+      "zone"
+    ],
+    "codename": "delete_zone"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 64,
+  "fields": {
+    "name": "Can view zone",
+    "content_type": [
+      "asset_dashboard",
+      "zone"
+    ],
+    "codename": "view_zone"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 65,
+  "fields": {
+    "name": "Can add staff",
+    "content_type": [
+      "asset_dashboard",
+      "staff"
+    ],
+    "codename": "add_staff"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 66,
+  "fields": {
+    "name": "Can change staff",
+    "content_type": [
+      "asset_dashboard",
+      "staff"
+    ],
+    "codename": "change_staff"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 67,
+  "fields": {
+    "name": "Can delete staff",
+    "content_type": [
+      "asset_dashboard",
+      "staff"
+    ],
+    "codename": "delete_staff"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 68,
+  "fields": {
+    "name": "Can view staff",
+    "content_type": [
+      "asset_dashboard",
+      "staff"
+    ],
+    "codename": "view_staff"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 69,
+  "fields": {
+    "name": "Can add project score",
+    "content_type": [
+      "asset_dashboard",
+      "projectscore"
+    ],
+    "codename": "add_projectscore"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 70,
+  "fields": {
+    "name": "Can change project score",
+    "content_type": [
+      "asset_dashboard",
+      "projectscore"
+    ],
+    "codename": "change_projectscore"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 71,
+  "fields": {
+    "name": "Can delete project score",
+    "content_type": [
+      "asset_dashboard",
+      "projectscore"
+    ],
+    "codename": "delete_projectscore"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 72,
+  "fields": {
+    "name": "Can view project score",
+    "content_type": [
+      "asset_dashboard",
+      "projectscore"
+    ],
+    "codename": "view_projectscore"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 73,
+  "fields": {
+    "name": "Can add project funding year",
+    "content_type": [
+      "asset_dashboard",
+      "projectfundingyear"
+    ],
+    "codename": "add_projectfundingyear"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 74,
+  "fields": {
+    "name": "Can change project funding year",
+    "content_type": [
+      "asset_dashboard",
+      "projectfundingyear"
+    ],
+    "codename": "change_projectfundingyear"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 75,
+  "fields": {
+    "name": "Can delete project funding year",
+    "content_type": [
+      "asset_dashboard",
+      "projectfundingyear"
+    ],
+    "codename": "delete_projectfundingyear"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 76,
+  "fields": {
+    "name": "Can view project funding year",
+    "content_type": [
+      "asset_dashboard",
+      "projectfundingyear"
+    ],
+    "codename": "view_projectfundingyear"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 77,
+  "fields": {
+    "name": "Can add project finances",
+    "content_type": [
+      "asset_dashboard",
+      "projectfinances"
+    ],
+    "codename": "add_projectfinances"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 78,
+  "fields": {
+    "name": "Can change project finances",
+    "content_type": [
+      "asset_dashboard",
+      "projectfinances"
+    ],
+    "codename": "change_projectfinances"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 79,
+  "fields": {
+    "name": "Can delete project finances",
+    "content_type": [
+      "asset_dashboard",
+      "projectfinances"
+    ],
+    "codename": "delete_projectfinances"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 80,
+  "fields": {
+    "name": "Can view project finances",
+    "content_type": [
+      "asset_dashboard",
+      "projectfinances"
+    ],
+    "codename": "view_projectfinances"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 81,
+  "fields": {
+    "name": "Can add asset",
+    "content_type": [
+      "asset_dashboard",
+      "asset"
+    ],
+    "codename": "add_asset"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 82,
+  "fields": {
+    "name": "Can change asset",
+    "content_type": [
+      "asset_dashboard",
+      "asset"
+    ],
+    "codename": "change_asset"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 83,
+  "fields": {
+    "name": "Can delete asset",
+    "content_type": [
+      "asset_dashboard",
+      "asset"
+    ],
+    "codename": "delete_asset"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 84,
+  "fields": {
+    "name": "Can view asset",
+    "content_type": [
+      "asset_dashboard",
+      "asset"
+    ],
+    "codename": "view_asset"
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$216000$Yocc04X2sKMe$7PgR8vZ0U+KWMMxm+JSzlv0X5CrOpkuwl30z5hht0Hk=",
+    "last_login": "2021-02-03T15:57:46.615Z",
+    "is_superuser": true,
+    "username": "smcalilly",
+    "first_name": "",
+    "last_name": "",
+    "email": "sam.mcalilly@datamade.us",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2021-01-04T22:36:32.525Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$216000$D1etxVIYj4p8$7XEgewZMwhIJ6kYCkY5iU/9h9vpAbvTnunnh/ZYeTUY=",
+    "last_login": "2021-02-03T15:39:30.305Z",
+    "is_superuser": true,
+    "username": "garretwais",
+    "first_name": "",
+    "last_name": "",
+    "email": "garret.wais@cookcountyil.gov",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2021-01-04T22:38:55.579Z",
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]

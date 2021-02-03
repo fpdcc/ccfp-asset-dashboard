@@ -64,3 +64,13 @@ Run tests with Docker Compose:
 ```
 docker-compose -f docker-compose.yml -f tests/docker-compose.yml run --rm app
 ```
+
+### Fixture data
+Dump the data:
+```
+heroku run python manage.py dumpdata --natural-foreign --indent 2 \
+-e contenttypes \
+-e sessions \
+asset_dashboard \ 
+auth > fixtures/data.json
+```
