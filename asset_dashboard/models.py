@@ -85,8 +85,18 @@ class ProjectScore(models.Model):
 
     @property
     def total_score(self):
-        '''return the total, weighted score'''
-        ...
+        # get the ProjectScore fields, excluding the id and project fields
+        score_fields = [f for f in self._meta.get_fields() if f.name != 'id' if f.name != 'project']
+        score_weights = ScoreWeights.objects.get(pk=1)
+        total_score = 0
+        
+        for field in score_fields:
+            score_field_value = field.value_from_object(self)
+            weight_field_value = field.value_from_object(score_weights)
+
+            total_score += score_field_value * weight_field_value
+
+        return total_score
 
     def add_score_to_queryset(self):
         '''we'll need to add the total scores to the queryset'''

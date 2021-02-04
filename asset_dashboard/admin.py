@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CommissionerDistrict, HouseDistrict, Plan, Project, ProjectCategory, ProjectScore, Section, SenateDistrict, Staff, Zone
+from .models import CommissionerDistrict, HouseDistrict, Plan, Project, ProjectCategory, ProjectScore, ScoreWeights, Section, SenateDistrict, Staff, Zone
 
 
 class ProjectCategoryAdmin(admin.ModelAdmin):
@@ -12,6 +12,7 @@ admin.site.register(Plan)
 admin.site.register(Project)
 admin.site.register(ProjectCategory, ProjectCategoryAdmin)
 admin.site.register(ProjectScore)
+admin.site.register(ScoreWeights)
 admin.site.register(Section)
 admin.site.register(SenateDistrict)
 admin.site.register(Staff)
