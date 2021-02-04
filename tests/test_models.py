@@ -6,6 +6,8 @@ def test_project_score_total_method(project, score_weights):
     """
     Tests the ProjectScore.total_score method
     """
+    print('test project score')
+    print(score_weights)
     
     project_score_instance = project.projectscore
     
