@@ -71,8 +71,7 @@ Dump the data:
 docker-compose run --rm app python manage.py dumpdata --natural-foreign --indent 2 \
 -e contenttypes \
 -e sessions \
-asset_dashboard \ 
-auth > fixtures/data.json
+asset_dashboard auth > asset_dashboard/fixtures/data.json
 ```
 
 Load the data:
