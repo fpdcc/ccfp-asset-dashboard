@@ -99,7 +99,7 @@ class ProjectScore(models.Model):
         return total_score
 
     def add_score_to_queryset(self):
-        ...
+        '''we'll need to add the total scores to the queryset'''
 
     def __str__(self):
         return self.project.name
