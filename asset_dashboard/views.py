@@ -10,8 +10,8 @@ from django.contrib import messages
 from django.db.models import Q
 
 
-class Home(TemplateView):
-    title = 'home'
+class CipPlannerView(TemplateView):
+    title = 'CIP Planner'
     template_name = 'asset_dashboard/index.html'
     component = 'js/pages/index.js'
 
@@ -73,7 +73,7 @@ class ProjectListJson(BaseDatatableView):
 
 
 class ProjectCreateView(CreateView):
-    template_name = 'asset_dashboard/partials/add_project_modal_form.html'
+    template_name = 'asset_dashboard/partials/forms/add_project_modal_form.html'
     form_class = ProjectForm
 
     def form_valid(self, form):

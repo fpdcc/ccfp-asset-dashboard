@@ -7,25 +7,7 @@
 
     <title>{% block title %}{% endblock %} | CCFP Asset Dashboard</title>
 
-    <meta content="Description TK" name="description" />
-    <meta content="Author TK" name="author" />
-
-    <!-- Facebook metadata -->
-    <meta property="og:site_name" content="CCFP Asset Dashboard">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Title TK">
-    <meta property="og:description" content="Description TK">
-    <meta property="og:url" content="URL TK">
-    <meta property="og:image" content="Image TK">
-
-    <!-- Twitter metadata -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:site" content="CCFP Asset Dashboard">
-    <meta name="twitter:creator" content="Creator TK">
-    <meta name="twitter:title" content="Title TK">
-    <meta name="twitter:url" content="URL TK">
-    <meta name="twitter:description" content="Description TK">
-    <meta name="twitter:image" content="Image TK">
+    <meta content="CCFP Asset Dashboard" name="Manage CCFP's projects and assets." />
 
     <!-- Override this block to add extra meta tags -->
     {% block extra_meta %}{% endblock %}
@@ -53,38 +35,21 @@
     {% block extra_css %}{% endblock %}
   </head>
 
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light pl-2 pl-md-4">
-      <div class="justify-content-left va-container">
-        {% block navbar_brand %}
-          <a class="navbar-brand" href="/projects">
-            <div id="navbar-title" class="d-inline-block">
-              <span class="d-none d-sm-inline navbar-title-text">
-                Forest Preserves of Cook County
-              </span>
-            </div>
-          </a>
-        {% endblock %}
-      </div>
-      <div class="justify-content-right">
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbar-supported-content"
-          aria-controls="navbar-supported-content"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      </div>
-      <div class="collapse navbar-collapse" id="navbar-supported-content">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'projects' %}">Home</a>
-          </li>
-        </ul>
+  <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light justify-content-between border-bottom shadow-sm bg-info">
+      
+      <a class="navbar-brand text-light" href="{% url 'projects' %}">
+        Forest Preserves of Cook County
+      </a>
+      <div class="nav-item dropdown justify-content-right">
+        <a class="nav-link dropdown-toggle text-light" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Home
+        </a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item text-primary" href="{% url 'projects' %}">Projects</a>
+          <a class="dropdown-item text-primary" href="{% url 'cip-planner' %}">CIP Planner</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item text-primary" href="{% url 'admin:index' %}">Admin</a>
       </div>
     </nav>
 
@@ -102,15 +67,6 @@
         {% block body %}{% endblock %}
       </div>
     </main>
-
-    <!-- Load Google Tag Manager for analytics (no-op until APIKEY is set) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=APIKEY"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'APIKEY');
-    </script>
 
     <!-- Load extra external scripts -->
     {% block extra_js %}{% endblock %}

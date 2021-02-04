@@ -1,0 +1,45 @@
+<!-- Modal Form -->
+<div class="modal fade" id="projectForm" tabindex="-1" aria-labelledby="projectFormLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h1 class="modal-title text-light" id="projectFormLabel">Add Project</h1>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <form action="{% url 'add-project' %}" method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+              <label class="form-label" for="id_name">Name</label>
+              {{ form.name }}
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label" for="id_description">Description</label>
+              {{ form.description }}
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="id_section_owner">Section</label>
+              {{ form.section_owner }}
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="id_category">Category</label>
+              {{ form.category }}
+            </div>
+
+            <div class="d-flex justify-content-end">
+              <input type="submit" value="Add Project" class="btn btn-primary">
+            </div>
+            
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
