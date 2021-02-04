@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from djmoney.models.fields import MoneyField
 from django.contrib.gis.db import models
+from django.db.models.query import QuerySet
 
 
 class Section(models.Model):
@@ -61,6 +62,13 @@ class Project(models.Model):
         return self.name
 
 
+# class ProjectScoreQuerySet(QuerySet):
+#         def total_weighted_score(self):
+#             return self.total_score
+            
+# class ProjectScoreManager(models.Manager):
+#     _queryset_class = ProjectScoreQuerySet
+
 class ProjectScore(models.Model):
 
     project = models.OneToOneField(Project, on_delete=models.CASCADE)
@@ -82,6 +90,8 @@ class ProjectScore(models.Model):
     social_equity_score = models.IntegerField(default=1,
                                               validators=[MinValueValidator(1),
                                                           MaxValueValidator(5)])
+    
+    # objects = ProjectScoreManager()
 
     @property
     def total_score(self):
@@ -99,7 +109,6 @@ class ProjectScore(models.Model):
         return total_score
 
     def add_score_to_queryset(self):
-        '''we'll need to add the total scores to the queryset'''
         ...
 
     def __str__(self):

@@ -47,9 +47,15 @@
         </div>
 
         <div class="col-4 m-4">
-            <table >
+            <table class="mb-3">
                 {{ score_form }}
+                
             </table>
+
+            <div class="d-flex justify-content-around lead">
+                <strong>Weighted Score Total:</strong>
+                <p class="text-center">{{ total_score|floatformat:2 }}</p>
+            </div>
         </div>
     </div>
 
