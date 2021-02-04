@@ -87,7 +87,7 @@ class ProjectScore(models.Model):
     def total_score(self):
         # get the ProjectScore fields, excluding the id and project fields
         score_fields = [f for f in self._meta.get_fields() if f.name != 'id' if f.name != 'project']
-        score_weights = ScoreWeights.objects.get(pk=1)
+        score_weights = ScoreWeights.objects.all()[0]
         total_score = 0
 
         for field in score_fields:
