@@ -4,7 +4,7 @@ import ProjectsTable from './components/ProjectsTable'
 import PortfolioTable from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
 import SearchInput from './components/FilterComponent'
-import { CSVLink, CSVDownload } from 'react-csv'
+import { CSVLink } from 'react-csv'
 
 class PortfolioPlanner extends React.Component {
   constructor(props) {
@@ -38,6 +38,7 @@ class PortfolioPlanner extends React.Component {
         budget: project.fields.budget || 0,
         name: project.fields.name,
         zone: project.fields.zone || 'N/A',
+        linkTo: `/projects/${project.pk}`,
         ...project
       }
     })
@@ -143,15 +144,17 @@ class PortfolioPlanner extends React.Component {
           </div>
           <div className="col">
             <PortfolioTotals totals={this.state.portfolio.totals} />
-            <div class="d-flex justify-content-center mt-3">
-              <CSVLink 
-                data={this.state.portfolio.projects}
-                filename={`CIP-${this.getDate()}`}
-                className='btn btn-primary mx-auto'
-                >
-                  Export as CSV
-              </CSVLink>
-            </div>
+            { this.state.portfolio.projects.length > 0 
+             ? <div className="d-flex justify-content-center mt-3">
+                  <CSVLink 
+                    data={this.state.portfolio.projects}
+                    filename={`CIP-${this.getDate()}`}
+                    className='btn btn-primary mx-auto'
+                    >
+                      Export as CSV
+                  </CSVLink>
+                </div> 
+            : null }
           </div>
         </div>
       </div>
