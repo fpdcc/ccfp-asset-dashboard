@@ -64,22 +64,22 @@ class Project(models.Model):
 class ProjectScore(models.Model):
 
     project = models.OneToOneField(Project, on_delete=models.CASCADE)
-    core_mission_score = models.IntegerField(default=1,
+    core_mission_score = models.IntegerField(null=True, blank=True,
                                              validators=[MinValueValidator(1),
                                                          MaxValueValidator(5)])
-    operations_impact_score = models.IntegerField(default=1,
+    operations_impact_score = models.IntegerField(null=True, blank=True,
                                                   validators=[MinValueValidator(1),
                                                               MaxValueValidator(5)])
-    sustainability_score = models.IntegerField(default=1,
+    sustainability_score = models.IntegerField(null=True, blank=True,
                                                validators=[MinValueValidator(1),
                                                            MaxValueValidator(5)])
-    ease_score = models.IntegerField(default=1,
+    ease_score = models.IntegerField(null=True, blank=True,
                                      validators=[MinValueValidator(1),
                                                  MaxValueValidator(5)])
-    geographic_distance_score = models.IntegerField(default=1,
+    geographic_distance_score = models.IntegerField(null=True, blank=True,
                                                     validators=[MinValueValidator(1),
                                                                 MaxValueValidator(5)])
-    social_equity_score = models.IntegerField(default=1,
+    social_equity_score = models.IntegerField(null=True, blank=True,
                                               validators=[MinValueValidator(1),
                                                           MaxValueValidator(5)])
 
@@ -91,7 +91,7 @@ class ProjectScore(models.Model):
         total_score = 0
 
         for field in score_fields:
-            score_field_value = field.value_from_object(self)
+            score_field_value = field.value_from_object(self) if field.value_from_object(self) else 0
             weight_field_value = field.value_from_object(score_weights)
 
             total_score += score_field_value * weight_field_value
