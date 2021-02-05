@@ -98,7 +98,7 @@ class ProjectScore(models.Model):
             weight_field_value = field.value_from_object(score_weights)
 
             # return a total of 0 if any of the fields are missing a score
-            if score_field_value == None:
+            if score_field_value is None:
                 total_score = 0
                 return total_score
 
