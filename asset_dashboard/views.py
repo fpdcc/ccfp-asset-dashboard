@@ -12,8 +12,8 @@ from django.db.models import Q
 
 class CipPlannerView(TemplateView):
     title = 'CIP Planner'
-    template_name = 'asset_dashboard/index.html'
-    component = 'js/pages/index.js'
+    template_name = 'asset_dashboard/planner.html'
+    component = 'js/planner.js'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
