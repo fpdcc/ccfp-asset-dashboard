@@ -4,6 +4,7 @@ import ProjectsTable from './components/ProjectsTable'
 import PortfolioTable from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
 import SearchInput from './components/FilterComponent'
+import { CSVLink, CSVDownload } from 'react-csv'
 
 class PortfolioPlanner extends React.Component {
   constructor(props) {
@@ -32,11 +33,12 @@ class PortfolioPlanner extends React.Component {
     const projects = JSON.parse(props.projects).map((project) => {
       return {
         key: project.pk,
-        projectDescription: project.fields.project_description || 'No description available.',
+        projectDescription: project.fields.description || 'No description available.',
         score: project.fields.score || 'N/A',
         budget: project.fields.budget || 0,
         name: project.fields.name,
-        zone: project.fields.zone,
+        zone: project.fields.zone || 'N/A',
+        ...project
       }
     })
 
@@ -108,6 +110,11 @@ class PortfolioPlanner extends React.Component {
     })
   }
 
+  getDate() {
+    const date = new Date(new Date().toString().split('GMT')[0]+' UTC').toISOString().split('T')[0]
+    return date
+  }
+
   render() {
     // This filters on every re-render, so that this.state.remainingProjects can be the source of truth.
     // Could also chain filtering here for other things (like "department" from the wireframe).
@@ -124,18 +131,27 @@ class PortfolioPlanner extends React.Component {
               <SearchInput
                 onFilter={this.searchProjects} 
                 filterText={this.state.filterText} />
-              <div>
+              <>
                 <PortfolioTable 
                   portfolioProjects={this.state.portfolio.projects} 
                   onRemoveFromPortfolio={this.removeProjectFromPortfolio} />
                 <ProjectsTable 
                   allProjects={filteredRows}
                   onAddToPortfolio={this.addProjectToPortfolio} />
-              </div>
+              </>
             </div>
           </div>
           <div className="col">
             <PortfolioTotals totals={this.state.portfolio.totals} />
+            <div class="d-flex justify-content-center mt-3">
+              <CSVLink 
+                data={this.state.portfolio.projects}
+                filename={`CIP-${this.getDate()}`}
+                className='btn btn-primary mx-auto'
+                >
+                  Export as CSV
+              </CSVLink>
+            </div>
           </div>
         </div>
       </div>

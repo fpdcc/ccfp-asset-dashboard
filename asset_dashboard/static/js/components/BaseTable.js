@@ -15,7 +15,11 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
         Cell: selector ? selector : <span></span>
       },
       {
-        Header: 'Project Description',
+        Header: 'Name',
+        accessor: 'name'
+      },
+      {
+        Header: 'Description',
         accessor: 'projectDescription', 
       },
       {
