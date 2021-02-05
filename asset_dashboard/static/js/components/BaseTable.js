@@ -80,6 +80,7 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
               {headerGroup.headers.map(column => (
                 <th {...column.getHeaderProps(column.getSortByToggleProps())} className='text-center'>
                   {column.render('Header')}
+                  {column.isSorted ? <span><i className="fas fa-sort ml-1 text-secondary"></i></span> : ''}
                 </th>
               ))}
             </tr>
