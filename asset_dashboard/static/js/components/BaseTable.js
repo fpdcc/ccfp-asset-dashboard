@@ -16,20 +16,19 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
         disableSortBy: true
       },
       {
-        Header: <span>Name<i className="fas fa-sort ml-1 text-secondary"></i></span>,
-        accessor: 'name',
-        sortType: 'basic'
+        Header: 'Name',
+        accessor: 'name'
       },
       {
-        Header: <span>Description<i className="fas fa-sort ml-1 text-secondary"></i></span>,
+        Header: 'Description',
         accessor: 'projectDescription', 
       },
       {
-        Header: <span>Total Score<i className="fas fa-sort ml-1 text-secondary"></i></span>,
+        Header: 'Total Score',
         accessor: 'score',
       },
       {
-        Header: <span>Total Budget<i className="fas fa-sort ml-1 text-secondary"></i></span>,
+        Header: 'Total Budget',
         accessor: 'budget',
       },
       {
