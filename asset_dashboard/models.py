@@ -59,19 +59,19 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 
 class ScoreField(models.IntegerField):
+    def __init__(self, *args, **kwargs):
 
-     def __init__(self, *args, **kwargs):
-         
-          if 'null' not in kwargs:
-              kwargs['null'] = True
-          if 'blank' not in kwargs:
-               kwargs['blank'] = True
-          if 'validators' not in kwargs:
-               kwargs['validators'] = [MinValueValidator(1), MaxValueValidator(5)]
-          super().__init__(*args, **kwargs)
+        if 'null' not in kwargs:
+            kwargs['null'] = True
+        if 'blank' not in kwargs:
+            kwargs['blank'] = True
+        if 'validators' not in kwargs:
+            kwargs['validators'] = [MinValueValidator(1), MaxValueValidator(5)]
+
+        super().__init__(*args, **kwargs)
 
 
 class ProjectScore(models.Model):
@@ -87,8 +87,8 @@ class ProjectScore(models.Model):
     @property
     def total_score(self):
         score_fields = [f for f in self._meta.get_fields() if type(f) == ScoreField]
-        
-        # there should be one, and only one row in score weights. 
+
+        # there should be one, and only one row in score weights.
         # this tuple unpacking will throw an error if that's not so
         score_weights, = ScoreWeights.objects.all()
         total_score = 0
