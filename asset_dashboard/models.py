@@ -59,19 +59,19 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 
 class ScoreField(models.IntegerField):
+    def __init__(self, *args, **kwargs):
 
-     def __init__(self, *args, **kwargs):
-         
-          if 'null' not in kwargs:
-              kwargs['null'] = True
-          if 'blank' not in kwargs:
-               kwargs['blank'] = True
-          if 'validators' not in kwargs:
-               kwargs['validators'] = [MinValueValidator(1), MaxValueValidator(5)]
-          super().__init__(*args, **kwargs)
+        if 'null' not in kwargs:
+            kwargs['null'] = True
+        if 'blank' not in kwargs:
+            kwargs['blank'] = True
+        if 'validators' not in kwargs:
+            kwargs['validators'] = [MinValueValidator(1), MaxValueValidator(5)]
+
+        super().__init__(*args, **kwargs)
 
 
 class ScoreField(models.IntegerField):
