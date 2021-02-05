@@ -9,6 +9,10 @@ def test_project_score_total_method(project, score_weights):
     
     project_score_instance = project.projectscore
     
+    # at this point in the code, the ProjectScore fields have no data.
+    # so, test that total_score = 0 if there is a missing score
+    assert project_score_instance.total_score == 0
+    
     updated_scores = {
         'core_mission_score': 3,
         'operations_impact_score': 1,
