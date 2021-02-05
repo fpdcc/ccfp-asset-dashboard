@@ -39,7 +39,7 @@ class PortfolioPlanner extends React.Component {
         name: project.fields.name,
         zone: project.fields.zone || 'N/A',
         linkTo: `/projects/${project.pk}`,
-        ...project
+        ...project.fields
       }
     })
 

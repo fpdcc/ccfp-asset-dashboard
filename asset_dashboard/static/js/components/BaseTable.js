@@ -1,5 +1,5 @@
 import React from 'react'
-import { useTable, usePagination } from 'react-table'
+import { useTable, usePagination, useSortBy } from 'react-table'
 
 const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, selector }) => {
   const data = React.useMemo(
@@ -12,27 +12,30 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
       {
         Header: () => null,
         id: 'selector',
-        Cell: selector ? selector : <span></span>
+        Cell: selector ? selector : <span></span>,
+        disableSortBy: true
       },
       {
-        Header: 'Name',
-        accessor: 'name'
+        Header: <span>Name<i className="fas fa-sort ml-1 text-secondary"></i></span>,
+        accessor: 'name',
+        sortType: 'basic'
       },
       {
-        Header: 'Description',
+        Header: <span>Description<i className="fas fa-sort ml-1 text-secondary"></i></span>,
         accessor: 'projectDescription', 
       },
       {
-        Header: 'Total Score',
+        Header: <span>Total Score<i className="fas fa-sort ml-1 text-secondary"></i></span>,
         accessor: 'score',
       },
       {
-        Header: 'Total Budget',
+        Header: <span>Total Budget<i className="fas fa-sort ml-1 text-secondary"></i></span>,
         accessor: 'budget',
       },
       {
         Header: () => null,
         accessor: 'linkTo',
+        disableSortBy: true,
         Cell: props => <a href={props.value} 
                           onClick={e => e.stopPropagation()}
                           className='btn btn-success btn-sm'>View Project</a>
@@ -55,8 +58,18 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
     previousPage,
     setPageSize,
     state: { pageIndex, pageSize },
-  } = useTable({ columns, data, initialState: { pageIndex: 0, pageSize: 15 }}, usePagination)
+  } = useTable({ columns, data, initialState: { pageIndex: 0, pageSize: 15 }}, useSortBy, usePagination)
 
+  const renderSorting = (column) => {
+    if (column.isSorted) {
+      return (
+        <i className="fas fa-sort ml-1 text-secondary"></i>
+      )
+    } else {
+      return null
+    }
+    
+  }
   return (
     <div className="table-responsive">
       <table {...getTableProps()} className='table table-striped table-hover'>
@@ -65,8 +78,9 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
           {headerGroups.map(headerGroup => (
             <tr {...headerGroup.getHeaderGroupProps()} className='col'>
               {headerGroup.headers.map(column => (
-                <th {...column.getHeaderProps()} className='text-center'>
+                <th {...column.getHeaderProps(column.getSortByToggleProps())} className='text-center'>
                   {column.render('Header')}
+                  {column.isSorted ? (column.isSortedDesc ? <i className="fas fa-sort-up ml-1 text-secondary"></i> : <i className="fas fa-sort-down ml-1 text-secondary"></i> ) : ''}
                 </th>
               ))}
             </tr>
