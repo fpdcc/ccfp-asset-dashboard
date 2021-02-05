@@ -34,17 +34,12 @@ def test_project_score_total_method(project, score_weights):
     
     assert project_score_instance.total_score == total_score
     
-<<<<<<< HEAD
     # test that an error will raise if there is no score weight
-=======
-    # test that an error will raise if there are no score weights
->>>>>>> safer - handles an error in case a ScoreWeight doesn't exist
     with pytest.raises(ValueError):
         ScoreWeights.objects.all().delete()
     
         # this should raise an error
         project_score_instance.total_score
-<<<<<<< HEAD
     
     # test that an error will raise if there is more than one score weight
     with pytest.raises(ValueError):
@@ -62,5 +57,3 @@ def test_project_score_total_method(project, score_weights):
     
         # this should raise an error
         project_score_instance.total_score
-=======
->>>>>>> safer - handles an error in case a ScoreWeight doesn't exist
