@@ -87,7 +87,10 @@ class ProjectScore(models.Model):
     @property
     def total_score(self):
         score_fields = [f for f in self._meta.get_fields() if type(f) == ScoreField]
-        score_weights = ScoreWeights.objects.all()[0]
+        
+        # there should be one, and only one row in score weights. 
+        # this tuple unpacking will throw an error if that's not so
+        score_weights, = ScoreWeights.objects.all()
         total_score = 0
 
         for field in score_fields:
