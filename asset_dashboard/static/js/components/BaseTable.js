@@ -16,19 +16,20 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
         disableSortBy: true
       },
       {
-        Header: 'Name',
-        accessor: 'name'
+        Header: <span>Name<i className="fas fa-sort ml-1 text-secondary"></i></span>,
+        accessor: 'name',
+        sortType: 'basic'
       },
       {
         Header: 'Description',
         accessor: 'description', 
       },
       {
-        Header: 'Total Score',
+        Header: <span>Total Score<i className="fas fa-sort ml-1 text-secondary"></i></span>,
         accessor: 'score',
       },
       {
-        Header: 'Total Budget',
+        Header: <span>Total Budget<i className="fas fa-sort ml-1 text-secondary"></i></span>,
         accessor: 'budget',
       },
       {
@@ -63,6 +64,16 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
     state: { pageIndex, pageSize },
   } = useTable({ columns, data, initialState: { pageIndex: 0, pageSize: 15 }}, useSortBy, usePagination)
 
+  const renderSorting = (column) => {
+    if (column.isSorted) {
+      return (
+        <i className="fas fa-sort ml-1 text-secondary"></i>
+      )
+    } else {
+      return null
+    }
+    
+  }
   return (
     <div className="table-responsive">
       <table {...getTableProps()} className='table table-striped table-hover'>
