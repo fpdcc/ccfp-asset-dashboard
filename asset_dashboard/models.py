@@ -59,34 +59,34 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class ScoreField(models.IntegerField):
+
+     def __init__(self, *args, **kwargs):
+         
+          if 'null' not in kwargs:
+              kwargs['null'] = True
+          if 'blank' not in kwargs:
+               kwargs['blank'] = True
+          if 'validators' not in kwargs:
+               kwargs['validators'] = [MinValueValidator(1), MaxValueValidator(5)]
+          super().__init__(*args, **kwargs)
 
 
 class ProjectScore(models.Model):
 
     project = models.OneToOneField(Project, on_delete=models.CASCADE)
-    core_mission_score = models.IntegerField(null=True, blank=True,
-                                             validators=[MinValueValidator(1),
-                                                         MaxValueValidator(5)])
-    operations_impact_score = models.IntegerField(null=True, blank=True,
-                                                  validators=[MinValueValidator(1),
-                                                              MaxValueValidator(5)])
-    sustainability_score = models.IntegerField(null=True, blank=True,
-                                               validators=[MinValueValidator(1),
-                                                           MaxValueValidator(5)])
-    ease_score = models.IntegerField(null=True, blank=True,
-                                     validators=[MinValueValidator(1),
-                                                 MaxValueValidator(5)])
-    geographic_distance_score = models.IntegerField(null=True, blank=True,
-                                                    validators=[MinValueValidator(1),
-                                                                MaxValueValidator(5)])
-    social_equity_score = models.IntegerField(null=True, blank=True,
-                                              validators=[MinValueValidator(1),
-                                                          MaxValueValidator(5)])
+    core_mission_score = ScoreField()
+    operations_impact_score = ScoreField()
+    sustainability_score = ScoreField()
+    ease_score = ScoreField()
+    geographic_distance_score = ScoreField()
+    social_equity_score = ScoreField()
 
     @property
     def total_score(self):
-        # get the ProjectScore fields, excluding the id and project fields
-        score_fields = [f for f in self._meta.get_fields() if f.name != 'id' if f.name != 'project']
+        score_fields = [f for f in self._meta.get_fields() if type(f) == ScoreField]
         score_weights = ScoreWeights.objects.all()[0]
         total_score = 0
 
