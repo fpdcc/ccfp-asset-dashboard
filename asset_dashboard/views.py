@@ -22,7 +22,6 @@ class CipPlannerView(TemplateView):
         
         projects = Project.objects.all()
         projects = projects.select_related('section_owner', 'category', 'projectfinances', 'projectscore')
-        print(f'projects: {projects}')
         
         projects_list = []
         for prj in list(projects):
@@ -34,7 +33,7 @@ class CipPlannerView(TemplateView):
                 'category': prj.category.name,
                 'total_budget': prj.projectfinances.budget.amount,
                 'total_score': prj.projectscore.total_score,
-                # 'phase': prj.phase, add when the other branch is merged
+                # 'phase': prj.phase, todo: add when the other branch is merged
                 'zones': list(prj.zones.all().values('name')),
                 'house_districts': list(prj.house_districts.all().values('name')),
                 'senate_districts': list(prj.senate_districts.all().values('name')),
@@ -42,9 +41,6 @@ class CipPlannerView(TemplateView):
             }
             projects_list.append(project)
 
-
-        #projects_json = serializers.serialize('json', projects_list)
-        #print(f'projects_json: {projects_json}')
         context['props'] = {'projects': json.dumps(projects_list, cls=DjangoJSONEncoder)}
         return context
 
