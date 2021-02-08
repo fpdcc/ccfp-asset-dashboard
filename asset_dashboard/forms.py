@@ -25,7 +25,9 @@ class ProjectForm(StyledFormMixin, ModelForm):
                   'senate_districts',
                   'house_districts',
                   'commissioner_districts',
-                  'zones']
+                  'zones',
+                  'phase',
+                  'estimated_bid_quarter']
         widgets = {
             'name': TextInput(),
         }

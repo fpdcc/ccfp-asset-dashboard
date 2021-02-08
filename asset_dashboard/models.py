@@ -56,6 +56,27 @@ class Project(models.Model):
     senate_districts = models.ManyToManyField('SenateDistrict', blank=True)
     commissioner_districts = models.ManyToManyField('CommissionerDistrict', blank=True)
     zones = models.ManyToManyField('Zone', blank=True)
+    
+    PHASE_CHOICES = [
+        ('phase_1', 'Phase 1'),
+        ('phase_2', 'Phase 2'),
+        ('phase_3_engineering', 'Phase 3 Engineering'),
+        ('phase_3_construction', 'Phase 3 Construction'),
+        ('feasibility', 'Feasibility'),
+        ('design', 'Design'),
+        ('construction', 'Construction')
+    ] 
+    
+    phase = models.TextField(choices=PHASE_CHOICES, null=True, blank=True)
+    
+    BID_QUARTER_CHOICES = [
+        ('Q1', 'Q1'),
+        ('Q2', 'Q2'),
+        ('Q3', 'Q3'),
+        ('Q4', 'Q4')
+    ]
+    
+    estimated_bid_quarter = models.TextField(choices=BID_QUARTER_CHOICES, null=True, blank=True)
 
     def __str__(self):
         return self.name
