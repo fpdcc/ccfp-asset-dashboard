@@ -56,7 +56,7 @@ class Project(models.Model):
     senate_districts = models.ManyToManyField('SenateDistrict', blank=True)
     commissioner_districts = models.ManyToManyField('CommissionerDistrict', blank=True)
     zones = models.ManyToManyField('Zone', blank=True)
-    
+
     PHASE_CHOICES = [
         ('phase_1', 'Phase 1'),
         ('phase_2', 'Phase 2'),
@@ -65,34 +65,21 @@ class Project(models.Model):
         ('feasibility', 'Feasibility'),
         ('design', 'Design'),
         ('construction', 'Construction')
-    ] 
-    
+    ]
+
     phase = models.TextField(choices=PHASE_CHOICES, null=True, blank=True)
-    
+
     BID_QUARTER_CHOICES = [
         ('Q1', 'Q1'),
         ('Q2', 'Q2'),
         ('Q3', 'Q3'),
         ('Q4', 'Q4')
     ]
-    
+
     estimated_bid_quarter = models.TextField(choices=BID_QUARTER_CHOICES, null=True, blank=True)
 
     def __str__(self):
         return self.name
-
-
-class ScoreField(models.IntegerField):
-    def __init__(self, *args, **kwargs):
-
-        if 'null' not in kwargs:
-            kwargs['null'] = True
-        if 'blank' not in kwargs:
-            kwargs['blank'] = True
-        if 'validators' not in kwargs:
-            kwargs['validators'] = [MinValueValidator(1), MaxValueValidator(5)]
-
-        super().__init__(*args, **kwargs)
 
 
 class ScoreField(models.IntegerField):

@@ -1,20 +1,20 @@
 from django.contrib import admin
-from .models import CommissionerDistrict, HouseDistrict, Plan, Project, ProjectCategory, ProjectFinances, ProjectScore, ScoreWeights, Section, SenateDistrict, Staff, Zone
+from . import models
 
 
 class ProjectCategoryAdmin(admin.ModelAdmin):
     exclude = ('name',)
 
 
-admin.site.register(CommissionerDistrict)
-admin.site.register(HouseDistrict)
-admin.site.register(Plan)
-admin.site.register(Project)
-admin.site.register(ProjectCategory, ProjectCategoryAdmin)
-admin.site.register(ProjectFinances)
-admin.site.register(ProjectScore)
-admin.site.register(ScoreWeights)
-admin.site.register(Section)
-admin.site.register(SenateDistrict)
-admin.site.register(Staff)
-admin.site.register(Zone)
+admin.site.register(models.CommissionerDistrict)
+admin.site.register(models.HouseDistrict)
+admin.site.register(models.Plan)
+admin.site.register(models.Project)
+admin.site.register(models.ProjectCategory, ProjectCategoryAdmin)
+admin.site.register(models.ProjectFinances)
+admin.site.register(models.ProjectScore)
+admin.site.register(models.ScoreWeights)
+admin.site.register(models.Section)
+admin.site.register(models.SenateDistrict)
+admin.site.register(models.Staff)
+admin.site.register(models.Zone)

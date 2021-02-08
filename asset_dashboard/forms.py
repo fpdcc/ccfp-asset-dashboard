@@ -1,4 +1,4 @@
-from django.forms import ModelForm, TextInput, NumberInput
+from django.forms import ModelForm, TextInput
 from .models import Project, ProjectFinances, ProjectScore, ProjectCategory
 
 
@@ -73,6 +73,6 @@ class ProjectFinancesForm(StyledFormMixin, ModelForm):
         fields = [
             'budget'
         ]
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

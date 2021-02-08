@@ -4,7 +4,7 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.http import HttpResponseRedirect
 from django.core import serializers
 from django.urls import reverse
-from .models import DummyProject, Project, ProjectCategory, ProjectFinances, ProjectScore, Section
+from .models import Project, ProjectCategory, ProjectFinances, ProjectScore, Section
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, ProjectFinancesForm
 from django.contrib import messages
 from django.db.models import Q
@@ -104,7 +104,7 @@ class ProjectUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         project_finances, _ = ProjectFinances.objects.get_or_create(project=self.object)
 
         if self.request.POST:
