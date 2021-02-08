@@ -40,8 +40,6 @@ class PortfolioPlanner extends React.Component {
       }
     })
 
-    console.log('projects', projects)
-
     this.setState({
       allProjects: projects,
       remainingProjects: projects
