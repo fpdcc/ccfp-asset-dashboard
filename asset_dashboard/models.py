@@ -139,7 +139,7 @@ class ProjectFinances(models.Model):
     ]
 
     project = models.OneToOneField(Project, on_delete=models.CASCADE)
-    year = models.IntegerField()
+    year = models.IntegerField(null=True, blank=True)
     bid_quarter = models.TextField()
     funded = models.TextField(choices=FUNDING_CHOICES,
                               null=True,

@@ -4,8 +4,8 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.http import HttpResponseRedirect
 from django.core import serializers
 from django.urls import reverse
-from .models import DummyProject, Project, ProjectCategory, ProjectScore, Section
-from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm
+from .models import DummyProject, Project, ProjectCategory, ProjectFinances, ProjectScore, Section
+from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, ProjectFinancesForm
 from django.contrib import messages
 from django.db.models import Q
 
@@ -104,6 +104,8 @@ class ProjectUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        project_finances, _ = ProjectFinances.objects.get_or_create(project=self.object)
 
         if self.request.POST:
             # instantiate the forms with data from the post request
@@ -111,10 +113,12 @@ class ProjectUpdateView(UpdateView):
 
             context['score_form'] = ProjectScoreForm(request_data, instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(request_data, instance=self.object.category)
+            context['finances_form'] = ProjectFinancesForm(request_data, instance=project_finances)
         else:
             context['total_score'] = ProjectScore.objects.get(project=self.object).total_score
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
+            context['finances_form'] = ProjectFinancesForm(instance=project_finances)
 
         return context
 
@@ -127,7 +131,9 @@ class ProjectUpdateView(UpdateView):
         forms = {
             'project': form,
             'score': context['score_form'],
+            'finances': context['finances_form']
         }
+
 
         for form_instance in forms:
             form_to_save = forms[form_instance]
