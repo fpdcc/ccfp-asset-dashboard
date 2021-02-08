@@ -137,7 +137,7 @@ def test_add_project_view(client, section_owner, project_category):
     
 
 @pytest.mark.django_db
-def test_project_detail_view(client, project, project_list, section_owner, districts, project_category):
+def test_project_detail_view(client, project, project_list, section_owner, districts, project_category, score_weights):
     project_detail_url = reverse('project-detail', kwargs={'pk': project.pk})
     response = client.get(project_detail_url)
     assert response.status_code == 200
