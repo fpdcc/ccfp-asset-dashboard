@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactTable from './BaseTable'
 
-const ProjectsTable = ({ allProjects, columns, onAddToPortfolio }) => {
+const ProjectsTable = ({ allProjects, columns, onAddToPortfolio, searchInput }) => {
   const onRowClick = ({ original }) => {
     return {
       onClick: e => {
@@ -11,8 +11,12 @@ const ProjectsTable = ({ allProjects, columns, onAddToPortfolio }) => {
   }
 
   return (
-    <div className="mt-4">
-      <h3>All Projects</h3>
+    <>
+      <div className="d-flex justify-content-between px-2">
+        <h3>All Projects</h3>
+        {searchInput}
+      </div>
+      
       <ReactTable
         rows={allProjects}
         columns={columns}
@@ -24,7 +28,7 @@ const ProjectsTable = ({ allProjects, columns, onAddToPortfolio }) => {
             </span>
           )
         }} />
-    </div>
+    </>
   )
 }
 

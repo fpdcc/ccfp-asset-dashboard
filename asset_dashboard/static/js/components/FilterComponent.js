@@ -20,11 +20,10 @@ const TextField = styled.input`
 const SearchInput = ({ filterText, onFilter }) => {
     return (
       <div className="mb-4">
-        <p>Search for projects by name</p>
         <TextField 
           id="search" 
           type="text" 
-          placeholder="Search" 
+          placeholder="Search for projects by name" 
           aria-label="Search Input" 
           value={filterText} 
           onChange={onFilter} />

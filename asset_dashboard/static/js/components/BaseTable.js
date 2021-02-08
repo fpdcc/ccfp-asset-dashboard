@@ -21,7 +21,7 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
       },
       {
         Header: 'Description',
-        accessor: 'projectDescription', 
+        accessor: 'description', 
       },
       {
         Header: 'Total Score',
@@ -32,10 +32,14 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
         accessor: 'budget',
       },
       {
+        Header: 'Phase',
+        accessor: 'phase'
+      },
+      {
         Header: () => null,
-        accessor: 'linkTo',
+        accessor: 'key',
         disableSortBy: true,
-        Cell: props => <a href={props.value} 
+        Cell: props => <a href={`/projects/${props.value}`}  
                           onClick={e => e.stopPropagation()}
                           className='btn btn-success btn-sm'>View Project</a>
       }
@@ -59,16 +63,6 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
     state: { pageIndex, pageSize },
   } = useTable({ columns, data, initialState: { pageIndex: 0, pageSize: 15 }}, useSortBy, usePagination)
 
-  const renderSorting = (column) => {
-    if (column.isSorted) {
-      return (
-        <i className="fas fa-sort ml-1 text-secondary"></i>
-      )
-    } else {
-      return null
-    }
-    
-  }
   return (
     <div className="table-responsive">
       <table {...getTableProps()} className='table table-striped table-hover'>
@@ -106,57 +100,52 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
       </table>
       
       
-      <div className="container">
-        <nav aria-label="Pagination for all potential projects." className="row">
-          <span className="col">
-            Viewing {pageIndex + 1} of {pageOptions.length}
-          </span>
+      <div className="row container" aria-label="Pagination for all potential projects.">
+          <div className="d-flex col justify-content-start align-items-center ml-2">
+            <small class="text-muted">Pages {pageIndex + 1} of {pageOptions.length}</small>
+          </div>
           
-          <ul className="pagination col">
+          <ul className="pagination col d-flex justify-content-center">
             <li className="page-item">
-              <button onClick={() => gotoPage(0)} disabled={!canPreviousPage} className="btn btn-light">
+              <button onClick={() => gotoPage(0)} disabled={!canPreviousPage} className="btn btn-light btn-sm">
                 {'<<'}
               </button>
             </li>
             <li className="page-item ml-2">
-              <button onClick={() => previousPage()} disabled={!canPreviousPage} className="btn btn-light">
+              <button onClick={() => previousPage()} disabled={!canPreviousPage} className="btn btn-light btn-sm">
                 {'<'}
               </button>
             </li>
             <li className="page-item ml-2">
-              <button onClick={() => nextPage()} disabled={!canNextPage} className="btn btn-light">
+              <button onClick={() => nextPage()} disabled={!canNextPage} className="btn btn-light btn-sm">
                 {'>'}
               </button>
             </li>
             <li className="page-item ml-2">
-              <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage} className="btn btn-light">
+              <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage} className="btn btn-light btn-sm">
                 {'>>'}
               </button>
             </li>
           </ul>
           
-          <div className="col w-25">
-            <ul className="pagination col">
-              Showing 
-              {[15, 30, 45].map(pSize => (
-                <li 
-                  key={pSize} 
-                  value={pSize} 
-                  className="page-item ml-2"  
+          <ul className="pagination col d-flex justify-content-end">
+            {[15, 30, 45].map(pSize => (
+              <li 
+                key={pSize} 
+                value={pSize} 
+                className="page-item ml-2"  
+                >
+                <button 
+                  onClick={e => {
+                    setPageSize(Number(pSize))
+                  }}
+                  className={`btn btn-light btn-sm ${(pSize == pageSize) ? 'active' : '' }`}
                   >
-                  <button 
-                    onClick={e => {
-                      setPageSize(Number(pSize))
-                    }}
-                    className={`btn btn-light ${(pSize == pageSize) ? 'active' : '' }`}
-                    >
-                    {pSize}
-                  </button>
-                </li>
-              ))}
-              </ul>
-          </div>
-        </nav>
+                  {pSize}
+                </button>
+              </li>
+            ))}
+          </ul>
       </div>
     </div>
   )
