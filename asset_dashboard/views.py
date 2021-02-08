@@ -87,6 +87,7 @@ class ProjectCreateView(CreateView):
 
             project = Project.objects.create(**project_data)
             ProjectScore.objects.get_or_create(project=project)
+            ProjectFinances.objects.get_or_create(project=project)
 
             messages.success(self.request, 'Project successfully created!')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
@@ -105,7 +106,7 @@ class ProjectUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        project_finances, _ = ProjectFinances.objects.get_or_create(project=self.object)
+        project_finances = ProjectFinances.objects.get(project_id=self.object.id)
 
         if self.request.POST:
             # instantiate the forms with data from the post request
