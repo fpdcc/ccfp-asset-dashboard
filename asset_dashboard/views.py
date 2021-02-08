@@ -1,3 +1,5 @@
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 from django_datatables_view.base_datatable_view import BaseDatatableView
@@ -17,8 +19,33 @@ class CipPlannerView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        projects = serializers.serialize('json', Project.objects.all())
-        context['props'] = {'projects': projects}
+        
+        projects = Project.objects.all()
+        projects = projects.select_related('section_owner', 'category', 'projectfinances', 'projectscore')
+        print(f'projects: {projects}')
+        
+        projects_list = []
+        for prj in list(projects):
+            project = {
+                'pk': prj.id,
+                'name': prj.name,
+                'description': prj.description,
+                'section': prj.section_owner.name,
+                'category': prj.category.name,
+                'total_budget': prj.projectfinances.budget.amount,
+                'total_score': prj.projectscore.total_score,
+                # 'phase': prj.phase, add when the other branch is merged
+                'zones': list(prj.zones.all().values('name')),
+                'house_districts': list(prj.house_districts.all().values('name')),
+                'senate_districts': list(prj.senate_districts.all().values('name')),
+                'commissioner_districts': list(prj.commissioner_districts.all().values('name'))
+            }
+            projects_list.append(project)
+
+
+        #projects_json = serializers.serialize('json', projects_list)
+        #print(f'projects_json: {projects_json}')
+        context['props'] = {'projects': json.dumps(projects_list, cls=DjangoJSONEncoder)}
         return context
 
 

@@ -29,17 +29,31 @@ class PortfolioPlanner extends React.Component {
     this.searchProjects = this.searchProjects.bind(this)
   }
 
+  createRegionName(regions) {
+    // returns a CSV string of names for the different regions
+    const names = regions.map(({ name }) => {
+      return name
+    }).join(',')
+
+    return names
+  }
+
   componentDidMount() {
+    // prepare the data so it can be used in the table and exported as CSV
     const projects = JSON.parse(props.projects).map((project) => {
       return {
-        key: project.pk,
-        projectDescription: project.fields.description || 'No description available.',
-        score: project.fields.score || 'N/A',
-        budget: project.fields.budget || 0,
-        name: project.fields.name,
-        zone: project.fields.zone || 'N/A',
-        linkTo: `/projects/${project.pk}`,
-        ...project.fields
+        name: project.name,
+        description: project.description || 'No description available.',
+        section: project.section,
+        category: project.category,
+        budget: parseFloat(project.total_budget) || 0,
+        score: project.total_score || 'N/A',
+        phase: project.phase || 'N/A',
+        zones: this.createRegionName(project.zones) || 'N/A',
+        house_districts: this.createRegionName(project.house_districts),
+        senate_districts: this.createRegionName(project.senate_districts),
+        commissioner_districts: this.createRegionName(project.commissioner_districts),
+        key: project.pk
       }
     })
 
@@ -120,27 +134,25 @@ class PortfolioPlanner extends React.Component {
     // This filters on every re-render, so that this.state.remainingProjects can be the source of truth.
     // Could also chain filtering here for other things (like "department" from the wireframe).
     const filteredRows = this.state.remainingProjects && this.state.remainingProjects.filter(project => {
-      return project.projectDescription.toLowerCase().includes(this.state.filterText.toLowerCase())
+      return project.description.toLowerCase().includes(this.state.filterText.toLowerCase())
     })
 
     return (
-      <div className="container">
+      <div className="m-5">
+        <h1>Build a 5-Year Plan</h1>
         <div className="row">
-          <div className="container col card border-2 border-secondary border-3 mt-5 col-9">
-            <h1 className="pt-5 pl-3">Build a 5-Year Plan</h1>
-            <div className="w-100">
-              <SearchInput
-                onFilter={this.searchProjects} 
-                filterText={this.state.filterText} />
+          <div className="container col card shadow-sm mt-5 ml-3 col-9">
               <>
                 <PortfolioTable 
                   portfolioProjects={this.state.portfolio.projects} 
                   onRemoveFromPortfolio={this.removeProjectFromPortfolio} />
                 <ProjectsTable 
                   allProjects={filteredRows}
-                  onAddToPortfolio={this.addProjectToPortfolio} />
+                  onAddToPortfolio={this.addProjectToPortfolio}
+                  searchInput={<SearchInput
+                    onFilter={this.searchProjects} 
+                    filterText={this.state.filterText} />} />
               </>
-            </div>
           </div>
           <div className="col">
             <PortfolioTotals totals={this.state.portfolio.totals} />
