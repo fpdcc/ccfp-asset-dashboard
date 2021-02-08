@@ -73,9 +73,6 @@ class ProjectFinancesForm(StyledFormMixin, ModelForm):
         fields = [
             'budget'
         ]
-        widgets = {
-            'budget': NumberInput()
-        }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

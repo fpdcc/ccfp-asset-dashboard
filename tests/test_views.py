@@ -1,6 +1,6 @@
 import pytest
 from django.urls import reverse
-from asset_dashboard.models import Project, ProjectScore, ProjectCategory
+from asset_dashboard.models import Project, ProjectFinances, ProjectScore, ProjectCategory
 from django.forms.models import model_to_dict
 import json
 from django.utils.html import escape
@@ -165,7 +165,10 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
         'ease_score': 4,
         'geographic_distance_score': 1,
         'social_equity_score': 3,
-        'phase_completion': 'on',
+        'phase': 'phase_1',
+        'estimated_bid_quarter': 'Q1',
+        'budget_0': 1000.00,
+        'budget_1': 'USD',
         'senate_districts': [districts[0][0].id],
         'house_districts': [districts[1][0].id],
         'commissioner_districts': [districts[2][0].id],
@@ -182,9 +185,14 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
     # Project model
     assert updated_project[0].name == valid_form_data['name']
     assert updated_project[0].description == valid_form_data['description']
-    assert updated_project[0].phase_completion == True
+    assert updated_project[0].phase == valid_form_data['phase']
+    assert updated_project[0].estimated_bid_quarter == valid_form_data['estimated_bid_quarter']
     assert updated_project[0].category_id == project_category.id
     assert updated_project[0].section_owner_id == section_owner.id
+    
+    # ProjectFinances model
+    project_finances = ProjectFinances.objects.get(project=project)
+    assert project_finances.budget.amount == valid_form_data['budget_0']
     
     # ProjectScore model, related to Project
     assert updated_project[0].projectscore.core_mission_score == valid_form_data['core_mission_score']

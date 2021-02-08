@@ -134,7 +134,6 @@ class ProjectUpdateView(UpdateView):
             'finances': context['finances_form']
         }
 
-
         for form_instance in forms:
             form_to_save = forms[form_instance]
 
