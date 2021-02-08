@@ -4,8 +4,8 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.http import HttpResponseRedirect
 from django.core import serializers
 from django.urls import reverse
-from .models import DummyProject, Project, ProjectCategory, ProjectFinances, ProjectScore, Section
-from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, ProjectFinancesForm
+from .models import Project, ProjectCategory, ProjectScore, Section
+from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm
 from django.contrib import messages
 from django.db.models import Q
 
@@ -17,7 +17,8 @@ class CipPlannerView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        projects = serializers.serialize('json', DummyProject.objects.all())
+        projects = serializers.serialize('json', Project.objects.select_related('projectfinances').all())
+        print(f'projects: {projects}')
         context['props'] = {'projects': projects}
         return context
 
