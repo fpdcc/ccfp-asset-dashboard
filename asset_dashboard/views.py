@@ -17,12 +17,7 @@ class CipPlannerView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-<<<<<<< Updated upstream
         projects = serializers.serialize('json', DummyProject.objects.all())
-=======
-        projects = serializers.serialize('json', Project.objects.select_related('projectfinances').all())
-        print(f'projects: {projects}')
->>>>>>> Stashed changes
         context['props'] = {'projects': projects}
         return context
 
