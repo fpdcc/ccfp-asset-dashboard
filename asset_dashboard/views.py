@@ -4,7 +4,6 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.http import HttpResponseRedirect
-from django.core import serializers
 from django.urls import reverse
 from .models import Project, ProjectCategory, ProjectFinances, ProjectScore, Section
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, ProjectFinancesForm
@@ -19,10 +18,10 @@ class CipPlannerView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        
+
         projects = Project.objects.all()
         projects = projects.select_related('section_owner', 'category', 'projectfinances', 'projectscore')
-        
+
         projects_list = []
         for prj in list(projects):
             project = {
