@@ -1,5 +1,5 @@
 from django.forms import ModelForm, TextInput
-from .models import Project, ProjectScore, ProjectCategory
+from .models import Project, ProjectFinances, ProjectScore, ProjectCategory
 
 
 class StyledFormMixin(object):
@@ -25,7 +25,9 @@ class ProjectForm(StyledFormMixin, ModelForm):
                   'senate_districts',
                   'house_districts',
                   'commissioner_districts',
-                  'zones']
+                  'zones',
+                  'phase',
+                  'estimated_bid_quarter']
         widgets = {
             'name': TextInput(),
         }
@@ -63,3 +65,14 @@ class ProjectCategoryForm(StyledFormMixin, ModelForm):
             'category',
             'subcategory'
         ]
+
+
+class ProjectFinancesForm(StyledFormMixin, ModelForm):
+    class Meta:
+        model = ProjectFinances
+        fields = [
+            'budget'
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

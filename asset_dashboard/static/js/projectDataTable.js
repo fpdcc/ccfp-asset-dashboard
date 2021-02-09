@@ -80,7 +80,7 @@ $(document).ready(function() {
     // listen to click event for redirecting to a project detail page
     $('#project-list-table tbody').on('click', 'tr', function () {
         const id = $(this).data('project-id')
-        window.location = id ? id + '/projects/' : ''
+        window.location = id ? '/projects/' + id : ''
     })
 
     // callback function for the search text input

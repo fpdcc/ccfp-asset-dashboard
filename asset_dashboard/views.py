@@ -4,8 +4,8 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.http import HttpResponseRedirect
 from django.core import serializers
 from django.urls import reverse
-from .models import DummyProject, Project, ProjectCategory, ProjectScore, Section
-from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm
+from .models import Project, ProjectCategory, ProjectFinances, ProjectScore, Section
+from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, ProjectFinancesForm
 from django.contrib import messages
 from django.db.models import Q
 
@@ -17,7 +17,7 @@ class CipPlannerView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        projects = serializers.serialize('json', DummyProject.objects.all())
+        projects = serializers.serialize('json', Project.objects.all())
         context['props'] = {'projects': projects}
         return context
 
@@ -87,6 +87,7 @@ class ProjectCreateView(CreateView):
 
             project = Project.objects.create(**project_data)
             ProjectScore.objects.get_or_create(project=project)
+            ProjectFinances.objects.get_or_create(project=project)
 
             messages.success(self.request, 'Project successfully created!')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
@@ -105,16 +106,20 @@ class ProjectUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        project_finances, _ = ProjectFinances.objects.get_or_create(project_id=self.object.id)
+
         if self.request.POST:
             # instantiate the forms with data from the post request
             request_data = self.request.POST
 
             context['score_form'] = ProjectScoreForm(request_data, instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(request_data, instance=self.object.category)
+            context['finances_form'] = ProjectFinancesForm(request_data, instance=project_finances)
         else:
             context['total_score'] = ProjectScore.objects.get(project=self.object).total_score
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
+            context['finances_form'] = ProjectFinancesForm(instance=project_finances)
 
         return context
 
@@ -127,6 +132,7 @@ class ProjectUpdateView(UpdateView):
         forms = {
             'project': form,
             'score': context['score_form'],
+            'finances': context['finances_form']
         }
 
         for form_instance in forms:

@@ -39,9 +39,21 @@
                     {{ form.zones }}
                 </div>
 
-                <div class="col d-flex justify-content-around m-4">
-                    <strong>Phase Completed?</strong>
-                    {{ form.phase_completion }}
+                <div class="col m-4">
+                    <strong>Total Budget</strong>
+                    <div class="mt-3">
+                        {{ finances_form.budget }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col m-4">
+                    <strong>Phase</strong>
+                        {{ form.phase }}
+                </div>
+                <div class="col m-4">
+                    <strong>Estimated Bid Quarter</strong>
+                    {{ form.estimated_bid_quarter }}
                 </div>
             </div>
         </div>
