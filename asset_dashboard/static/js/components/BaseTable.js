@@ -63,16 +63,6 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
     state: { pageIndex, pageSize },
   } = useTable({ columns, data, initialState: { pageIndex: 0, pageSize: 15 }}, useSortBy, usePagination)
 
-  const renderSorting = (column) => {
-    if (column.isSorted) {
-      return (
-        <i className="fas fa-sort ml-1 text-secondary"></i>
-      )
-    } else {
-      return null
-    }
-    
-  }
   return (
     <div className="table-responsive">
       <table {...getTableProps()} className='table table-striped table-hover'>
