@@ -106,7 +106,7 @@ class ProjectUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        project_finances = ProjectFinances.objects.get(project_id=self.object.id)
+        project_finances, _ = ProjectFinances.objects.get_or_create(project_id=self.object.id)
 
         if self.request.POST:
             # instantiate the forms with data from the post request
