@@ -112,7 +112,7 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
       
       <div className="row container" aria-label="Pagination for all potential projects.">
           <div className="d-flex col justify-content-start align-items-center ml-2">
-            <small class="text-muted">Pages {pageIndex + 1} of {pageOptions.length}</small>
+            <small className="text-muted">Pages {pageIndex + 1} of {pageOptions.length}</small>
           </div>
           
           <ul className="pagination col d-flex justify-content-center">

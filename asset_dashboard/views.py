@@ -33,7 +33,7 @@ class CipPlannerView(TemplateView):
                 'category': prj.category.name,
                 'total_budget': prj.projectfinances.budget.amount,
                 'total_score': prj.projectscore.total_score,
-                # 'phase': prj.phase, todo: add when the other branch is merged
+                'phase': prj.phase,
                 'zones': list(prj.zones.all().values('name')),
                 'house_districts': list(prj.house_districts.all().values('name')),
                 'senate_districts': list(prj.senate_districts.all().values('name')),

@@ -25,9 +25,11 @@ const PortfolioTotals = ({ totals }) => {
           <ul className="list-unstyled">
             {
               totals.projectZones.length > 0 ?
-                totals.projectZones.map((zone, index) => { 
-                  return <li key={index}>{zone || 'N/A'}</li> })
-                  : 'N/A'
+                totals.projectZones.map((zones) => {
+                  return zones.map((zone, index) => {
+                    return <li key={index}>{zone || 'N/A'}</li> 
+                  })
+                }): 'N/A'
             }
           </ul>
         </div>
