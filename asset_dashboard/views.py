@@ -23,7 +23,7 @@ class CipPlannerView(TemplateView):
         projects = projects.select_related('section_owner', 'category', 'projectfinances', 'projectscore')
 
         projects_list = []
-        for prj in list(projects):
+        for prj in projects:
             project = {
                 'pk': prj.id,
                 'name': prj.name,
