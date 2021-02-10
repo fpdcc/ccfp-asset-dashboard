@@ -16,12 +16,12 @@
     <link rel="shortcut icon" type="image/ico" href="{% static 'images/favicon-16x16.png' %}" sizes="16x16" />
     <link rel="shortcut icon" type="image/ico" href="{% static 'images/favicon-32x32.png' %}" sizes="32x32" />
 
-    <script src="{% static 'js/jquery.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-    <script src="{% static 'js/fontawesome.min.js' %}"></script>
-    <script src="{% static 'js/solid.min.js' %}"></script>
-    <script src="{% static 'js/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'js/dataTables.bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/lib/jquery.min.js' %}"></script>
+    <script src="{% static 'js/lib/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/lib/fontawesome.min.js' %}"></script>
+    <script src="{% static 'js/lib/solid.min.js' %}"></script>
+    <script src="{% static 'js/lib/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/lib/dataTables.bootstrap.min.js' %}"></script>
 
     <!-- Bootstrap core CSS -->
     <link href="{% static 'css/bootstrap.custom.css' %}" rel="stylesheet">
@@ -63,7 +63,7 @@
     {% endif %}
 
     <main id="main-body" role="main">
-      <div class="mt-3 mt-lg-5 mb-5 container">
+      <div class="mt-3 mt-lg-5 mb-5">
         {% block body %}{% endblock %}
       </div>
     </main>

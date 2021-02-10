@@ -1,8 +1,9 @@
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.http import HttpResponseRedirect
-from django.core import serializers
 from django.urls import reverse
 from .models import Project, ProjectCategory, ProjectFinances, ProjectScore, Section
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, ProjectFinancesForm
@@ -12,13 +13,34 @@ from django.db.models import Q
 
 class CipPlannerView(TemplateView):
     title = 'CIP Planner'
-    template_name = 'asset_dashboard/index.html'
-    component = 'js/pages/index.js'
+    template_name = 'asset_dashboard/planner.html'
+    component = 'js/planner.js'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        projects = serializers.serialize('json', Project.objects.all())
-        context['props'] = {'projects': projects}
+
+        projects = Project.objects.all()
+        projects = projects.select_related('section_owner', 'category', 'projectfinances', 'projectscore')
+
+        projects_list = []
+        for prj in projects:
+            project = {
+                'pk': prj.id,
+                'name': prj.name,
+                'description': prj.description,
+                'section': prj.section_owner.name,
+                'category': prj.category.name,
+                'total_budget': prj.projectfinances.budget.amount,
+                'total_score': prj.projectscore.total_score,
+                'phase': prj.phase,
+                'zones': list(prj.zones.all().values('name')),
+                'house_districts': list(prj.house_districts.all().values('name')),
+                'senate_districts': list(prj.senate_districts.all().values('name')),
+                'commissioner_districts': list(prj.commissioner_districts.all().values('name'))
+            }
+            projects_list.append(project)
+
+        context['props'] = {'projects': json.dumps(projects_list, cls=DjangoJSONEncoder)}
         return context
 
 
