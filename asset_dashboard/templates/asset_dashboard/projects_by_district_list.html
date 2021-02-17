@@ -32,10 +32,12 @@
                   <td>{{ project.category }}</td>
 
                   <!-- TODO: show the list of district names. 
-                    i need advice on how to do this. each district returns a queryset.
-                    somehow, a project's list of districts need to be combined for display
-                    in the table. it could look like: Senate 17, Senate 18 or 17, 18.
-                    should i parse out each district in the template or create a model method to do this? -->
+                    i need advice on how to do this. each district returns a queryset, so
+                    a project's list of districts need to be combined for display
+                    in the table. it could look like either: 
+                        Senate 17, Senate 18
+                        17, 18
+                    to do this, should i parse out each district in the template or create a model method? -->
                   <td>senate</td>
                   <td>house</td>
                   <td>commissioner</td>
