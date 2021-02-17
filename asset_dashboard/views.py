@@ -1,5 +1,4 @@
 import json
-from typing import List
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView
