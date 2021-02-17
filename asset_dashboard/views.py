@@ -1,4 +1,5 @@
 import json
+from typing import List
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView
@@ -167,3 +168,9 @@ class ProjectUpdateView(UpdateView):
 
         messages.success(self.request, 'Project successfully saved!')
         return super().form_valid(form)
+
+
+class ProjectsByDistrictListView(ListView):
+    template_name = 'asset_dashboard/projects_by_district_list.html'
+    queryset = Project.objects.all()
+    context_object_name = 'projects'
