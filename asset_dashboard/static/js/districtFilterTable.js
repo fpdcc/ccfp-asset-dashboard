@@ -6,24 +6,24 @@ $(document).ready(function() {
             {
                 name: 'name',
                 orderable: true,
-                searchable: true,
+                searchable: false,
                 targets: [0]
             },
             {
                 name: 'description',
                 orderable: true,
-                searchable: true,
+                searchable: false,
                 targets: [1],
             },
             {
                 name: 'senate_districts',
-                orderable: true,
+                orderable: false,
                 searchable: false,
                 targets: [2]
             },
             {
                 name: 'house_districts',
-                orderable: true,
+                orderable: false,
                 searchable: false,
                 targets: [3]
             },
