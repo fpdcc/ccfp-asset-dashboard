@@ -22,7 +22,7 @@ from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreate
 
 urlpatterns = [
     path('', ProjectListView.as_view(), name='projects'),
-    path('projects/json', ProjectListJson.as_view(), name='project-list-json'),
+    path('projects/json/', ProjectListJson.as_view(), name='project-list-json'),
     path('projects/add-project/', ProjectCreateView.as_view(), name='add-project'),
     path('projects/<int:pk>/', ProjectUpdateView.as_view(), name='project-detail'),
     path('projects/districts/', ProjectsByDistrictListView.as_view(), name='projects-by-detail'),

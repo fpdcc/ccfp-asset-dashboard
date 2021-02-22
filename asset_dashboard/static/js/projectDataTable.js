@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var table = $('#project-list-table').DataTable({
         serverSide: true,
-        ajax: 'projects/json',
+        ajax: 'projects/json/',
         columns: [
             {
                 name: 'name',
