@@ -232,7 +232,7 @@ class ProjectsByDistrictListJson(BaseDatatableView):
     def format_district_names(self, districts):
         """Parses a queryset of districts into something consumable by the table library."""
 
-        # create a string w/ names separated by commma
+        # create a string with names separated by commma
         district_names = ', '.join([d.name for d in districts.all()])
 
         # only return the district's number and comma/space between numbers
