@@ -55,7 +55,6 @@ $(document).ready(function() {
                 let columnHeaderName = column.header().textContent
 
                 const idSelectorName = columnHeaderName.toLowerCase().split(' ')[0]
-                console.log('idSelectorName', idSelectorName)
 
                 const idSelectorsForFiltering = [
                     'senate',
@@ -103,5 +102,5 @@ $(document).ready(function() {
     $('div.dataTables_length').addClass('pt-3');
     $('div.dataTables_length label').addClass('d-flex flex-row');
     $('div.dataTables_paginate').addClass('pt-1');
-    $('div.dataTables_info').addClass('text-center')
+    $('div.dataTables_info').addClass('text-center');
   });

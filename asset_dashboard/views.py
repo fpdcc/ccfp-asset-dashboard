@@ -175,14 +175,14 @@ class ProjectsByDistrictListView(ListView):
     template_name = 'asset_dashboard/projects_by_district_list.html'
     queryset = Project.objects.all()
     context_object_name = 'projects'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         context['senate_districts'] = SenateDistrict.objects.all()
         context['house_districts'] = HouseDistrict.objects.all()
         context['commissioner_districts'] = CommissionerDistrict.objects.all()
-        
+
         return context
 
 
@@ -202,7 +202,7 @@ class ProjectsByDistrictListJson(BaseDatatableView):
 
         if house_district:
             qs = qs.filter(house_districts__name=house_district)
-            
+
         if commissioner_district:
             qs = qs.filter(commissioner_districts__name=commissioner_district)
 
@@ -212,7 +212,7 @@ class ProjectsByDistrictListJson(BaseDatatableView):
         # prepare list with output column data
         # queryset is already paginated here
         json_data = []
-        
+
         for item in qs:
             senate_districts = self.format_district_names(item.senate_districts)
             house_districts = self.format_district_names(item.house_districts)
@@ -226,16 +226,14 @@ class ProjectsByDistrictListJson(BaseDatatableView):
                 escape(commissioner_districts),
                 item.id
             ])
-            
+
         return json_data
-    
-    
+
     def format_district_names(self, districts):
         """Parses a queryset of districts into something consumable by the table library."""
-        
+
         # create a string w/ names separated by commma
         district_names = ', '.join([d.name for d in districts.all()])
-        
+
         # only return the district's number and comma/space between numbers
         return re.sub('[^0-9, ]', '', district_names)
-        

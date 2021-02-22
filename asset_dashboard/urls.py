@@ -16,7 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreateView, ProjectUpdateView, ProjectListJson, ProjectsByDistrictListView, ProjectsByDistrictListJson
+from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreateView, \
+                                    ProjectUpdateView, ProjectListJson, \
+                                    ProjectsByDistrictListView, ProjectsByDistrictListJson
 
 urlpatterns = [
     path('', ProjectListView.as_view(), name='projects'),
