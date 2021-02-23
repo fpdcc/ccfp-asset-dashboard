@@ -8,44 +8,63 @@
       <div class="card mt-4 p-4 col-12 col-lg-10 mx-auto shadow-sm">
         <div class="card-body table-responsive">
           <div class="row text-left">
-            <h1 class="col-8">Projects by District</h1>
+            <h3 class="col-8">View Projects by District</h3>
           </div>
 
-          <!-- TODO: add filtering and searching, with javascript -->
+          <!-- these elements filter the table, with the help of javascript -->
+          <div class="row d-flex justify-content-around mt-4">
+            <select class="form-control col-lg-3 col-md-12 m-1" id="senate-select">
+              <option value="" disabled selected >
+                Filter by Senate District
+              </option>
+              {% for district in senate_districts %}
+                <option>
+                  {{ district.name }}
+                </option>
+              {% endfor %}
+            </select>
 
-          <table class="table table-hover table-border py-4 dataTable no-footer" id="project-by-district-list-table">
+              <select class="form-control col-lg-3 col-md-12 m-1" id="house-select">
+                <option value="" disabled selected >
+                  Filter by House District
+                </option>
+                {% for district in house_districts %}
+                  <option>
+                    {{ district.name }}
+                  </option>
+                {% endfor %}
+              </select>
+
+              <select class="form-control col-lg-3 col-md-12 m-1" id="commissioner-select">
+                <option value="" disabled selected >
+                  Filter by Commissioner District
+                </option>
+                {% for district in commissioner_districts %}
+                  <option>
+                    {{ district.name }}
+                  </option>
+                {% endfor %}
+              </select>
+          </div>
+
+          <table class="table table-hover table-border py-4 dataTable no-footer" id="project-by-district-list">
             <thead>
               <tr>
                 <th>Name</th>
                 <th>Description</th>
-                <th>Category</th>
-                <th>Senate District</th>
-                <th>House District</th>
-                <th>Commissioner District</th>
+                <th>Senate Districts</th>
+                <th>House Districts</th>
+                <th>Commissioner Districts</th>
               </tr>
             </thead>
             <tbody>
-              {% for project in projects %}
-                <tr>
-                  <td>{{ project.name }}</td>
-                  <td>{{ project.description }}</td>
-                  <td>{{ project.category }}</td>
-
-                  <!-- TODO: show the list of district names. 
-                    i need advice on how to do this. each district returns a queryset, so
-                    a project's list of districts need to be combined for display
-                    in the table. it could look like either: 
-                        Senate 17, Senate 18
-                        17, 18
-                    to do this, should i parse out each district in the template or create a model method? -->
-                  <td>senate</td>
-                  <td>house</td>
-                  <td>commissioner</td>
-                </tr>
-              {% endfor %}
             </tbody>
           </table>
         </div>
       </div>
   </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script type="text/javascript" src="{% static 'js/districtFilterTable.js' %}"></script>
 {% endblock %}

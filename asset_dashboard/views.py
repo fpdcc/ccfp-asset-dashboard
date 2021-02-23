@@ -1,14 +1,16 @@
 import json
+import re
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from .models import Project, ProjectCategory, ProjectFinances, ProjectScore, Section
+from .models import HouseDistrict, Project, ProjectCategory, ProjectFinances, ProjectScore, Section, SenateDistrict, CommissionerDistrict
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, ProjectFinancesForm
 from django.contrib import messages
 from django.db.models import Q
+from django.utils.html import escape
 
 
 class CipPlannerView(TemplateView):
@@ -173,3 +175,65 @@ class ProjectsByDistrictListView(ListView):
     template_name = 'asset_dashboard/projects_by_district_list.html'
     queryset = Project.objects.all()
     context_object_name = 'projects'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['senate_districts'] = SenateDistrict.objects.all()
+        context['house_districts'] = HouseDistrict.objects.all()
+        context['commissioner_districts'] = CommissionerDistrict.objects.all()
+
+        return context
+
+
+class ProjectsByDistrictListJson(BaseDatatableView):
+    model = Project
+    columns = ['name', 'description', 'senate_districts', 'house_districts', 'commissioner_districts', 'id']
+    order_columns = ['name', 'description']
+    max_display_length = 500
+
+    def filter_queryset(self, qs):
+        senate_district = self.request.GET.get('columns[2][search][value]', None)
+        house_district = self.request.GET.get('columns[3][search][value]', None)
+        commissioner_district = self.request.GET.get('columns[4][search][value]', None)
+
+        if senate_district:
+            qs = qs.filter(senate_districts__name=senate_district)
+
+        if house_district:
+            qs = qs.filter(house_districts__name=house_district)
+
+        if commissioner_district:
+            qs = qs.filter(commissioner_districts__name=commissioner_district)
+
+        return qs
+
+    def prepare_results(self, qs):
+        # prepare list with output column data
+        # queryset is already paginated here
+        json_data = []
+
+        for item in qs:
+            senate_districts = self.format_district_names(item.senate_districts)
+            house_districts = self.format_district_names(item.house_districts)
+            commissioner_districts = self.format_district_names(item.commissioner_districts)
+
+            json_data.append([
+                escape(item.name),
+                escape(item.description),
+                escape(senate_districts),
+                escape(house_districts),
+                escape(commissioner_districts),
+                item.id
+            ])
+
+        return json_data
+
+    def format_district_names(self, districts):
+        """Parses a queryset of districts into something consumable by the table library."""
+
+        # create a string with names separated by commma
+        district_names = ', '.join([d.name for d in districts.all()])
+
+        # only return the district's number and comma/space between numbers
+        return re.sub('[^0-9, ]', '', district_names)
