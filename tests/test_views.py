@@ -30,7 +30,7 @@ def test_project_list_json(client, project_list):
     #
     # a request to filter based on "section" will have a query string like this:
     #
-    #   http://localhost:8000/projects/json?draw=2&columns[2][data]=2&columns[2][name]=section_owner
+    #   http://localhost:8000/projects/json/?draw=2&columns[2][data]=2&columns[2][name]=section_owner
     #                           &columns[2][searchable]=true&columns[2][orderable]=true
     #                           &columns[2][search][value]=Architecture&columns[2][search][regex]=true
     #
@@ -54,7 +54,7 @@ def test_project_list_json(client, project_list):
     # iterate through the project_list to get each project's section owner
     for project in project_list:
         section = project.section_owner
-        url_with_section_params = f'/projects/json?draw=2&columns[2][data]=2&columns[2][name]=section_owner \
+        url_with_section_params = f'/projects/json/?draw=2&columns[2][data]=2&columns[2][name]=section_owner \
                             &columns[2][searchable]=true&columns[2][orderable]=true \
                             &columns[2][search][value]={section.name}&columns[2][search][regex]=true'
 
@@ -69,7 +69,7 @@ def test_project_list_json(client, project_list):
 
     # test the filtering for a project category
     for category in ProjectCategory.objects.all():
-        url_with_category_filter = f'/projects/json?draw=3&columns[3][data]=3&columns[3][name]=category \
+        url_with_category_filter = f'/projects/json/?draw=3&columns[3][data]=3&columns[3][name]=category \
                                     &columns[3][searchable]=false&columns[3][orderable]=true \
                                     &columns[3][search][value]={category}&columns[3][search][regex]=true'
 
@@ -83,7 +83,7 @@ def test_project_list_json(client, project_list):
                         
     # test that the response returns no data if data doesn't exist (effectively filtering out everything)
     nonexistent_section_name = 'nonexistent section'
-    url_params_for_nonexistent_section = f'/projects/json?draw=2&columns[2][data]=2&columns[2][name]=section_owner \
+    url_params_for_nonexistent_section = f'/projects/json/?draw=2&columns[2][data]=2&columns[2][name]=section_owner \
                         &columns[2][searchable]=true&columns[2][orderable]=true \
                         &columns[2][search][value]={nonexistent_section_name}&columns[2][search][regex]=true'
                         
