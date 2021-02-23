@@ -27,7 +27,7 @@ urlpatterns = [
     path('projects/<int:pk>/', ProjectUpdateView.as_view(), name='project-detail'),
     path('projects/districts/', ProjectsByDistrictListView.as_view(), name='projects-by-detail'),
     path('projects/districts/json/', ProjectsByDistrictListJson.as_view(), name='projects-district-json'),
-    path('cip-planner', CipPlannerView.as_view(), name='cip-planner'),
+    path('cip-planner/', CipPlannerView.as_view(), name='cip-planner'),
     path('admin/', admin.site.urls),
 ]
 
