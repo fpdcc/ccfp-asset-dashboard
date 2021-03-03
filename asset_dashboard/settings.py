@@ -164,6 +164,13 @@ COMPRESS_PRECOMPILERS = (
 
 COMPRESS_OUTPUT_DIR = 'compressor'
 
+# Defaults to the opposite of DEBUG. 
+# DEBUG == False in production.
+COMPRESS_ENABLED = True
+
+# Enable offline compression in production only
+COMPRESS_OFFLINE = not DEBUG
+
 # Enforce SSL in production
 if DEBUG is False:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
