@@ -165,15 +165,13 @@ COMPRESS_PRECOMPILERS = (
 
 COMPRESS_OUTPUT_DIR = 'compressor'
 
-# Defaults to the opposite of DEBUG. 
-# DEBUG == False in production.
 COMPRESS_ENABLED = True
 
 # Enable offline compression in production only
 COMPRESS_OFFLINE = not DEBUG
 
 # Make sure Django compressor can generate static paths
-COMPRESS_OFFLINE_CONTEXT = { 'static': static }
+COMPRESS_OFFLINE_CONTEXT = {'static': static}
 
 # Enforce SSL in production
 if DEBUG is False:
