@@ -9,6 +9,7 @@ django-compressor
 sentry-sdk
 django-money
 django-datatables-view
+django-widget-tweaks==1.4.8
 
 # Testing requirements
 pytest
