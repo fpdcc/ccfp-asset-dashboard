@@ -13,6 +13,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.utils.html import escape
 
+
 class CipPlannerView(LoginRequiredMixin, TemplateView):
     title = 'CIP Planner'
     template_name = 'asset_dashboard/planner.html'
