@@ -1,12 +1,14 @@
 import pytest
 from django.urls import reverse
-from asset_dashboard.models import Project, ProjectFinances, ProjectScore, ProjectCategory
+from asset_dashboard.models import Project, ProjectFinances, ProjectScore, ProjectCategory, User
 from django.forms.models import model_to_dict
 import json
 from django.utils.html import escape
 
 @pytest.mark.django_db
-def test_project_list_view(client, project_list):
+def test_project_list_view(client, project_list, user):
+    client.force_login(user=user)
+    
     url = reverse('projects')
     response = client.get(url)
     assert response.status_code == 200
@@ -15,7 +17,9 @@ def test_project_list_view(client, project_list):
 
 
 @pytest.mark.django_db
-def test_project_list_json(client, project_list):
+def test_project_list_json(client, project_list, user):
+    client.force_login(user=user)
+    
     url = reverse('project-list-json')
     response = client.get(url)
     
@@ -94,7 +98,9 @@ def test_project_list_json(client, project_list):
 
 
 @pytest.mark.django_db
-def test_add_project_view(client, section_owner, project_category):
+def test_add_project_view(client, section_owner, project_category, user):
+    client.force_login(user=user)
+    
     url = reverse('add-project')
 
     valid_form_data = {
@@ -137,7 +143,9 @@ def test_add_project_view(client, section_owner, project_category):
     
 
 @pytest.mark.django_db
-def test_project_detail_view(client, project, project_list, section_owner, districts, project_category, score_weights):
+def test_project_detail_view(client, project, project_list, section_owner, districts, project_category, score_weights, user):
+    client.force_login(user=user)
+    
     project_detail_url = reverse('project-detail', kwargs={'pk': project.pk})
     response = client.get(project_detail_url)
     assert response.status_code == 200
@@ -234,3 +242,46 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
     bad_url = reverse('project-detail', kwargs={'pk': 1234556873459})
     bad_response = client.get(bad_url)
     assert bad_response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_unauthenticated_user_cannot_access_site(client):
+    get_urls = [
+        'projects',
+        'project-list-json',
+        'projects-by-district',
+        'projects-district-json',
+        'cip-planner'
+    ]
+    
+    # request these urls
+    for url in get_urls:
+        response = client.get(reverse(url))
+        
+        # should be redirected to the login page
+        assert response.status_code == 302
+        assert reverse('login') in response.url
+
+    # test that an unauthenticated user can't create a new project
+    response = client.post(reverse('add-project'), data={'name': 'bad', 'description': 'data'})
+    assert response.status_code == 302
+    assert reverse('login') in response.url
+    
+    # test that an unauthenticated user can't update a project
+    response = client.post(reverse('project-detail', kwargs={'pk': 1}), data={'name': 'data', 'description': 'no good'})
+    assert response.status_code == 302
+    assert reverse('login') in response.url
+
+
+@pytest.mark.django_db
+def test_login(client):
+    user = {
+        'username': 'test',
+        'password': 'testtest'
+    }
+    
+    test_user = User.objects.create_user(username=user['username'], password=user['password'])
+    
+    response = client.post(reverse('login'), user)
+    assert response.status_code == 302
+    assert reverse('projects') in response.url 

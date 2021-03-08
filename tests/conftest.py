@@ -75,3 +75,7 @@ def score_weights():
                                               geographic_distance_score=0.5, social_equity_score=0.4,
                                               obligation_weight=0.5, phase_completion=0.5, 
                                               accessibility=0.5, leverage_resource=0.5)
+
+@pytest.fixture
+def user():
+    return models.User.objects.create_user(username='sylvie', password='lightnin')
