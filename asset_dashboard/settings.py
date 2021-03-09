@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'compressor',
     'djmoney',
-    'asset_dashboard'
+    'asset_dashboard',
+    'widget_tweaks'
 ]
 
 MIDDLEWARE = [
@@ -193,3 +194,7 @@ LOGGING = {
         },
     },
 }
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+LOGIN_URL = '/accounts/login/'

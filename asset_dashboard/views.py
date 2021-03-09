@@ -6,6 +6,7 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import HouseDistrict, Project, ProjectCategory, ProjectFinances, ProjectScore, Section, SenateDistrict, CommissionerDistrict
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, ProjectFinancesForm
 from django.contrib import messages
@@ -13,7 +14,7 @@ from django.db.models import Q
 from django.utils.html import escape
 
 
-class CipPlannerView(TemplateView):
+class CipPlannerView(LoginRequiredMixin, TemplateView):
     title = 'CIP Planner'
     template_name = 'asset_dashboard/planner.html'
     component = 'js/planner.js'
@@ -54,7 +55,7 @@ def server_error(request, template_name='asset_dashboard/500.html'):
     return render(request, template_name, status=500)
 
 
-class ProjectListView(ListView):
+class ProjectListView(LoginRequiredMixin, ListView):
     template_name = 'asset_dashboard/projects.html'
     queryset = Project.objects.all()
     context_object_name = 'projects'
@@ -73,7 +74,7 @@ class ProjectListView(ListView):
         return context
 
 
-class ProjectListJson(BaseDatatableView):
+class ProjectListJson(LoginRequiredMixin, BaseDatatableView):
     model = Project
     columns = ['name', 'description', 'section_owner', 'category', 'id']
     order_columns = ['name', 'description', 'section_owner__name', 'category__category']
@@ -96,7 +97,7 @@ class ProjectListJson(BaseDatatableView):
         return qs
 
 
-class ProjectCreateView(CreateView):
+class ProjectCreateView(LoginRequiredMixin, CreateView):
     template_name = 'asset_dashboard/partials/forms/add_project_modal_form.html'
     form_class = ProjectForm
 
@@ -119,7 +120,7 @@ class ProjectCreateView(CreateView):
             return super().form_invalid(form)
 
 
-class ProjectUpdateView(UpdateView):
+class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     """
     Updated view that updates a Project and all related models.
     """
@@ -171,7 +172,7 @@ class ProjectUpdateView(UpdateView):
         return super().form_valid(form)
 
 
-class ProjectsByDistrictListView(ListView):
+class ProjectsByDistrictListView(LoginRequiredMixin, ListView):
     template_name = 'asset_dashboard/projects_by_district_list.html'
     queryset = Project.objects.all()
     context_object_name = 'projects'
@@ -186,7 +187,7 @@ class ProjectsByDistrictListView(ListView):
         return context
 
 
-class ProjectsByDistrictListJson(BaseDatatableView):
+class ProjectsByDistrictListJson(LoginRequiredMixin, BaseDatatableView):
     model = Project
     columns = ['name', 'description', 'senate_districts', 'house_districts', 'commissioner_districts', 'id']
     order_columns = ['name', 'description']
