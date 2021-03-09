@@ -21,20 +21,6 @@ class Staff(models.Model):
         verbose_name_plural = 'Staff'
 
 
-class Plan(models.Model):
-
-    name = models.TextField()
-    user = models.ForeignKey(Staff,
-                             on_delete=models.CASCADE,
-                             related_name='plans')
-
-    def total_budget(self):
-        ...
-
-    def other_aggregate_measures(self):
-        ...
-
-
 class Project(models.Model):
 
     name = models.TextField()
