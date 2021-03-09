@@ -130,6 +130,9 @@ class ProjectFinances(models.Model):
     budget = MoneyField(default_currency='USD',
                         default=0.00,
                         max_digits=11)
+    
+    class Meta:
+        verbose_name_plural = 'Project Finances'
 
 
 class ProjectFundingYear(models.Model):
@@ -230,6 +233,9 @@ class ScoreWeights(models.Model):
     social_equity_score = models.FloatField(default=1.0,
                                             validators=[MinValueValidator(0.0),
                                                         MaxValueValidator(1.0)])
+    
+    class Meta:
+        verbose_name_plural = 'Score Weights'
 
 
 class DummyProject(models.Model):
