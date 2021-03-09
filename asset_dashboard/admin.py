@@ -6,10 +6,19 @@ class ProjectCategoryAdmin(admin.ModelAdmin):
     exclude = ('name',)
 
 
+class ProjectAdmin(admin.ModelAdmin):
+    exclude = (
+        'accessibility',
+        'leverage_resource',
+        'obligation',
+        'phase_completion',
+        'plan',
+    )
+
+
 admin.site.register(models.CommissionerDistrict)
 admin.site.register(models.HouseDistrict)
-admin.site.register(models.Plan)
-admin.site.register(models.Project)
+admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.ProjectCategory, ProjectCategoryAdmin)
 admin.site.register(models.ProjectFinances)
 admin.site.register(models.ProjectScore)
