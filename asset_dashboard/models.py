@@ -127,24 +127,6 @@ class ProjectFinances(models.Model):
     ]
 
     project = models.OneToOneField(Project, on_delete=models.CASCADE)
-    year = models.IntegerField(null=True, blank=True)
-    bid_quarter = models.TextField()
-    funded = models.TextField(choices=FUNDING_CHOICES,
-                              null=True,
-                              blank=True)
-    high_priority = models.BooleanField(default=False)
-    rollover = MoneyField(default_currency='USD',
-                          default=0.00,
-                          max_digits=11)
-    bond = MoneyField(default_currency='USD',
-                      default=0.00,
-                      max_digits=11)
-    grant_funds = MoneyField(default_currency='USD',
-                             default=0.00,
-                             max_digits=11)
-    fees = MoneyField(default_currency='USD',
-                      default=0.00,
-                      max_digits=11)
     budget = MoneyField(default_currency='USD',
                         default=0.00,
                         max_digits=11)
