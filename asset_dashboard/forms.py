@@ -21,7 +21,6 @@ class ProjectForm(StyledFormMixin, ModelForm):
                   'description',
                   'section_owner',
                   'category',
-                  'phase_completion',
                   'senate_districts',
                   'house_districts',
                   'commissioner_districts',

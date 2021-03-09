@@ -45,12 +45,6 @@ class Project(models.Model):
     section_owner = models.ForeignKey(Section,
                                       null=True,
                                       on_delete=models.SET_NULL)
-    plan = models.ManyToManyField(Plan, blank=True)
-
-    obligation = models.BooleanField(default=False)
-    phase_completion = models.BooleanField(default=False)
-    accessibility = models.BooleanField(default=False)
-    leverage_resource = models.BooleanField(default=False)
 
     house_districts = models.ManyToManyField('HouseDistrict', blank=True)
     senate_districts = models.ManyToManyField('SenateDistrict', blank=True)
