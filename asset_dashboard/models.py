@@ -263,13 +263,6 @@ class ScoreWeights(models.Model):
                                             validators=[MinValueValidator(0.0),
                                                         MaxValueValidator(1.0)])
 
-    # I'm not sure it makes sense to score these binary variables, but
-    # there's ambiguity on what the client wants
-    obligation_weight = models.FloatField()
-    phase_completion = models.FloatField()
-    accessibility = models.FloatField()
-    leverage_resource = models.FloatField()
-
 
 class DummyProject(models.Model):
     """A Project model, based on the columns from ~/raw/simplified.csv"""

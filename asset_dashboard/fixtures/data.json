@@ -832,11 +832,7 @@
     "sustainability_score": 1.0,
     "ease_score": 1.0,
     "geographic_distance_score": 1.0,
-    "social_equity_score": 1.0,
-    "obligation_weight": 1.0,
-    "phase_completion": 1.0,
-    "accessibility": 1.0,
-    "leverage_resource": 1.0
+    "social_equity_score": 1.0
   }
 },
 {
