@@ -8,7 +8,6 @@ class ProjectCategoryAdmin(admin.ModelAdmin):
 
 admin.site.register(models.CommissionerDistrict)
 admin.site.register(models.HouseDistrict)
-admin.site.register(models.Plan)
 admin.site.register(models.Project)
 admin.site.register(models.ProjectCategory, ProjectCategoryAdmin)
 admin.site.register(models.ProjectFinances)

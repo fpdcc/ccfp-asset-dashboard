@@ -45,15 +45,11 @@ def test_project_score_total_method(project, score_weights):
     with pytest.raises(ValueError):
         ScoreWeights.objects.create(core_mission_score=0.7, operations_impact_score=0.8, 
                                               sustainability_score=0.2, ease_score=0.6, 
-                                              geographic_distance_score=0.5, social_equity_score=0.4,
-                                              obligation_weight=0.5, phase_completion=0.5, 
-                                              accessibility=0.5, leverage_resource=0.5)
+                                              geographic_distance_score=0.5, social_equity_score=0.4)
         
         ScoreWeights.objects.create(core_mission_score=0.7, operations_impact_score=0.8, 
                                               sustainability_score=0.2, ease_score=0.6, 
-                                              geographic_distance_score=0.5, social_equity_score=0.4,
-                                              obligation_weight=0.5, phase_completion=0.5, 
-                                              accessibility=0.5, leverage_resource=0.5)
+                                              geographic_distance_score=0.5, social_equity_score=0.4)
     
         # this should raise an error
         project_score_instance.total_score

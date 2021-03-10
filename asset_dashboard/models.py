@@ -21,20 +21,6 @@ class Staff(models.Model):
         verbose_name_plural = 'Staff'
 
 
-class Plan(models.Model):
-
-    name = models.TextField()
-    user = models.ForeignKey(Staff,
-                             on_delete=models.CASCADE,
-                             related_name='plans')
-
-    def total_budget(self):
-        ...
-
-    def other_aggregate_measures(self):
-        ...
-
-
 class Project(models.Model):
 
     name = models.TextField()
@@ -45,12 +31,6 @@ class Project(models.Model):
     section_owner = models.ForeignKey(Section,
                                       null=True,
                                       on_delete=models.SET_NULL)
-    plan = models.ManyToManyField(Plan, blank=True)
-
-    obligation = models.BooleanField(default=False)
-    phase_completion = models.BooleanField(default=False)
-    accessibility = models.BooleanField(default=False)
-    leverage_resource = models.BooleanField(default=False)
 
     house_districts = models.ManyToManyField('HouseDistrict', blank=True)
     senate_districts = models.ManyToManyField('SenateDistrict', blank=True)
@@ -147,27 +127,12 @@ class ProjectFinances(models.Model):
     ]
 
     project = models.OneToOneField(Project, on_delete=models.CASCADE)
-    year = models.IntegerField(null=True, blank=True)
-    bid_quarter = models.TextField()
-    funded = models.TextField(choices=FUNDING_CHOICES,
-                              null=True,
-                              blank=True)
-    high_priority = models.BooleanField(default=False)
-    rollover = MoneyField(default_currency='USD',
-                          default=0.00,
-                          max_digits=11)
-    bond = MoneyField(default_currency='USD',
-                      default=0.00,
-                      max_digits=11)
-    grant_funds = MoneyField(default_currency='USD',
-                             default=0.00,
-                             max_digits=11)
-    fees = MoneyField(default_currency='USD',
-                      default=0.00,
-                      max_digits=11)
     budget = MoneyField(default_currency='USD',
                         default=0.00,
                         max_digits=11)
+
+    class Meta:
+        verbose_name_plural = 'Project Finances'
 
 
 class ProjectFundingYear(models.Model):
@@ -269,12 +234,8 @@ class ScoreWeights(models.Model):
                                             validators=[MinValueValidator(0.0),
                                                         MaxValueValidator(1.0)])
 
-    # I'm not sure it makes sense to score these binary variables, but
-    # there's ambiguity on what the client wants
-    obligation_weight = models.FloatField()
-    phase_completion = models.FloatField()
-    accessibility = models.FloatField()
-    leverage_resource = models.FloatField()
+    class Meta:
+        verbose_name_plural = 'Score Weights'
 
 
 class DummyProject(models.Model):
