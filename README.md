@@ -33,6 +33,29 @@ Run the app with a debugger:
 docker-compose run --rm -p 8000:8000 app
 ```
 
+### Restore the FPDCC database
+Download the database from Dropbox and save the tar file in this repo's root directory.
+
+Load the database:
+```
+pg_restore -U postgres -h localhost -p 32002 -d fpdcc -O FPDCC_DataMade_backup112221.tar
+```
+
+Connect to the database with `psql`:
+```
+psql -U postgres -h localhost -p 32002
+```
+
+Examine the tables. In the postgres shell:
+```
+postgres=# \c fpdcc
+psql (14.0, server 12.5)
+You are now connected to database "fpdcc" as user "postgres".
+fpdcc=# \dt *.*
+```
+
+You should see a list of all the tables.
+
 ### Compiling Sass to CSS
 
 This project uses Sass to compile a custom Bootstrap build with house styles.
