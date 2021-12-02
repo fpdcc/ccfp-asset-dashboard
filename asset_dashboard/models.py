@@ -250,165 +250,195 @@ class DummyProject(models.Model):
         return self.name
 
 
+class NaturePreserves(models.Model):
+
+    class Meta:
+        managed = False
+        db_table = '"quercus"."nature_preserves"'
+
+    id = models.AutoField(primary_key=True, db_column='nature_preserves_id')
+    site_name = models.CharField(max_length=254)
+
+    def __str__(self):
+        return self.site_name
+
+
 class Buildings(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.buildings'
 
+
 class Holdings(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.holdings'
-        
+
+
 class LicenseIGA(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.license_iga'
-        
+
+
 class MowAreaDB(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.mow_area_db'
-        
+
+
 class MwrdFpdLease(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.mwrd_fpd_lease'
 
+
 class Names(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.names'
-        
-class NaturePreserves(models.Model):
-    
-    class Meta:
-        managed = False
-        db_table = 'quercus.nature_preserves'
-        
+
+
 class ParkingEntrance(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.parking_entrance'
-        
+
+
 class ParkingEntranceInfo(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.parking_entrance_info'
 
+
 class ParkingEval17(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.parking_eval17'
-        
+
+
 class ParkingLots(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.parking_lots'
-        
+
+
 class PicnicGroves(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.picnicgroves'
-        
+
+
 class PoiAmenity(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.poi_amenity'
-        
+
+
 class PoiDesc(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.poi_desc'
-        
+
+
 class PoiInfo(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.poi_info'
-        
+
+
 class PoiToTrails(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.poi_to_trails'
-        
+
+
 class PointsOfInterest(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.pointsofinterest'
-        
+
+
 class Regions(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.regions'
-        
+
+
 class Signage(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.signage'
-        
+
+
 class TrailSubsystemLu(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.trail_subsystem_lu'
-        
+
+
 class Trails(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.trails'
-        
+
+
 class TrailsAmenity(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.trails_amenity'
-        
+
+
 class TrailsDesc(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.trails_desc'
-        
+
+
 class TrailsInfo(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.trails_info'
-        
+
+
 class TrailsMaintenance(models.Model):
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.trails_maintenace'
-        
+
 class Zones(models.Model):
     # fpdcc=# \d quercus.zones
     #                                             Table "quercus.zones"
-    #     Column    |            Type             | Collation | Nullable |                    Default                     
+    #     Column    |            Type             | Collation | Nullable |                    Default
     # --------------+-----------------------------+-----------+----------+------------------------------------------------
     # zone_id      | integer                     |           | not null | nextval('quercus.zones_zone_id_seq'::regclass)
-    # zone         | character varying(10)       |           |          | 
-    # abbreviation | character varying(2)        |           |          | 
-    # geom         | geometry(MultiPolygon,3435) |           |          | 
+    # zone         | character varying(10)       |           |          |
+    # abbreviation | character varying(2)        |           |          |
+    # geom         | geometry(MultiPolygon,3435) |           |          |
     # Indexes:
     #     "zones_pkey" PRIMARY KEY, btree (zone_id)
 
@@ -416,7 +446,7 @@ class Zones(models.Model):
     zone_id = models.IntegerField(primary_key=True)
     zone = models.CharField(max_length=10)
     geom = models.MultiPolygonField(srid=3435) # TODO: i think this was srid? `geom | geometry(MultiPolygon,3435)`
-    
+
     class Meta:
         managed = False
         db_table = 'quercus.zones'
