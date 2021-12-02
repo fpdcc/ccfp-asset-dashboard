@@ -90,7 +90,26 @@ WSGI_APPLICATION = 'asset_dashboard.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {}
+# DATABASES = {
+#     'fp_postgis': {
+#         'ENGINE': 'django.contrib.gis.db.backends.postgis',
+#         'OPTIONS': {
+#             'options': '-c search_path=public,acer,catalpa,history,pinus,quercus'
+#         },
+#         'NAME': 'fpdcc',
+#         'PASSWORD': os.getenv('POSTGIS_PASSWORD'),
+#         'HOST': 'fp-postgis'
+#     }
+# }
+
+DATABASES = {
+    'fp_postgis': dj_database_url.parse(
+        os.getenv('DATABASE_URL', 'postgis://postgres:postgres@fp-postgis:5432/fpdcc'),
+        conn_max_age=600,
+        ssl_require=True if os.getenv('POSTGRES_REQUIRE_SSL') else False,
+        engine='django.contrib.gis.db.backends.postgis'
+    )
+}
 
 DATABASES['default'] = dj_database_url.parse(
     os.getenv('DATABASE_URL', 'postgis://postgres:postgres@postgres:5432/database'),
