@@ -106,3 +106,5 @@ venv.bak/
 # Compiled JavaScript
 node_modules/
 asset_dashboard/static/compressor/*
+
+FPDCC_DataMade_backup112221.tar
