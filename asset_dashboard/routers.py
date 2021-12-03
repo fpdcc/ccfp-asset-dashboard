@@ -13,8 +13,6 @@ class GISRouter:
 
     def db_for_write(self, model, **hints):
         """
-        Attempts to write "quercus" models go to fp_postgis.
-
         N.b., we probably should not modify CCFP's data. This method assumes
         that they've granted us read-only access, i.e., the database will raise
         an exception for any write requests.
@@ -32,8 +30,10 @@ class GISRouter:
 
         https://docs.djangoproject.com/en/3.2/topics/db/multi-db/#allow_relation
 
-        Since "quercus" models are write only, this should disallow the
-        relation of non-"quercus" models to objects in the default database.
+        Thus, this should disallow the relation of tables in the specified
+        schemas to objects in the default database. This should be ok because
+        we will copy necessary GIS data to the default database for subsequent
+        relation and manipulation.
         """
         return None
 

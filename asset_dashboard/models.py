@@ -430,6 +430,7 @@ class TrailsMaintenance(models.Model):
         managed = False
         db_table = 'quercus.trails_maintenace'
 
+
 class Zones(models.Model):
     # fpdcc=# \d quercus.zones
     #                                             Table "quercus.zones"
@@ -445,7 +446,7 @@ class Zones(models.Model):
     # zones_pk = models.IntegerField(primary_key=True)
     zone_id = models.IntegerField(primary_key=True)
     zone = models.CharField(max_length=10)
-    geom = models.MultiPolygonField(srid=3435) # TODO: i think this was srid? `geom | geometry(MultiPolygon,3435)`
+    geom = models.MultiPolygonField(srid=3435)  # TODO: i think this was srid? `geom | geometry(MultiPolygon,3435)`
 
     class Meta:
         managed = False
