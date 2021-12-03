@@ -90,14 +90,22 @@ WSGI_APPLICATION = 'asset_dashboard.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {}
+DATABASES = {
+    'default': dj_database_url.parse(
+        os.getenv('DATABASE_URL', 'postgis://postgres:postgres@postgres:5432/database'),
+        conn_max_age=600,
+        ssl_require=True if os.getenv('POSTGRES_REQUIRE_SSL') else False,
+        engine='django.contrib.gis.db.backends.postgis'
+    ),
+    'fp_postgis': dj_database_url.parse(
+        os.getenv('GIS_DATABASE_URL', 'postgis://postgres:postgres@fp-postgis:5432/fpdcc'),
+        conn_max_age=600,
+        ssl_require=True if os.getenv('POSTGRES_REQUIRE_SSL') else False,
+        engine='django.contrib.gis.db.backends.postgis'
+    ),
+}
 
-DATABASES['default'] = dj_database_url.parse(
-    os.getenv('DATABASE_URL', 'postgis://postgres:postgres@postgres:5432/database'),
-    conn_max_age=600,
-    ssl_require=True if os.getenv('POSTGRES_REQUIRE_SSL') else False,
-    engine='django.contrib.gis.db.backends.postgis'
-)
+DATABASE_ROUTERS = ['asset_dashboard.routers.GISRouter']
 
 # Caching
 # https://docs.djangoproject.com/en/3.0/topics/cache/

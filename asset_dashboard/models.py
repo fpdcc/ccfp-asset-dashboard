@@ -108,7 +108,7 @@ class ProjectScore(models.Model):
         return total_score
 
     def add_score_to_queryset(self):
-        '''we'll need to add the total scores to the queryset'''
+        """we'll need to add the total scores to the queryset"""
 
     def __str__(self):
         return self.project.name
@@ -248,3 +248,192 @@ class DummyProject(models.Model):
     def __str__(self):
         """"String for representing the model object"""
         return self.name
+
+
+class GISModel(models.Model):
+    """
+    Migrations will not be created for models inheriting from this base class
+    because of allow_migrate() method in the GISRouter.
+    """
+
+    class Meta:
+        abstract = True
+        managed = False
+        app_label = 'asset_dashboard_gis'
+
+
+class NaturePreserves(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = '"quercus"."nature_preserves"'
+
+    id = models.AutoField(primary_key=True, db_column='nature_preserves_id')
+    site_name = models.CharField(max_length=254)
+
+    def __str__(self):
+        return self.site_name
+
+
+class Buildings(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.buildings'
+
+
+class Holdings(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.holdings'
+
+
+class LicenseIGA(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.license_iga'
+
+
+class MowAreaDB(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.mow_area_db'
+
+
+class MwrdFpdLease(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.mwrd_fpd_lease'
+
+
+class Names(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.names'
+
+
+class ParkingEntrance(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.parking_entrance'
+
+
+class ParkingEntranceInfo(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.parking_entrance_info'
+
+
+class ParkingEval17(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.parking_eval17'
+
+
+class ParkingLots(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.parking_lots'
+
+
+class PicnicGroves(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.picnicgroves'
+
+
+class PoiAmenity(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.poi_amenity'
+
+
+class PoiDesc(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.poi_desc'
+
+
+class PoiInfo(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.poi_info'
+
+
+class PoiToTrails(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.poi_to_trails'
+
+
+class PointsOfInterest(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.pointsofinterest'
+
+
+class Regions(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.regions'
+
+
+class Signage(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.signage'
+
+
+class TrailSubsystemLu(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.trail_subsystem_lu'
+
+
+class Trails(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.trails'
+
+
+class TrailsAmenity(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.trails_amenity'
+
+
+class TrailsDesc(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.trails_desc'
+
+
+class TrailsInfo(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.trails_info'
+
+
+class TrailsMaintenance(GISModel):
+
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.trails_maintenace'
+
+
+class Zones(GISModel):
+    class Meta(GISModel.Meta):
+        db_table = 'quercus.zones'
+
+    # fpdcc=# \d quercus.zones
+    #                                             Table "quercus.zones"
+    #     Column    |            Type             | Collation | Nullable |                    Default
+    # --------------+-----------------------------+-----------+----------+------------------------------------------------
+    # zone_id      | integer                     |           | not null | nextval('quercus.zones_zone_id_seq'::regclass)
+    # zone         | character varying(10)       |           |          |
+    # abbreviation | character varying(2)        |           |          |
+    # geom         | geometry(MultiPolygon,3435) |           |          |
+    # Indexes:
+    #     "zones_pkey" PRIMARY KEY, btree (zone_id)
+
+    # zones_pk = models.IntegerField(primary_key=True)
+    zone_id = models.IntegerField(primary_key=True)
+    zone = models.CharField(max_length=10)
+    geom = models.MultiPolygonField(srid=3435)  # TODO: i think this was srid? `geom | geometry(MultiPolygon,3435)`

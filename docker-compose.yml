@@ -16,6 +16,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      fp-postgis:
+        condition: service_healthy
     volumes:
       # Mount the development directory as a volume into the container, so
       # Docker automatically recognizes your changes.
