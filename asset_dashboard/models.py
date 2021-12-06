@@ -37,17 +37,28 @@ class Project(models.Model):
     commissioner_districts = models.ManyToManyField('CommissionerDistrict', blank=True)
     zones = models.ManyToManyField('Zone', blank=True)
 
-    PHASE_CHOICES = [
+    def __str__(self):
+        return self.name
+
+
+class Task(models.Model):
+    """
+    A sub-project unit of work. Projects without defined tasks are assigned a
+    default Task of type "implementation".
+    """
+
+    # TODO: Identify better choice list (e.g., what's the difference between
+    # Phase 3 Construction and Construction?)
+    TASK_TYPE_CHOICES = [
         ('phase_1', 'Phase 1'),
         ('phase_2', 'Phase 2'),
         ('phase_3_engineering', 'Phase 3 Engineering'),
         ('phase_3_construction', 'Phase 3 Construction'),
         ('feasibility', 'Feasibility'),
         ('design', 'Design'),
-        ('construction', 'Construction')
+        ('construction', 'Construction'),
+        ('implementation', 'Implementation'),
     ]
-
-    phase = models.TextField(choices=PHASE_CHOICES, null=True, blank=True)
 
     BID_QUARTER_CHOICES = [
         ('Q1', 'Q1'),
@@ -56,10 +67,11 @@ class Project(models.Model):
         ('Q4', 'Q4')
     ]
 
+    sequence = models.IntegerField(default=1)
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='tasks')
+    task_type = models.TextField(choices=TASK_TYPE_CHOICES, null=True, blank=True)
     estimated_bid_quarter = models.TextField(choices=BID_QUARTER_CHOICES, null=True, blank=True)
-
-    def __str__(self):
-        return self.name
+    # funding = models.ForeignKey('FundingSource', on_delete=models.SET_NULL)
 
 
 class ScoreField(models.IntegerField):
@@ -117,7 +129,7 @@ class ProjectScore(models.Model):
         verbose_name_plural = 'Project Scores'
 
 
-class ProjectFinances(models.Model):
+class TaskFinances(models.Model):
 
     FUNDING_CHOICES = [
         ('unfunded', 'Unfunded'),
@@ -126,7 +138,7 @@ class ProjectFinances(models.Model):
         ('funded', 'Funded')
     ]
 
-    project = models.OneToOneField(Project, on_delete=models.CASCADE)
+    task = models.OneToOneField('Task', on_delete=models.CASCADE)
     budget = MoneyField(default_currency='USD',
                         default=0.00,
                         max_digits=11)
@@ -135,11 +147,11 @@ class ProjectFinances(models.Model):
         verbose_name_plural = 'Project Finances'
 
 
-class ProjectFundingYear(models.Model):
+class TaskFundingYear(models.Model):
 
-    project = models.ForeignKey(Project,
-                                null=True,
-                                on_delete=models.CASCADE)
+    task = models.ForeignKey('Task',
+                              null=True,
+                              on_delete=models.CASCADE)
     year = models.IntegerField()
     funds = MoneyField(default_currency='USD',
                        default=0.00,
