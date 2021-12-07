@@ -46,7 +46,7 @@ def task_to_project(apps, schema_editor):
     TaskFinances = apps.get_model('asset_dashboard', 'TaskFinances')
     TaskFundingYear = apps.get_model('asset_dashboard', 'TaskFundingYear')
 
-    seen_ids = {}
+    seen_ids = set()
 
     for task in Task.objects.order_by('sequence'):
         project = task.project
@@ -66,19 +66,24 @@ def task_to_project(apps, schema_editor):
         project.estimated_bid_quarter = task.estimated_bid_quarter
         project.save()
 
-        finances = TaskFinances.objects.get(project=project)
+        finances = TaskFinances.objects.get(task=task)
         finances.project = project
         finances.save()
 
-        funding_year = TaskFundingYear.objects.get(project=project)
-        funding_year.project = project
-        funding_year.save()
+        try:
+            funding_year = TaskFundingYear.objects.get(task=task)
+        except TaskFundingYear.DoesNotExist:
+            print(f'Could not find funding year for task "{task}". Skipping...')
+        else:
+            funding_year.project = project
+            funding_year.save()
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ('asset_dashboard', '0018_auto_20211124_2000'),
+        ('contenttypes', '0002_remove_content_type_name'),
     ]
 
     operations = [
@@ -111,8 +116,55 @@ class Migration(migrations.Migration):
             name='task',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='asset_dashboard.task'),
         ),
+        # On forward migration, do nothing. On backward migration, add unique
+        # and foreign key constraints to project ID "after" the data migration.
+        migrations.RunSQL(
+            sql=migrations.RunSQL.noop,
+            reverse_sql=['''
+                ALTER TABLE asset_dashboard_taskfinances
+                ADD CONSTRAINT asset_dashboard_taskfinances_project_id_key
+                UNIQUE (project_id)
+            ''', '''
+                ALTER TABLE asset_dashboard_taskfinances
+                ADD FOREIGN KEY (project_id)
+                REFERENCES asset_dashboard_project
+            ''', '''
+                ALTER TABLE asset_dashboard_taskfinances
+                ALTER COLUMN project_id
+                SET NOT NULL
+            ''']
+        ),
+        migrations.RunSQL(
+            sql=migrations.RunSQL.noop,
+            reverse_sql=['''
+                ALTER TABLE asset_dashboard_taskfundingyear
+                ADD CONSTRAINT asset_dashboard_taskfundingyear_project_id_key
+                UNIQUE (project_id)
+            ''', '''
+                ALTER TABLE asset_dashboard_taskfundingyear
+                ADD FOREIGN KEY (project_id)
+                REFERENCES asset_dashboard_project
+            ''']
+        ),
         migrations.RunPython(
             project_to_task, task_to_project
+        ),
+        # Add the not null constraint to TaskFinances.task_id after the data
+        # migration. Trying to create the column with the null constraint will
+        # fail due to existing TaskFinances records not having a default ID,
+        # and setting a default to handle that case fails because the OneToOne
+        # field has a unique constraint.
+        migrations.RunSQL(
+            sql='''
+                ALTER TABLE asset_dashboard_taskfinances
+                ALTER COLUMN task_id
+                SET NOT NULL
+            ''',
+            reverse_sql='''
+                ALTER TABLE asset_dashboard_taskfinances
+                ALTER COLUMN task_id
+                DROP NOT NULL
+            '''
         ),
         migrations.RemoveField(
             model_name='project',
@@ -122,12 +174,31 @@ class Migration(migrations.Migration):
             model_name='project',
             name='phase',
         ),
-        migrations.RemoveField(
-            model_name='taskfinances',
-            name='project',
+        # Use RunSQL instead of RemoveField so we can add the project_id back
+        # without the not null and foreign key constraints on reverse migration.
+        # These constraints, as well as the unique constraint, are added back
+        # in the reverse_sql of the RunSQL operations "after" the RunPython
+        # which repopulates project_id.
+        migrations.RunSQL(
+            sql='''
+                ALTER TABLE asset_dashboard_taskfinances
+                DROP COLUMN project_id
+                CASCADE
+            ''',
+            reverse_sql='''
+                ALTER TABLE asset_dashboard_taskfinances
+                ADD COLUMN project_id integer
+            '''
         ),
-        migrations.RemoveField(
-            model_name='taskfundingyear',
-            name='project',
+        migrations.RunSQL(
+            sql='''
+                ALTER TABLE asset_dashboard_taskfundingyear
+                DROP COLUMN project_id
+                CASCADE
+            ''',
+            reverse_sql='''
+                ALTER TABLE asset_dashboard_taskfundingyear
+                ADD COLUMN project_id integer
+            '''
         ),
     ]
