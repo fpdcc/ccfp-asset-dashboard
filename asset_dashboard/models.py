@@ -150,8 +150,8 @@ class TaskFinances(models.Model):
 class TaskFundingYear(models.Model):
 
     task = models.ForeignKey('Task',
-                              null=True,
-                              on_delete=models.CASCADE)
+                             null=True,
+                             on_delete=models.CASCADE)
     year = models.IntegerField()
     funds = MoneyField(default_currency='USD',
                        default=0.00,
