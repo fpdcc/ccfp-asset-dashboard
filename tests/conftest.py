@@ -99,7 +99,8 @@ def project(section_owner, project_category):
                                             section_owner=section_owner,
                                             category=project_category)
 
-    project_score = models.ProjectScore.objects.create(project=project)
+    models.ProjectScore.objects.create(project=project)
+    models.Task.objects.create(project=project)
 
     return project
 

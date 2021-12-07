@@ -7,7 +7,8 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import HouseDistrict, Project, ProjectCategory, TaskFinances, ProjectScore, Section, SenateDistrict, CommissionerDistrict
+from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
+    Section, SenateDistrict, CommissionerDistrict, Task, TaskFinances
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, TaskFinancesForm
 from django.contrib import messages
 from django.db.models import Q
@@ -112,7 +113,11 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
 
             project = Project.objects.create(**project_data)
             ProjectScore.objects.get_or_create(project=project)
-            TaskFinances.objects.get_or_create(project=project)
+
+            # TODO: Is there any other information we should capture from the
+            # form for the Task?
+            task = Task.objects.create(project=project)
+            TaskFinances.objects.get_or_create(task=task)
 
             messages.success(self.request, 'Project successfully created!')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
@@ -131,7 +136,9 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        task_finances, _ = TaskFinances.objects.get_or_create(task__project=self.object)
+        # TODO: This arbitrarily grabs the first Task associated with a Project.
+        # Fix this when we decide what the Task management UI should look like
+        task_finances, _ = TaskFinances.objects.get_or_create(task=self.object.tasks.first())
 
         if self.request.POST:
             # instantiate the forms with data from the post request

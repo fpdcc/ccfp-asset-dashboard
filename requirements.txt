@@ -11,7 +11,7 @@ django-widget-tweaks==1.4.8
 
 # Testing requirements
 pytest==6.2.2
-pytest-django==4.1.0
+pytest-django==4.5.1
 pytest-mock==3.5.1
 flake8==3.8.4
 django-test-migrations==1.1.0
