@@ -1,10 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db.models import indexes
-from django.db.models.deletion import CASCADE
 from djmoney.models.fields import MoneyField
 from django.contrib.gis.db import models
-from django.contrib.gis.geos.geometry import GEOSGeometry
 
 
 class Section(models.Model):
@@ -289,10 +286,11 @@ class GISModel(models.Model):
 
 
 class Buildings(GISModel):
+    """Includes all building structures within FPDCC boundaries"""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."buildings"'
-        
+
     id = models.AutoField(primary_key=True, db_column='buildings_id')
     geom = models.PolygonField(srid=3435)
     building_number = models.CharField(max_length=10)
@@ -311,7 +309,7 @@ class Buildings(GISModel):
     concession = models.CharField(max_length=10)
     public_access = models.CharField(max_length=5)
     support_building = models.CharField(max_length=5)
-    demolished= models.CharField(max_length=5)
+    demolished = models.CharField(max_length=5)
     a1_list_12 = models.CharField(max_length=5)
     ada_evaluation = models.CharField(max_length=3)
     current_occupant = models.CharField(max_length=25)
@@ -337,12 +335,13 @@ class Buildings(GISModel):
 
 
 class Holdings(GISModel):
+    """Includes all individual parcels owned by the FPDCC."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."holdings"'
-        
+
     id = models.AutoField(primary_key=True, db_column='holdings_id')
-    
+
     geom = models.MultiPolygonField(srid=3435)
     pin14 = models.CharField(max_length=14)
     pin10 = models.CharField(max_length=10)
@@ -412,13 +411,14 @@ class Holdings(GISModel):
     iga_licensee = models.CharField(max_length=75)
     iga_exhibit = models.CharField(max_length=250)
     boundary_survey_corrected = models.CharField(max_length=3)
-    
-    # This model is missing a PostGIS `topogeom`, because 
-    # the Django geo library doesn't have this data type 
-    # and we don't yet need it.
+
+    # This model is missing a PostGIS `topogeom`, because
+    #  the Django geo library doesn't have this data type
+    #  and we don't yet need it.
 
 
 class LicenseIGA(GISModel):
+    """All licenses an IGA's registered with the FPDCC."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."license_iga"'
@@ -442,14 +442,15 @@ class LicenseIGA(GISModel):
 
 
 class MowAreaDB(GISModel):
+    """All mowed areas by Landscape Maintenance and Resource Mgmt."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."mow_area_db"'
 
     id = models.AutoField(primary_key=True, db_column='id')
-    
+
     geom = models.MultiPolygonField(srid=3435)
-    
+
     filename = models.CharField(max_length=80)
     name = models.CharField(max_length=141)
     descriptio = models.CharField(max_length=187)
@@ -462,14 +463,15 @@ class MowAreaDB(GISModel):
 
 
 class MwrdFpdLease(GISModel):
+    """Land Leased to the FPDCC by MWRD."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."mwrd_fpd_lease"'
-        
+
     id = models.AutoField(primary_key=True, db_column='id')
-    
+
     geom = models.PolygonField(srid=3435, spatial_index=True)
-    
+
     lease_id = models.CharField(max_length=50)
     acreage = models.DecimalField(max_digits=10, decimal_places=2)
     notes = models.CharField(max_length=254)
@@ -478,28 +480,30 @@ class MwrdFpdLease(GISModel):
 
 
 class Names(GISModel):
+    """Table of all FPDCC preserve/location names."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."names"'
-        
+
         constraints = [
             models.UniqueConstraint(fields=['name'], name='unique_nameid_constraint')
         ]
-        
+
     id = models.AutoField(primary_key=True, db_column='nameid')
-    
+
     name = models.CharField(max_length=100)
 
 
 class NaturePreserves(GISModel):
+    """Official Nature Preserve boundaries within FPDCC boundaries."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."nature_preserves"'
 
     id = models.AutoField(primary_key=True, db_column='nature_preserves_id')
-    
+
     geom = models.MultiPolygonField(srid=3435, spatial_index=True)
-    
+
     org = models.CharField(max_length=50)
     type = models.CharField(max_length=50)
     site_name = models.CharField(max_length=254)
@@ -513,33 +517,34 @@ class NaturePreserves(GISModel):
     acreage = models.DecimalField(max_digits=10, decimal_places=2)
     gis_acres = models.DecimalField(max_digits=10, decimal_places=2)
 
-
     def __str__(self):
         return self.site_name
 
 
 class ParkingEntrance(GISModel):
+    """Point location of all official parking lot entrances."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."parking_entrance"'
-    
+
     id = models.AutoField(primary_key=True, db_column='parking_entrance_id')
     geom = models.PointField(srid=3435, spatial_index=True)
 
 
 class ParkingEntranceInfo(GISModel):
+    """Companion metadata to "parking_entrance". Foreign Key reference "parking_entrance_id"."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."parking_entrance_info"'
-        
+
         indexes = [
             models.Index(fields=['parking_entrance_id'])
         ]
-        
+
     id = models.AutoField(primary_key=True, db_column='parking_info_id')
-    
+
     parking_entrance = models.ForeignKey('ParkingEntrance', on_delete=models.RESTRICT)
-    
+
     multi_entrance = models.CharField(max_length=10)
     private_lot = models.CharField(max_length=10)
     lot_id = models.IntegerField()
@@ -550,13 +555,14 @@ class ParkingEntranceInfo(GISModel):
 
 
 class ParkingEval17(GISModel):
+    """Parking lot evaluation done by Cook County circa 2017."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."parking_eval17"'
-        
+
     id = models.AutoField(primary_key=True, db_column='parking_eval17_id')
-    
-    # In postgres, these are all "character varying" with no character limit. 
+
+    # In postgres, these are all "character varying" with no character limit.
     # I them all TextFields since max_length is required for CharField.
     latitude = models.TextField()
     longitude = models.TextField()
@@ -603,14 +609,15 @@ class ParkingEval17(GISModel):
 
 
 class ParkingLots(GISModel):
+    """Parking lot polygons, for all public and non-public lots."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."parking_lots"'
-        
+
     id = models.AutoField(primary_key=True, db_column='parking_lots_id')
-    
+
     geom = models.PolygonField(srid=3435, spatial_index=True)
-    
+
     lot_id = models.IntegerField()
     zone = models.CharField(max_length=25)
     lot_access = models.CharField(max_length=25)
@@ -629,16 +636,17 @@ class ParkingLots(GISModel):
 
 
 class PicnicGroves(GISModel):
+    """All picnic groves with active status"""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."picnicgroves"'
 
     id = models.AutoField(primary_key=True, db_column='picnicgrove_id')
-    
+
     poi_info = models.ForeignKey('PoiInfo', on_delete=models.SET_NULL)
-    
+
     geom = models.PointField(srid=3435)
-    
+
     preserve_name = models.CharField(max_length=100)
     grove = models.IntegerField()
     division = models.CharField(max_length=25)
@@ -655,16 +663,18 @@ class PicnicGroves(GISModel):
 
 
 class PoiAmenity(GISModel):
+    """Table of all amenities associated with a point of interest.
+    Forgein Key reference poi_info.poi_info_id."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."poi_amenity"'
         indexes = [
             models.Index(fields=['poi_info_id'])
         ]
-    
+
     id = models.AutoField(primary_key=True, db_column='poi_amenity_id')
     poi_info = models.ForeignKey('PoiInfo', on_delete=models.CASCADE)
-    
+
     ada = models.IntegerField()
     bike_parking = models.IntegerField()
     bike_rental = models.IntegerField()
@@ -733,16 +743,18 @@ class PoiAmenity(GISModel):
 
 
 class PoiDesc(GISModel):
+    """Table of POI description for a select group of POIs.
+     Mainly used for the webmap. Foreign Key reference poi_info.poi_info_id."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."poi_desc"'
         indexes = [
             models.Index(fields=['poi_info_id'])
         ]
-        
+
     id = models.AutoField(primary_key=True, db_column='poi_desc_id')
     poi_info = models.ForeignKey('PoiInfo', on_delete=models.CASCADE)
-    
+
     hours1 = models.CharField(max_length=150)
     hours2 = models.CharField(max_length=150)
     phone = models.CharField(max_length=12)
@@ -762,10 +774,12 @@ class PoiDesc(GISModel):
     special_link = models.CharField(max_length=150)
     photo_link = models.CharField(max_length=150)
     fish_map = models.CharField(max_length=150)
-    accessibility_description = models.CharField(max_length=1050)    
+    accessibility_description = models.CharField(max_length=1050)
 
 
 class PoiInfo(GISModel):
+    """Main table to the point of interest (POI) containing
+     the main attributes for those points."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."poi_info"'
@@ -775,14 +789,14 @@ class PoiInfo(GISModel):
             models.Index(fields=['parking_info_id']),
             models.Index(fields=['pointsofinterest_id'])
         ]
-    
+
     id = models.AutoField(primary_key=True, db_column='poi_info_id')
 
     parking_info = models.ForeignKey(ParkingEntranceInfo, on_delete=models.RESTRICT)
     parking_connection = models.ForeignKey(ParkingEntranceInfo, on_delete=models.RESTRICT)
 
     nameid = models.ForeignKey(Names, on_delete=models.RESTRICT, db_column='nameid')
-    
+
     point_type = models.CharField(max_length=50)
     addr = models.CharField(max_length=100)
     zip = models.CharField(max_length=5)
@@ -812,6 +826,7 @@ class PoiInfo(GISModel):
 
 
 class PoiToTrails(GISModel):
+    """No longer used"""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."poi_to_trails"'
@@ -819,9 +834,9 @@ class PoiToTrails(GISModel):
             models.Index(fields=['poi_info_id']),
             models.Index(fields=['trail_info_id'])
         ]
-        
-    # This table has no pk specified, but it is indexed by these fields. 
-    # Django models require a PK, so set both of these fields as primary keys. 
+
+    # This table has no pk specified, but it is indexed by these fields.
+    # Django models require a PK, so set both of these fields as primary keys.
     # Otherwise, without a PK set, this model won't work.
     # See https://stackoverflow.com/a/28516276
     # and https://stackoverflow.com/q/55127195
@@ -831,10 +846,12 @@ class PoiToTrails(GISModel):
 
 
 class PointsOfInterest(GISModel):
+    """Geometry table to the points of interest.
+     Foreign Key Reference poi_info.poi_info_id."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."pointsofinterest"'
-        
+
     id = models.AutoField(primary_key=True, db_column='pointsofinterest_id')
     geom = models.PointField(srid=3435, spatial_index=True)
     web_map_geom = models.PointField(srid=4326)
@@ -842,6 +859,8 @@ class PointsOfInterest(GISModel):
 
 
 class Regions(GISModel):
+    """This table has been moved to pinus.regoins.
+     Should be removed from quercus in the future."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."regions"'
@@ -850,14 +869,18 @@ class Regions(GISModel):
     region_number = models.IntegerField()
     geom = models.MultiPolygonField(srid=3435)
 
+
 class Signage(GISModel):
+    """Point table of misc. features on FPDCC property.
+     Including; signs, markers, utilities, monuments,
+     manhole covers, culverts, bridges, etc."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."signage"'
-        
+
     id = models.AutoField(primary_key=True, db_column='signage_id')
     geom = models.PointField(srid=3435, spatial_index=True)
-    
+
     type = models.CharField(max_length=254)
     division = models.CharField(max_length=254)
     zone = models.CharField(max_length=254)
@@ -881,19 +904,21 @@ class Signage(GISModel):
 
 
 class TrailSubsystemLu(GISModel):
+    """Look up table for trail_subsystem ID. Mainly used for the webmap."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."trail_subsystem_lu"'
-        
+
     trail_subsystem = models.CharField(primary_key=True, max_length=140, db_column='trail_subsystem')
     trail_subsystem_id = models.IntegerField()
 
 
 class Trails(GISModel):
+    """Main table for trails. Containing main attributes for that describe each trail."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."trails"'
-    
+
     trails_id = models.AutoField(primary_key=True)
     geom = models.LineStringField(srid=3435, spatial_index=True)
 
@@ -901,13 +926,15 @@ class Trails(GISModel):
 
 
 class TrailsAmenity(GISModel):
+    """Geometry table for Trails. Each official trail tries to maintain topological consistency."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."trails_amenity"'
-        
+
     id = models.AutoField(primary_key=True, db_column='trails_amenities_id')
-    trail_info = models.ForeignKey('TrailsInfo', on_delete=models.DO_NOTHING) # there is no constraint in the legacy database
-    
+
+    trail_info = models.ForeignKey('TrailsInfo', on_delete=models.DO_NOTHING)
+
     # For the following group of fields, the type is
     # `quercus.bin_1_0_dom`, an integer that can only be 1 or 0.
     hiking = models.IntegerField()
@@ -922,10 +949,12 @@ class TrailsAmenity(GISModel):
 
 
 class TrailsDesc(GISModel):
+    """Table of all amenities associated with a trail segment.
+     Foreign Key reference trail_info.trail_info_id."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."trails_desc"'
-        
+
     id = models.AutoField(primary_key=True, db_column='trail_desc_id')
     trail_subsystem = models.CharField(max_length=100)
     alt_name = models.CharField(max_length=50)
@@ -940,13 +969,15 @@ class TrailsDesc(GISModel):
     season2 = models.CharField(max_length=50)
     special_hours = models.CharField(max_length=150)
     web_link = models.CharField(max_length=150)
-    
+
 
 class TrailsInfo(GISModel):
+    """Table of trail descriptions for a select group of trails.
+     Mainly used for the webmap. Foreign Key reference trail_info.trail_info_id."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."trails_info"'
-    
+
     id = models.AutoField(primary_key=True, db_column='trail_info_id')
     trails = models.ForeignKey(Trails, on_delete=models.RESTRICT)
 
@@ -978,10 +1009,13 @@ class TrailsInfo(GISModel):
 
 
 class TrailsMaintenance(GISModel):
+    """Table of attributes to identify maintenance responsibilities for trails
+     not only on FPDCC property but within the county trail system directly linked to the FPDCC.
+     Forgein Key reference trail_info.trail_info_id."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."trails_maintenance"'
-        
+
     id = models.AutoField(primary_key=True, db_column='trails_maintenance_id')
     poi_info = models.ForeignKey(TrailsInfo, on_delete=models.DO_NOTHING)
     iga_number = models.IntegerField()
@@ -990,6 +1024,8 @@ class TrailsMaintenance(GISModel):
 
 
 class Zones(GISModel):
+    """This table has been moved to pinus.zones. Should be removed from quercus in the future."""
+
     class Meta(GISModel.Meta):
         db_table = '"quercus"."zones"'
 

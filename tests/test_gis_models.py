@@ -6,37 +6,47 @@ import pytest
 
 from asset_dashboard import models
 
+
 def get_all(model):
+    """Helper function since every test gets a queryset.
+    Also that the qs isn't empty."""
     if bool(os.environ.get('TEST_GIS')):
         qs = model.objects.all()
         assert qs.count() > 0
         return qs
     else:
+        # skip the test if no TEST_GIS env variable
+        # kinda hacky / workaround !
+        # this function doesn't follow the SRP...
         pytest.skip()
+
 
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_buildings():
     buildings = get_all(models.Buildings)
 
     assert isinstance(buildings[0].geom, Polygon)
-    
+
     assert buildings[0].building_number
+
 
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_holdings():
     holdings = get_all(models.Holdings)
-    
+
     assert isinstance(holdings[0].geom, MultiPolygon)
-    
+
     assert holdings[0].city_name
+
 
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_license_iga():
-    l = get_all(models.LicenseIGA)
+    l_iga = get_all(models.LicenseIGA)
 
-    assert l[0]
-    assert l[0].license_no
-    assert l[0].structure
+    assert l_iga[0]
+    assert l_iga[0].license_no
+    assert l_iga[0].structure
+
 
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_mow_area_db():
@@ -44,6 +54,7 @@ def test_mow_area_db():
     assert mow[0].name
     assert mow[0].area
     assert mow[0].type
+
 
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_mwrd_fpd_lease():
@@ -53,10 +64,12 @@ def test_mwrd_fpd_lease():
     assert leases[0].lease_end
     assert leases[0].acreage
 
+
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_names():
     names = get_all(models.Names)
     assert names[0].name
+
 
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_nature_preserves():
@@ -66,11 +79,13 @@ def test_nature_preserves():
     assert nature_preserves[0].type
     assert nature_preserves[0].acreage
 
+
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_parking_entrance():
     parking_entrances = get_all(models.ParkingEntrance)
 
     assert isinstance(parking_entrances[0].geom, Point)
+
 
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_parking_entrance_info():
@@ -84,27 +99,30 @@ def test_parking_entrance_info():
     entrance_info = models.ParkingEntranceInfo.objects.get(parking_entrance=parking_entrance.id)
     assert parking_entrance == entrance_info.parking_entrance
 
+
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_parking_eval_17():
     p = get_all(models.ParkingEval17)
 
     assert p[0].date
-    
+
+
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_parking_lots():
     parking_lots = get_all(models.ParkingLots)
-    
+
     assert isinstance(parking_lots[0].geom, Polygon)
     assert parking_lots[0].id
     assert parking_lots[0].lot_surface
     assert parking_lots[0].zone
+
 
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_picnic_groves():
     picnic_groves = get_all(models.PicnicGroves)
 
     assert isinstance(picnic_groves[0].geom, Point)
-    
+
     assert picnic_groves[0].grove
     assert picnic_groves[0].location
 
@@ -128,19 +146,19 @@ def test_picnic_groves():
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_poi_amenity():
     poi_amenities = get_all(models.PoiAmenity)
-    
+
     # all the fields in this table are either 1 or 0.
     # since 0 evaluates to False, cast to a string for testing.
     assert str(poi_amenities[0].no_dogs)
     assert str(poi_amenities[0].bike_parking)
-    
+
     # test poi_amenity relationship with poi_info
     assert isinstance(poi_amenities[0].poi_info, models.PoiInfo)
 
     # test poi_info_id index
     poi_amenity = poi_amenities[0]
     poi_info_id = poi_amenity.poi_info.id
-    
+
     # lookup an amenity with the poi_info_id
     amenity_by_lookup = models.PoiAmenity.objects.get(poi_info_id=poi_info_id)
 
@@ -151,9 +169,9 @@ def test_poi_amenity():
 @pytest.mark.django_db(databases=['fp_postgis'])
 def test_poi_desc():
     poi_desc_qs = get_all(models.PoiDesc)
-    
+
     assert poi_desc_qs[0]
-    
+
     assert isinstance(poi_desc_qs[0].poi_info, models.PoiInfo)
 
 
@@ -253,5 +271,3 @@ def test_zones():
     zones = get_all(models.Zones)
 
     assert isinstance(zones[0].geom, MultiPolygon)
-
-# TODO test the relationships to the name table
