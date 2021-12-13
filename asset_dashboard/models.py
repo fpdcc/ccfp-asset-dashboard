@@ -413,8 +413,9 @@ class Holdings(GISModel):
     iga_exhibit = models.CharField(max_length=250)
     boundary_survey_corrected = models.CharField(max_length=3)
     
-    # TODO: this model is missing topogeom
-    # topogeom
+    # This model is missing a PostGIS `topogeom`, because 
+    # the Django geo library doesn't have this data type 
+    # and we don't yet need it.
 
 
 class LicenseIGA(GISModel):
@@ -555,8 +556,8 @@ class ParkingEval17(GISModel):
         
     id = models.AutoField(primary_key=True, db_column='parking_eval17_id')
     
-    # in postgres, these are all "character varying" with no character limit, 
-    # so i'm making them all TextFields since max_length is required for CharField
+    # In postgres, these are all "character varying" with no character limit. 
+    # I them all TextFields since max_length is required for CharField.
     latitude = models.TextField()
     longitude = models.TextField()
     date = models.TextField()
@@ -730,17 +731,6 @@ class PoiAmenity(GISModel):
     accessible_fishing = models.IntegerField()
     accessible_campsite = models.IntegerField()
 
-    # TODO: test
-    # >>> from asset_dashboard.models import PoiAmenity
-    # >>> a = PoiAmenity.objects.all()
-    # >>> a
-    # <QuerySet [<PoiAmenity: PoiAmenity object (2)>, <PoiAmenity: PoiAmenity object (131)>, <PoiAmenity: PoiAmenity object (318)>, <PoiAmenity: PoiAmenity object (167)>, <PoiAmenity: PoiAmenity object (151)>, <PoiAmenity: PoiAmenity object (399)>, <PoiAmenity: PoiAmenity object (400)>, <PoiAmenity: PoiAmenity object (144)>, <PoiAmenity: PoiAmenity object (90)>, <PoiAmenity: PoiAmenity object (1)>, <PoiAmenity: PoiAmenity object (3)>, <PoiAmenity: PoiAmenity object (401)>, <PoiAmenity: PoiAmenity object (402)>, <PoiAmenity: PoiAmenity object (161)>, <PoiAmenity: PoiAmenity object (159)>, <PoiAmenity: PoiAmenity object (26)>, <PoiAmenity: PoiAmenity object (375)>, <PoiAmenity: PoiAmenity object (126)>, <PoiAmenity: PoiAmenity object (163)>, <PoiAmenity: PoiAmenity object (209)>, '...(remaining elements truncated)...']>
-    # >>> a[0].bike_parking
-    # 0
-    # >>> a[0].poi_info
-    # <PoiInfo: PoiInfo object (263)>
-    # >>> a[0].poi_info.point_type
-    # 'special activity'
 
 class PoiDesc(GISModel):
 
@@ -772,23 +762,7 @@ class PoiDesc(GISModel):
     special_link = models.CharField(max_length=150)
     photo_link = models.CharField(max_length=150)
     fish_map = models.CharField(max_length=150)
-    accessibility_description = models.CharField(max_length=1050)
-    
-    # TODO: tests with foreign key and indexes
-    # >>> from asset_dashboard.models import PoiDesc
-    # >>> pd = PoiDesc.objects.all()
-    # >>> pd
-    # <QuerySet [<PoiDesc: PoiDesc object (337)>, <PoiDesc: PoiDesc object (248)>, <PoiDesc: PoiDesc object (60)>, <PoiDesc: PoiDesc object (245)>, <PoiDesc: PoiDesc object (10)>, <PoiDesc: PoiDesc object (271)>, <PoiDesc: PoiDesc object (226)>, <PoiDesc: PoiDesc object (28)>, <PoiDesc: PoiDesc object (277)>, <PoiDesc: PoiDesc object (272)>, <PoiDesc: PoiDesc object (33)>, <PoiDesc: PoiDesc object (68)>, <PoiDesc: PoiDesc object (156)>, <PoiDesc: PoiDesc object (281)>, <PoiDesc: PoiDesc object (137)>, <PoiDesc: PoiDesc object (6)>, <PoiDesc: PoiDesc object (119)>, <PoiDesc: PoiDesc object (86)>, <PoiDesc: PoiDesc object (87)>, <PoiDesc: PoiDesc object (35)>, '...(remaining elements truncated)...']>
-    # >>> pd[0]
-    # <PoiDesc: PoiDesc object (337)>
-    # >>> pd[0].poi_info
-    # <PoiInfo: PoiInfo object (1150)>
-    # >>> pd[0].poi_info.id
-    # 1150
-    # >>> p = PoiDesc.objects.get(poi_info=1150)
-    # >>> p
-    # <PoiDesc: PoiDesc object (337)>
-    
+    accessibility_description = models.CharField(max_length=1050)    
 
 
 class PoiInfo(GISModel):
@@ -803,8 +777,7 @@ class PoiInfo(GISModel):
         ]
     
     id = models.AutoField(primary_key=True, db_column='poi_info_id')
-    
-    # these reference the same thing?
+
     parking_info = models.ForeignKey(ParkingEntranceInfo, on_delete=models.RESTRICT)
     parking_connection = models.ForeignKey(ParkingEntranceInfo, on_delete=models.RESTRICT)
 
@@ -822,48 +795,22 @@ class PoiInfo(GISModel):
     zone_name = models.CharField(max_length=10)
     zonemapno = models.IntegerField()
     dwmapno = models.IntegerField()
-    
+
     pointsofinterest_id = models.IntegerField()
-    
+
     fpd_uid = models.IntegerField()
     web_poi = models.CharField(max_length=80)
     web_street_addr = models.CharField(max_length=100)
     web_muni_addr = models.CharField(max_length=100)
-    
+
     alt_nameid = models.IntegerField()
     alt2_nameid = models.IntegerField()
     trail_info_id = models.IntegerField()
     poi_info_id_group = models.IntegerField()
     maintenance_div = models.CharField(max_length=15)
     maintenance_div_nickname = models.CharField(max_length=25)
-    
-    #TODO: write test for this
-    # >>> from asset_dashboard.models import PoiInfo
-    # >>> pi = PoiInfo.objects.all()
-    # >>> pi
-    # <QuerySet [<PoiInfo: PoiInfo object (1160)>, <PoiInfo: PoiInfo object (1154)>, <PoiInfo: PoiInfo object (50)>, <PoiInfo: PoiInfo object (1156)>, <PoiInfo: PoiInfo object (975)>, <PoiInfo: PoiInfo object (1061)>, <PoiInfo: PoiInfo object (964)>, <PoiInfo: PoiInfo object (1092)>, <PoiInfo: PoiInfo object (1163)>, <PoiInfo: PoiInfo object (1164)>, <PoiInfo: PoiInfo object (1165)>, <PoiInfo: PoiInfo object (1166)>, <PoiInfo: PoiInfo object (1167)>, <PoiInfo: PoiInfo object (1168)>, <PoiInfo: PoiInfo object (1169)>, <PoiInfo: PoiInfo object (1170)>, <PoiInfo: PoiInfo object (1171)>, <PoiInfo: PoiInfo object (1172)>, <PoiInfo: PoiInfo object (1173)>, <PoiInfo: PoiInfo object (1157)>, '...(remaining elements truncated)...']>
-    # >>> pi[0].nameid
-    # <Names: Names object (665)>
-    # >>> pi[0].nameid.name
-    # 'Elizabeth Conkey Woods Nature Preserve'
-    # >>> pi[0].parking_connection
-    # <ParkingEntranceInfo: ParkingEntranceInfo object (50)>
-    # >>> p = PoiInfo.objects.get(parking_connection=50)
-    # >>> p
-    # <PoiInfo: PoiInfo object (1160)>
-    # >>> p.parking_connection
-    # <ParkingEntranceInfo: ParkingEntranceInfo object (50)>
-    # >>> p.parking_info
-    # <ParkingEntranceInfo: ParkingEntranceInfo object (0)>
-    # >>> p.parking_info.__dict__
-    # {'_state': <django.db.models.base.ModelState object at 0x7fa00a54ab50>, 'id': 0, 'parking_entrance_id': 0, 'multi_entrance': 'no', 'private_lot': None, 'lot_id': None, 'fpd_uid': None, 'parking_entrance_addr': None, 'trailaccess': 'no', 'entrance_closed': 'no'}
-    # >>> parking_info = PoiInfo.objects.get(parking_info=1)
-    # >>> parking_info
-    # <PoiInfo: PoiInfo object (279)>
-    # >>> parking_info.parking_info
-    # <ParkingEntranceInfo: ParkingEntranceInfo object (1)>
 
-# TODO: figure out this pk issue
+
 class PoiToTrails(GISModel):
 
     class Meta(GISModel.Meta):
@@ -881,16 +828,7 @@ class PoiToTrails(GISModel):
     poi_info = models.ForeignKey('PoiInfo', on_delete=models.DO_NOTHING, primary_key=True)
     trail_info = models.ForeignKey('TrailsInfo', on_delete=models.DO_NOTHING, primary_key=True)
     distance = models.FloatField()
-    
-    # >>> from asset_dashboard.models import PoiToTrails
-    # >>> pt = PoiToTrails.objects.all()
-    # >>> pt
-    # <QuerySet [<PoiToTrails: PoiToTrails object (268)>, <PoiToTrails: PoiToTrails object (268)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (160)>, <PoiToTrails: PoiToTrails object (384)>, <PoiToTrails: PoiToTrails object (277)>, <PoiToTrails: PoiToTrails object (275)>, <PoiToTrails: PoiToTrails object (378)>, <PoiToTrails: PoiToTrails object (24)>, <PoiToTrails: PoiToTrails object (202)>, <PoiToTrails: PoiToTrails object (202)>, <PoiToTrails: PoiToTrails object (347)>, <PoiToTrails: PoiToTrails object (277)>, <PoiToTrails: PoiToTrails object (15)>, <PoiToTrails: PoiToTrails object (347)>, <PoiToTrails: PoiToTrails object (203)>, <PoiToTrails: PoiToTrails object (372)>, <PoiToTrails: PoiToTrails object (295)>, <PoiToTrails: PoiToTrails object (277)>, <PoiToTrails: PoiToTrails object (161)>, '...(remaining elements truncated)...']>
-    # >>> pt[0].poi_info
-    # <PoiInfo: PoiInfo object (268)>
-    # >>> p = PoiToTrails.objects.filter(poi_info=270)
-    # >>> p
-    # <QuerySet [<PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, <PoiToTrails: PoiToTrails object (270)>, '...(remaining elements truncated)...']>
+
 
 class PointsOfInterest(GISModel):
 
@@ -901,17 +839,6 @@ class PointsOfInterest(GISModel):
     geom = models.PointField(srid=3435, spatial_index=True)
     web_map_geom = models.PointField(srid=4326)
     poi_info = models.ForeignKey('PoiInfo', on_delete=models.CASCADE)
-    
-    # >>> from asset_dashboard.models import PointsOfInterest
-    # >>> p = PointsOfInterest.objects.all()
-    
-    # test foreign key
-    # >>> p[0].poi_info
-    # <PoiInfo: PoiInfo object (1154)>
-    # >>> p[0].poi_info.public_access
-    # 'no'
-    # >>> p[0].poi_info.addr
-    # '801 River Rd'
 
 
 class Regions(GISModel):
@@ -944,10 +871,10 @@ class Signage(GISModel):
     full_path = models.CharField(max_length=100)
     latitude = models.DecimalField(max_digits=15, decimal_places=13)
     longitude = models.DecimalField(max_digits=15, decimal_places=13)
-    poi_info_id = models.IntegerField() # TODO: this probably is related to another table?
+    poi_info_id = models.IntegerField()
     current_image_date = models.DateField()
     sub_type = models.CharField(max_length=254)
-    trail_segment_id = models.IntegerField() # TODO: this probably is related to another table?
+    trail_segment_id = models.IntegerField()
     status = models.CharField(max_length=25)
     removed = models.CharField(max_length=3)
     bad_image = models.CharField(max_length=3)
@@ -960,23 +887,7 @@ class TrailSubsystemLu(GISModel):
         
     trail_subsystem = models.CharField(primary_key=True, max_length=140, db_column='trail_subsystem')
     trail_subsystem_id = models.IntegerField()
-    
-    # test:
-    # >>> from asset_dashboard.models import TrailSubsystemLu
-    # >>> t = TrailSubsystemLu.objects.all()
-    # >>> t
-    # <QuerySet [<TrailSubsystemLu: TrailSubsystemLu object (Burnham Greenway Trail System)>, <TrailSubsystemLu: TrailSubsystemLu object (Burnham Prairie Trail)>, <TrailSubsystemLu: TrailSubsystemLu object (Cal-Sag Trail)>, <TrailSubsystemLu: TrailSubsystemLu object (Centennial Trail)>, <TrailSubsystemLu: TrailSubsystemLu object (Crabtree Nature Center Trails)>, <TrailSubsystemLu: TrailSubsystemLu object (Crabtree Trail)>, <TrailSubsystemLu: TrailSubsystemLu object (Dan Ryan Trails)>, <TrailSubsystemLu: TrailSubsystemLu object (Deer Grove Trails)>, <TrailSubsystemLu: TrailSubsystemLu object (Des Plaines Trail System)>, <TrailSubsystemLu: TrailSubsystemLu object (Horizon Farm Trails)>, <TrailSubsystemLu: TrailSubsystemLu object (John Husar I&M Canal Trail)>, <TrailSubsystemLu: TrailSubsystemLu object (Kickapoo Woods Trail)>, <TrailSubsystemLu: TrailSubsystemLu object (Little Red Schoolhouse Nature Center Trails)>, <TrailSubsystemLu: TrailSubsystemLu object (Major Taylor Trail)>, <TrailSubsystemLu: TrailSubsystemLu object (Midlothian Reservoir Trails)>, <TrailSubsystemLu: TrailSubsystemLu object (Miller Meadow Trail)>, <TrailSubsystemLu: TrailSubsystemLu object (North Branch Trail System)>, <TrailSubsystemLu: TrailSubsystemLu object (Orland Grassland Trail System)>, <TrailSubsystemLu: TrailSubsystemLu object (Palos Trail System)>, <TrailSubsystemLu: TrailSubsystemLu object (Paul Douglas Trail)>, '...(remaining elements truncated)...']>
-    # >>> t = TrailSubsystemLu.objects.get(pk='Burnham Greenway Trail System')
-    # >>> t
-    # <TrailSubsystemLu: TrailSubsystemLu object (Burnham Greenway Trail System)>
 
-
-# TODO: write a class that actually works with a PostGIS topology.topogeometry type...
-# class TopoGeometry(GEOSGeometry):
-#     """Custom TopoGeometry type because it doesn't exist in the Django gis libray. 
-#     It automatically casts to a geometry. This is based on the PostGis documentation: 
-#     https://postgis.net/docs/topogeometry.html
-#     """
 
 class Trails(GISModel):
 
@@ -986,8 +897,7 @@ class Trails(GISModel):
     trails_id = models.AutoField(primary_key=True)
     geom = models.LineStringField(srid=3435, spatial_index=True)
 
-    # TODO: figure this out
-    # topogeom = TopoGeometry(geo_input=None, srid=3435)
+    # topogeom isn't implemented
 
 
 class TrailsAmenity(GISModel):
@@ -1031,12 +941,6 @@ class TrailsDesc(GISModel):
     special_hours = models.CharField(max_length=150)
     web_link = models.CharField(max_length=150)
     
-    # test:
-    # >>> from asset_dashboard.models import TrailsDesc
-    # >>> t = TrailsDesc.objects.all()
-    # >>> t
-    # <QuerySet [<TrailsDesc: TrailsDesc object (9)>, <TrailsDesc: TrailsDesc object (3)>, <TrailsDesc: TrailsDesc object (4)>, <TrailsDesc: TrailsDesc object (11)>, <TrailsDesc: TrailsDesc object (33)>, <TrailsDesc: TrailsDesc object (13)>, <TrailsDesc: TrailsDesc object (36)>, <TrailsDesc: TrailsDesc object (17)>, <TrailsDesc: TrailsDesc object (5)>, <TrailsDesc: TrailsDesc object (14)>, <TrailsDesc: TrailsDesc object (8)>, <TrailsDesc: TrailsDesc object (12)>, <TrailsDesc: TrailsDesc object (7)>, <TrailsDesc: TrailsDesc object (16)>, <TrailsDesc: TrailsDesc object (34)>, <TrailsDesc: TrailsDesc object (15)>, <TrailsDesc: TrailsDesc object (23)>, <TrailsDesc: TrailsDesc object (30)>, <TrailsDesc: TrailsDesc object (25)>, <TrailsDesc: TrailsDesc object (32)>, '...(remaining elements truncated)...']>
-
 
 class TrailsInfo(GISModel):
 
@@ -1045,13 +949,6 @@ class TrailsInfo(GISModel):
     
     id = models.AutoField(primary_key=True, db_column='trail_info_id')
     trails = models.ForeignKey(Trails, on_delete=models.RESTRICT)
-    # test query in the database:
-    # select a.trail_subsystem, b.geom from quercus.trails_info as a inner join quercus.trails as b on a.trails_id = b.trails_id where b.trails_id = 1557;
-    # TODO: the same query in django shell
-    # >>> from asset_dashboard.models import TrailsInfo
-    # >>> t = TrailsInfo.objects.all()
-    # >>> t[0].trails.geom
-    # <LineString object at 0x7fc861060c10>
 
     trail_system = models.CharField(max_length=100)
     trail_subsystem = models.CharField(max_length=100)

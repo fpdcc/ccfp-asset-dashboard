@@ -17,62 +17,64 @@ def django_db_setup(django_db_blocker, request):
     with django_db_blocker.unblock():
         setup_databases(verbosity=2, interactive=False, aliases=['default'])
 
-    # gis_db = settings.DATABASES['fp_postgis']
-    # test_gis_db_name = f'{gis_db["NAME"]}'
+    # Only run this when we don't want to test the GIS database
+    if not bool(os.environ.get('TEST_GIS')):
+        gis_db = settings.DATABASES['fp_postgis']
+        test_gis_db_name = f'test_{gis_db["NAME"]}'
 
-    # # The GIS database will already exist on a remote server to which we have
-    # # readonly access, i.e., we aren't managing the schema through migrations.
-    # # Manually create a test database, instead.
-    # create_conn = psycopg2.connect(
-    #     host=gis_db['HOST'],
-    #     user=gis_db['USER'],
-    #     password=gis_db['PASSWORD']
-    # )
-    # create_conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        # The GIS database will already exist on a remote server to which we have
+        # readonly access, i.e., we aren't managing the schema through migrations.
+        # Manually create a test database, instead.
+        create_conn = psycopg2.connect(
+            host=gis_db['HOST'],
+            user=gis_db['USER'],
+            password=gis_db['PASSWORD']
+        )
+        create_conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
-    # # with create_conn.cursor() as c:
-    # #     c.execute(f'DROP DATABASE IF EXISTS {test_gis_db_name}')
-    # #     c.execute(f'CREATE DATABASE {test_gis_db_name}')
-    # #     print(f'Created database "{test_gis_db_name}"')
+        with create_conn.cursor() as c:
+            c.execute(f'DROP DATABASE IF EXISTS {test_gis_db_name}')
+            c.execute(f'CREATE DATABASE {test_gis_db_name}')
+            print(f'Created database "{test_gis_db_name}"')
 
-    # # "Migrate" the test database from a dump of the schema from the fpdcc
-    # # database. N.b., this dump does not contain any data. To update the dump,
-    # # load in the GIS data as documented in the README, then:
-    # # pg_dump -U postgres -Fc --schema-only -h localhost -p 32002 -d fpdcc > tests/sql/fpdcc_schema.dump
-    # fpdcc_schema = os.path.join(os.path.dirname(__file__), 'sql', 'fpdcc_schema.dump')
-    # cmd_args = [
-    #     'pg_restore',
-    #     '--username=postgres',
-    #     '--host=fp-postgis',
-    #     '--port=5432',
-    #     f'--dbname={test_gis_db_name}',
-    #     fpdcc_schema
-    # ]
-    # subprocess.run(cmd_args, stdout=subprocess.PIPE)
-    # print(f'Migrated database "{test_gis_db_name}"')
+        # "Migrate" the test database from a dump of the schema from the fpdcc
+        # database. N.b., this dump does not contain any data. To update the dump,
+        # load in the GIS data as documented in the README, then:
+        # pg_dump -U postgres -Fc --schema-only -h localhost -p 32002 -d fpdcc > tests/sql/fpdcc_schema.dump
+        fpdcc_schema = os.path.join(os.path.dirname(__file__), 'sql', 'fpdcc_schema.dump')
+        cmd_args = [
+            'pg_restore',
+            '--username=postgres',
+            '--host=fp-postgis',
+            '--port=5432',
+            f'--dbname={test_gis_db_name}',
+            fpdcc_schema
+        ]
+        subprocess.run(cmd_args, stdout=subprocess.PIPE)
+        print(f'Migrated database "{test_gis_db_name}"')
 
-    # # Update the name of the database in the settings, since we set up this
-    # # test database manually.
-    # settings.DATABASES['fp_postgis']['NAME'] = test_gis_db_name
+        # Update the name of the database in the settings, since we set up this
+        # test database manually.
+        settings.DATABASES['fp_postgis']['NAME'] = test_gis_db_name
 
-    # def teardown_fpdcc():
-    #     with create_conn.cursor() as c:
-    #         # Clean up any lingering transactions against the GIS database.
-    #         # Not sure why they aren't closed out. Reference:
-    #         # https://github.com/pytest-dev/pytest-django/issues/696
-    #         c.execute(f'''
-    #             SELECT pg_terminate_backend(pg_stat_activity.pid)
-    #             FROM pg_stat_activity
-    #             WHERE pg_stat_activity.datname = '{test_gis_db_name}'
-    #             AND pid <> pg_backend_pid()
-    #         ''')
+        def teardown_fpdcc():
+            with create_conn.cursor() as c:
+                # Clean up any lingering transactions against the GIS database.
+                # Not sure why they aren't closed out. Reference:
+                # https://github.com/pytest-dev/pytest-django/issues/696
+                c.execute(f'''
+                    SELECT pg_terminate_backend(pg_stat_activity.pid)
+                    FROM pg_stat_activity
+                    WHERE pg_stat_activity.datname = '{test_gis_db_name}'
+                    AND pid <> pg_backend_pid()
+                ''')
 
-    #         c.execute(f'DROP DATABASE IF EXISTS {test_gis_db_name}')
-    #         print(f'Destroyed database "{test_gis_db_name}"')
+                c.execute(f'DROP DATABASE IF EXISTS {test_gis_db_name}')
+                print(f'Destroyed database "{test_gis_db_name}"')
 
-    #     create_conn.close()
+            create_conn.close()
 
-    # request.addfinalizer(teardown_fpdcc)
+        request.addfinalizer(teardown_fpdcc)
 
 
 @pytest.fixture
