@@ -1,4 +1,5 @@
 import os
+import functools
 
 from django.contrib.gis.geos import Polygon, MultiPolygon, Point, LineString
 
@@ -6,22 +7,43 @@ import pytest
 
 from asset_dashboard import models
 
+def use_gis_database(func):
+    """
+    Combine decorators that we add to every test, so 
+    we can use the gis database.
+    
+    These decorators do this: 
+      1. whether to run the test
+      2. set the database as the fp_postgis db.
+    """
+    skip_test = False if bool(os.environ.get('TEST_GIS')) else True
+
+    @functools.wraps(func)
+    @pytest.mark.skipif(skip_test, reason='TEST_GIS environment variable not set.')
+    @pytest.mark.django_db(databases=['fp_postgis'])
+    def combined_decorator(*args, **kwargs):
+        return func(*args, **kwargs)
+    
+    return combined_decorator
 
 def get_all(model):
     """Helper function since every test gets a queryset.
-    Also that the qs isn't empty."""
-    if bool(os.environ.get('TEST_GIS')):
-        qs = model.objects.all()
-        assert qs.count() > 0
-        return qs
-    else:
-        # skip the test if no TEST_GIS env variable
-        # kinda hacky / workaround !
-        # this function doesn't follow the SRP...
-        pytest.skip()
+     Also test that the queryset isn't empty."""
+    qs = model.objects.all()
+    assert qs.count() > 0
+    return qs
+    # if bool(os.environ.get('TEST_GIS')):
+    #     qs = model.objects.all()
+    #     assert qs.count() > 0
+    #     return qs
+    # else:
+    #     # skip the test if no TEST_GIS env variable
+    #     # kinda hacky / workaround !
+    #     # this function doesn't follow the SRP...
+    #     pytest.skip()
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_buildings():
     buildings = get_all(models.Buildings)
 
@@ -30,7 +52,7 @@ def test_buildings():
     assert buildings[0].building_number
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_holdings():
     holdings = get_all(models.Holdings)
 
@@ -39,7 +61,7 @@ def test_holdings():
     assert holdings[0].city_name
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_license_iga():
     l_iga = get_all(models.LicenseIGA)
 
@@ -48,7 +70,7 @@ def test_license_iga():
     assert l_iga[0].structure
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_mow_area_db():
     mow = get_all(models.MowAreaDB)
     assert mow[0].name
@@ -56,7 +78,7 @@ def test_mow_area_db():
     assert mow[0].type
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_mwrd_fpd_lease():
     leases = get_all(models.MwrdFpdLease)
 
@@ -65,13 +87,13 @@ def test_mwrd_fpd_lease():
     assert leases[0].acreage
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_names():
     names = get_all(models.Names)
     assert names[0].name
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_nature_preserves():
     nature_preserves = get_all(models.NaturePreserves)
 
@@ -80,14 +102,14 @@ def test_nature_preserves():
     assert nature_preserves[0].acreage
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_parking_entrance():
     parking_entrances = get_all(models.ParkingEntrance)
 
     assert isinstance(parking_entrances[0].geom, Point)
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_parking_entrance_info():
     parking_entrance_info = get_all(models.ParkingEntranceInfo)
 
@@ -100,14 +122,14 @@ def test_parking_entrance_info():
     assert parking_entrance == entrance_info.parking_entrance
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_parking_eval_17():
     p = get_all(models.ParkingEval17)
 
     assert p[0].date
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_parking_lots():
     parking_lots = get_all(models.ParkingLots)
 
@@ -117,7 +139,7 @@ def test_parking_lots():
     assert parking_lots[0].zone
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_picnic_groves():
     picnic_groves = get_all(models.PicnicGroves)
 
@@ -143,7 +165,7 @@ def test_picnic_groves():
     assert isinstance(nameid, models.Names)
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_poi_amenity():
     poi_amenities = get_all(models.PoiAmenity)
 
@@ -166,7 +188,7 @@ def test_poi_amenity():
     assert poi_amenity == amenity_by_lookup
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_poi_desc():
     poi_desc_qs = get_all(models.PoiDesc)
 
@@ -175,7 +197,7 @@ def test_poi_desc():
     assert isinstance(poi_desc_qs[0].poi_info, models.PoiInfo)
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_poi_info():
     poi_info_qs = get_all(models.PoiInfo)
 
@@ -190,7 +212,7 @@ def test_poi_info():
     assert parking_connection == p.parking_connection
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_poi_to_trails():
     poi_to_trails_qs = get_all(models.PoiToTrails)
 
@@ -201,7 +223,7 @@ def test_poi_to_trails():
     assert isinstance(poi_trail.trail_info, models.TrailsInfo)
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_points_of_interest():
     points_of_interest_qs = get_all(models.PointsOfInterest)
 
@@ -212,35 +234,35 @@ def test_points_of_interest():
     assert poi.poi_info.addr
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_regions():
     regions_qs = get_all(models.Regions)
 
     assert isinstance(regions_qs[0].geom, MultiPolygon)
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_signage():
     signage_qs = get_all(models.Signage)
 
     assert isinstance(signage_qs[0].geom, Point)
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_trail_substance_lu():
     trail_subsystem_qs = get_all(models.TrailSubsystemLu)
 
     assert trail_subsystem_qs[0].trail_subsystem_id
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_trails():
     trails = get_all(models.Trails)
 
     assert isinstance(trails[0].geom, LineString)
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def trails_amenity():
     trails_amenity_qs = get_all(models.TrailsAmenity)
 
@@ -248,14 +270,14 @@ def trails_amenity():
     assert isinstance(trails_amenity_qs[0].trails_info, models.TrailsInfo)
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_trails_desc():
     trails_desc_qs = get_all(models.TrailsDesc)
 
     assert trails_desc_qs[0].trail_subsystem
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_trails_info():
     trails_info_qs = get_all(models.TrailsInfo)
 
@@ -266,7 +288,7 @@ def test_trails_info():
     assert trails_info_qs[0].trails.geom
 
 
-@pytest.mark.django_db(databases=['fp_postgis'])
+@use_gis_database
 def test_zones():
     zones = get_all(models.Zones)
 
