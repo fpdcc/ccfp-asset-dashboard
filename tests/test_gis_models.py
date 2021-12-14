@@ -32,15 +32,6 @@ def get_all(model):
     qs = model.objects.all()
     assert qs.count() > 0
     return qs
-    # if bool(os.environ.get('TEST_GIS')):
-    #     qs = model.objects.all()
-    #     assert qs.count() > 0
-    #     return qs
-    # else:
-    #     # skip the test if no TEST_GIS env variable
-    #     # kinda hacky / workaround !
-    #     # this function doesn't follow the SRP...
-    #     pytest.skip()
 
 
 @use_gis_database
