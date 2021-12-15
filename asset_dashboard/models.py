@@ -62,10 +62,17 @@ class Phase(models.Model):
         ('Q4', 'Q4')
     ]
 
+    STATUS_CHOICES = [
+        ('unscheduled', 'Unscheduled'),
+        ('in-progress', 'In Progress'),
+        ('done', 'Done'),
+    ]
+
     sequence = models.IntegerField(default=1)
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='phases')
     phase_type = models.TextField(choices=PHASE_TYPE_CHOICES, null=True, blank=True)
     estimated_bid_quarter = models.TextField(choices=BID_QUARTER_CHOICES, null=True, blank=True)
+    status = models.TextField(choices=STATUS_CHOICES, default='unscheduled')
 
     def save(self, *args, **kwargs):
         if self.project.phases.count() > 0:

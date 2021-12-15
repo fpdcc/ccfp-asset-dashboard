@@ -77,7 +77,8 @@
     "sequence": 1,
     "project": 1,
     "phase_type": "phase_1",
-    "estimated_bid_quarter": "Q1"
+    "estimated_bid_quarter": "Q1",
+    "status": "unscheduled"
   }
 },
 {
@@ -87,7 +88,8 @@
     "sequence": 1,
     "project": 2,
     "phase_type": "phase_1",
-    "estimated_bid_quarter": "Q2"
+    "estimated_bid_quarter": "Q2",
+    "status": "unscheduled"
   }
 },
 {
