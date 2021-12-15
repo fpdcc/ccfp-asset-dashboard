@@ -103,6 +103,10 @@ class Migration(migrations.Migration):
             old_name='ProjectFinances',
             new_name='PhaseFinances',
         ),
+        migrations.AlterModelOptions(
+            name='phasefinances',
+            options={'verbose_name_plural': 'Phase Finances'},
+        ),
         migrations.RenameModel(
             old_name='ProjectFundingYear',
             new_name='PhaseFundingYear',
