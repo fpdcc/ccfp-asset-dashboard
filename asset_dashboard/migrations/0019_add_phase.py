@@ -6,52 +6,52 @@ import django.db.models.deletion
 import djmoney
 
 
-def project_to_task(apps, schema_editor):
+def project_to_phase(apps, schema_editor):
     '''
-    Create default task for each existing project, then migrate existing phase,
-    bid quarter, project finances, and funding year to task.
+    Create default phase for each existing project, then migrate existing phase,
+    bid quarter, project finances, and funding year to phase.
     '''
     Project = apps.get_model('asset_dashboard', 'Project')
-    Task = apps.get_model('asset_dashboard', 'Task')
-    TaskFinances = apps.get_model('asset_dashboard', 'TaskFinances')
-    TaskFundingYear = apps.get_model('asset_dashboard', 'TaskFundingYear')
+    Phase = apps.get_model('asset_dashboard', 'Phase')
+    PhaseFinances = apps.get_model('asset_dashboard', 'PhaseFinances')
+    PhaseFundingYear = apps.get_model('asset_dashboard', 'PhaseFundingYear')
 
     for project in Project.objects.all():
-        task = Task.objects.create(
+        phase = Phase.objects.create(
             project=project,
-            task_type=project.phase or 'implementation',
+            phase_type=project.phase or 'implementation',
             estimated_bid_quarter=project.estimated_bid_quarter,
         )
 
-        finances = TaskFinances.objects.get(project=project)
-        finances.task = task
+        finances = PhaseFinances.objects.get(project=project)
+        finances.phase = phase
         finances.save()
 
         try:
-            funding_year = TaskFundingYear.objects.get(project=project)
-        except TaskFundingYear.DoesNotExist:
+            funding_year = PhaseFundingYear.objects.get(project=project)
+        except PhaseFundingYear.DoesNotExist:
             print(f'Could not find funding year for project "{project.name}". Skipping...')
         else:
-            funding_year.task = task
+            funding_year.phase = phase
             funding_year.save()
 
-def task_to_project(apps, schema_editor):
+def phase_to_project(apps, schema_editor):
     '''
-    Migrate task type -> phase, estimated bid quarter, and funding year from
-    existing tasks back up to projects. If more than one task exists for a
-    given project, update the root project from the first task, then break
-    subsequent tasks into new projects, helpfully labelled with the task
+    Migrate phase type -> phase, estimated bid quarter, and funding year from
+    existing phases back up to projects. If more than one phase exists for a
+    given project, update the root project from the first phase, then break
+    subsequent phases into new projects, helpfully labelled with the phase
     sequence.
     '''
     Project = apps.get_model('asset_dashboard', 'Project')
-    Task = apps.get_model('asset_dashboard', 'Task')
-    TaskFinances = apps.get_model('asset_dashboard', 'TaskFinances')
-    TaskFundingYear = apps.get_model('asset_dashboard', 'TaskFundingYear')
+    Phase = apps.get_model('asset_dashboard', 'Phase')
+    PhaseFinances = apps.get_model('asset_dashboard', 'PhaseFinances')
+    PhaseFundingYear = apps.get_model('asset_dashboard', 'PhaseFundingYear')
 
     seen_ids = set()
 
-    for task in Task.objects.order_by('sequence'):
-        project = task.project
+    for phase in Phase.objects.order_by('sequence'):
+        project = phase.project
 
         if project.id in seen_ids:
             project = Project.objects.create(
@@ -60,22 +60,22 @@ def task_to_project(apps, schema_editor):
                     if k in {'name', 'description', 'category_id', 'section_owner_id'}
                 }
             )
-            project.name = f'{project.name} - Task {task.sequence}'
+            project.name = f'{project.name} - Phase {phase.sequence}'
         else:
             seen_ids.add(project.id)
 
-        project.phase = task.task_type
-        project.estimated_bid_quarter = task.estimated_bid_quarter
+        project.phase = phase.phase_type
+        project.estimated_bid_quarter = phase.estimated_bid_quarter
         project.save()
 
-        finances = TaskFinances.objects.get(task=task)
+        finances = PhaseFinances.objects.get(phase=phase)
         finances.project = project
         finances.save()
 
         try:
-            funding_year = TaskFundingYear.objects.get(task=task)
-        except TaskFundingYear.DoesNotExist:
-            print(f'Could not find funding year for task "{task.project.name} - {task.task_type}". Skipping...')
+            funding_year = PhaseFundingYear.objects.get(phase=phase)
+        except PhaseFundingYear.DoesNotExist:
+            print(f'Could not find funding year for phase "{phase.project.name} - {phase.phase_type}". Skipping...')
         else:
             funding_year.project = project
             funding_year.save()
@@ -90,48 +90,48 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Task',
+            name='Phase',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('sequence', models.IntegerField(default=1)),
-                ('task_type', models.TextField(blank=True, choices=[('phase_1', 'Phase 1'), ('phase_2', 'Phase 2'), ('phase_3_engineering', 'Phase 3 Engineering'), ('phase_3_construction', 'Phase 3 Construction'), ('feasibility', 'Feasibility'), ('design', 'Design'), ('construction', 'Construction'), ('implementation', 'Implementation')], null=True)),
+                ('phase_type', models.TextField(blank=True, choices=[('feasibility', 'Feasibility'), ('design', 'Design'), ('engineering', 'Engineering'), ('construction', 'Construction'), ('implementation', 'Implementation')], null=True)),
                 ('estimated_bid_quarter', models.TextField(blank=True, choices=[('Q1', 'Q1'), ('Q2', 'Q2'), ('Q3', 'Q3'), ('Q4', 'Q4')], null=True)),
-                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tasks', to='asset_dashboard.project')),
+                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='phases', to='asset_dashboard.project')),
             ],
         ),
         migrations.RenameModel(
             old_name='ProjectFinances',
-            new_name='TaskFinances',
+            new_name='PhaseFinances',
         ),
         migrations.RenameModel(
             old_name='ProjectFundingYear',
-            new_name='TaskFundingYear',
+            new_name='PhaseFundingYear',
         ),
         migrations.AddField(
-            model_name='taskfinances',
-            name='task',
-            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, to='asset_dashboard.task'),
+            model_name='phasefinances',
+            name='phase',
+            field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, to='asset_dashboard.phase'),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='taskfundingyear',
-            name='task',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='asset_dashboard.task'),
+            model_name='phasefundingyear',
+            name='phase',
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='asset_dashboard.phase'),
         ),
         # On forward migration, do nothing. On backward migration, add unique
         # and foreign key constraints to project ID "after" the data migration.
         migrations.RunSQL(
             sql=migrations.RunSQL.noop,
             reverse_sql=['''
-                ALTER TABLE asset_dashboard_taskfinances
-                ADD CONSTRAINT asset_dashboard_taskfinances_project_id_key
+                ALTER TABLE asset_dashboard_phasefinances
+                ADD CONSTRAINT asset_dashboard_phasefinances_project_id_key
                 UNIQUE (project_id)
             ''', '''
-                ALTER TABLE asset_dashboard_taskfinances
+                ALTER TABLE asset_dashboard_phasefinances
                 ADD FOREIGN KEY (project_id)
                 REFERENCES asset_dashboard_project
             ''', '''
-                ALTER TABLE asset_dashboard_taskfinances
+                ALTER TABLE asset_dashboard_phasefinances
                 ALTER COLUMN project_id
                 SET NOT NULL
             ''']
@@ -139,39 +139,39 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             sql=migrations.RunSQL.noop,
             reverse_sql=['''
-                ALTER TABLE asset_dashboard_taskfundingyear
-                ADD CONSTRAINT asset_dashboard_taskfundingyear_project_id_key
+                ALTER TABLE asset_dashboard_phasefundingyear
+                ADD CONSTRAINT asset_dashboard_phasefundingyear_project_id_key
                 UNIQUE (project_id)
             ''', '''
-                ALTER TABLE asset_dashboard_taskfundingyear
+                ALTER TABLE asset_dashboard_phasefundingyear
                 ADD FOREIGN KEY (project_id)
                 REFERENCES asset_dashboard_project
             ''']
         ),
         migrations.RunPython(
-            project_to_task, task_to_project
+            project_to_phase, phase_to_project
         ),
-        # Add the not null constraint to TaskFinances.task_id after the data
+        # Add the not null constraint to PhaseFinances.phase_id after the data
         # migration. Trying to create the column with the null constraint will
-        # fail due to existing TaskFinances records not having a default ID,
+        # fail due to existing PhaseFinances records not having a default ID,
         # and setting a default to handle that case fails because the OneToOne
         # field has a unique constraint.
         migrations.RunSQL(
             sql='''
-                ALTER TABLE asset_dashboard_taskfinances
-                ALTER COLUMN task_id
+                ALTER TABLE asset_dashboard_phasefinances
+                ALTER COLUMN phase_id
                 SET NOT NULL
             ''',
             reverse_sql='''
-                ALTER TABLE asset_dashboard_taskfinances
-                ALTER COLUMN task_id
+                ALTER TABLE asset_dashboard_phasefinances
+                ALTER COLUMN phase_id
                 DROP NOT NULL
             ''',
             state_operations=[
                 migrations.AlterField(
-                    model_name='taskfinances',
-                    name='task',
-                    field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='asset_dashboard.task'),
+                    model_name='phasefinances',
+                    name='phase',
+                    field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='asset_dashboard.phase'),
                     preserve_default=False,
                 )
             ],
@@ -191,45 +191,45 @@ class Migration(migrations.Migration):
         # which repopulates project_id.
         migrations.RunSQL(
             sql='''
-                ALTER TABLE asset_dashboard_taskfinances
+                ALTER TABLE asset_dashboard_phasefinances
                 DROP COLUMN project_id
                 CASCADE
             ''',
             reverse_sql='''
-                ALTER TABLE asset_dashboard_taskfinances
+                ALTER TABLE asset_dashboard_phasefinances
                 ADD COLUMN project_id integer
             ''',
             state_operations=[
                 migrations.RemoveField(
-                    model_name='taskfinances',
+                    model_name='phasefinances',
                     name='project'
                 )
             ],
         ),
         migrations.RunSQL(
             sql='''
-                ALTER TABLE asset_dashboard_taskfundingyear
+                ALTER TABLE asset_dashboard_phasefundingyear
                 DROP COLUMN project_id
                 CASCADE
             ''',
             reverse_sql='''
-                ALTER TABLE asset_dashboard_taskfundingyear
+                ALTER TABLE asset_dashboard_phasefundingyear
                 ADD COLUMN project_id integer
             ''',
             state_operations=[
                 migrations.RemoveField(
-                    model_name='taskfundingyear',
+                    model_name='phasefundingyear',
                     name='project'
                 )
             ],
         ),
         migrations.AlterField(
-            model_name='taskfinances',
+            model_name='phasefinances',
             name='budget_currency',
             field=djmoney.models.fields.CurrencyField(choices=[('XUA', 'ADB Unit of Account'), ('AFN', 'Afghani'), ('DZD', 'Algerian Dinar'), ('ARS', 'Argentine Peso'), ('AMD', 'Armenian Dram'), ('AWG', 'Aruban Guilder'), ('AUD', 'Australian Dollar'), ('AZN', 'Azerbaijanian Manat'), ('BSD', 'Bahamian Dollar'), ('BHD', 'Bahraini Dinar'), ('THB', 'Baht'), ('PAB', 'Balboa'), ('BBD', 'Barbados Dollar'), ('BYN', 'Belarussian Ruble'), ('BYR', 'Belarussian Ruble'), ('BZD', 'Belize Dollar'), ('BMD', 'Bermudian Dollar (customarily known as Bermuda Dollar)'), ('BTN', 'Bhutanese ngultrum'), ('VEF', 'Bolivar Fuerte'), ('BOB', 'Boliviano'), ('XBA', 'Bond Markets Units European Composite Unit (EURCO)'), ('BRL', 'Brazilian Real'), ('BND', 'Brunei Dollar'), ('BGN', 'Bulgarian Lev'), ('BIF', 'Burundi Franc'), ('XOF', 'CFA Franc BCEAO'), ('XAF', 'CFA franc BEAC'), ('XPF', 'CFP Franc'), ('CAD', 'Canadian Dollar'), ('CVE', 'Cape Verde Escudo'), ('KYD', 'Cayman Islands Dollar'), ('CLP', 'Chilean peso'), ('XTS', 'Codes specifically reserved for testing purposes'), ('COP', 'Colombian peso'), ('KMF', 'Comoro Franc'), ('CDF', 'Congolese franc'), ('BAM', 'Convertible Marks'), ('NIO', 'Cordoba Oro'), ('CRC', 'Costa Rican Colon'), ('HRK', 'Croatian Kuna'), ('CUP', 'Cuban Peso'), ('CUC', 'Cuban convertible peso'), ('CZK', 'Czech Koruna'), ('GMD', 'Dalasi'), ('DKK', 'Danish Krone'), ('MKD', 'Denar'), ('DJF', 'Djibouti Franc'), ('STD', 'Dobra'), ('DOP', 'Dominican Peso'), ('VND', 'Dong'), ('XCD', 'East Caribbean Dollar'), ('EGP', 'Egyptian Pound'), ('SVC', 'El Salvador Colon'), ('ETB', 'Ethiopian Birr'), ('EUR', 'Euro'), ('XBB', 'European Monetary Unit (E.M.U.-6)'), ('XBD', 'European Unit of Account 17(E.U.A.-17)'), ('XBC', 'European Unit of Account 9(E.U.A.-9)'), ('FKP', 'Falkland Islands Pound'), ('FJD', 'Fiji Dollar'), ('HUF', 'Forint'), ('GHS', 'Ghana Cedi'), ('GIP', 'Gibraltar Pound'), ('XAU', 'Gold'), ('XFO', 'Gold-Franc'), ('PYG', 'Guarani'), ('GNF', 'Guinea Franc'), ('GYD', 'Guyana Dollar'), ('HTG', 'Haitian gourde'), ('HKD', 'Hong Kong Dollar'), ('UAH', 'Hryvnia'), ('ISK', 'Iceland Krona'), ('INR', 'Indian Rupee'), ('IRR', 'Iranian Rial'), ('IQD', 'Iraqi Dinar'), ('IMP', 'Isle of Man Pound'), ('JMD', 'Jamaican Dollar'), ('JOD', 'Jordanian Dinar'), ('KES', 'Kenyan Shilling'), ('PGK', 'Kina'), ('LAK', 'Kip'), ('KWD', 'Kuwaiti Dinar'), ('AOA', 'Kwanza'), ('MMK', 'Kyat'), ('GEL', 'Lari'), ('LVL', 'Latvian Lats'), ('LBP', 'Lebanese Pound'), ('ALL', 'Lek'), ('HNL', 'Lempira'), ('SLL', 'Leone'), ('LSL', 'Lesotho loti'), ('LRD', 'Liberian Dollar'), ('LYD', 'Libyan Dinar'), ('SZL', 'Lilangeni'), ('LTL', 'Lithuanian Litas'), ('MGA', 'Malagasy Ariary'), ('MWK', 'Malawian Kwacha'), ('MYR', 'Malaysian Ringgit'), ('TMM', 'Manat'), ('MUR', 'Mauritius Rupee'), ('MZN', 'Metical'), ('MXV', 'Mexican Unidad de Inversion (UDI)'), ('MXN', 'Mexican peso'), ('MDL', 'Moldovan Leu'), ('MAD', 'Moroccan Dirham'), ('BOV', 'Mvdol'), ('NGN', 'Naira'), ('ERN', 'Nakfa'), ('NAD', 'Namibian Dollar'), ('NPR', 'Nepalese Rupee'), ('ANG', 'Netherlands Antillian Guilder'), ('ILS', 'New Israeli Sheqel'), ('RON', 'New Leu'), ('TWD', 'New Taiwan Dollar'), ('NZD', 'New Zealand Dollar'), ('KPW', 'North Korean Won'), ('NOK', 'Norwegian Krone'), ('PEN', 'Nuevo Sol'), ('MRO', 'Ouguiya'), ('TOP', 'Paanga'), ('PKR', 'Pakistan Rupee'), ('XPD', 'Palladium'), ('MOP', 'Pataca'), ('PHP', 'Philippine Peso'), ('XPT', 'Platinum'), ('GBP', 'Pound Sterling'), ('BWP', 'Pula'), ('QAR', 'Qatari Rial'), ('GTQ', 'Quetzal'), ('ZAR', 'Rand'), ('OMR', 'Rial Omani'), ('KHR', 'Riel'), ('MVR', 'Rufiyaa'), ('IDR', 'Rupiah'), ('RUB', 'Russian Ruble'), ('RWF', 'Rwanda Franc'), ('XDR', 'SDR'), ('SHP', 'Saint Helena Pound'), ('SAR', 'Saudi Riyal'), ('RSD', 'Serbian Dinar'), ('SCR', 'Seychelles Rupee'), ('XAG', 'Silver'), ('SGD', 'Singapore Dollar'), ('SBD', 'Solomon Islands Dollar'), ('KGS', 'Som'), ('SOS', 'Somali Shilling'), ('TJS', 'Somoni'), ('SSP', 'South Sudanese Pound'), ('LKR', 'Sri Lanka Rupee'), ('XSU', 'Sucre'), ('SDG', 'Sudanese Pound'), ('SRD', 'Surinam Dollar'), ('SEK', 'Swedish Krona'), ('CHF', 'Swiss Franc'), ('SYP', 'Syrian Pound'), ('BDT', 'Taka'), ('WST', 'Tala'), ('TZS', 'Tanzanian Shilling'), ('KZT', 'Tenge'), ('XXX', 'The codes assigned for transactions where no currency is involved'), ('TTD', 'Trinidad and Tobago Dollar'), ('MNT', 'Tugrik'), ('TND', 'Tunisian Dinar'), ('TRY', 'Turkish Lira'), ('TMT', 'Turkmenistan New Manat'), ('TVD', 'Tuvalu dollar'), ('AED', 'UAE Dirham'), ('XFU', 'UIC-Franc'), ('USD', 'US Dollar'), ('USN', 'US Dollar (Next day)'), ('UGX', 'Uganda Shilling'), ('CLF', 'Unidad de Fomento'), ('COU', 'Unidad de Valor Real'), ('UYI', 'Uruguay Peso en Unidades Indexadas (URUIURUI)'), ('UYU', 'Uruguayan peso'), ('UZS', 'Uzbekistan Sum'), ('VUV', 'Vatu'), ('CHE', 'WIR Euro'), ('CHW', 'WIR Franc'), ('KRW', 'Won'), ('YER', 'Yemeni Rial'), ('JPY', 'Yen'), ('CNY', 'Yuan Renminbi'), ('ZMK', 'Zambian Kwacha'), ('ZMW', 'Zambian Kwacha'), ('ZWD', 'Zimbabwe Dollar A/06'), ('ZWN', 'Zimbabwe dollar A/08'), ('ZWL', 'Zimbabwe dollar A/09'), ('PLN', 'Zloty')], default='USD', editable=False, max_length=3),
         ),
         migrations.AlterField(
-            model_name='taskfundingyear',
+            model_name='phasefundingyear',
             name='funds_currency',
             field=djmoney.models.fields.CurrencyField(choices=[('XUA', 'ADB Unit of Account'), ('AFN', 'Afghani'), ('DZD', 'Algerian Dinar'), ('ARS', 'Argentine Peso'), ('AMD', 'Armenian Dram'), ('AWG', 'Aruban Guilder'), ('AUD', 'Australian Dollar'), ('AZN', 'Azerbaijanian Manat'), ('BSD', 'Bahamian Dollar'), ('BHD', 'Bahraini Dinar'), ('THB', 'Baht'), ('PAB', 'Balboa'), ('BBD', 'Barbados Dollar'), ('BYN', 'Belarussian Ruble'), ('BYR', 'Belarussian Ruble'), ('BZD', 'Belize Dollar'), ('BMD', 'Bermudian Dollar (customarily known as Bermuda Dollar)'), ('BTN', 'Bhutanese ngultrum'), ('VEF', 'Bolivar Fuerte'), ('BOB', 'Boliviano'), ('XBA', 'Bond Markets Units European Composite Unit (EURCO)'), ('BRL', 'Brazilian Real'), ('BND', 'Brunei Dollar'), ('BGN', 'Bulgarian Lev'), ('BIF', 'Burundi Franc'), ('XOF', 'CFA Franc BCEAO'), ('XAF', 'CFA franc BEAC'), ('XPF', 'CFP Franc'), ('CAD', 'Canadian Dollar'), ('CVE', 'Cape Verde Escudo'), ('KYD', 'Cayman Islands Dollar'), ('CLP', 'Chilean peso'), ('XTS', 'Codes specifically reserved for testing purposes'), ('COP', 'Colombian peso'), ('KMF', 'Comoro Franc'), ('CDF', 'Congolese franc'), ('BAM', 'Convertible Marks'), ('NIO', 'Cordoba Oro'), ('CRC', 'Costa Rican Colon'), ('HRK', 'Croatian Kuna'), ('CUP', 'Cuban Peso'), ('CUC', 'Cuban convertible peso'), ('CZK', 'Czech Koruna'), ('GMD', 'Dalasi'), ('DKK', 'Danish Krone'), ('MKD', 'Denar'), ('DJF', 'Djibouti Franc'), ('STD', 'Dobra'), ('DOP', 'Dominican Peso'), ('VND', 'Dong'), ('XCD', 'East Caribbean Dollar'), ('EGP', 'Egyptian Pound'), ('SVC', 'El Salvador Colon'), ('ETB', 'Ethiopian Birr'), ('EUR', 'Euro'), ('XBB', 'European Monetary Unit (E.M.U.-6)'), ('XBD', 'European Unit of Account 17(E.U.A.-17)'), ('XBC', 'European Unit of Account 9(E.U.A.-9)'), ('FKP', 'Falkland Islands Pound'), ('FJD', 'Fiji Dollar'), ('HUF', 'Forint'), ('GHS', 'Ghana Cedi'), ('GIP', 'Gibraltar Pound'), ('XAU', 'Gold'), ('XFO', 'Gold-Franc'), ('PYG', 'Guarani'), ('GNF', 'Guinea Franc'), ('GYD', 'Guyana Dollar'), ('HTG', 'Haitian gourde'), ('HKD', 'Hong Kong Dollar'), ('UAH', 'Hryvnia'), ('ISK', 'Iceland Krona'), ('INR', 'Indian Rupee'), ('IRR', 'Iranian Rial'), ('IQD', 'Iraqi Dinar'), ('IMP', 'Isle of Man Pound'), ('JMD', 'Jamaican Dollar'), ('JOD', 'Jordanian Dinar'), ('KES', 'Kenyan Shilling'), ('PGK', 'Kina'), ('LAK', 'Kip'), ('KWD', 'Kuwaiti Dinar'), ('AOA', 'Kwanza'), ('MMK', 'Kyat'), ('GEL', 'Lari'), ('LVL', 'Latvian Lats'), ('LBP', 'Lebanese Pound'), ('ALL', 'Lek'), ('HNL', 'Lempira'), ('SLL', 'Leone'), ('LSL', 'Lesotho loti'), ('LRD', 'Liberian Dollar'), ('LYD', 'Libyan Dinar'), ('SZL', 'Lilangeni'), ('LTL', 'Lithuanian Litas'), ('MGA', 'Malagasy Ariary'), ('MWK', 'Malawian Kwacha'), ('MYR', 'Malaysian Ringgit'), ('TMM', 'Manat'), ('MUR', 'Mauritius Rupee'), ('MZN', 'Metical'), ('MXV', 'Mexican Unidad de Inversion (UDI)'), ('MXN', 'Mexican peso'), ('MDL', 'Moldovan Leu'), ('MAD', 'Moroccan Dirham'), ('BOV', 'Mvdol'), ('NGN', 'Naira'), ('ERN', 'Nakfa'), ('NAD', 'Namibian Dollar'), ('NPR', 'Nepalese Rupee'), ('ANG', 'Netherlands Antillian Guilder'), ('ILS', 'New Israeli Sheqel'), ('RON', 'New Leu'), ('TWD', 'New Taiwan Dollar'), ('NZD', 'New Zealand Dollar'), ('KPW', 'North Korean Won'), ('NOK', 'Norwegian Krone'), ('PEN', 'Nuevo Sol'), ('MRO', 'Ouguiya'), ('TOP', 'Paanga'), ('PKR', 'Pakistan Rupee'), ('XPD', 'Palladium'), ('MOP', 'Pataca'), ('PHP', 'Philippine Peso'), ('XPT', 'Platinum'), ('GBP', 'Pound Sterling'), ('BWP', 'Pula'), ('QAR', 'Qatari Rial'), ('GTQ', 'Quetzal'), ('ZAR', 'Rand'), ('OMR', 'Rial Omani'), ('KHR', 'Riel'), ('MVR', 'Rufiyaa'), ('IDR', 'Rupiah'), ('RUB', 'Russian Ruble'), ('RWF', 'Rwanda Franc'), ('XDR', 'SDR'), ('SHP', 'Saint Helena Pound'), ('SAR', 'Saudi Riyal'), ('RSD', 'Serbian Dinar'), ('SCR', 'Seychelles Rupee'), ('XAG', 'Silver'), ('SGD', 'Singapore Dollar'), ('SBD', 'Solomon Islands Dollar'), ('KGS', 'Som'), ('SOS', 'Somali Shilling'), ('TJS', 'Somoni'), ('SSP', 'South Sudanese Pound'), ('LKR', 'Sri Lanka Rupee'), ('XSU', 'Sucre'), ('SDG', 'Sudanese Pound'), ('SRD', 'Surinam Dollar'), ('SEK', 'Swedish Krona'), ('CHF', 'Swiss Franc'), ('SYP', 'Syrian Pound'), ('BDT', 'Taka'), ('WST', 'Tala'), ('TZS', 'Tanzanian Shilling'), ('KZT', 'Tenge'), ('XXX', 'The codes assigned for transactions where no currency is involved'), ('TTD', 'Trinidad and Tobago Dollar'), ('MNT', 'Tugrik'), ('TND', 'Tunisian Dinar'), ('TRY', 'Turkish Lira'), ('TMT', 'Turkmenistan New Manat'), ('TVD', 'Tuvalu dollar'), ('AED', 'UAE Dirham'), ('XFU', 'UIC-Franc'), ('USD', 'US Dollar'), ('USN', 'US Dollar (Next day)'), ('UGX', 'Uganda Shilling'), ('CLF', 'Unidad de Fomento'), ('COU', 'Unidad de Valor Real'), ('UYI', 'Uruguay Peso en Unidades Indexadas (URUIURUI)'), ('UYU', 'Uruguayan peso'), ('UZS', 'Uzbekistan Sum'), ('VUV', 'Vatu'), ('CHE', 'WIR Euro'), ('CHW', 'WIR Franc'), ('KRW', 'Won'), ('YER', 'Yemeni Rial'), ('JPY', 'Yen'), ('CNY', 'Yuan Renminbi'), ('ZMK', 'Zambian Kwacha'), ('ZMW', 'Zambian Kwacha'), ('ZWD', 'Zimbabwe Dollar A/06'), ('ZWN', 'Zimbabwe dollar A/08'), ('ZWL', 'Zimbabwe dollar A/09'), ('PLN', 'Zloty')], default='USD', editable=False, max_length=3),
         ),

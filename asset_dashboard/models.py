@@ -41,21 +41,16 @@ class Project(models.Model):
         return self.name
 
 
-class Task(models.Model):
+class Phase(models.Model):
     """
-    A sub-project unit of work. Projects without defined tasks are assigned a
-    default Task of type "implementation".
+    A sub-project unit of work. Projects without defined phases are assigned a
+    default Phase of type "implementation".
     """
 
-    # TODO: Identify better choice list (e.g., what's the difference between
-    # Phase 3 Construction and Construction?)
-    TASK_TYPE_CHOICES = [
-        ('phase_1', 'Phase 1'),
-        ('phase_2', 'Phase 2'),
-        ('phase_3_engineering', 'Phase 3 Engineering'),
-        ('phase_3_construction', 'Phase 3 Construction'),
+    PHASE_TYPE_CHOICES = [
         ('feasibility', 'Feasibility'),
         ('design', 'Design'),
+        ('engineering', 'Engineering'),
         ('construction', 'Construction'),
         ('implementation', 'Implementation'),
     ]
@@ -68,10 +63,19 @@ class Task(models.Model):
     ]
 
     sequence = models.IntegerField(default=1)
-    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='tasks')
-    task_type = models.TextField(choices=TASK_TYPE_CHOICES, null=True, blank=True)
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='phases')
+    phase_type = models.TextField(choices=PHASE_TYPE_CHOICES, null=True, blank=True)
     estimated_bid_quarter = models.TextField(choices=BID_QUARTER_CHOICES, null=True, blank=True)
-    # funding = models.ForeignKey('FundingSource', on_delete=models.SET_NULL)
+
+    def save(self, *args, **kwargs):
+        if self.project.phases.count() > 0:
+            max_phase_sequence = self.project.phases.order_by('sequence')\
+                                                    .last()\
+                                                    .sequence
+
+            self.sequence = max_phase_sequence + 1
+
+        super().save(*args, **kwargs)
 
 
 class ScoreField(models.IntegerField):
@@ -129,7 +133,7 @@ class ProjectScore(models.Model):
         verbose_name_plural = 'Project Scores'
 
 
-class TaskFinances(models.Model):
+class PhaseFinances(models.Model):
 
     FUNDING_CHOICES = [
         ('unfunded', 'Unfunded'),
@@ -138,20 +142,20 @@ class TaskFinances(models.Model):
         ('funded', 'Funded')
     ]
 
-    task = models.OneToOneField('Task', on_delete=models.CASCADE)
+    phase = models.OneToOneField('Phase', on_delete=models.CASCADE)
     budget = MoneyField(default_currency='USD',
                         default=0.00,
                         max_digits=11)
 
     class Meta:
-        verbose_name_plural = 'Project Finances'
+        verbose_name_plural = 'Phase Finances'
 
 
-class TaskFundingYear(models.Model):
+class PhaseFundingYear(models.Model):
 
-    task = models.ForeignKey('Task',
-                             null=True,
-                             on_delete=models.CASCADE)
+    phase = models.ForeignKey('Phase',
+                              null=True,
+                              on_delete=models.CASCADE)
     year = models.IntegerField()
     funds = MoneyField(default_currency='USD',
                        default=0.00,

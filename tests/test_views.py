@@ -1,6 +1,6 @@
 import pytest
 from django.urls import reverse
-from asset_dashboard.models import Project, TaskFinances, ProjectScore, ProjectCategory, User
+from asset_dashboard.models import Project, PhaseFinances, ProjectScore, ProjectCategory, User
 from django.forms.models import model_to_dict
 import json
 from django.utils.html import escape
@@ -194,15 +194,15 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
     assert updated_project[0].name == valid_form_data['name']
     assert updated_project[0].description == valid_form_data['description']
     # TODO: These are no longer associated with the project. Update this test
-    # once we implement Task management.
+    # once we implement Phase management.
     # assert updated_project[0].phase == valid_form_data['phase']
     # assert updated_project[0].estimated_bid_quarter == valid_form_data['estimated_bid_quarter']
     assert updated_project[0].category_id == project_category.id
     assert updated_project[0].section_owner_id == section_owner.id
     
-    # TaskFinances model
-    task_finances = TaskFinances.objects.get(task__project=project)
-    assert task_finances.budget.amount == valid_form_data['budget_0']
+    # PhaseFinances model
+    phase_finances = PhaseFinances.objects.get(phase__project=project)
+    assert phase_finances.budget.amount == valid_form_data['budget_0']
     
     # ProjectScore model, related to Project
     assert updated_project[0].projectscore.core_mission_score == valid_form_data['core_mission_score']

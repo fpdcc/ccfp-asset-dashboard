@@ -1,5 +1,5 @@
 from django.forms import ModelForm, TextInput
-from .models import Project, TaskFinances, ProjectScore, ProjectCategory
+from .models import Project, PhaseFinances, ProjectScore, ProjectCategory
 
 
 class StyledFormMixin(object):
@@ -64,9 +64,9 @@ class ProjectCategoryForm(StyledFormMixin, ModelForm):
         ]
 
 
-class TaskFinancesForm(StyledFormMixin, ModelForm):
+class PhaseFinancesForm(StyledFormMixin, ModelForm):
     class Meta:
-        model = TaskFinances
+        model = PhaseFinances
         fields = [
             'budget'
         ]
