@@ -91,10 +91,13 @@ docker-compose -f docker-compose.yml -f tests/docker-compose.yml run --rm app
 ### Dumping and Loading Fixture Data
 Dump the data:
 ```bash
-docker-compose run --rm app python manage.py dumpdata --natural-foreign --indent 2 \
--e contenttypes \
--e sessions \
-asset_dashboard auth > asset_dashboard/fixtures/data.json
+docker-compose run --rm app python manage.py dumpdata \
+    --natural-foreign \
+    --indent 2 \
+    -e contenttypes \
+    -e sessions \
+    -o asset_dashboard/fixtures/data.json \
+    asset_dashboard auth
 ```
 
 Load the data:

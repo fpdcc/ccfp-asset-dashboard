@@ -7,8 +7,9 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import HouseDistrict, Project, ProjectCategory, ProjectFinances, ProjectScore, Section, SenateDistrict, CommissionerDistrict
-from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, ProjectFinancesForm
+from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
+    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances
+from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, PhaseFinancesForm
 from django.contrib import messages
 from django.db.models import Q
 from django.utils.html import escape
@@ -23,7 +24,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(*args, **kwargs)
 
         projects = Project.objects.all()
-        projects = projects.select_related('section_owner', 'category', 'projectfinances', 'projectscore')
+        projects = projects.select_related('section_owner', 'category', 'phasefinances', 'projectscore')
 
         projects_list = []
         for prj in projects:
@@ -112,7 +113,11 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
 
             project = Project.objects.create(**project_data)
             ProjectScore.objects.get_or_create(project=project)
-            ProjectFinances.objects.get_or_create(project=project)
+
+            # TODO: Is there any other information we should capture from the
+            # form for the Phase?
+            phase = Phase.objects.create(project=project)
+            PhaseFinances.objects.get_or_create(phase=phase)
 
             messages.success(self.request, 'Project successfully created!')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
@@ -131,7 +136,9 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        project_finances, _ = ProjectFinances.objects.get_or_create(project_id=self.object.id)
+        # TODO: This arbitrarily grabs the first Phase associated with a Project.
+        # Fix this when we decide what the Phase management UI should look like
+        phase_finances, _ = PhaseFinances.objects.get_or_create(phase=self.object.phases.first())
 
         if self.request.POST:
             # instantiate the forms with data from the post request
@@ -139,12 +146,12 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
 
             context['score_form'] = ProjectScoreForm(request_data, instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(request_data, instance=self.object.category)
-            context['finances_form'] = ProjectFinancesForm(request_data, instance=project_finances)
+            context['finances_form'] = PhaseFinancesForm(request_data, instance=phase_finances)
         else:
             context['total_score'] = ProjectScore.objects.get(project=self.object).total_score
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
-            context['finances_form'] = ProjectFinancesForm(instance=project_finances)
+            context['finances_form'] = PhaseFinancesForm(instance=phase_finances)
 
         return context
 
