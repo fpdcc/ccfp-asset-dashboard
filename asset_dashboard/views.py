@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
     Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances
-from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, PhaseFinancesForm
+from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, PhaseFinancesForm, PhaseForm
 from django.contrib import messages
 from django.db.models import Q
 from django.utils.html import escape
@@ -62,7 +62,7 @@ class ProjectListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # send the form to a modal in this view
+        # send a new Project form to the modal in this view's template
         form = ProjectForm()
         context['form'] = form
 
@@ -112,8 +112,6 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
             project = Project.objects.create(**project_data)
             ProjectScore.objects.get_or_create(project=project)
 
-            # TODO: Is there any other information we should capture from the
-            # form for the Phase?
             phase = Phase.objects.create(project=project)
             PhaseFinances.objects.get_or_create(phase=phase)
 
@@ -145,11 +143,13 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
             context['score_form'] = ProjectScoreForm(request_data, instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(request_data, instance=self.object.category)
             context['finances_form'] = PhaseFinancesForm(request_data, instance=phase_finances)
+            context['phase_form'] = PhaseForm(request_data, instance=phase_finances.phase)
         else:
             context['total_score'] = ProjectScore.objects.get(project=self.object).total_score
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
             context['finances_form'] = PhaseFinancesForm(instance=phase_finances)
+            context['phase_form'] = PhaseForm(instance=phase_finances.phase)
 
         return context
 
@@ -162,7 +162,8 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
         forms = {
             'project': form,
             'score': context['score_form'],
-            'finances': context['finances_form']
+            'finances': context['finances_form'],
+            'phase': context['phase_form']
         }
 
         for form_instance in forms:
