@@ -8,7 +8,7 @@ from asset_dashboard.models import Section, NaturePreserves
 @pytest.mark.django_db(databases=['default', 'fp_postgis'])
 def test_gis_query(nature_preserves):
     assert NaturePreserves.objects.db == 'fp_postgis'
-    assert NaturePreserves.objects.count() == 1
+    assert NaturePreserves.objects.count() > 0
 
     with pytest.raises(ProgrammingError) as excinfo:
         NaturePreserves.objects.using('default').count()

@@ -82,10 +82,15 @@ To extend Bootstrap styles and add new styles, edit `app.css` directly.
 
 ### Running tests
 
-Run tests with Docker Compose:
+Run tests without testing the GIS models:
 
 ```
 docker-compose -f docker-compose.yml -f tests/docker-compose.yml run --rm app
+```
+
+To test the GIS models in your local environment with the restored database, use this command with the `TEST_GIS` environment variable:
+```
+docker-compose -f docker-compose.yml -f tests/docker-compose.yml run -e TEST_GIS=True --rm app
 ```
 
 ### Dumping and Loading Fixture Data
