@@ -23,28 +23,26 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
 
-        projects = Project.objects.all()
-        projects = projects.select_related('section_owner', 'category', 'phasefinances', 'projectscore')
+        phases = Phase.objects.all().select_related('project')
 
-        projects_list = []
-        for prj in projects:
-            project = {
-                'pk': prj.id,
-                'name': prj.name,
-                'description': prj.description,
-                'section': prj.section_owner.name,
-                'category': prj.category.name,
-                'total_budget': prj.projectfinances.budget.amount,
-                'total_score': prj.projectscore.total_score,
-                'phase': prj.phase,
-                'zones': list(prj.zones.all().values('name')),
-                'house_districts': list(prj.house_districts.all().values('name')),
-                'senate_districts': list(prj.senate_districts.all().values('name')),
-                'commissioner_districts': list(prj.commissioner_districts.all().values('name'))
-            }
-            projects_list.append(project)
+        project_phases = []
+        for phase in phases:
+            project_phases.append({
+                'phase': phase.name,
+                'total_budget': PhaseFinances.objects.get(phase=phase).budget.amount,
+                'pk': phase.project.id,
+                'name': phase.project.name,
+                'description': phase.project.description,
+                'section': phase.project.section_owner.name,
+                'category': phase.project.category.name,
+                'total_score': phase.project.projectscore.total_score,
+                'zones': list(phase.project.zones.all().values('name')),
+                'house_districts': list(phase.project.house_districts.all().values('name')),
+                'senate_districts': list(phase.project.senate_districts.all().values('name')),
+                'commissioner_districts': list(phase.project.commissioner_districts.all().values('name'))
+            })
 
-        context['props'] = {'projects': json.dumps(projects_list, cls=DjangoJSONEncoder)}
+        context['props'] = {'projects': json.dumps(project_phases, cls=DjangoJSONEncoder)}
         return context
 
 
