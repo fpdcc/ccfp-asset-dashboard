@@ -62,7 +62,7 @@ class SequencedModel(models.Model):
             type(self).objects.bulk_update(for_update, ['sequence'])
 
         else:
-            # If there are no other sequenced indexes, default to 1
+            # If there are no other sequenced instances, default to 1
             self.sequence = 1
             super().save(*args, **kwargs)
 
