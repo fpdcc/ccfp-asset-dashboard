@@ -9,6 +9,4 @@ release:
     - ./scripts/release.sh
   image: web
 run:
-  web: >-
-    bin/qgtunnel gunicorn -t 180 -w 3 --log-level debug asset_dashboard.wsgi:application || \
-    gunicorn -t 180 -w 3 --log-level debug asset_dashboard.wsgi:application
+  web: ./scripts/run-app.sh
