@@ -84,6 +84,10 @@ class Phase(models.Model):
 
         super().save(*args, **kwargs)
 
+    @property
+    def name(self):
+        return f'{self.phase_type} - {self.estimated_bid_quarter} - {self.status}'
+
 
 class ScoreField(models.IntegerField):
     def __init__(self, *args, **kwargs):
