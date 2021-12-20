@@ -54,3 +54,8 @@ ENV DJANGO_DEBUG 'False'
 # Build static files into the container
 RUN python manage.py collectstatic --noinput
 RUN python manage.py compress
+
+# Install QGTunnel to enable access to GIS database. The QuotaGuard docs say
+# this step should be run from the root directory of the app:
+# https://quotaguard.github.io/qg-docs/quickstart-socks5
+RUN curl https://s3.amazonaws.com/quotaguard/qgtunnel-latest.tar.gz | tar xz
