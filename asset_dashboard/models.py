@@ -96,7 +96,6 @@ class PortfolioPhase(SequencedModel):
 
     portfolio = models.ForeignKey('Portfolio', related_name='phases', on_delete=models.CASCADE)
     phase = models.ForeignKey('Phase', related_name='portfolios', on_delete=models.CASCADE)
-    sequence = models.IntegerField(default=1)
 
     @property
     def sequenced_instances(self):
