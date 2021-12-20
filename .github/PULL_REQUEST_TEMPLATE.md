@@ -15,7 +15,7 @@ Optional. Ancillary topics, caveats, alternative strategies that didn't work out
 ## Testing Instructions
 
 If you are opening a PR for functionality that requires access to the remote GIS
-database from your review app, don't forget to attach the QuotaGuard static add-on
+database from your review app, don't forget to attach the QuotaGuard Static add-on
 to your review app after it initializes:
 
 ```bash
