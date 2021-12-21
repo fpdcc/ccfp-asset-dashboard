@@ -1,5 +1,6 @@
 import json
 import re
+from typing import List
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -158,6 +159,9 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
 
+        # Add the project_pk to context so we have a consistent way of accessing
+        # the primary key for building the link in the project_base.html tabs
+        context['project_pk'] = self.kwargs['pk']
         return context
 
     def get_success_url(self):
@@ -186,7 +190,6 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
 class ProjectPhasesListView(LoginRequiredMixin, ListView):
     template_name = 'asset_dashboard/project_phases_list.html'
     paginate_by = 15
-
     def get_queryset(self):
         return Phase.objects.filter(project=self.kwargs['pk']).values(
             'phase_type',
