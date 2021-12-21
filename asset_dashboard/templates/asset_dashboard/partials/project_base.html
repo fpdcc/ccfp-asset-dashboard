@@ -1,0 +1,49 @@
+{% extends "asset_dashboard/base.html" %}
+
+{% block title %}{{ project.name }}{% endblock %}
+
+<!-- Base view that contains the various forms for a Project. -->
+{% block body %}
+  <div class="container">
+    <h1 class="text-right">{{ project.name }}</h1>
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link" id="overview" href="{% url 'project-detail' pk=project_pk %}">Overview</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="phases" href="{% url 'project-phases-list' pk=project_pk %}">Phases</a>
+      </li>
+    </ul>
+    
+    <div class="tab-content container card p-4 shadow-sm" id="nav-tabContent">
+        {% block project %}{% endblock %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+  // JS for making the nav tab links look "active"
+
+  // Remove the existing active CSS class
+  Array.from(document.querySelectorAll('.nav-link')).forEach(el => el.classList.remove('active'))
+
+  // TODO: Add "assets" whenever we add that page.
+  // (just to give you an idea of how I'm thinking about this)
+  const tabIds = [
+    "phases"
+  ]
+
+  // Find the active tab in the tabIds array, based on window.location.pathname.
+  // This helps us use separate templates and views for the different forms attached to a project.
+  // I thought this was simpler, instead of using the Bootstrap tab mechanism, which would encourage
+  // us to have all that logic on the same templates and views.
+  const active = tabIds.find(element => window.location.pathname.includes(element))
+
+  // If the path includes one of the tabIds, then that is the id selector we want.
+  // Else it is the project overview page. Since all of the path names that use this template
+  // will have "projects", we're using "overview" as the default home-like page for a project.
+  const elementId = active ? active : "overview"
+  document.getElementById(elementId).classList.add("active")
+</script>
+{% endblock %}

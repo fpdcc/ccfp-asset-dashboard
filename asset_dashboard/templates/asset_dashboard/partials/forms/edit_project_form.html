@@ -38,13 +38,6 @@
 
                     {{ form.zones }}
                 </div>
-
-                <div class="col m-4">
-                    <strong>Total Budget</strong>
-                    <div class="mt-3">
-                        {{ finances_form.budget }}
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -57,21 +50,6 @@
                 <strong>Weighted Score Total:</strong>
                 <p class="text-center">{{ total_score|floatformat:2 }}</p>
             </div>
-        </div>
-    </div>
-
-    <div class="row m-4">
-        <div class="col m-4">
-            <strong>Phase</strong>
-                {{ phase_form.phase_type }}
-        </div>
-        <div class="col m-4">
-            <strong>Estimated Bid Quarter</strong>
-            {{ phase_form.estimated_bid_quarter }}
-        </div>
-        <div class="col m-4">
-            <strong>Estimated Bid Quarter</strong>
-            {{ phase_form.status }}
         </div>
     </div>
 

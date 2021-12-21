@@ -1,5 +1,5 @@
-from django.forms import ModelForm, TextInput
-from .models import Project, PhaseFinances, ProjectScore, ProjectCategory, Phase
+from django.forms import ModelForm, TextInput, DecimalField
+from .models import Project, PhaseFinances, ProjectScore, ProjectCategory, Phase, PhaseFundingYear
 
 
 class StyledFormMixin(object):
@@ -12,6 +12,7 @@ class StyledFormMixin(object):
 
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['required'] = True
 
 
 class ProjectForm(StyledFormMixin, ModelForm):
@@ -86,3 +87,25 @@ class PhaseForm(StyledFormMixin, ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
+class PhaseFundingYearForm(StyledFormMixin, ModelForm):
+    class Meta:
+        model = PhaseFundingYear
+        fields = [
+            'year',
+            'funds'
+        ]
+        # widgets = {
+        #     'funds': DecimalField(),
+        # }
+    
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+
+    #     for field_name, field in self.fields.items():
+    #         ...
+    #         # Hide the currency type field
+    #         # if field_name == 'funds':
+    #         #     print(field.__dict__)
+    #         #     field.widget.attrs['class'] = 'd-none'
