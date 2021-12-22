@@ -1,7 +1,70 @@
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
-from djmoney.models.fields import MoneyField
 from django.contrib.gis.db import models
+from django.db.models import Max
+
+from djmoney.models.fields import MoneyField
+
+
+class SequencedModel(models.Model):
+
+    class Meta:
+        abstract = True
+
+    sequence = models.IntegerField()
+
+    @property
+    def sequenced_instances(self):
+        '''
+        Queryset of instances belonging to the same sequence.
+        '''
+        raise NotImplementedError(
+            'Property "sequenced_instances" must be defined on subclass'
+        )
+
+    @property
+    def relative_position(self):
+        '''
+        The zero-index position of a given sequenced instance, in a list of all
+        sequenced instances. Order incoming instances without a specified
+        sequence last.
+        '''
+        if self.sequence is not None:
+            return self.sequence - 1
+        else:
+            return self.sequenced_instances.aggregate(Max('sequence'))['sequence__max']
+
+    def save(self, *args, **kwargs):
+        '''
+        Given a new sequenced instance, update sequence across all instances to
+        account for arbitrary sequencing of new instance.
+
+        For example, if we have two (instance, sequence) pairs (A, 1) and (B, 2),
+        and we insert a new pair (C, 2), insert C with a sequence of 2 and update
+        B to have a sequence of 3.
+        '''
+        if self.sequenced_instances.exists():
+            instances = list(self.sequenced_instances.order_by('sequence'))
+            instances.insert(self.relative_position, self)
+
+            for_update = []
+
+            for seq, instance in enumerate(instances, start=1):
+                if instance.sequence != seq:
+                    instance.sequence = seq
+                    for_update.append(instance)
+
+            # Save the new instance
+            super().save(*args, **kwargs)
+
+            # Update the sequence of all changed instances. N.b., bulk_update()
+            # does not call the save() method of updated instances.
+            type(self).objects.bulk_update(for_update, ['sequence'])
+
+        else:
+            # If there are no other sequenced instances, default to 1
+            self.sequence = 1
+            super().save(*args, **kwargs)
 
 
 class Section(models.Model):
@@ -19,6 +82,24 @@ class Staff(models.Model):
 
     class Meta:
         verbose_name_plural = 'Staff'
+
+
+class Portfolio(models.Model):
+
+    name = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class PortfolioPhase(SequencedModel):
+
+    portfolio = models.ForeignKey('Portfolio', related_name='phases', on_delete=models.CASCADE)
+    phase = models.ForeignKey('Phase', related_name='portfolios', on_delete=models.CASCADE)
+
+    @property
+    def sequenced_instances(self):
+        return self.portfolio.phases
 
 
 class Project(models.Model):
@@ -41,7 +122,7 @@ class Project(models.Model):
         return self.name
 
 
-class Phase(models.Model):
+class Phase(SequencedModel):
     """
     A sub-project unit of work. Projects without defined phases are assigned a
     default Phase of type "implementation".
@@ -68,25 +149,21 @@ class Phase(models.Model):
         ('done', 'Done'),
     ]
 
-    sequence = models.IntegerField(default=1)
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='phases')
     phase_type = models.TextField(choices=PHASE_TYPE_CHOICES, null=True, blank=True)
     estimated_bid_quarter = models.TextField(choices=BID_QUARTER_CHOICES, null=True, blank=True)
     status = models.TextField(choices=STATUS_CHOICES, default='unscheduled')
 
-    def save(self, *args, **kwargs):
-        if self.project.phases.count() > 0:
-            max_phase_sequence = self.project.phases.order_by('sequence')\
-                                                    .last()\
-                                                    .sequence
-
-            self.sequence = max_phase_sequence + 1
-
-        super().save(*args, **kwargs)
+    @property
+    def sequenced_instances(self):
+        return self.project.phases
 
     @property
     def name(self):
-        return f'{self.phase_type} - {self.estimated_bid_quarter} - {self.status}'
+        return str(self)
+
+    def __str__(self):
+        f'{self.phase_type} - {self.estimated_bid_quarter} - {self.status}'
 
 
 class ScoreField(models.IntegerField):

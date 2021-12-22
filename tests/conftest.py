@@ -96,15 +96,24 @@ def project(section_owner, project_category):
     Creates and returns a single project.
     """
 
-    project = models.Project.objects.create(name="Trail Maintenance",
-                                            description="Fixing trail erosion.",
-                                            section_owner=section_owner,
-                                            category=project_category)
+    class ProjectFactory():
+        def build(self, **kwargs):
+            project_info = {
+                'name': 'Trail Maintenance',
+                'description': 'Fixing trail erosion.',
+                'section_owner': section_owner,
+                'category': project_category,
+            }
 
-    models.ProjectScore.objects.create(project=project)
-    models.Phase.objects.create(project=project)
+            project_info.update(kwargs)
 
-    return project
+            project = models.Project.objects.create(**project_info)
+            models.ProjectScore.objects.create(project=project)
+            models.Phase.objects.create(project=project)
+
+            return project
+
+    return ProjectFactory()
 
 
 @pytest.fixture
@@ -117,9 +126,19 @@ def project_list():
         name = f'project_{index}'
         description = f'description text for this project'
         section_owner = models.Section.objects.create(name=f'Section{index}')
-        category = models.ProjectCategory.objects.create(category=f'category {index}', subcategory=f'subcategory {index}')
-        project = models.Project.objects.create(name=name, description=description, section_owner=section_owner, category=category)
-        project_score = models.ProjectScore.objects.create(project=project)
+        category = models.ProjectCategory.objects.create(
+            category=f'category {index}',
+            subcategory=f'subcategory {index}'
+        )
+        project = models.Project.objects.create(
+            name=name,
+            description=description,
+            section_owner=section_owner,
+            category=category
+        )
+
+        models.Phase.objects.create(project=project)
+        models.ProjectScore.objects.create(project=project)
 
     return models.Project.objects.all()
 
