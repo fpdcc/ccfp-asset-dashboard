@@ -13,6 +13,10 @@
       <li class="nav-item">
         <a class="nav-link" id="phases" href="{% url 'project-phases-list' pk=project.pk %}">Phases</a>
       </li>
+      <li class="nav-item">
+        <!-- TODO: change this to assets list view -->
+        <a class="nav-link" id="assets" href="{% url 'create-update-assets' pk=project_pk %}">Assets</a>
+      </li>
     </ul>
     
     <div class="tab-content container card p-4 shadow-sm" id="nav-tabContent">
@@ -28,11 +32,14 @@
   // Remove the existing active CSS class
   Array.from(document.querySelectorAll('.nav-link')).forEach(el => el.classList.remove('active'))
 
-  // TODO: Add "assets" whenever we add that page.
-  // (just to give you an idea of how I'm thinking about this)
   const tabIds = [
-    "phases"
+    "phases",
+    "assets"
   ]
+
+  // TODO: figure out why this code is overridden on the asset page, when we use other javascript. possible to use both?
+  console.log('assets')
+  console.log(window.location.pathname)
 
   // Find the active tab in the tabIds array, based on window.location.pathname.
   // This helps us use separate templates and views for the different forms attached to a project.

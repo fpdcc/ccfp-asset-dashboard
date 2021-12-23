@@ -12,7 +12,6 @@ class StyledFormMixin(object):
 
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
-            field.widget.attrs['required'] = True
 
 
 class ProjectForm(StyledFormMixin, ModelForm):
@@ -96,16 +95,12 @@ class PhaseFundingYearForm(StyledFormMixin, ModelForm):
             'year',
             'funds'
         ]
-        # widgets = {
-        #     'funds': DecimalField(),
-        # }
     
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
+    # TODO: reconcile with phase-form branch
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-    #     for field_name, field in self.fields.items():
-    #         ...
-    #         # Hide the currency type field
-    #         # if field_name == 'funds':
-    #         #     print(field.__dict__)
-    #         #     field.widget.attrs['class'] = 'd-none'
+        # When saving a Phase, this PhaseFundingYearForm
+        # is included but isn't required
+        self.fields['year'].required = False
+        self.fields['funds'].required = False

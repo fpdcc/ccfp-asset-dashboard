@@ -22,7 +22,8 @@ from asset_dashboard.endpoints import PortfolioViewSet
 from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreateView, \
                                     ProjectUpdateView, ProjectListJson, \
                                     ProjectsByDistrictListView, ProjectsByDistrictListJson, \
-                                    ProjectPhasesListView, PhaseCreateView, PhaseUpdateView
+                                    ProjectPhasesListView, PhaseCreateView, PhaseUpdateView, \
+                                    AssetAddEditView
 
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -37,6 +38,7 @@ urlpatterns = [
     path('projects/<int:pk>/phases/', ProjectPhasesListView.as_view(), name='project-phases-list'),
     path('projects/<int:pk>/phases/create/', PhaseCreateView.as_view(), name='create-phase'),
     path('projects/phases/edit/<int:pk>/', PhaseUpdateView.as_view(), name='edit-phase'),
+    path('projects/<int:pk>/assets/', AssetAddEditView.as_view(), name='create-update-assets'),
     path('projects/districts/', ProjectsByDistrictListView.as_view(), name='projects-by-district'),
     path('projects/districts/json/', ProjectsByDistrictListJson.as_view(), name='projects-district-json'),
     path('cip-planner/', CipPlannerView.as_view(), name='cip-planner'),

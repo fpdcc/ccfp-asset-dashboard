@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import HttpResponseRedirect
+from django.core.serializers import serialize
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.html import escape
@@ -13,9 +15,9 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
-    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, \
-    PhaseFundingYear
-from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm,  \
+    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear, \
+    Buildings
+from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
     PhaseFinancesForm, PhaseForm
 from .serializers import PortfolioSerializer
 
@@ -284,6 +286,53 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
             return HttpResponseRedirect(reverse('project-phases-list', kwargs={'pk': phase.project.pk}))
         else:
             return super().form_invalid(form)
+
+
+class AssetAddEditView(LoginRequiredMixin, TemplateView):
+    template_name = 'asset_dashboard/asset_create_update.html'
+    component = 'js/components/maps/update.js'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['project_pk'] = self.kwargs['pk']
+ 
+        search_query = self.request.GET.get('q')
+
+        if search_query:
+            # Dynamically use the GIS model.
+            model_name = self.request.GET.get('asset-type').capitalize()
+            asset_model = globals()[model_name]
+
+            # Search and send back a list of search results 
+            search_results = asset_model.objects.filter(building_name__icontains=search_query)
+            paginated_results = self.paginated_qs(search_results)
+            context['search_results'] = paginated_results
+
+            # Send back geojson
+            search_geom = serialize('geojson', paginated_results, geometry_field='geom')
+            context['props'] = { 'search_assets': search_geom }
+
+            # todo: search the existing assests and add the geojson
+
+
+        return context
+
+    def paginated_qs(self, qs):
+        """Since this view is a TemplateView and not a ListView
+        (because this view does more than listing), need a paginator
+        for the two querysets that we render in tables.
+        """
+        page = self.request.GET.get('page', 1)
+        paginator = Paginator(qs, 10)
+
+        try:
+            objects = paginator.page(page)
+        except PageNotAnInteger:
+            objects = paginator.page(1)
+        except EmptyPage:
+            objects = paginator.page(paginator.num_pages)
+        
+        return objects
 
 
 class ProjectsByDistrictListView(LoginRequiredMixin, ListView):
