@@ -250,7 +250,18 @@ class PhaseFundingYear(models.Model):
                        max_digits=11)
 
 
-class Asset(models.Model):
+class LocalAsset(models.Model):
+    """
+    We save a local copy of a geo asset with this model.
+    """
+
+    # TODO: implement these fields
+    # phase = models.ForeignKey('Phase', on_delete=models.CASCADE)
+
+    # geom = geom = models.GeometryField(srid=3435)
+
+    # # These fields are related to the unmanaged GIS models
+    # building = models.ForeignKey('Buildings', on_delete=models.CASCADE)
 
     name = models.TextField()
     location = models.GeometryField()

@@ -1,0 +1,88 @@
+{% extends "asset_dashboard/partials/project_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+  <link href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet">
+{% endblock %}
+
+{% block project %}
+  <div class="row">
+    <div class="col-4">
+        <form method="get" class="form-inline">
+            <label for="asset-search" class="sr-only">Search for Assets</label>
+            <input type="search" class="form-control row" name="q" aria-label="Search for assets" placeholder="Search for Assets">
+            <select name="asset-type" class="form-control row">
+                <option value="buildings">Buildings</option>
+            </select>
+            <input type="submit" value="Search" class="btn btn-primary">
+        </form>
+        
+        {% if search_results %}
+            <table class="table table-hover table-border">
+                <thead>
+                    <tr>
+                        <td><strong>fpd_uid</strong></td>
+                        <td><strong>building name</strong></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asset in search_results %}
+                        <tr>
+                            <td>{{ asset.fpd_uid }}</td>
+                            <td>{{ asset.building_name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    
+        {% if search_results.has_other_pages %}
+            <nav aria-label="Search results navigation">
+                <ul class="pagination">
+                    {% if search_results.has_previous %}
+                        <li><a href="{{ request.get_full_path }}&page={{ search_results.previous_page_number }}">&laquo;</a></li>
+                    {% else %}
+                        <li class="disabled"><span>&laquo;</span></li>
+                    {% endif %}
+                    {% for i in search_results.paginator.page_range %}
+                        {% if search_results.number == i %}
+                            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                        {% else %}
+                            <li><a href="{{ request.get_full_path }}&page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if search_results.has_next %}
+                        <li><a href="{{ request.get_full_path }}&page={{ search_results.next_page_number }}">&raquo;</a></li>
+                        {% else %}
+                        <li class="disabled"><span>&raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+    
+    <div id="map" class="col-8">
+        <!-- Contents get replaced by mounted React.Component -->
+        <div class="text-center">
+            <i class="fa fa-lg fa-spinner fa-spin"></i><br><br>
+            <i class="pending">Loading map...</i><br><br>
+        </div>
+    </div>
+  </div>
+
+  <div>
+      table
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  {% load compress %}
+  {{ props|json_script:"props" }}
+  <script type="text/javascript">
+    window.props = JSON.parse(document.getElementById('props').textContent)
+    window.reactMount = document.getElementById('map')
+  </script>
+  {% compress js %}
+    <script type="text/jsx" src="{% static 'js/components/maps/update.js' %}"></script>
+  {% endcompress %}
+{% endblock %}
