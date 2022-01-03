@@ -11,8 +11,6 @@
           <th>Phase</th>
           <th>Status</th>
           <th>Total Budget</th>
-          <th>Funding Amount</th>
-          <th>Funding Year</th>
           <th>Bid Quarter</th>
           <th></th>
         </tr>
@@ -23,8 +21,6 @@
             <td>{{ phase.phase_type }}</td>
             <td>{{ phase.status }}</td>
             <td>{{ phase.phasefinances__budget }}</td>
-            <td>{{ phase.phasefundingyear__funds }}</td>
-            <td>{{ phase.phasefundingyear__year }}</td>
             <td>{{ phase.estimated_bid_quarter }}</td>
             <td><a href="{% url 'edit-phase' pk=phase.id %}">Edit</a></td>
           </tr>

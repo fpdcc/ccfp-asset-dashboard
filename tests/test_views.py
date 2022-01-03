@@ -249,9 +249,6 @@ def test_project_phase_form(client, project, user):
         'status': 'in-progress',
         'budget_0': '100000',
         'budget_1': 'USD',
-        'year': '2023',
-        'funds_0': '50000',
-        'funds_1': 'USD'
     }
     
     form_response = client.post(phase_url, data=form_data)
@@ -264,10 +261,6 @@ def test_project_phase_form(client, project, user):
     assert phase.estimated_bid_quarter == form_data['estimated_bid_quarter']
     assert phase.status == form_data['status']
     assert phase.phasefinances.budget.amount == float(form_data['budget_0'])
-
-    phase_funding_year = PhaseFundingYear.objects.get(phase=phase)
-    assert phase_funding_year.year == int(form_data['year'])
-    assert phase_funding_year.funds.amount == float(form_data['funds_0'])
 
 
 @pytest.mark.django_db

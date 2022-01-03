@@ -180,9 +180,7 @@ class ProjectPhasesListView(LoginRequiredMixin, ListView):
             'status',
             'project',
             'id',
-            'phasefinances__budget',
-            'phasefundingyear__funds',
-            'phasefundingyear__year'
+            'phasefinances__budget'
         ).order_by('sequence')
 
     def get_context_data(self, **kwargs):
@@ -204,11 +202,6 @@ class PhaseCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         context = self.get_context_data()
 
-        forms = [
-            context['finances_form'],
-            context['funding_year_form']
-        ]
-
         if form.is_valid():
             phase_data = {
                 **form.cleaned_data,
@@ -217,19 +210,16 @@ class PhaseCreateView(LoginRequiredMixin, CreateView):
 
             phase = Phase.objects.create(**phase_data)
 
-            for nested_form in forms:
-                if nested_form.is_valid():
-                    data = {
-                        **nested_form.cleaned_data,
-                        'phase': phase
-                    }
+            if context['finances_form'].is_valid():
+                data = {
+                    **context['finances_form'].cleaned_data,
+                    'phase': phase
+                }
 
-                    nested_form.instance.phase_id = phase.id
-                    nested_form.save()
-
-                    continue
-                else:
-                    return super().form_invalid(f)
+                context['finances_form'].instance.phase_id = phase.id
+                context['finances_form'].save()
+            else:
+                return super().form_invalid(context['finances_form'])
 
             messages.success(self.request, 'Phase successfully created!')
             return HttpResponseRedirect(reverse('project-phases-list', kwargs={'pk': phase.project.pk}))
@@ -242,11 +232,9 @@ class PhaseCreateView(LoginRequiredMixin, CreateView):
         if self.request.POST:
             # Hydrate the form with the post request.
             context['finances_form'] = PhaseFinancesForm(self.request.POST)
-            context['funding_year_form'] = PhaseFundingYearForm(self.request.POST)
         else:
             # This will execute when a new, blank form loads.
             context['finances_form'] = PhaseFinancesForm()
-            context['funding_year_form'] = PhaseFundingYearForm()
 
         context['project_pk'] = self.kwargs['pk']
 
@@ -264,14 +252,13 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        phase_funding_year, _ = PhaseFundingYear.objects.get_or_create(phase=self.object)
+        phase_funding_year = PhaseFundingYear.objects.filter(phase=self.object)
+        context['phase_funding_year'] = phase_funding_year
 
         if self.request.POST:
             context['finances_form'] = PhaseFinancesForm(self.request.POST, instance=self.object.phasefinances)
-            context['funding_year_form'] = PhaseFundingYearForm(self.request.POST, instance=phase_funding_year)
         else:
             context['finances_form'] = PhaseFinancesForm(instance=self.object.phasefinances)
-            context['funding_year_form'] = PhaseFundingYearForm(instance=phase_funding_year)
 
         context['project'] = self.object.project
         context['project_pk'] = context['project'].pk
@@ -281,20 +268,15 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         context = self.get_context_data()
 
-        forms = [
-            context['finances_form'],
-            context['funding_year_form']
-        ]
-
         if form.is_valid():
             phase = form.save()
 
-            for nested_form in forms:
-                if nested_form.is_valid():
-                    nested_form.save()
-                    continue
-                else:
-                    return super().form_invalid(nested_form)
+            if context['finances_form'].is_valid():
+                context['finances_form'].save()
+            else:
+                return super().form_invalid(context['finances_form'])
+            
+            messages.success(self.request, 'Phase successfully edited!')
             return HttpResponseRedirect(reverse('project-phases-list', kwargs={'pk': phase.project.pk}))
         else:
             return super().form_invalid(form)
