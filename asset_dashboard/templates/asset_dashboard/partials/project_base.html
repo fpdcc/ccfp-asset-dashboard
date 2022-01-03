@@ -8,10 +8,10 @@
     <h1 class="text-right">{{ project.name }}</h1>
     <ul class="nav nav-tabs">
       <li class="nav-item">
-        <a class="nav-link" id="overview" href="{% url 'project-detail' pk=project_pk %}">Overview</a>
+        <a class="nav-link" id="overview" href="{% url 'project-detail' pk=project.pk %}">Overview</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="phases" href="{% url 'project-phases-list' pk=project_pk %}">Phases</a>
+        <a class="nav-link" id="phases" href="{% url 'project-phases-list' pk=project.pk %}">Phases</a>
       </li>
     </ul>
     

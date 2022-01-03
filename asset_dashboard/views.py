@@ -1,6 +1,5 @@
 import json
 import re
-from typing import List
 from django.core.serializers.json import DjangoJSONEncoder
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView
@@ -11,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
     Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
-    PhaseFinancesForm, PhaseForm, PhaseFundingYearForm
+    PhaseFinancesForm, PhaseForm
 from django.contrib import messages
 from django.db.models import Q
 from django.utils.html import escape
@@ -141,9 +140,6 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
 
-        # Add the project_pk to context so we have a consistent way of accessing
-        # the primary key for building the link in the project_base.html tabs
-        context['project_pk'] = self.kwargs['pk']
         return context
 
     def get_success_url(self):
@@ -172,7 +168,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
 class ProjectPhasesListView(LoginRequiredMixin, ListView):
     template_name = 'asset_dashboard/project_phases_list.html'
     paginate_by = 15
-    
+
     def get_queryset(self):
         return Phase.objects.filter(project=self.kwargs['pk']).values(
             'phase_type',
@@ -188,10 +184,6 @@ class ProjectPhasesListView(LoginRequiredMixin, ListView):
 
         # Need the project in context so the name shows up in the project_base.html template
         context['project'] = Project.objects.get(id=self.kwargs['pk'])
-
-        # Add the project_pk to context so we have a consistent way of accessing
-        # the primary key for building the link in the project_base.html tabs
-        context['project_pk'] = self.kwargs['pk']
         return context
 
 
@@ -211,11 +203,6 @@ class PhaseCreateView(LoginRequiredMixin, CreateView):
             phase = Phase.objects.create(**phase_data)
 
             if context['finances_form'].is_valid():
-                data = {
-                    **context['finances_form'].cleaned_data,
-                    'phase': phase
-                }
-
                 context['finances_form'].instance.phase_id = phase.id
                 context['finances_form'].save()
             else:
@@ -225,10 +212,10 @@ class PhaseCreateView(LoginRequiredMixin, CreateView):
             return HttpResponseRedirect(reverse('project-phases-list', kwargs={'pk': phase.project.pk}))
         else:
             return super().form_invalid(form)
-        
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         if self.request.POST:
             # Hydrate the form with the post request.
             context['finances_form'] = PhaseFinancesForm(self.request.POST)
@@ -236,10 +223,7 @@ class PhaseCreateView(LoginRequiredMixin, CreateView):
             # This will execute when a new, blank form loads.
             context['finances_form'] = PhaseFinancesForm()
 
-        context['project_pk'] = self.kwargs['pk']
-
-        # Need the project in context so the name shows up in the project_base.html template
-        context['project'] = Project.objects.get(id=context['project_pk'])
+        context['project'] = Project.objects.get(id=self.kwargs['pk'])
 
         return context
 
@@ -248,7 +232,7 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'asset_dashboard/partials/forms/add_edit_phase_form.html'
     form_class = PhaseForm
     model = Phase
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -261,7 +245,6 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
             context['finances_form'] = PhaseFinancesForm(instance=self.object.phasefinances)
 
         context['project'] = self.object.project
-        context['project_pk'] = context['project'].pk
 
         return context
 
@@ -275,7 +258,7 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
                 context['finances_form'].save()
             else:
                 return super().form_invalid(context['finances_form'])
-            
+
             messages.success(self.request, 'Phase successfully edited!')
             return HttpResponseRedirect(reverse('project-phases-list', kwargs={'pk': phase.project.pk}))
         else:

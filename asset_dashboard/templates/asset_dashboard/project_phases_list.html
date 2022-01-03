@@ -3,7 +3,7 @@
 {% block project %}
   <div>
     <div class="text-right mb-4">
-      <a href="{{ request.path }}create/">Add Phase</a>
+      <a href="{% url 'create-phase' pk=project.id %}">Add Phase</a>
     </div>
     <table class="table table-hover table-border py-4">
       <thead>
