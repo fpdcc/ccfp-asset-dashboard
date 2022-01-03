@@ -11,6 +11,6 @@ input[type="checkbox"] {
 }
 
 /* hides the currency selection in the ProjectFinances.budget form input */
-#id_budget_1 {
+#id_budget_1, #id_funds_1 {
     display: none;
 }

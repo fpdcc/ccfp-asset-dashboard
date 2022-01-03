@@ -1,5 +1,5 @@
 from django.forms import ModelForm, TextInput
-from .models import Project, PhaseFinances, ProjectScore, ProjectCategory
+from .models import Project, PhaseFinances, ProjectScore, ProjectCategory, Phase
 
 
 class StyledFormMixin(object):
@@ -12,6 +12,7 @@ class StyledFormMixin(object):
 
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['required'] = True
 
 
 class ProjectForm(StyledFormMixin, ModelForm):
@@ -69,6 +70,19 @@ class PhaseFinancesForm(StyledFormMixin, ModelForm):
         model = PhaseFinances
         fields = [
             'budget'
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class PhaseForm(StyledFormMixin, ModelForm):
+    class Meta:
+        model = Phase
+        fields = [
+            'phase_type',
+            'estimated_bid_quarter',
+            'status'
         ]
 
     def __init__(self, *args, **kwargs):

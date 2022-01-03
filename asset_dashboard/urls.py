@@ -19,13 +19,17 @@ from django.contrib.auth import views as auth_views
 
 from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreateView, \
                                     ProjectUpdateView, ProjectListJson, \
-                                    ProjectsByDistrictListView, ProjectsByDistrictListJson
+                                    ProjectsByDistrictListView, ProjectsByDistrictListJson, \
+                                    ProjectPhasesListView, PhaseCreateView, PhaseUpdateView
 
 urlpatterns = [
     path('', ProjectListView.as_view(), name='projects'),
     path('projects/json/', ProjectListJson.as_view(), name='project-list-json'),
     path('projects/add-project/', ProjectCreateView.as_view(), name='add-project'),
     path('projects/<int:pk>/', ProjectUpdateView.as_view(), name='project-detail'),
+    path('projects/<int:pk>/phases/', ProjectPhasesListView.as_view(), name='project-phases-list'),
+    path('projects/<int:pk>/phases/create/', PhaseCreateView.as_view(), name='create-phase'),
+    path('projects/phases/edit/<int:pk>/', PhaseUpdateView.as_view(), name='edit-phase'),
     path('projects/districts/', ProjectsByDistrictListView.as_view(), name='projects-by-district'),
     path('projects/districts/json/', ProjectsByDistrictListJson.as_view(), name='projects-district-json'),
     path('cip-planner/', CipPlannerView.as_view(), name='cip-planner'),

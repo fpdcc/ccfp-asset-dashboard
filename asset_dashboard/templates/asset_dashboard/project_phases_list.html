@@ -1,0 +1,32 @@
+{% extends "asset_dashboard/partials/project_base.html" %}
+
+{% block project %}
+  <div>
+    <div class="text-right mb-4">
+      <a href="{% url 'create-phase' pk=project.id %}">Add Phase</a>
+    </div>
+    <table class="table table-hover table-border py-4">
+      <thead>
+        <tr>
+          <th>Phase</th>
+          <th>Status</th>
+          <th>Total Budget</th>
+          <th>Bid Quarter</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for phase in object_list %}
+          <tr>
+            <td>{{ phase.phase_type }}</td>
+            <td>{{ phase.status }}</td>
+            <td>{{ phase.phasefinances__budget }}</td>
+            <td>{{ phase.estimated_bid_quarter }}</td>
+            <td><a href="{% url 'edit-phase' pk=phase.id %}">Edit</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+    
+{% endblock %}
