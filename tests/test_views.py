@@ -238,8 +238,10 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
 @pytest.mark.django_db
 def test_project_phase_form(client, project, user):
     client.force_login(user=user)
+    
+    prj = project.build()
 
-    phase_url = reverse('create-phase', kwargs={'pk': project.pk})
+    phase_url = reverse('create-phase', kwargs={'pk': prj.pk})
     response = client.get(phase_url)
     assert response.status_code == 200
 
@@ -255,7 +257,7 @@ def test_project_phase_form(client, project, user):
     assert form_response.status_code == 302
 
     # Test the Phase and related objects saved how we expect.
-    phase = Phase.objects.filter(project=project)[0]
+    phase = Phase.objects.filter(project=prj)[1]
 
     assert phase.phase_type == form_data['phase_type']
     assert phase.estimated_bid_quarter == form_data['estimated_bid_quarter']
