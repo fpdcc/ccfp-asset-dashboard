@@ -12,7 +12,7 @@ from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
     Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear, \
-    Buildings
+    Buildings, LocalAsset
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
     PhaseFinancesForm, PhaseForm
 from django.contrib import messages
@@ -277,7 +277,26 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['project_pk'] = self.kwargs['pk']
+        
+        project = Project.objects.get(id=self.kwargs['pk'])
+        context['project'] = project
+        
+        phases = Phase.objects.filter(project=project).values(
+            'id',
+            'estimated_bid_quarter',
+            'phase_type',
+            'status'
+        )
+        context['props'] = {
+            'phases': list(phases)
+        }
+
+        existing_geometries = LocalAsset.objects.filter(phase__project=project)
+
+        if existing_geometries.exists():
+            context['props'].update({
+                'existing_geoms': serialize('geojson', existing_geometries, geometry_field='geom')
+            })
  
         search_query = self.request.GET.get('q')
 
@@ -291,12 +310,9 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
             paginated_results = self.paginated_qs(search_results)
             context['search_results'] = paginated_results
 
-            # Send back geojson
-            search_geom = serialize('geojson', paginated_results, geometry_field='geom')
-            context['props'] = { 'search_assets': search_geom }
-
-            # todo: search the existing assests and add the geojson
-
+            # Send back the searched geojson
+            search_geoms = serialize('geojson', paginated_results, geometry_field='geom')
+            context['props'].update({ 'search_geoms': search_geoms })
 
         return context
 

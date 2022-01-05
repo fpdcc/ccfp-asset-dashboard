@@ -75,7 +75,9 @@
   </div>
 {% endblock %}
 
+{% csrf_token %}
 {% block extra_js %}
+  {{ block.super }}
   {% load compress %}
   {{ props|json_script:"props" }}
   <script type="text/javascript">
