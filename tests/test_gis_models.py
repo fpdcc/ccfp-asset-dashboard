@@ -13,7 +13,7 @@ def use_gis_database(func):
     we can use the gis database.
     
     These decorators do this: 
-      1. whether to run the test
+      1. decide whether to run the test
       2. set the database as the fp_postgis db.
     """
     skip_test = False if bool(os.environ.get('TEST_GIS')) else True

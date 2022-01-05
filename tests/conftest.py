@@ -1,5 +1,6 @@
 import os
 import subprocess
+import json
 
 import pytest
 import psycopg2
@@ -182,3 +183,7 @@ def user():
 @pytest.fixture
 def nature_preserves():
     return models.NaturePreserves.objects.create(site_name="Lou Lou's Sanctuary")
+
+@pytest.fixture
+def test_geojson():
+    return json.loads('{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"building_number":"100","building_comments":"Added To Fpd Databse 2016","grove_number":null,"forest":null,"commplace":null,"fpd_uid":1247,"division_name":"Salt Creek","region":0,"building_name":"Brookfield Zoo","complex":"Brookfield Zoo","building_type":"unknown","sqft":11279.761905482632,"alternate_address":null,"concession":null,"public_access":null,"support_building":null,"demolished":"no","a1_list_12":null,"ada_evaluation":null,"current_occupant":null,"building_description":"Unknown-Added From Cc Database","commissioner_district":16,"wastewater":null,"water":null,"ownership":null,"latitude":41.831582689998974,"longitude":-87.83579124652252,"managing_department":null,"improvement_year":null,"addition":null,"fpd_zone":"Central","old_address":null,"street_name_current":"GOLF ROAD","address_number_current":"3300","city_current":null,"zip_city_current":"Brookfield","zip_current":"60513","address_current":"3300 Golf Road, Brookfield, Il 60513","seasonal_closing":null,"pk":"1256"},"geometry":{"type":"Polygon","coordinates":[[[-87.83560191965763,41.831535950500836],[-87.83599323890846,41.831535950500836],[-87.83599674510782,41.83162103513153],[-87.83597896770718,41.83162144389445],[-87.83598268944739,41.83171184553104],[-87.83582143010092,41.83171555722877],[-87.83582343756666,41.831764320755944],[-87.83565389122822,41.83176822409932],[-87.83565112780272,41.83170101300551],[-87.8356330164162,41.831701428500565],[-87.83563262105326,41.83169183553792],[-87.83560304825646,41.83169251970175],[-87.83560057526238,41.831632348936054],[-87.83563540342124,41.83163154758606],[-87.8356316761104,41.831540981256694],[-87.83560215477311,41.831541662899085],[-87.83560191965763,41.831535950500836]]]}}]}')
