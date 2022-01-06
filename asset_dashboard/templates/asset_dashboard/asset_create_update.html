@@ -14,7 +14,7 @@
             <select name="asset-type" class="form-control row">
                 <option value="buildings">Buildings</option>
             </select>
-            <input type="submit" value="Search" class="btn btn-primary">
+            <input type="submit" value="Search" class="btn btn-secondary">
         </form>
         
         {% if search_results %}
@@ -75,7 +75,6 @@
   </div>
 {% endblock %}
 
-{% csrf_token %}
 {% block extra_js %}
   {{ block.super }}
   {% load compress %}

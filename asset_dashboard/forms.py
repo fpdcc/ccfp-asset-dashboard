@@ -1,4 +1,7 @@
-from django.forms import ModelForm, TextInput, DecimalField
+from django.core.exceptions import ValidationError
+from django.forms import ModelForm, TextInput, DecimalField, Form, Field
+from django.http import request
+
 from .models import Project, PhaseFinances, ProjectScore, ProjectCategory, Phase, PhaseFundingYear
 
 
@@ -104,3 +107,50 @@ class PhaseFundingYearForm(StyledFormMixin, ModelForm):
         # is included but isn't required
         self.fields['year'].required = False
         self.fields['funds'].required = False
+
+
+class LocalAssetForm:
+    """
+    We don't need all the HTML elements from a standard Django
+    form class, so we're implementing a basic class to validate
+    the GeoJSON.
+    """
+    def __init__(self, geojson, *args, **kwargs):
+        self.uncleaned_geojson = geojson
+    
+    def is_valid(self, *args, **kwargs):
+        request_data = self.uncleaned_geojson
+        
+        if self.is_valid_feature_collection(request_data):
+            return True
+    
+    def is_valid_feature_collection(self, data):
+        """
+        The geojson library doesn't have a validation for
+        feature collection, so we implement our own.
+        """
+        try:
+            geojson = data.get('geojson')
+
+            if not geojson:
+                raise ValidationError('The GeoJSON is missing a "geom" key.')
+
+            features = geojson.get('features')
+            
+            if not features:
+                raise ValidationError('The GeoJSON is missing a "features" key')
+            
+            for feature in features:
+                geometry = feature.get('geometry')
+                
+                if not geometry:
+                    raise ValidationError('Feature is missing a "geometry" key.')
+                
+                if not geometry.get('coordinates'):
+                    raise ValidationError('Geometry is missing a "coordinates" key.')
+            
+            self.cleaned_geojson = geojson
+            return True
+        except AttributeError as e:
+            """Catch this error when a part of the dict is a string."""
+            raise ValidationError(e)

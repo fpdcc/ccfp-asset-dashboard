@@ -4,12 +4,13 @@ import clip from 'turf-clip'
 import { polygon } from '@turf/turf'
 import { debounce } from 'lodash'
 
-// This component controls the interaction for selecting a part or whole
-// geojson geometry. A user can select an area by holding shift and dragging a box
+// This component controls the interaction for selecting a part, whole, or group of
+// assets. A user can select an area by holding shift and dragging a box
 // over the map with their mouse. This clips the intersection of the bounding box
-// and any geojson assets within the box. It doesn't return anything in the UI, 
+// and any geojson assets within the box. The component doesn't return anything in the UI, 
 // but has side effects via a callback that sends the clipped FeatureCollection to 
 // the parent component.
+
 export default function AreaClipper({ geoJson, onClipped }) {
   const [selectedArea, setSelectedArea] = useState(null)
 
@@ -39,7 +40,7 @@ export default function AreaClipper({ geoJson, onClipped }) {
     setSelectedArea(rectangle)
 
     // Format the bounds to (long, lat) so the polygon 
-    // matches the incoming geojson SRID
+    // matches the incoming geojson SRID.
     const boundsPoly = polygon([
       [
         [bounds.getNorthEast().lng, bounds.getNorthEast().lat],

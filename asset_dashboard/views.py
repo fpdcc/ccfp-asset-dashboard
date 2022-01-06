@@ -6,13 +6,18 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.core.serializers import serialize
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.html import escape
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+from django.db.models import Q
+from django.utils.html import escape
 
 from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
     Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear, \
@@ -314,42 +319,36 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
             context['props'].update({
                 'existing_geoms': serialize('geojson', existing_geometries, geometry_field='geom')
             })
- 
-        search_query = self.request.GET.get('q')
 
-        if search_query:
-            # Dynamically use the GIS model.
-            model_name = self.request.GET.get('asset-type').capitalize()
-            asset_model = globals()[model_name]
-
-            # Search and send back a list of search results 
-            search_results = asset_model.objects.filter(building_name__icontains=search_query)
-            paginated_results = self.paginated_qs(search_results)
+        if self.request.GET.get('q'):
+            paginated_results, search_results = search_assets(self.request)
             context['search_results'] = paginated_results
 
-            # Send back the searched geojson
-            search_geoms = serialize('geojson', paginated_results, geometry_field='geom')
-            context['props'].update({ 'search_geoms': search_geoms })
+            # Send back the searched geojson, not paginated
+            context['props'].update({ 
+                'search_geoms': serialize('geojson', search_results, geometry_field='geom')
+            })
 
         return context
 
-    def paginated_qs(self, qs):
-        """Since this view is a TemplateView and not a ListView
-        (because this view does more than listing), need a paginator
-        for the two querysets that we render in tables.
-        """
-        page = self.request.GET.get('page', 1)
-        paginator = Paginator(qs, 10)
+    def post(self, request, *args, **kwargs):
+        body = json.loads(request.body)
 
-        try:
-            objects = paginator.page(page)
-        except PageNotAnInteger:
-            objects = paginator.page(1)
-        except EmptyPage:
-            objects = paginator.page(paginator.num_pages)
-        
-        return objects
+        geojson_form = LocalAssetForm(geojson=body)
 
+        if geojson_form.is_valid():
+            # TODO: need to save with the phase
+            saved = save_local_assets(geojson_form.cleaned_geojson, body.get('phase'))
+
+            if saved:
+                # TODO: return a json response instead since this post request is from an ajax call.
+                # See https://stackoverflow.com/questions/13256817/django-how-to-show-messages-under-ajax-function
+                # for ideas.
+                return HttpResponseRedirect(reverse('create-update-assets', kwargs={'pk': kwargs['pk']}))
+        else:
+            # TODO: return error...need to figure out how to use the messages with ajax
+            # This is where inheriting from a standard django form class might be helpful
+            ...
 
 class ProjectsByDistrictListView(LoginRequiredMixin, ListView):
     template_name = 'asset_dashboard/projects_by_district_list.html'

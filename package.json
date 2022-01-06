@@ -16,8 +16,6 @@
     "browserify-shim": "^3.8.14",
     "js-cookie": "^3.0.1",
     "leaflet": "^1.7.1",
-    "leaflet-area-select": "^1.0.5",
-    "leaflet.locationfilter": "^0.1.0",
     "lodash": "^4.17.21",
     "react": "^16.13.1",
     "react-bootstrap": "1.6.4",
@@ -25,7 +23,7 @@
     "react-data-table-component": "^6.11.6",
     "react-dom": "^16.13.1",
     "react-leaflet": "^3.2.2",
-    "react-select": "^3.1.1",
+    "react-select": "^3.2.0",
     "react-table": "^7.6.2",
     "sass": "^1.30.0",
     "styled-components": "^5.2.1",
@@ -33,10 +31,5 @@
   },
   "scripts": {
     "develop": "sass --watch /app/asset_dashboard/static/scss/custom.scss:/app/asset_dashboard/static/css/bootstrap.custom.css"
-  },
-  "devDependencies": {
-    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/register": "^7.16.7",
-    "babel-loader": "^7.1.5"
   }
 }
