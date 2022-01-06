@@ -68,7 +68,7 @@ MIDDLEWARE = [
 ]
 
 SERIALIZATION_MODULES = {
-    'geojson': 'django.contrib.gis.serializers.geojson', 
+    'geojson': 'django.contrib.gis.serializers.geojson',
 }
 
 ROOT_URLCONF = 'asset_dashboard.urls'

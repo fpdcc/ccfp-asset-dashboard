@@ -1,6 +1,5 @@
 import json
 import re
-from typing import List
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.serializers import serialize
@@ -16,7 +15,7 @@ from django.utils.html import escape
 
 from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
     Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear, \
-    Buildings, LocalAsset
+    LocalAsset
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
     PhaseFinancesForm, PhaseForm, LocalAssetForm
 from .services import search_assets, save_local_assets
@@ -49,7 +48,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
                 'commissioner_districts': list(phase.project.commissioner_districts.all().values('name'))
             })
 
-        context['props'] = {'projects': json.dumps(project_phases, cls=json.DjangoJSONEncoder)}
+        context['props'] = {'projects': json.dumps(project_phases, cls=DjangoJSONEncoder)}
         return context
 
 
@@ -177,6 +176,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
 class ProjectPhasesListView(LoginRequiredMixin, ListView):
     template_name = 'asset_dashboard/project_phases_list.html'
     paginate_by = 15
+
     def get_queryset(self):
         return Phase.objects.filter(project=self.kwargs['pk']).values(
             'phase_type',
@@ -279,10 +279,10 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         project = Project.objects.get(id=self.kwargs['pk'])
         context['project'] = project
-        
+
         phases = Phase.objects.filter(project=project).values(
             'id',
             'estimated_bid_quarter',
@@ -305,7 +305,7 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
             context['search_results'] = paginated_results
 
             # Send back the searched geojson, not paginated
-            context['props'].update({ 
+            context['props'].update({
                 'search_geoms': serialize('geojson', search_results, geometry_field='geom')
             })
 
@@ -327,8 +327,9 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
                 return HttpResponseRedirect(reverse('create-update-assets', kwargs={'pk': kwargs['pk']}))
         else:
             # TODO: return error...need to figure out how to use the messages with ajax
-            # This is where inheriting from a standard django form class might be helpful
+            # This is where inheriting from a standard django form class might be helpful.
             ...
+
 
 class ProjectsByDistrictListView(LoginRequiredMixin, ListView):
     template_name = 'asset_dashboard/projects_by_district_list.html'
