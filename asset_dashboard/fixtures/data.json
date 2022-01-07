@@ -4362,5 +4362,41 @@
     "budget": 51000,
     "zone": "Central"
   }
+},
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$216000$Yocc04X2sKMe$7PgR8vZ0U+KWMMxm+JSzlv0X5CrOpkuwl30z5hht0Hk=",
+    "last_login": "2022-01-03T17:36:24.690Z",
+    "is_superuser": true,
+    "username": "smcalilly",
+    "first_name": "",
+    "last_name": "",
+    "email": "sam.mcalilly@datamade.us",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2021-01-04T22:36:32.525Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$216000$D1etxVIYj4p8$7XEgewZMwhIJ6kYCkY5iU/9h9vpAbvTnunnh/ZYeTUY=",
+    "last_login": "2021-02-03T15:39:30.305Z",
+    "is_superuser": true,
+    "username": "garretwais",
+    "first_name": "",
+    "last_name": "",
+    "email": "garret.wais@cookcountyil.gov",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2021-01-04T22:38:55.579Z",
+    "groups": [],
+    "user_permissions": []
+  }
 }
 ]
