@@ -145,9 +145,6 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
 
-        # Add the project_pk to context so we have a consistent way of accessing
-        # the primary key for building the link in the project_base.html tabs
-        context['project_pk'] = self.kwargs['pk']
         return context
 
     def get_success_url(self):

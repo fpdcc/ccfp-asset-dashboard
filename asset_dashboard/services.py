@@ -47,14 +47,14 @@ def search_assets(request) -> (Paginator.page, QuerySet):
 def save_local_assets(data, phase):
     try:
         # By this point, the form class would've already looped over these.
-        # For efficieny, would it be better to do the loop once and validate here?
+        # For efficiency, would it be better to do the loop once and validate here?
         for feature in data['features']:
             # TODO: we might want to find any existing assets that intersect
             # with this feature and reconstruct it and/or delete existing asset...
             # how should that work?
             # We could maybe do it with postgis / geodjango, but if we did that
             # then we might want to move the logic from the frontend that finds
-            # the intersections to make this geojson.
+            # the intersections to make this geojson, so that logic lives together.
             local_asset, _ = LocalAsset.objects.get_or_create(
                 geom=GEOSGeometry(json.dumps(feature['geometry'])),
                 # TODO implement a dynamic way to use the type,
