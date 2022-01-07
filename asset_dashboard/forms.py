@@ -108,8 +108,8 @@ class LocalAssetForm:
 
     def is_valid_feature_collection(self, data):
         """
-        The geojson library doesn't have a validation for
-        feature collection, so we implement our own.
+        The Django GEOS library doesn't have a validation 
+        for this (AFAICT), so we implement our own.
         """
         try:
             geojson = data.get('geojson')
