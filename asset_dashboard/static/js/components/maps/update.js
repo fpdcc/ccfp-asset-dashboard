@@ -22,8 +22,6 @@ function UpdateMap(props) {
       setExistingGeoms(JSON.parse(props.existing_geoms))
     }
 
-    console.log(props)
-
     const phaseOptions = makePhaseOptions(props.phases)
     setPhases(phaseOptions)
     setSelectedPhase(phaseOptions[0])
@@ -44,7 +42,8 @@ function UpdateMap(props) {
   }
 
   function onClipped(featureCollection) {
-     // TODO: implement the ability to click on a single asset? Or does one single way make it a better UX?
+     // TODO: implement the ability to click on a single asset? 
+     // Or does having only one way to select make for a better UX?
     setClippedGeoms(featureCollection)
   }
 
@@ -114,14 +113,13 @@ function makePhaseOptions(inputPhases) {
         <BaseMap
           center={[41.8781, -87.6298]}
           zoom={11}
-          whenCreated={onMapCreated}
-        >
+          whenCreated={onMapCreated}>
           <AreaClipper 
             geoJson={searchedGeoms}
             onClipped={onClipped} />
           {/* TODO: what colors do we want to use? do we need a legend? */}
-          {searchedGeoms && <GeoJSON data={searchedGeoms} style={{color: 'green', opacity: 1}}/>}
-          {existingGeoms && <GeoJSON data={existingGeoms} style={{color: 'black'}}/>}
+          <GeoJSON data={searchedGeoms} style={{color: 'black'}}/>
+          {existingGeoms && <GeoJSON data={existingGeoms} style={{color: 'green'}}/>}
         </BaseMap>
       </div>
     </div>
