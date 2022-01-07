@@ -14,6 +14,7 @@ class StyledFormMixin(object):
 
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['required'] = True
 
 
 class ProjectForm(StyledFormMixin, ModelForm):
