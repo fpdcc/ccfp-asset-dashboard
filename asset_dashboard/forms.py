@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm, TextInput
 
-from .models import Project, PhaseFinances, ProjectScore, ProjectCategory, Phase, PhaseFundingYear
+from .models import Project, PhaseFinances, ProjectScore, ProjectCategory, Phase
 
 
 class StyledFormMixin(object):
@@ -108,8 +108,8 @@ class LocalAssetForm:
 
     def is_valid_feature_collection(self, data):
         """
-        The Django GEOS library doesn't have a validation 
-        for this (AFAICT), so we implement our own.
+        The Django GEOS library doesn't have a validation
+         for this (AFAICT), so we implement our own.
         """
         try:
             geojson = data.get('geojson')
