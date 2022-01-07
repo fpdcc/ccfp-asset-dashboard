@@ -90,24 +90,6 @@ class PhaseForm(StyledFormMixin, ModelForm):
         super().__init__(*args, **kwargs)
 
 
-class PhaseFundingYearForm(StyledFormMixin, ModelForm):
-    class Meta:
-        model = PhaseFundingYear
-        fields = [
-            'year',
-            'funds'
-        ]
-
-    # TODO: reconcile with phase-form branch
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # When saving a Phase, this PhaseFundingYearForm
-        # is included but isn't required
-        self.fields['year'].required = False
-        self.fields['funds'].required = False
-
-
 class LocalAssetForm:
     """
     We don't need all the HTML elements from a standard Django
