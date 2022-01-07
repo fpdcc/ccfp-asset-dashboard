@@ -5277,54 +5277,6 @@
 },
 {
   "model": "auth.permission",
-  "pk": 77,
-  "fields": {
-    "name": "Can add asset",
-    "content_type": [
-      "asset_dashboard",
-      "asset"
-    ],
-    "codename": "add_asset"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 78,
-  "fields": {
-    "name": "Can change asset",
-    "content_type": [
-      "asset_dashboard",
-      "asset"
-    ],
-    "codename": "change_asset"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 79,
-  "fields": {
-    "name": "Can delete asset",
-    "content_type": [
-      "asset_dashboard",
-      "asset"
-    ],
-    "codename": "delete_asset"
-  }
-},
-{
-  "model": "auth.permission",
-  "pk": 80,
-  "fields": {
-    "name": "Can view asset",
-    "content_type": [
-      "asset_dashboard",
-      "asset"
-    ],
-    "codename": "view_asset"
-  }
-},
-{
-  "model": "auth.permission",
   "pk": 81,
   "fields": {
     "name": "Can add phase",
