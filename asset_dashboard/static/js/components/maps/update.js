@@ -27,6 +27,15 @@ function UpdateMap(props) {
     setSelectedPhase(phaseOptions[0])
   }, [setSearchedGeoms, setExistingGeoms, setPhases])
 
+  function makePhaseOptions(inputPhases) {
+    return inputPhases.map(phase => {
+      return {
+        value: phase.id.toString(),
+        label: `${phase.estimated_bid_quarter} - ${phase.phase_type} - ${phase.status}`
+      }
+    })
+  }
+
   function onMapCreated(map) {
     const group = new L.featureGroup()
 
@@ -69,16 +78,7 @@ function UpdateMap(props) {
         // TODO: catch error and show message
       }
     })
-}
-
-function makePhaseOptions(inputPhases) {
-  return inputPhases.map(phase => {
-    return {
-      value: phase.id.toString(),
-      label: `${phase.estimated_bid_quarter} - ${phase.phase_type} - ${phase.status}`
-    }
-  })
-}
+  }
  
   return (
     <div>
