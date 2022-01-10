@@ -380,6 +380,12 @@ class Buildings(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"quercus"."buildings"'
 
+    class Search:
+        fields = (
+            ('fpd_uid', int),
+            ('building_name', str),
+        )
+
     id = models.AutoField(primary_key=True, db_column='buildings_id')
     geom = models.PolygonField(srid=3435)
     building_number = models.CharField(max_length=10)
@@ -1066,6 +1072,12 @@ class TrailsInfo(GISModel):
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."trails_info"'
+
+    class Search:
+        fields = (
+            ('trails', int),
+            ('trail_subsystem', str),
+        )
 
     id = models.AutoField(primary_key=True, db_column='trail_info_id')
     trails = models.ForeignKey(Trails, on_delete=models.RESTRICT)
