@@ -70,7 +70,7 @@ class AssetViewSet(viewsets.ModelViewSet):
             for field, field_type in self.model_cls.Search.fields:
                 try:
                     field_type(query)
-                except ValueError:
+                except (ValueError, TypeError):
                     continue
                 else:
                     search_filter |= Q(**{f'{field}__icontains': query})

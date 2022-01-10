@@ -57,22 +57,34 @@ class PortfolioSerializer(serializers.ModelSerializer):
         ...
 
 
+class NullableIntegerField(serializers.IntegerField):
+
+    def __init__(self, *args, allow_null=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.allow_null = allow_null
+
+    def to_representation(self, value):
+        if self.allow_null and value is None:
+            return None
+        return super().to_representation(value)
+
+
 class BuildingsSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = Buildings
-        fields = ('id', 'name', 'geom')
+        fields = ('identifier', 'name', 'geom')
         geo_field = 'geom'
 
-    id = serializers.IntegerField(source='fpd_uid')
+    identifier = NullableIntegerField(source='fpd_uid', allow_null=True)
     name = serializers.CharField(source='building_name')
 
 
 class TrailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrailsInfo
-        fields = ('id', 'name', 'geom')
+        fields = ('identifier', 'name', 'geom')
 
-    id = serializers.IntegerField(source='trails_id')
+    identifier = serializers.IntegerField(source='trails_id')
     name = serializers.CharField(source='trail_subsystem')
     geom = GeometrySerializerMethodField()
 
