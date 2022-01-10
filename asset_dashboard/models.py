@@ -393,7 +393,7 @@ class Buildings(GISModel):
     grove_number = models.CharField(max_length=5)
     forest = models.CharField(max_length=40)
     commplace = models.CharField(max_length=20)
-    fpd_uid = models.IntegerField()
+    fpd_uid = models.IntegerField(null=True)
     division_name = models.CharField(max_length=15)
     region = models.IntegerField()
     building_name = models.CharField(max_length=100)
