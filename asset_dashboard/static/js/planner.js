@@ -5,6 +5,8 @@ import PortfolioTable from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
 import SearchInput from './components/FilterComponent'
 import { CSVLink } from 'react-csv'
+import Cookies from 'js-cookie'
+
 
 class PortfolioPlanner extends React.Component {
   constructor(props) {
@@ -27,6 +29,7 @@ class PortfolioPlanner extends React.Component {
     this.addProjectToPortfolio = this.addProjectToPortfolio.bind(this)
     this.removeProjectFromPortfolio = this.removeProjectFromPortfolio.bind(this)
     this.searchProjects = this.searchProjects.bind(this)
+    this.savePortfolio = this.savePortfolio.bind(this)
   }
 
   createRegionName(regions) {
@@ -125,6 +128,30 @@ class PortfolioPlanner extends React.Component {
     })
   }
 
+  savePortfolio(e) {
+    e.preventDefault()
+
+    const data = {
+      name: 'test portfolio',
+      user: props.user_id,
+      phases: this.state.portfolio.projects.map((phase, index) => {
+        return {'phase': phase.key, 'sequence': index + 1}
+      })
+    }
+
+    fetch('/portfolios/', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRFTOKEN': Cookies.get('csrftoken')
+      },
+      body: JSON.stringify(data)
+    }).then(response => {
+      console.log(response.ok, response.status, response.statusText)
+    })
+  }
+
   getDate() {
     const date = new Date(new Date().toString().split('GMT')[0]+' UTC').toISOString().split('T')[0]
     return date
@@ -145,7 +172,8 @@ class PortfolioPlanner extends React.Component {
               <>
                 <PortfolioTable 
                   portfolioProjects={this.state.portfolio.projects} 
-                  onRemoveFromPortfolio={this.removeProjectFromPortfolio} />
+                  onRemoveFromPortfolio={this.removeProjectFromPortfolio}
+                  savePortfolio={this.savePortfolio} />
                 <ProjectsTable 
                   allProjects={filteredRows}
                   onAddToPortfolio={this.addProjectToPortfolio}

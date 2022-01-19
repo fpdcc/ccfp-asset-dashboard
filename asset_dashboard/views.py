@@ -30,7 +30,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
             project_phases.append({
                 'phase': phase.name,
                 'total_budget': PhaseFinances.objects.get(phase=phase).budget.amount,
-                'pk': phase.project.id,
+                'pk': phase.id,
                 'name': phase.project.name,
                 'description': phase.project.description,
                 'section': phase.project.section_owner.name,
@@ -42,7 +42,10 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
                 'commissioner_districts': list(phase.project.commissioner_districts.all().values('name'))
             })
 
-        context['props'] = {'projects': json.dumps(project_phases, cls=DjangoJSONEncoder)}
+        context['props'] = {
+            'projects': json.dumps(project_phases, cls=DjangoJSONEncoder),
+            'user_id': self.request.user.id,
+        }
         return context
 
 
