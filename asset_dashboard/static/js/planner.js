@@ -23,13 +23,15 @@ class PortfolioPlanner extends React.Component {
           projectZones: []
         }
       },
-      filterText: ''
+      filterText: '',
+      unsavedChanges: false
     }
 
     this.addProjectToPortfolio = this.addProjectToPortfolio.bind(this)
     this.removeProjectFromPortfolio = this.removeProjectFromPortfolio.bind(this)
     this.searchProjects = this.searchProjects.bind(this)
     this.savePortfolio = this.savePortfolio.bind(this)
+    this.registerChange = this.registerChange.bind(this)
   }
 
   createRegionName(regions) {
@@ -94,6 +96,8 @@ class PortfolioPlanner extends React.Component {
       },
       remainingProjects: updatedRemainingProjects
     })
+
+    this.registerChange()
   }
 
   removeProjectFromPortfolio(row) {
@@ -118,6 +122,8 @@ class PortfolioPlanner extends React.Component {
       },
       remainingProjects: remainingProjects
     })
+
+    this.registerChange()
   }
 
   searchProjects(e) {
@@ -132,13 +138,15 @@ class PortfolioPlanner extends React.Component {
     e.preventDefault()
 
     const data = {
-      name: 'test portfolio',
+      name: 'test portfolio', // TODO: Grab name from state
       user: props.user_id,
       phases: this.state.portfolio.projects.map((phase, index) => {
         return {'phase': phase.key, 'sequence': index + 1}
       })
     }
 
+    // TODO: This request will always create a new portfolio. Implement ability
+    // to edit existing portfolio. (PATCH request)
     fetch('/portfolios/', {
       method: 'POST',
       headers: {
@@ -150,6 +158,17 @@ class PortfolioPlanner extends React.Component {
     }).then(response => {
       console.log(response.ok, response.status, response.statusText)
     })
+
+    this.setState({unsavedChanges: false})
+  }
+
+  updatePortfolioName(e) {
+    // update name in portfolio state
+    this.registerChange()
+  }
+
+  registerChange(e) {
+    this.setState({unsavedChanges: true})
   }
 
   getDate() {
@@ -171,9 +190,11 @@ class PortfolioPlanner extends React.Component {
           <div className="container col card shadow-sm mt-5 ml-3 col-9">
               <>
                 <PortfolioTable 
-                  portfolioProjects={this.state.portfolio.projects} 
+                  portfolio={this.state.portfolio} 
                   onRemoveFromPortfolio={this.removeProjectFromPortfolio}
-                  savePortfolio={this.savePortfolio} />
+                  savePortfolio={this.savePortfolio}
+                  onNameChange={this.registerChange}
+                  disableSave={this.state.unsavedChanges ? false : true} />
                 <ProjectsTable 
                   allProjects={filteredRows}
                   onAddToPortfolio={this.addProjectToPortfolio}
