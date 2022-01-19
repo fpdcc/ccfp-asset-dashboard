@@ -1,50 +1,12 @@
 import React from 'react'
 import { useTable, usePagination, useSortBy } from 'react-table'
 
-const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, selector }) => {
-  const data = React.useMemo(
-    () => rows.map((project) => {
-      return project
-    }), [rows])
+const BaseTable = ({ rows = [], columns, getTrProps = props => props, rowClassNames, sizeOfPage=15, pageSizeIncrements=[15, 30, 45] }) => {
 
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: () => null,
-        id: 'selector',
-        Cell: selector ? selector : <span></span>,
-        disableSortBy: true
-      },
-      {
-        Header: 'Name',
-        accessor: 'name'
-      },
-      {
-        Header: 'Description',
-        accessor: 'description', 
-      },
-      {
-        Header: 'Total Score',
-        accessor: 'score',
-      },
-      {
-        Header: 'Total Budget',
-        accessor: 'budget',
-      },
-      {
-        Header: 'Phase',
-        accessor: 'phase'
-      },
-      {
-        Header: () => null,
-        accessor: 'key',
-        disableSortBy: true,
-        Cell: props => <a href={`/projects/${props.value}`}  
-                          onClick={e => e.stopPropagation()}
-                          className='btn btn-success btn-sm'>View Project</a>
-      }
-    ], []
-  )
+  const data = React.useMemo(
+    () => rows.map((row) => {
+      return row
+    }), [rows])
 
   const {
     getTableProps,
@@ -61,7 +23,7 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
     previousPage,
     setPageSize,
     state: { pageIndex, pageSize },
-  } = useTable({ columns, data, initialState: { pageIndex: 0, pageSize: 15 }}, useSortBy, usePagination)
+  } = useTable({ columns, data, initialState: { pageIndex: 0, pageSize: sizeOfPage }}, useSortBy, usePagination)
 
   return (
     <div className="table-responsive">
@@ -101,11 +63,12 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
       
       
       <div className="row container" aria-label="Pagination for all potential projects.">
-          <div className="d-flex col justify-content-start align-items-center ml-2">
-            <small className="text-muted">Pages {pageIndex + 1} of {pageOptions.length}</small>
+          <div className="d-flex col align-items-center ml-2">
+            <small className="text-muted">Pages {pageIndex + 1} of {pageOptions.length > 0 ? pageOptions.length : 1 }</small>
           </div>
+          {console.log('page options', pageOptions.length)}
           
-          <ul className="pagination col d-flex justify-content-center">
+          <ul className="pagination col d-flex align-items-center mb-0">
             <li className="page-item">
               <button onClick={() => gotoPage(0)} disabled={!canPreviousPage} className="btn btn-light btn-sm">
                 {'<<'}
@@ -128,24 +91,26 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
             </li>
           </ul>
           
-          <ul className="pagination col d-flex justify-content-end">
-            {[15, 30, 45].map(pSize => (
-              <li 
-                key={pSize} 
-                value={pSize} 
-                className="page-item ml-2"  
-                >
-                <button 
-                  onClick={e => {
-                    setPageSize(Number(pSize))
-                  }}
-                  className={`btn btn-light btn-sm ${(pSize == pageSize) ? 'active' : '' }`}
+          {pageSizeIncrements.length > 1 &&
+            <ul className="pagination col d-flex justify-content-end">
+              pageSizeIncrements.map(pSize => (
+                <li 
+                  key={pSize} 
+                  value={pSize} 
+                  className="page-item ml-2"  
                   >
-                  {pSize}
-                </button>
-              </li>
-            ))}
-          </ul>
+                  <button 
+                    onClick={e => {
+                      setPageSize(Number(pSize))
+                    }}
+                    className={`btn btn-light btn-sm ${(pSize == pageSize) ? 'active' : '' }`}
+                    >
+                    {pSize}
+                  </button>
+                </li>
+              ))
+            </ul>
+          }
       </div>
     </div>
   )
