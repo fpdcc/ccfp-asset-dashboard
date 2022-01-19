@@ -3,8 +3,9 @@ import ReactTable from './BaseTable'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
+import columns from './table-utils/projectColumns'
 
-const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, savePortfolioName, savePortfolio, createNewPortfolio }) => {
+const PortfolioTable = ({ portfolio, onRemoveFromPortfolio, savePortfolioName, savePortfolio, createNewPortfolio }) => {
   const [edit, setEdit] = useState(portfolio.name ? false : true)
 
   const onRowClick = ({ original }) => {
@@ -97,17 +98,10 @@ const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, savePortfol
         </Form>
       }
       <ReactTable
-        columns={columns}
+        columns={React.useMemo(() => columns, [])}
         rows={portfolio.projects}
         getTrProps={onRowClick}
         rowClassNames='table-info'
-        selector={() => {
-          return (
-            <span>
-              <i className="fa fa-minus-square bg-"></i>
-            </span>
-          )
-        }}
       />
     </div>
   )

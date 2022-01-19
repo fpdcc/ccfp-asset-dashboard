@@ -17,6 +17,7 @@
     "js-cookie": "^3.0.1",
     "leaflet": "^1.7.1",
     "lodash": "^4.17.21",
+    "object-hash": "^2.2.0",
     "react": "^16.13.1",
     "react-bootstrap": "1.6.4",
     "react-csv": "^2.0.3",

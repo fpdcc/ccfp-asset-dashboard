@@ -113,12 +113,17 @@ class BuildingsSerializer(GeoFeatureModelSerializer):
 
     identifier = NullableIntegerField(source='fpd_uid', allow_null=True)
     name = serializers.CharField(source='building_name')
+    geom = GeometrySerializerMethodField()
+    
+    def get_geom(self, obj):
+        return obj.geom.transform(4326, clone=True)
 
 
-class TrailsSerializer(serializers.ModelSerializer):
+class TrailsSerializer(GeoFeatureModelSerializer):
     class Meta:
         model = TrailsInfo
         fields = ('identifier', 'name', 'geom')
+        geo_field = 'geom'
 
     identifier = serializers.IntegerField(source='trails_id')
     name = serializers.CharField(source='trail_subsystem')
@@ -129,4 +134,4 @@ class TrailsSerializer(serializers.ModelSerializer):
         This is heavy, might want to consider pre-fetching related Trails obj
         in viewset -> get_queryset
         '''
-        return obj.trails.geom
+        return obj.trails.geom.transform(4326, clone=True)
