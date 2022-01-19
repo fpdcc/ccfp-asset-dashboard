@@ -75,7 +75,7 @@ class PortfolioPlanner extends React.Component {
     // add the row to the existing portfolio
     const updatedProjectsInPortfolio = [...this.state.portfolio.projects, row]
 
-    const updatedTotals =this.calculateTotals(updatedProjectsInPortfolio)
+    const updatedTotals = this.calculateTotals(updatedProjectsInPortfolio)
 
     // remove the row from the remaining projects
     const updatedRemainingProjects = this.state.remainingProjects.filter((project) => {
