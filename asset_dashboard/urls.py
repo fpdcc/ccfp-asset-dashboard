@@ -19,7 +19,7 @@ from django.contrib.auth import views as auth_views
 from rest_framework import routers
 
 from asset_dashboard.endpoints import PortfolioViewSet, UserViewSet, \
-    PortfolioPhaseViewSet, PhaseViewSet, ProjectViewSet
+    PortfolioPhaseViewSet, PhaseViewSet, ProjectViewSet, AssetViewSet
 from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreateView, \
                                     ProjectUpdateView, ProjectListJson, \
                                     ProjectsByDistrictListView, ProjectsByDistrictListJson, \
@@ -34,6 +34,7 @@ router.register(r'users', UserViewSet)
 router.register(r'portfolio-phases', PortfolioPhaseViewSet)
 router.register(r'phases', PhaseViewSet)
 router.register(r'projects', ProjectViewSet)
+router.register(r'assets', AssetViewSet)
 
 urlpatterns = [
     path('', ProjectListView.as_view(), name='projects'),

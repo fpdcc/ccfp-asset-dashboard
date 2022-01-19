@@ -1,7 +1,10 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
+    GeometryField, GeometrySerializerMethodField
 
-from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project
+from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
+    Buildings, TrailsInfo
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -52,3 +55,42 @@ class PortfolioSerializer(serializers.ModelSerializer):
 
     def update(self, validated_data):
         ...
+
+
+class NullableIntegerField(serializers.IntegerField):
+
+    def __init__(self, *args, allow_null=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.allow_null = allow_null
+
+    def to_representation(self, value):
+        if self.allow_null and value is None:
+            return None
+        return super().to_representation(value)
+
+
+class BuildingsSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = Buildings
+        fields = ('identifier', 'name', 'geom')
+        geo_field = 'geom'
+
+    identifier = NullableIntegerField(source='fpd_uid', allow_null=True)
+    name = serializers.CharField(source='building_name')
+
+
+class TrailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TrailsInfo
+        fields = ('identifier', 'name', 'geom')
+
+    identifier = serializers.IntegerField(source='trails_id')
+    name = serializers.CharField(source='trail_subsystem')
+    geom = GeometrySerializerMethodField()
+
+    def get_geom(self, obj):
+        '''
+        This is heavy, might want to consider pre-fetching related Trails obj
+        in viewset -> get_queryset
+        '''
+        return obj.trails.geom

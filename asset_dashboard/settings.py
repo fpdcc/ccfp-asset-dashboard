@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'asset_dashboard',
     'widget_tweaks',
     'rest_framework',
+    'rest_framework_gis',
 ]
 
 MIDDLEWARE = [
