@@ -4,7 +4,7 @@ import { GeoJSON } from 'react-leaflet'
 import hash from 'object-hash'
 import Cookies from 'js-cookie'
 import BaseMap from './BaseMap'
-import AreaClipper from '../map_utils/clipper'
+import AreaClipper from '../map_utils/AreaClipper'
 import AssetSearchTable from '../tables/AssetSearchTable'
 
 function AssetTypeOptions() {
