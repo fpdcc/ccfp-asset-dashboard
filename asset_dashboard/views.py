@@ -298,55 +298,9 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        project = Project.objects.get(id=self.kwargs['pk'])
-        context['project'] = project
-
-        phases = Phase.objects.filter(project=project).values(
-            'id',
-            'estimated_bid_quarter',
-            'phase_type',
-            'status'
-        )
-        context['props'] = {
-            'phases': list(phases)
-        }
-
-        existing_geometries = LocalAsset.objects.filter(phase__project=project)
-
-        if existing_geometries.exists():
-            context['props'].update({
-                'existing_geoms': serialize('geojson', existing_geometries, geometry_field='geom')
-            })
-
-        if self.request.GET.get('q'):
-            paginated_results, search_results = search_assets(self.request)
-            context['search_results'] = paginated_results
-
-            # Send back the searched geojson, not paginated
-            context['props'].update({
-                'search_geoms': serialize('geojson', search_results, geometry_field='geom')
-            })
+        context['project'] = Project.objects.get(id=self.kwargs['pk'])
 
         return context
-
-    def post(self, request, *args, **kwargs):
-        body = json.loads(request.body)
-
-        geojson_form = LocalAssetForm(geojson=body)
-
-        if geojson_form.is_valid():
-            # TODO: need to save with the phase
-            saved = save_local_assets(geojson_form.cleaned_geojson, body.get('phase'))
-
-            if saved:
-                # TODO: return a json response instead since this post request is from an ajax call.
-                # See https://stackoverflow.com/questions/13256817/django-how-to-show-messages-under-ajax-function
-                # for ideas.
-                return HttpResponseRedirect(reverse('create-update-assets', kwargs={'pk': kwargs['pk']}))
-        else:
-            # TODO: return error...need to figure out how to use the messages with ajax
-            # This is where inheriting from a standard django form class might be helpful.
-            ...
 
 
 class ProjectsByDistrictListView(LoginRequiredMixin, ListView):

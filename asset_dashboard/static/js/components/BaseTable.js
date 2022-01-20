@@ -66,8 +66,6 @@ const BaseTable = ({ rows = [], columns, getTrProps = props => props, rowClassNa
           <div className="d-flex col align-items-center ml-2">
             <small className="text-muted">Pages {pageIndex + 1} of {pageOptions.length > 0 ? pageOptions.length : 1 }</small>
           </div>
-          {console.log('page options', pageOptions.length)}
-          
           <ul className="pagination col d-flex align-items-center mb-0">
             <li className="page-item">
               <button onClick={() => gotoPage(0)} disabled={!canPreviousPage} className="btn btn-light btn-sm">

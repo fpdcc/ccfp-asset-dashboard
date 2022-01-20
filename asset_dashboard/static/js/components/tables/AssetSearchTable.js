@@ -12,10 +12,6 @@ function AssetSearchTable({ rows }) {
     {
       Header: 'Name',
       accessor: 'properties.name', 
-    },
-    {
-      Header: 'Asset Type',
-      accessor: 'properties.asset_type',
     }
   ]
 
@@ -24,9 +20,10 @@ function AssetSearchTable({ rows }) {
       <ReactTable
         rows={rows}
         columns={React.useMemo(() => columns, [])}
-        getTrProps={() => console.log('on row click')}
+        // we could use this to select assets from the table
+        getTrProps={() => console.log('on row click')} 
         pageSizeIncrements={[10]}
-        sizeOfPage={7}
+        sizeOfPage={10}
       />
     </>
   )
