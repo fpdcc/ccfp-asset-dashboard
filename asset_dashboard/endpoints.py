@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-from rest_framework import viewsets
-
-from asset_dashboard.models import Portfolio
-from asset_dashboard.serializers import PortfolioSerializer
-=======
 from django.contrib.auth.models import User
 from django.db.models import Q
 
@@ -15,16 +9,10 @@ from asset_dashboard.serializers import PortfolioSerializer, UserSerializer, \
     PortfolioPhaseSerializer, PhaseSerializer, ProjectSerializer, \
     BuildingsSerializer, TrailsSerializer
 
-import asset_dashboard.models as ad_models
-import asset_dashboard.serializers as ad_serializers
->>>>>>> Spike asset API with DRF
-
 
 class PortfolioViewSet(viewsets.ModelViewSet):
     queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
-<<<<<<< HEAD
-=======
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -85,4 +73,3 @@ class AssetViewSet(viewsets.ModelViewSet):
                     search_filter |= Q(**{f'{field}__icontains': query})
 
         return self.model_cls.objects.filter(search_filter)
->>>>>>> Spike asset API with DRF
