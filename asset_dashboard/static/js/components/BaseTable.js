@@ -91,22 +91,24 @@ const BaseTable = ({ rows = [], columns, getTrProps = props => props, rowClassNa
           
           {pageSizeIncrements.length > 1 &&
             <ul className="pagination col d-flex justify-content-end">
-              pageSizeIncrements.map(pSize => (
-                <li 
-                  key={pSize} 
-                  value={pSize} 
-                  className="page-item ml-2"  
-                  >
-                  <button 
-                    onClick={e => {
-                      setPageSize(Number(pSize))
-                    }}
-                    className={`btn btn-light btn-sm ${(pSize == pageSize) ? 'active' : '' }`}
+             {
+                pageSizeIncrements.map(pSize => (
+                  <li 
+                    key={pSize} 
+                    value={pSize} 
+                    className="page-item ml-2"  
                     >
-                    {pSize}
-                  </button>
-                </li>
-              ))
+                    <button 
+                      onClick={e => {
+                        setPageSize(Number(pSize))
+                      }}
+                      className={`btn btn-light btn-sm ${(pSize == pageSize) ? 'active' : '' }`}
+                      >
+                      {pSize}
+                    </button>
+                  </li>
+                ))
+             }
             </ul>
           }
       </div>

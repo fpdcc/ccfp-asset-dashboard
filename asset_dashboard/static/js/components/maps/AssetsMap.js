@@ -24,7 +24,7 @@ function AssetsMap(props) {
   const [existingGeoms, setExistingGeoms] = useState()
   const [clippedGeoms, setClippedGeoms] = useState(null)
   const [searchText, setSearchText] = useState('')
-  const [searchedAssetType, setSearchedAssetType] = useState({value: 'buildings', label: 'Buildings'})
+  const [searchedAssetType, setSearchedAssetType] = useState('buildings')
 
   useEffect(() => {
     if (props?.existing_geoms) {

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import ProjectsTable from './components/ProjectsTable'
 import PortfolioTable from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
-import SearchInput from './components/FilterComponent'
+import SearchInput from './components/SearchInput'
 import { CSVLink } from 'react-csv'
 
 class PortfolioPlanner extends React.Component {
