@@ -21,10 +21,10 @@ class PortfolioPlanner extends React.Component {
           budgetImpact: 0,
           projectNames: [],
           projectZones: []
-        }
+        },
+        unsavedChanges: false
       },
-      filterText: '',
-      unsavedChanges: false
+      filterText: ''
     }
 
     this.addProjectToPortfolio = this.addProjectToPortfolio.bind(this)
@@ -163,9 +163,13 @@ class PortfolioPlanner extends React.Component {
       body: JSON.stringify(data)
     }).then(response => {
       console.log(response.ok, response.status, response.statusText)
-    })
 
-    this.setState({portfolio: {...this.state.portfolio, unsavedChanges: false}})
+      if (response.ok) {
+        this.setState({portfolio: {...this.state.portfolio, unsavedChanges: false}})
+      } else {
+        console.error(response.status, response.statusText)
+      }
+    })
   }
 
   updatePortfolioName(e) {
@@ -200,31 +204,31 @@ class PortfolioPlanner extends React.Component {
         <div className="row">
           <div className="container col card shadow-sm mt-5 ml-3 col-9">
               <>
-                <PortfolioTable 
-                  portfolio={this.state.portfolio} 
+                <PortfolioTable
+                  portfolio={this.state.portfolio}
                   onRemoveFromPortfolio={this.removeProjectFromPortfolio}
                   savePortfolio={this.savePortfolio}
                   onNameChange={this.updatePortfolioName} />
-                <ProjectsTable 
+                <ProjectsTable
                   allProjects={filteredRows}
                   onAddToPortfolio={this.addProjectToPortfolio}
                   searchInput={<SearchInput
-                    onFilter={this.searchProjects} 
-                    filterText={this.state.filterText} />} />
+                  onFilter={this.searchProjects}
+                  filterText={this.state.filterText} />} />
               </>
           </div>
           <div className="col">
             <PortfolioTotals totals={this.state.portfolio.totals} />
-            { this.state.portfolio.projects.length > 0 
+            { this.state.portfolio.projects.length > 0
              ? <div className="d-flex justify-content-center mt-3">
-                  <CSVLink 
+                  <CSVLink
                     data={this.state.portfolio.projects}
                     filename={`CIP-${this.getDate()}`}
                     className='btn btn-primary mx-auto'
                     >
                       Export as CSV
                   </CSVLink>
-                </div> 
+                </div>
             : null }
           </div>
         </div>

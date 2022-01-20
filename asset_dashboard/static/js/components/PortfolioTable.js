@@ -18,7 +18,7 @@ const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, onNameChang
       <h3>
         Portfolio
       </h3>
-      <>
+      <Form onSubmit={savePortfolio}>
         <InputGroup className="mb-3">
           <Form.Control
             placeholder="Enter a name for your portfolio..."
@@ -26,17 +26,17 @@ const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, onNameChang
             aria-label="Portfolio name"
             aria-describedby="portfolioName"
             onChange={onNameChange}
+            required={true}
           />
           <Button
             variant="primary"
             type="submit"
             id="save-portfolio"
-            onClick={savePortfolio}
             disabled={portfolio.unsavedChanges ? false : true}>
             Save portfolio
           </Button>
         </InputGroup>
-      </>
+      </Form>
       <ReactTable
         columns={columns}
         rows={portfolio.projects}
