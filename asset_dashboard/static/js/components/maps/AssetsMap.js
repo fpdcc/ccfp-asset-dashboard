@@ -25,6 +25,7 @@ function AssetsMap(props) {
   const [clippedGeoms, setClippedGeoms] = useState(null)
   const [searchText, setSearchText] = useState('')
   const [searchedAssetType, setSearchedAssetType] = useState('buildings')
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     if (props?.existing_geoms) {
@@ -75,6 +76,7 @@ function AssetsMap(props) {
   }
 
   function searchAssets() {
+    setIsLoading(true)
     const url = `/assets/?` + new URLSearchParams({
       'q': searchText,
       'asset_type': searchedAssetType
@@ -89,7 +91,10 @@ function AssetsMap(props) {
       mode: 'same-origin',
       method: 'GET'
     }).then((response) => response.json())
-    .then((data) => setSearchedGeoms(data))
+    .then((data) => {
+      setIsLoading(false)
+      setSearchedGeoms(data)
+    })
     .catch(error => {
       // TODO: show an error message in the UI
       console.log('error', error)
@@ -127,11 +132,14 @@ function AssetsMap(props) {
             </div>
           </div>
         </div>
-        {searchedGeoms && 
-          <AssetSearchTable
-            rows={searchedGeoms.features}
-          />
-        }
+        <div>
+          {isLoading ? 'Loading...' : null}
+          {searchedGeoms && 
+            <AssetSearchTable
+              rows={searchedGeoms.features}
+            />
+          }
+        </div>
       </div>
       <div className='col'>
         {clippedGeoms 
