@@ -11,7 +11,7 @@ const TextField = styled.input`
   border-bottom-right-radius: 0;
   border: 1px solid #e5e5e5;
   padding: 0 32px 0 16px;
-  
+
   &:hover {
     cursor: pointer;
   }

@@ -151,10 +151,7 @@ class PortfolioPlanner extends React.Component {
                   onAddToPortfolio={this.addProjectToPortfolio}
                   searchInput={<SearchInput
                     onFilter={this.searchProjects} 
-                    filterText={this.state.filterText}
-                    placeholder='Search for projects by name'
-                    aria-label='Search for projects by name' />}
-                />
+                    filterText={this.state.filterText} />} />
               </>
           </div>
           <div className="col">
