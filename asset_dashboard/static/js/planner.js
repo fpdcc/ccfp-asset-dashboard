@@ -16,6 +16,7 @@ class PortfolioPlanner extends React.Component {
       allProjects: [],
       remainingProjects: [],
       portfolio: {
+        name: '',
         projects: [],
         totals: {
           budgetImpact: 0,
@@ -152,7 +153,7 @@ class PortfolioPlanner extends React.Component {
     console.log(data)
 
     // TODO: This request will always create a new portfolio. Implement ability
-    // to edit existing portfolio. (PATCH request)
+    // to edit existing portfolio (PATCH to /portfolios/<pk/).
     fetch('/portfolios/', {
       method: 'POST',
       headers: {

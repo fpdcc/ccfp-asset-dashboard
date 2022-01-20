@@ -50,5 +50,42 @@ class PortfolioSerializer(serializers.ModelSerializer):
 
         return portfolio
 
-    def update(self, validated_data):
-        ...
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.save()
+
+        phase_data = validated_data.get('phases', [])
+
+        if phase_data:
+            for_create = []
+            for_update = []
+
+            # TODO: This could be made more efficient by getting all existing
+            # PortfolioPhase instances in a single query, updating the sequence
+            # from phase data, then performing a bulk update. Will revisit if
+            # performance is a concern.
+            for phase in phase_data:
+                try:
+                    portfolio_phase = PortfolioPhase.objects.get(
+                        portfolio=instance,
+                        phase=phase['phase']
+                    )
+                except PortfolioPhase.DoesNotExist:
+                    portfolio_phase = PortfolioPhase(
+                        portfolio=instance,
+                        phase=phase['phase'],
+                        sequence=phase['sequence']
+                    )
+                    for_create.append(portfolio_phase)
+                else:
+                    portfolio_phase.sequence = phase['sequence']
+                    for_update.append(portfolio_phase)
+
+            PortfolioPhase.objects.bulk_create(for_create)
+            PortfolioPhase.objects.bulk_update(for_update, ['sequence'])
+
+            PortfolioPhase.objects.filter(portfolio=instance)\
+                                  .exclude(phase__in=tuple(phase['phase'] for phase in phase_data))\
+                                  .delete()
+
+        return instance
