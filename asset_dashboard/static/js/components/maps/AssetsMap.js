@@ -100,27 +100,31 @@ function AssetsMap(props) {
     <div className='row'>
       <div className='col-4'>
         <div className='row'>
-          <div className='input-group'>
-            <label htmlFor='asset-search' className='sr-only'>Search for Assets</label>
-            <input 
-              type='search'
-              onChange={(e) => setSearchText(e.target.value)}
-              value={searchText}
-              className='form-control' 
-              aria-label='Search for assets' 
-              placeholder='Search for assets' />
-            <select
-              className='form-control'
-              value={searchedAssetType}
-              onChange={(e) => setSearchedAssetType(e.target.value)}
-            >
-              <AssetTypeOptions />
-            </select>
-            <button 
-              onClick={() => searchAssets()}
-              className='btn btn-warning'>
-                Search
-            </button>
+          <div className='col'>
+            <div className='row m-1'>
+              <label htmlFor='asset-search' className='sr-only'>Search for Assets</label>
+              <input 
+                type='search'
+                onChange={(e) => setSearchText(e.target.value)}
+                value={searchText}
+                className='form-control' 
+                aria-label='Search for assets' 
+                placeholder='Search for assets' />
+            </div>
+            <div className='row m-1'>
+              <select
+                className='form-control col mr-1'
+                value={searchedAssetType}
+                onChange={(e) => setSearchedAssetType(e.target.value)}
+              >
+                <AssetTypeOptions />
+              </select>
+              <button 
+                onClick={() => searchAssets()}
+                className='btn btn-warning'>
+                  Search
+              </button>
+            </div>
           </div>
         </div>
         {searchedGeoms && 
