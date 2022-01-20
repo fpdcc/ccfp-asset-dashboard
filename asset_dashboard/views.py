@@ -29,7 +29,7 @@ from .serializers import PortfolioSerializer
 class CipPlannerView(LoginRequiredMixin, TemplateView):
     title = 'CIP Planner'
     template_name = 'asset_dashboard/planner.html'
-    component = 'js/planner.js'
+    component = 'js/PortfolioPlanner.js'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
