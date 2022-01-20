@@ -20,8 +20,7 @@ from django.db.models import Q
 from django.utils.html import escape
 
 from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
-    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear, \
-    LocalAsset
+    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
     PhaseFinancesForm, PhaseForm
 from .serializers import PortfolioSerializer
@@ -293,7 +292,7 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
 
 class AssetAddEditView(LoginRequiredMixin, TemplateView):
     template_name = 'asset_dashboard/asset_create_update.html'
-    component = 'js/components/maps/UpdateAssetsMap.js'
+    component = 'js/components/maps/AssetsMap.js'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
