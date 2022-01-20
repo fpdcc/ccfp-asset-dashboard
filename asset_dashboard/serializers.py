@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
-    GeometryField, GeometrySerializerMethodField
+    GeometrySerializerMethodField
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
     Buildings, TrailsInfo
@@ -78,7 +78,7 @@ class BuildingsSerializer(GeoFeatureModelSerializer):
     identifier = NullableIntegerField(source='fpd_uid', allow_null=True)
     name = serializers.CharField(source='building_name')
     geom = GeometrySerializerMethodField()
-    
+
     def get_geom(self, obj):
         return obj.geom.transform(4326, clone=True)
 

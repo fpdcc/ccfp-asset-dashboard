@@ -9,9 +9,6 @@ from asset_dashboard.serializers import PortfolioSerializer, UserSerializer, \
     PortfolioPhaseSerializer, PhaseSerializer, ProjectSerializer, \
     BuildingsSerializer, TrailsSerializer
 
-import asset_dashboard.models as ad_models
-import asset_dashboard.serializers as ad_serializers
-
 
 class PortfolioViewSet(viewsets.ModelViewSet):
     queryset = Portfolio.objects.all()

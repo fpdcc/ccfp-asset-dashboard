@@ -2,7 +2,6 @@ import json
 import re
 
 from django.core.serializers.json import DjangoJSONEncoder
-from django.core.serializers import serialize
 from django.shortcuts import render
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 from django_datatables_view.base_datatable_view import BaseDatatableView
