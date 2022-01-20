@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
 
-const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, onNameChange, savePortfolio, disableSave }) => {
+const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, onNameChange, savePortfolio }) => {
   const onRowClick = ({ original }) => {
     return {
       onClick: e => {
@@ -22,6 +22,7 @@ const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, onNameChang
         <InputGroup className="mb-3">
           <Form.Control
             placeholder="Enter a name for your portfolio..."
+            value={portfolio.name ? portfolio.name : ''}
             aria-label="Portfolio name"
             aria-describedby="portfolioName"
             onChange={onNameChange}
@@ -31,7 +32,7 @@ const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, onNameChang
             type="submit"
             id="save-portfolio"
             onClick={savePortfolio}
-            disabled={disableSave}>
+            disabled={portfolio.unsavedChanges ? false : true}>
             Save portfolio
           </Button>
         </InputGroup>

@@ -31,7 +31,7 @@ class PortfolioPlanner extends React.Component {
     this.removeProjectFromPortfolio = this.removeProjectFromPortfolio.bind(this)
     this.searchProjects = this.searchProjects.bind(this)
     this.savePortfolio = this.savePortfolio.bind(this)
-    this.registerChange = this.registerChange.bind(this)
+    this.updatePortfolioName = this.updatePortfolioName.bind(this)
   }
 
   createRegionName(regions) {
@@ -91,6 +91,7 @@ class PortfolioPlanner extends React.Component {
 
     this.setState({
       portfolio: {
+        ...this.state.portfolio,
         projects: updatedProjectsInPortfolio,
         totals: updatedTotals
       },
@@ -117,6 +118,7 @@ class PortfolioPlanner extends React.Component {
 
     this.setState({
       portfolio: {
+        ...this.state.portfolio,
         projects: updatedPortfolio,
         totals: this.calculateTotals(updatedPortfolio)
       },
@@ -137,13 +139,17 @@ class PortfolioPlanner extends React.Component {
   savePortfolio(e) {
     e.preventDefault()
 
+    console.log(this.state.portfolio)
+
     const data = {
-      name: 'test portfolio', // TODO: Grab name from state
+      name: this.state.portfolio.name,
       user: props.user_id,
       phases: this.state.portfolio.projects.map((phase, index) => {
         return {'phase': phase.key, 'sequence': index + 1}
       })
     }
+
+    console.log(data)
 
     // TODO: This request will always create a new portfolio. Implement ability
     // to edit existing portfolio. (PATCH request)
@@ -159,16 +165,21 @@ class PortfolioPlanner extends React.Component {
       console.log(response.ok, response.status, response.statusText)
     })
 
-    this.setState({unsavedChanges: false})
+    this.setState({portfolio: {...this.state.portfolio, unsavedChanges: false}})
   }
 
   updatePortfolioName(e) {
-    // update name in portfolio state
+    this.setState({
+      portfolio: {...this.state.portfolio, name: e.target.value}
+    })
+
     this.registerChange()
   }
 
   registerChange(e) {
-    this.setState({unsavedChanges: true})
+    this.setState((state, props) => ({
+      portfolio: {...state.portfolio, unsavedChanges: true}
+    }))
   }
 
   getDate() {
@@ -193,8 +204,7 @@ class PortfolioPlanner extends React.Component {
                   portfolio={this.state.portfolio} 
                   onRemoveFromPortfolio={this.removeProjectFromPortfolio}
                   savePortfolio={this.savePortfolio}
-                  onNameChange={this.registerChange}
-                  disableSave={this.state.unsavedChanges ? false : true} />
+                  onNameChange={this.updatePortfolioName} />
                 <ProjectsTable 
                   allProjects={filteredRows}
                   onAddToPortfolio={this.addProjectToPortfolio}
