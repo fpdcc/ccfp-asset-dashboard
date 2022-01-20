@@ -1,6 +1,5 @@
 import os
 import subprocess
-import json
 
 import pytest
 import psycopg2

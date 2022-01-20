@@ -36,8 +36,6 @@ function AssetsMap(props) {
     const group = new L.featureGroup()
 
     map.eachLayer((layer) => {
-      console.log('map each layer')
-      console.log(layer)
       if (layer.feature) {
         group.addLayer(layer)
       }
@@ -86,9 +84,9 @@ function AssetsMap(props) {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'X-CSRFTOKEN': Cookies.get('csrftoken'),
-        'credentials': 'same-origin'
+        'X-CSRFTOKEN': Cookies.get('csrftoken')
       },
+      mode: 'same-origin',
       method: 'GET'
     }).then((response) => response.json())
     .then((data) => setSearchedGeoms(data))

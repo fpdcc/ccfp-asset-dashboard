@@ -1,6 +1,4 @@
-from django.core.exceptions import ValidationError
 from django.forms import ModelForm, TextInput
-
 from .models import Project, PhaseFinances, ProjectScore, ProjectCategory, Phase
 
 
