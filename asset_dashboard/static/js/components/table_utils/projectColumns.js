@@ -8,7 +8,7 @@ const selector = () => {
     )
   }
 
-const columns = [
+const projectColumns = [
     {
       Header: () => null,
       id: 'selector',
@@ -45,4 +45,4 @@ const columns = [
     }
   ]
 
-export default columns
+export default projectColumns

@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactTable from './BaseTable'
-import columns from './table-utils/projectColumns'
+import projectColumns from './table_utils/projectColumns'
 
 const PortfolioTable = ({ portfolioProjects, onRemoveFromPortfolio }) => {
   const onRowClick = ({ original }) => {
@@ -15,7 +15,7 @@ const PortfolioTable = ({ portfolioProjects, onRemoveFromPortfolio }) => {
     <div className="mb-5 mt-5">
       <h3>Portfolio</h3>
       <ReactTable
-        columns={React.useMemo(() => columns, [])}
+        columns={React.useMemo(() => projectColumns, [])}
         rows={portfolioProjects}
         getTrProps={onRowClick}
         rowClassNames='table-info'
