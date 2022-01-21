@@ -4,25 +4,6 @@ from rest_framework import serializers
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project
 
 
-class UserSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ('id', 'email', 'first_name', 'last_name',)
-
-
-class ProjectSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Project
-        fields = ('id', 'name', 'description', 'category', 'section_owner',)
-
-
-class PhaseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Phase
-        fields = ('id',)
-
-
 class PortfolioPhaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = PortfolioPhase
