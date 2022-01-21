@@ -16,6 +16,7 @@ class PortfolioPlanner extends React.Component {
       allProjects: [],
       remainingProjects: [],
       portfolio: {
+        id: null,
         name: '',
         projects: [],
         totals: {
@@ -63,10 +64,35 @@ class PortfolioPlanner extends React.Component {
       }
     })
 
-    this.setState({
+    let state = {
       allProjects: projects,
       remainingProjects: projects
-    })
+    }
+
+    // Rehydate state from last edited portfolio, if one exists
+    if (props.portfolio) {
+      const selectedProjectIds = props.portfolio.phases.map(phase => phase.phase)
+
+      const portfolioProjects = projects.filter(
+        project => selectedProjectIds.includes(project.key)
+      )
+
+      state = {
+        ...state,
+        remainingProjects: projects.filter(
+          project => !selectedProjectIds.includes(project.key)
+        ),
+        portfolio: {
+          id: props.portfolio.id,
+          name: props.portfolio.name,
+          projects: portfolioProjects,
+          totals: this.calculateTotals(portfolioProjects),
+          unsavedChanges: false
+        }
+      }
+    }
+
+    this.setState(state)
   }
 
   calculateTotals(portfolio) {
@@ -140,8 +166,6 @@ class PortfolioPlanner extends React.Component {
   savePortfolio(e) {
     e.preventDefault()
 
-    console.log(this.state.portfolio)
-
     const data = {
       name: this.state.portfolio.name,
       user: props.user_id,
@@ -150,12 +174,12 @@ class PortfolioPlanner extends React.Component {
       })
     }
 
-    console.log(data)
+    const [url, method] = this.state.portfolio.id
+      ? [`/portfolios/${this.state.portfolio.id}/`, 'PATCH'] // Update
+      : ['/portfolios/', 'POST'] // Create
 
-    // TODO: This request will always create a new portfolio. Implement ability
-    // to edit existing portfolio (PATCH to /portfolios/<pk/).
-    fetch('/portfolios/', {
-      method: 'POST',
+    fetch(url, {
+      method: method,
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -165,11 +189,19 @@ class PortfolioPlanner extends React.Component {
     }).then(response => {
       console.log(response.ok, response.status, response.statusText)
 
-      if (response.ok) {
-        this.setState({portfolio: {...this.state.portfolio, unsavedChanges: false}})
-      } else {
+      if (!response.ok) {
         console.error(response.status, response.statusText)
       }
+
+      return response.json()
+    }).then(data => {
+      this.setState({
+        portfolio: {
+          ...this.state.portfolio,
+          id: data.id,
+          unsavedChanges: false
+        }
+      })
     })
   }
 

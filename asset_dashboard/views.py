@@ -1,18 +1,22 @@
 import json
 import re
+
 from django.core.serializers.json import DjangoJSONEncoder
-from django.shortcuts import render
-from django.views.generic import TemplateView, ListView, CreateView, UpdateView
-from django_datatables_view.base_datatable_view import BaseDatatableView
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
-    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances
-from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, PhaseFinancesForm
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
 from django.utils.html import escape
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView
+
+from django_datatables_view.base_datatable_view import BaseDatatableView
+
+from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
+    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, Portfolio
+from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, PhaseFinancesForm
+from .serializers import PortfolioSerializer
 
 
 class CipPlannerView(LoginRequiredMixin, TemplateView):
@@ -22,6 +26,12 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+
+        if portfolio := self.request.user.portfolio_set.order_by('-updated_at').first():
+            portfolio = PortfolioSerializer(portfolio).data
+
+        else:
+            portfolio = None
 
         phases = Phase.objects.all().select_related('project')
 
@@ -44,6 +54,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
 
         context['props'] = {
             'projects': json.dumps(project_phases, cls=DjangoJSONEncoder),
+            'portfolio': portfolio,
             'user_id': self.request.user.id,
         }
         return context
