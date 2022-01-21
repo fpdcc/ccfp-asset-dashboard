@@ -14,7 +14,8 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
-    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, Portfolio
+    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, \
+    PhaseFundingYear
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm,  \
     PhaseFinancesForm, PhaseForm
 from .serializers import PortfolioSerializer

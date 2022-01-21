@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project
+from asset_dashboard.models import Portfolio, PortfolioPhase
 
 
 class PortfolioPhaseSerializer(serializers.ModelSerializer):
