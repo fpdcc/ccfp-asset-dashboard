@@ -1,0 +1,6 @@
+
+[qgtunnel.CCFP_GIS_Database]
+accept = "127.0.0.1:25060"
+connect = "db-postgresql-nyc1-34623-do-user-1547545-0.db.ondigitalocean.com:25060"
+encrypted = false
+transparent = true

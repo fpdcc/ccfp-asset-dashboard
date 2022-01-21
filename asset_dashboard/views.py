@@ -15,7 +15,8 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
     Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, Portfolio
-from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, PhaseFinancesForm
+from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm,  \
+    PhaseFinancesForm, PhaseForm
 from .serializers import PortfolioSerializer
 
 
@@ -76,7 +77,7 @@ class ProjectListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # send the form to a modal in this view
+        # send a new Project form to the modal in this view's template
         form = ProjectForm()
         context['form'] = form
 
@@ -126,11 +127,6 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
             project = Project.objects.create(**project_data)
             ProjectScore.objects.get_or_create(project=project)
 
-            # TODO: Is there any other information we should capture from the
-            # form for the Phase?
-            phase = Phase.objects.create(project=project)
-            PhaseFinances.objects.get_or_create(phase=phase)
-
             messages.success(self.request, 'Project successfully created!')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
@@ -139,7 +135,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
 
 class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     """
-    Updated view that updates a Project and all related models.
+    Project detail view for updating a Project.
     """
     model = Project
     template_name = 'asset_dashboard/project_detail.html'
@@ -148,22 +144,15 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # TODO: This arbitrarily grabs the first Phase associated with a Project.
-        # Fix this when we decide what the Phase management UI should look like
-        phase_finances, _ = PhaseFinances.objects.get_or_create(phase=self.object.phases.first())
-
         if self.request.POST:
-            # instantiate the forms with data from the post request
             request_data = self.request.POST
 
             context['score_form'] = ProjectScoreForm(request_data, instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(request_data, instance=self.object.category)
-            context['finances_form'] = PhaseFinancesForm(request_data, instance=phase_finances)
         else:
             context['total_score'] = ProjectScore.objects.get(project=self.object).total_score
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
-            context['finances_form'] = PhaseFinancesForm(instance=phase_finances)
 
         return context
 
@@ -175,8 +164,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
 
         forms = {
             'project': form,
-            'score': context['score_form'],
-            'finances': context['finances_form']
+            'score': context['score_form']
         }
 
         for form_instance in forms:
@@ -189,6 +177,106 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
 
         messages.success(self.request, 'Project successfully saved!')
         return super().form_valid(form)
+
+
+class ProjectPhasesListView(LoginRequiredMixin, ListView):
+    template_name = 'asset_dashboard/project_phases_list.html'
+    paginate_by = 15
+
+    def get_queryset(self):
+        return Phase.objects.filter(project=self.kwargs['pk']).values(
+            'phase_type',
+            'estimated_bid_quarter',
+            'status',
+            'project',
+            'id',
+            'phasefinances__budget'
+        ).order_by('sequence')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Need the project in context so the name shows up in the project_base.html template
+        context['project'] = Project.objects.get(id=self.kwargs['pk'])
+        return context
+
+
+class PhaseCreateView(LoginRequiredMixin, CreateView):
+    template_name = 'asset_dashboard/partials/forms/add_edit_phase_form.html'
+    form_class = PhaseForm
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+
+        if form.is_valid():
+            phase_data = {
+                **form.cleaned_data,
+                'project_id': self.kwargs['pk']
+            }
+
+            phase = Phase.objects.create(**phase_data)
+
+            if context['finances_form'].is_valid():
+                context['finances_form'].instance.phase_id = phase.id
+                context['finances_form'].save()
+            else:
+                return super().form_invalid(context['finances_form'])
+
+            messages.success(self.request, 'Phase successfully created!')
+            return HttpResponseRedirect(reverse('project-phases-list', kwargs={'pk': phase.project.pk}))
+        else:
+            return super().form_invalid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if self.request.POST:
+            # Hydrate the form with the post request.
+            context['finances_form'] = PhaseFinancesForm(self.request.POST)
+        else:
+            # This will execute when a new, blank form loads.
+            context['finances_form'] = PhaseFinancesForm()
+
+        context['project'] = Project.objects.get(id=self.kwargs['pk'])
+
+        return context
+
+
+class PhaseUpdateView(LoginRequiredMixin, UpdateView):
+    template_name = 'asset_dashboard/partials/forms/add_edit_phase_form.html'
+    form_class = PhaseForm
+    model = Phase
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        phase_funding_year = PhaseFundingYear.objects.filter(phase=self.object)
+        context['phase_funding_year'] = phase_funding_year
+
+        if self.request.POST:
+            context['finances_form'] = PhaseFinancesForm(self.request.POST, instance=self.object.phasefinances)
+        else:
+            context['finances_form'] = PhaseFinancesForm(instance=self.object.phasefinances)
+
+        context['project'] = self.object.project
+
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+
+        if form.is_valid():
+            phase = form.save()
+
+            if context['finances_form'].is_valid():
+                context['finances_form'].save()
+            else:
+                return super().form_invalid(context['finances_form'])
+
+            messages.success(self.request, 'Phase successfully edited!')
+            return HttpResponseRedirect(reverse('project-phases-list', kwargs={'pk': phase.project.pk}))
+        else:
+            return super().form_invalid(form)
 
 
 class ProjectsByDistrictListView(LoginRequiredMixin, ListView):

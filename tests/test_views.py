@@ -1,6 +1,6 @@
 import pytest
 from django.urls import reverse
-from asset_dashboard.models import Project, PhaseFinances, ProjectScore, ProjectCategory, User
+from asset_dashboard.models import Project, PhaseFundingYear, ProjectScore, ProjectCategory, User, Phase
 from django.forms.models import model_to_dict
 import json
 from django.utils.html import escape
@@ -174,10 +174,6 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
         'ease_score': 4,
         'geographic_distance_score': 1,
         'social_equity_score': 3,
-        'phase': 'phase_1',
-        'estimated_bid_quarter': 'Q1',
-        'budget_0': 1000.00,
-        'budget_1': 'USD',
         'senate_districts': [districts[0][0].id],
         'house_districts': [districts[1][0].id],
         'commissioner_districts': [districts[2][0].id],
@@ -194,16 +190,8 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
     # Project model
     assert updated_project[0].name == valid_form_data['name']
     assert updated_project[0].description == valid_form_data['description']
-    # TODO: These are no longer associated with the project. Update this test
-    # once we implement Phase management.
-    # assert updated_project[0].phase == valid_form_data['phase']
-    # assert updated_project[0].estimated_bid_quarter == valid_form_data['estimated_bid_quarter']
     assert updated_project[0].category_id == project_category.id
     assert updated_project[0].section_owner_id == section_owner.id
-    
-    # PhaseFinances model
-    phase_finances = PhaseFinances.objects.get(phase__project=project)
-    assert phase_finances.budget.amount == valid_form_data['budget_0']
     
     # ProjectScore model, related to Project
     assert updated_project[0].projectscore.core_mission_score == valid_form_data['core_mission_score']
@@ -245,6 +233,36 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
     bad_url = reverse('project-detail', kwargs={'pk': 1234556873459})
     bad_response = client.get(bad_url)
     assert bad_response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_project_phase_form(client, project, user):
+    client.force_login(user=user)
+    
+    prj = project.build()
+
+    phase_url = reverse('create-phase', kwargs={'pk': prj.pk})
+    response = client.get(phase_url)
+    assert response.status_code == 200
+
+    form_data = {
+        'phase_type': 'design',
+        'estimated_bid_quarter': 'Q2',
+        'status': 'in-progress',
+        'budget_0': '100000',
+        'budget_1': 'USD',
+    }
+    
+    form_response = client.post(phase_url, data=form_data)
+    assert form_response.status_code == 302
+
+    # Test the Phase and related objects saved how we expect.
+    phase = Phase.objects.filter(project=prj)[1]
+
+    assert phase.phase_type == form_data['phase_type']
+    assert phase.estimated_bid_quarter == form_data['estimated_bid_quarter']
+    assert phase.status == form_data['status']
+    assert phase.phasefinances.budget.amount == float(form_data['budget_0'])
 
 
 @pytest.mark.django_db
