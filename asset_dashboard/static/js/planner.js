@@ -34,6 +34,7 @@ class PortfolioPlanner extends React.Component {
     this.searchProjects = this.searchProjects.bind(this)
     this.savePortfolio = this.savePortfolio.bind(this)
     this.updatePortfolioName = this.updatePortfolioName.bind(this)
+    this.alertUser = this.alertUser.bind(this)
   }
 
   createRegionName(regions) {
@@ -93,6 +94,19 @@ class PortfolioPlanner extends React.Component {
     }
 
     this.setState(state)
+
+    window.addEventListener('beforeunload', this.alertUser)
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.alertUser)
+  }
+
+  alertUser(e) {
+    if (this.state.portfolio.unsavedChanges) {
+      e.preventDefault()
+      e.returnValue = ''
+    }
   }
 
   calculateTotals(portfolio) {
