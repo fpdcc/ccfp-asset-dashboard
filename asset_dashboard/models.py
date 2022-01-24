@@ -256,14 +256,12 @@ class LocalAsset(models.Model):
     """
 
     # TODO: implement these fields
-    phase = models.ForeignKey('Phase', on_delete=models.CASCADE)
+    phase = models.ManyToManyField('Phase')
 
     geom = models.GeometryField(srid=3435)
 
-    # These fields correspond with the unmanaged GIS models.
-    # As far as I know, it's not possible to create a relationship
-    # between two databases with our current setup?
-    building_id = models.BigIntegerField()
+    asset_id = models.IntegerField()
+    asset_model = models.CharField(max_length=100)
 
 
 class ProjectCategory(models.Model):

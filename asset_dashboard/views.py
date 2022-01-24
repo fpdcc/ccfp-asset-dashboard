@@ -12,10 +12,12 @@ from django.contrib import messages
 from django.db.models import Q
 from django.utils.html import escape
 
-from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
-    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear
+from .models import HouseDistrict, LocalAsset, Project, ProjectCategory, ProjectScore, \
+    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear, \
+    LocalAsset
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
     PhaseFinancesForm, PhaseForm
+from .serializers import LocalAssetSerializer
 
 
 class CipPlannerView(LoginRequiredMixin, TemplateView):
@@ -275,6 +277,16 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['project'] = Project.objects.get(id=self.kwargs['pk'])
+        
+        # TODO: get the phase from context when I do issue # 94
+        phase_id = 2
+        
+        existing_assets = LocalAsset.objects.filter(phase__id=phase_id)
+        
+        if existing_assets.exists():
+            context['props'] = {
+                'existing_assets': LocalAssetSerializer(existing_assets, many=True)
+            }
 
         return context
 

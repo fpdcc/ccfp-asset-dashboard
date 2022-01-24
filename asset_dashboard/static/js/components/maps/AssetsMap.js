@@ -52,7 +52,8 @@ function AssetsMap(props) {
   }
 
   function saveGeometries() {
-    fetch(window.location.pathname, {
+    console.log(clippedGeoms['features'])
+    fetch('/local-assets/', {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -61,8 +62,7 @@ function AssetsMap(props) {
         method: 'POST',
         mode: 'same-origin',
         body: JSON.stringify({
-          'geojson': clippedGeoms,
-          'phase': selectedPhase.value
+          'geometry': clippedGeoms
         })
     }).then((response) => {
       if (response.status == 200) {
@@ -77,6 +77,7 @@ function AssetsMap(props) {
 
   function searchAssets() {
     setIsLoading(true)
+
     const url = `/assets/?` + new URLSearchParams({
       'q': searchText,
       'asset_type': searchedAssetType
@@ -161,9 +162,6 @@ function AssetsMap(props) {
             center={[41.8781, -87.6298]}
             zoom={11}
             whenCreated={onMapCreated}>
-            <AreaClipper 
-              geoJson={searchedGeoms}
-              onClipped={onClipped} />
             {searchedGeoms && 
               <>
                 <GeoJSON 
@@ -173,6 +171,9 @@ function AssetsMap(props) {
                   key={hash(searchedGeoms)} 
                   style={{color: 'black'}}
                 />
+                <AreaClipper 
+                  geoJson={searchedGeoms}
+                  onClipped={onClipped} />
               </>
             }
             {existingGeoms && <GeoJSON data={existingGeoms} style={{color: 'green'}}/>}

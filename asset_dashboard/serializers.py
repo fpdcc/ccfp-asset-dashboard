@@ -1,10 +1,13 @@
 from django.contrib.auth.models import User
+from django.contrib.gis.geos import GEOSGeometry
+from django.db.models.fields import IntegerField
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
     GeometrySerializerMethodField
+from rest_framework.exceptions import ErrorDetail, ValidationError
 
-from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
-    Buildings, TrailsInfo
+from asset_dashboard.models import LocalAsset, Phase, Portfolio, PortfolioPhase, Project, \
+    LocalAsset, Buildings, TrailsInfo
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -67,6 +70,59 @@ class NullableIntegerField(serializers.IntegerField):
         if self.allow_null and value is None:
             return None
         return super().to_representation(value)
+    
+class LocalAssetSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        model = LocalAsset
+        geo_field = 'geometry'
+
+    # id = serializers.IntegerField()
+    geometry = GeometrySerializerMethodField(source='geom')
+    # asset_id = serializers.IntegerField(source='')
+    # phase = serializers.RelatedField(source='phase.id', read_only=True)
+
+    def get_geom(self, obj):
+        return obj.geom.transform(4326, clone=True)
+
+    def create(self, validated_data):
+        print('create')
+        # geo = local_asset, _ = LocalAsset.objects.get_or_create(
+        #         geom=GEOSGeometry(json.dumps(feature['geometry'])),
+        #         # TODO implement type, (like building id etc)
+        #         building_id=feature['properties']['pk'], 
+        #         phase_id=phase
+        #     )
+        print('validated data')
+        from pprint import pprint
+        pprint(self.__dict__)
+        print(validated_data)
+        return LocalAsset.objects.create(**validated_data)
+
+    def validate_geom(self):
+        print('validate geom')
+        
+    def is_valid(self, raise_exception=False):
+        assert hasattr(self, 'initial_data'), (
+            'Cannot call `.is_valid()` as no `data=` keyword argument was '
+            'passed when instantiating the serializer instance.'
+        )
+        
+        print('is valid')
+
+        if not hasattr(self, '_validated_data'):
+            print('if not has attribute')
+            try:
+                self._validated_data = self.run_validation(self.initial_data)
+            except ValidationError as exc:
+                self._validated_data = {}
+                self._errors = exc.detail
+            else:
+                self._errors = {}
+
+        if self._errors and raise_exception:
+            raise ValidationError(self.errors)
+
+        return not bool(self._errors)
 
 
 class BuildingsSerializer(GeoFeatureModelSerializer):
