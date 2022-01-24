@@ -187,12 +187,6 @@ class PortfolioPlanner extends React.Component {
       },
       body: JSON.stringify(data)
     }).then(response => {
-      console.log(response.ok, response.status, response.statusText)
-
-      if (!response.ok) {
-        console.error(response.status, response.statusText)
-      }
-
       return response.json()
     }).then(data => {
       this.setState({
@@ -202,6 +196,8 @@ class PortfolioPlanner extends React.Component {
           unsavedChanges: false
         }
       })
+    }).catch(error => {
+      console.error(error)
     })
   }
 
