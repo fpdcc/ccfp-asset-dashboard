@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
 
-const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, savePortfolioName, savePortfolio }) => {
+const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, savePortfolioName, savePortfolio, createNewPortfolio }) => {
   const [edit, setEdit] = useState(false)
 
   const onRowClick = ({ original }) => {
@@ -18,9 +18,13 @@ const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, savePortfol
   const updatePortfolioName = (e) => {
     savePortfolioName(e).then(
       setEdit(false)
-    ).catch(err => {
-      console.error(err)
-    })
+    ).catch(err => console.error(err))
+  }
+
+  const _createNewPortfolio = (e) => {
+    createNewPortfolio(e).then(
+      setEdit(true)
+    ).catch(err => console.error(err))
   }
 
   return (
@@ -44,8 +48,9 @@ const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, savePortfol
             <Button
               variant="secondary"
               size="sm"
-              type="button"
-              id="new-portfolio">
+              type="link"
+              id="new-portfolio"
+              onClick={_createNewPortfolio}>
               New portfolio
             </Button>
           </div>
@@ -95,20 +100,22 @@ const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, savePortfol
           )
         }}
       />
-      <div className="d-flex justify-content-center">
-        <Button
-          variant={portfolio.unsavedChanges ? 'primary' : 'link'}
-          type="button"
-          id="save-portfolio-contents"
-          disabled={portfolio.unsavedChanges ? false : true}
-          className="mr-2 px-3"
-          onClick={savePortfolio}>
-          {portfolio.unsavedChanges
-            ? 'Save portfolio'
-            : 'All changes saved'
-          }
-        </Button>
-      </div>
+      {portfolio.name &&
+        <div className="d-flex justify-content-center">
+          <Button
+            variant={portfolio.unsavedChanges ? 'primary' : 'link'}
+            type="button"
+            id="save-portfolio-contents"
+            disabled={portfolio.unsavedChanges ? false : true}
+            className="mr-2 px-3"
+            onClick={savePortfolio}>
+            {portfolio.unsavedChanges
+              ? 'Save portfolio'
+              : 'All changes saved'
+            }
+          </Button>
+        </div>
+      }
     </div>
   )
 }
