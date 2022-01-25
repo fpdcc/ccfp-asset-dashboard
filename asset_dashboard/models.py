@@ -262,6 +262,7 @@ class LocalAsset(models.Model):
 
     asset_id = models.IntegerField()
     asset_model = models.CharField(max_length=100)
+    asset_name = models.CharField(max_length=600)
 
 
 class ProjectCategory(models.Model):
