@@ -255,7 +255,6 @@ class LocalAsset(models.Model):
     We save a local copy of a geo asset with this model.
     """
 
-    # TODO: implement these fields
     phase = models.ManyToManyField('Phase')
 
     geom = models.GeometryField(srid=3435)

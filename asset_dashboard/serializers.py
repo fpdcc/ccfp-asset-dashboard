@@ -1,13 +1,9 @@
-import pdb
 from django.contrib.auth.models import User
-from django.contrib.gis.geos import GEOSGeometry
-from django.db.models.fields import IntegerField
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
     GeometrySerializerMethodField, GeometryField
-from rest_framework.exceptions import ErrorDetail, ValidationError
 
-from asset_dashboard.models import LocalAsset, Phase, Portfolio, PortfolioPhase, Project, \
+from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
     LocalAsset, Buildings, TrailsInfo
 
 
@@ -72,6 +68,7 @@ class NullableIntegerField(serializers.IntegerField):
             return None
         return super().to_representation(value)
 
+
 class BaseLocalAssetSerializer(GeoFeatureModelSerializer):
     """
     A base serializer for the LocalAssets because we need
@@ -83,11 +80,11 @@ class BaseLocalAssetSerializer(GeoFeatureModelSerializer):
         model = LocalAsset
         fields = ('geom', 'asset_id', 'asset_type', 'asset_name')
         geo_field = 'geom'
-    
+
     asset_id = serializers.IntegerField()
     asset_type = serializers.CharField(source='asset_model')
     asset_name = serializers.CharField()
-    
+
     def get_geom(self, obj):
         return obj.geom.transform(4326, clone=True)
 

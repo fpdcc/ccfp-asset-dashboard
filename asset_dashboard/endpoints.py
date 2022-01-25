@@ -2,8 +2,6 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 
 from rest_framework import viewsets
-from rest_framework import status
-from rest_framework.response import Response
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
     LocalAsset, Buildings, TrailsInfo
@@ -79,7 +77,7 @@ class AssetViewSet(viewsets.ModelViewSet):
 
 class LocalAssetViewSet(viewsets.ModelViewSet):
     queryset = LocalAsset.objects.all()
-    
+
     def get_serializer(self, *args, **kwargs):
         if isinstance(kwargs.get('data', {}), list):
             kwargs['many'] = True

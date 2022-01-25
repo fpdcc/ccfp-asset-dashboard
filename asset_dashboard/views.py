@@ -13,8 +13,7 @@ from django.db.models import Q
 from django.utils.html import escape
 
 from .models import HouseDistrict, LocalAsset, Project, ProjectCategory, ProjectScore, \
-    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear, \
-    LocalAsset
+    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
     PhaseFinancesForm, PhaseForm
 from .serializers import LocalAssetReadSerializer
@@ -277,13 +276,12 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['project'] = Project.objects.get(id=self.kwargs['pk'])
-        
-        # TODO: when I do issue # 94 
+
+        # TODO: when I do issue # 94
         # get the phase from context and filter
         existing_assets = LocalAsset.objects.all()
         geojson_serializer = LocalAssetReadSerializer(existing_assets, many=True)
-        # print('geojson', geojson)
-        
+
         if existing_assets.exists():
             context['props'] = {
                 'existing_assets': geojson_serializer.data
