@@ -33,7 +33,7 @@ class PortfolioPlanner extends React.Component {
     this.removeProjectFromPortfolio = this.removeProjectFromPortfolio.bind(this)
     this.searchProjects = this.searchProjects.bind(this)
     this.savePortfolio = this.savePortfolio.bind(this)
-    this.updatePortfolioName = this.updatePortfolioName.bind(this)
+    this.savePortfolioName = this.savePortfolioName.bind(this)
     this.alertUser = this.alertUser.bind(this)
   }
 
@@ -215,12 +215,23 @@ class PortfolioPlanner extends React.Component {
     })
   }
 
-  updatePortfolioName(e) {
-    this.setState({
-      portfolio: {...this.state.portfolio, name: e.target.value}
-    })
+  savePortfolioName(e) {
+    e.persist()
 
-    this.registerChange()
+    return new Promise((resolve, reject) => {
+      const nameInput = document.querySelector('#portfolio-name')
+
+      try {
+        this.setState({
+          portfolio: {...this.state.portfolio, name: nameInput.value}
+        }, () => this.savePortfolio(e))
+      } catch (err) {
+        reject(err)
+        return
+      }
+
+      resolve()
+    })
   }
 
   registerChange(e) {
@@ -251,7 +262,7 @@ class PortfolioPlanner extends React.Component {
                   portfolio={this.state.portfolio}
                   onRemoveFromPortfolio={this.removeProjectFromPortfolio}
                   savePortfolio={this.savePortfolio}
-                  onNameChange={this.updatePortfolioName} />
+                  savePortfolioName={this.savePortfolioName} />
                 <ProjectsTable
                   allProjects={filteredRows}
                   onAddToPortfolio={this.addProjectToPortfolio}
