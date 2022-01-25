@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import ProjectsTable from './components/ProjectsTable'
 import PortfolioTable from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
+import PortfolioPicker from './components/PortfolioPicker'
 import SearchInput from './components/FilterComponent'
 import { CSVLink } from 'react-csv'
 import Cookies from 'js-cookie'
@@ -15,6 +16,7 @@ class PortfolioPlanner extends React.Component {
     this.state = {
       allProjects: [],
       remainingProjects: [],
+      allPortfolios: [],
       portfolio: {
         id: null,
         name: '',
@@ -36,6 +38,8 @@ class PortfolioPlanner extends React.Component {
     this.savePortfolioName = this.savePortfolioName.bind(this)
     this.createNewPortfolio = this.createNewPortfolio.bind(this)
     this.alertUserOfUnsavedChanges = this.alertUserOfUnsavedChanges.bind(this)
+    this.selectPortfolio = this.selectPortfolio.bind(this)
+    this.confirmDestroy = this.confirmDestroy.bind(this)
   }
 
   createRegionName(regions) {
@@ -68,12 +72,13 @@ class PortfolioPlanner extends React.Component {
 
     let state = {
       allProjects: projects,
-      remainingProjects: projects
+      remainingProjects: projects,
+      allPortfolios: props.portfolios
     }
 
     // Rehydate state from last edited portfolio, if one exists
-    if (props.portfolio) {
-      const selectedProjectIds = props.portfolio.phases.map(phase => phase.phase)
+    if (props.selectedPortfolio) {
+      const selectedProjectIds = props.selectedPortfolio.phases.map(phase => phase.phase)
 
       const portfolioProjects = projects.filter(
         project => selectedProjectIds.includes(project.key)
@@ -85,8 +90,8 @@ class PortfolioPlanner extends React.Component {
           project => !selectedProjectIds.includes(project.key)
         ),
         portfolio: {
-          id: props.portfolio.id,
-          name: props.portfolio.name,
+          id: props.selectedPortfolio.id,
+          name: props.selectedPortfolio.name,
           projects: portfolioProjects,
           totals: this.calculateTotals(portfolioProjects),
           unsavedChanges: false
@@ -189,7 +194,7 @@ class PortfolioPlanner extends React.Component {
 
     const data = {
       name: this.state.portfolio.name,
-      user: props.user_id,
+      user: props.userId,
       phases: this.state.portfolio.projects.map((phase, index) => {
         return {'phase': phase.key, 'sequence': index + 1}
       })
@@ -241,17 +246,53 @@ class PortfolioPlanner extends React.Component {
     })
   }
 
+  confirmDestroy(e) {
+   if (this.state.portfolio.unsavedChanges) {
+      return confirm('The current portfolio has unsaved changes. Are you ' +
+        'sure you want to switch portfolios? Changes you made may not be saved.')
+
+      if (!confirmDestroy) {
+        reject('Could not create new portfolio')
+        return
+      }
+    }
+  }
+
+  selectPortfolio(e) {
+    if (this.state.portfolio.unsavedChanges && !this.confirmDestroy()) {
+      return
+    }
+
+    // refactor for reuse in hydrating initial state
+    const selectedPortfolio = this.state.allPortfolios.find(
+      portfolio => portfolio.id == e.target.value
+    )
+
+    const selectedProjectIds = selectedPortfolio.phases.map(phase => phase.phase)
+
+    const portfolioProjects = this.state.allProjects.filter(
+      project => selectedProjectIds.includes(project.key)
+    )
+
+    this.setState({
+      remainingProjects: this.state.allProjects.filter(
+        project => !selectedProjectIds.includes(project.key)
+      ),
+      portfolio: {
+        id: props.selectedPortfolio.id,
+        name: props.selectedPortfolio.name,
+        projects: portfolioProjects,
+        totals: this.calculateTotals(portfolioProjects),
+        unsavedChanges: false
+      }
+    })
+  }
+
   createNewPortfolio(e) {
     return new Promise((resolve, reject) => {
-      if (this.state.portfolio.unsavedChanges) {
-        const confirmDestroy = confirm('The current portfolio has unsaved ' +
-          'changes. Are you sure you want to create a new portfolio? Changes ' +
-          'you made may not be saved.')
-
-        if (!confirmDestroy) {
-          reject('Could not create new portfolio')
-          return
-        }
+      if (this.state.portfolio.unsavedChanges && !this.confirmDestroy()) {
+        reject('Could not create new portfolio')
+        return
       }
 
       this.setState({
@@ -287,7 +328,17 @@ class PortfolioPlanner extends React.Component {
 
     return (
       <div className="m-5">
-        <h1>Build a 5-Year Plan</h1>
+        <div className="row">
+          <div className="col">
+            <h1>Build a 5-Year Plan</h1>
+          </div>
+          <div className="col">
+            <PortfolioPicker
+              portfolios={this.state.allPortfolios}
+              changePortfolio={this.selectPortfolio}
+            />
+          </div>
+        </div>
         <div className="row">
           <div className="container col card shadow-sm mt-5 ml-3 col-9">
               <>

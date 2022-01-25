@@ -29,11 +29,15 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
 
-        if portfolio := self.request.user.portfolio_set.order_by('-updated_at').first():
-            portfolio = PortfolioSerializer(portfolio).data
+        portfolios = []
+        selected_portfolio = None
 
-        else:
-            portfolio = None
+        if self.request.user.portfolio_set.count():
+            portfolios = PortfolioSerializer(
+                self.request.user.portfolio_set.order_by('-updated_at'),
+                many=True
+            ).data
+            selected_portfolio = portfolios[0]
 
         phases = Phase.objects.all().select_related('project')
 
@@ -56,8 +60,9 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
 
         context['props'] = {
             'projects': json.dumps(project_phases, cls=DjangoJSONEncoder),
-            'portfolio': portfolio,
-            'user_id': self.request.user.id,
+            'portfolios': portfolios,
+            'selectedPortfolio': selected_portfolio,
+            'userId': self.request.user.id,
         }
         return context
 
