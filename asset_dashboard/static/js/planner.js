@@ -31,24 +31,17 @@ class PortfolioPlanner extends React.Component {
       filterText: ''
     }
 
+    this.searchProjects = this.searchProjects.bind(this)
     this.addProjectToPortfolio = this.addProjectToPortfolio.bind(this)
     this.removeProjectFromPortfolio = this.removeProjectFromPortfolio.bind(this)
-    this.searchProjects = this.searchProjects.bind(this)
+
+    this.selectPortfolio = this.selectPortfolio.bind(this)
+    this.createNewPortfolio = this.createNewPortfolio.bind(this)
     this.savePortfolio = this.savePortfolio.bind(this)
     this.savePortfolioName = this.savePortfolioName.bind(this)
-    this.createNewPortfolio = this.createNewPortfolio.bind(this)
-    this.alertUserOfUnsavedChanges = this.alertUserOfUnsavedChanges.bind(this)
-    this.selectPortfolio = this.selectPortfolio.bind(this)
+
+    this.alertUser = this.alertUser.bind(this)
     this.confirmDestroy = this.confirmDestroy.bind(this)
-  }
-
-  createRegionName(regions) {
-    // returns a CSV string of names for the different regions
-    const names = regions.map(({ name }) => {
-      return name
-    }).join(',')
-
-    return names
   }
 
   componentDidMount() {
@@ -78,55 +71,34 @@ class PortfolioPlanner extends React.Component {
 
     // Rehydate state from last edited portfolio, if one exists
     if (props.selectedPortfolio) {
-      const selectedProjectIds = props.selectedPortfolio.phases.map(phase => phase.phase)
-
-      const portfolioProjects = projects.filter(
-        project => selectedProjectIds.includes(project.key)
+      const [portfolioObj, remainingProjects] = this.hydratePortfolio(
+        props.selectedPortfolio,
+        projects
       )
 
       state = {
         ...state,
-        remainingProjects: projects.filter(
-          project => !selectedProjectIds.includes(project.key)
-        ),
-        portfolio: {
-          id: props.selectedPortfolio.id,
-          name: props.selectedPortfolio.name,
-          projects: portfolioProjects,
-          totals: this.calculateTotals(portfolioProjects),
-          unsavedChanges: false
-        }
+        remainingProjects: remainingProjects,
+        portfolio: portfolioObj
       }
     }
 
     this.setState(state)
 
-    window.addEventListener('beforeunload', this.alertUserOfUnsavedChanges)
+    window.addEventListener('beforeunload', this.alertUser)
   }
 
   componentWillUnmount() {
-    window.removeEventListener('beforeunload', this.alertUserOfUnsavedChanges)
+    window.removeEventListener('beforeunload', this.alertUser)
   }
 
-  alertUserOfUnsavedChanges(e) {
-    if (this.state.portfolio.unsavedChanges) {
-      e.preventDefault()
-      e.returnValue = ''
-    }
-  }
+  // Project methods
+  searchProjects(e) {
+    const filterText = e.target.value
 
-  calculateTotals(portfolio) {
-    return {
-      budgetImpact: portfolio.reduce((total, project) => { return total + project.budget }, 0),
-      projectNames: portfolio.map(project => project.name),
-      projectZones: portfolio.map(project => project.zones.split(','))
-    }
-  }
-
-  registerChange(e) {
-    this.setState((state, props) => ({
-      portfolio: {...state.portfolio, unsavedChanges: true}
-    }))
+    this.setState({
+      filterText: filterText
+    })
   }
 
   addProjectToPortfolio(row) {
@@ -151,7 +123,7 @@ class PortfolioPlanner extends React.Component {
       remainingProjects: updatedRemainingProjects
     })
 
-    this.registerChange()
+    this.registerPortfolioChange()
   }
 
   removeProjectFromPortfolio(row) {
@@ -178,14 +150,53 @@ class PortfolioPlanner extends React.Component {
       remainingProjects: remainingProjects
     })
 
-    this.registerChange()
+    this.registerPortfolioChange()
   }
 
-  searchProjects(e) {
-    const filterText = e.target.value
+  // Portfolio methods
+  selectPortfolio(e) {
+    if (this.state.portfolio.unsavedChanges && !this.confirmDestroy()) {
+      return
+    }
+
+    const selectedPortfolio = this.state.allPortfolios.find(
+      portfolio => portfolio.id == e.target.value
+    )
+
+    const [portfolioObj, remainingProjects] = this.hydratePortfolio(
+      selectedPortfolio,
+      this.state.allProjects
+    )
 
     this.setState({
-      filterText: filterText
+      remainingProjects: remainingProjects,
+      portfolio: portfolioObj
+    })
+  }
+
+  createNewPortfolio(e) {
+    return new Promise((resolve, reject) => {
+      if (this.state.portfolio.unsavedChanges && !this.confirmDestroy()) {
+        reject('Could not create new portfolio')
+        return
+      }
+
+      this.setState({
+        portfolio: {
+          id: null,
+          name: '',
+          projects: [],
+          totals: {
+            budgetImpact: 0,
+            projectNames: [],
+            projectZones: []
+          },
+          unsavedChanges: false
+        },
+        remainingProjects: this.state.allProjects
+      })
+
+      resolve()
     })
   }
 
@@ -246,6 +257,14 @@ class PortfolioPlanner extends React.Component {
     })
   }
 
+  // Methods to alert user of unsaved changes on navigation
+  alertUser(e) {
+    if (this.state.portfolio.unsavedChanges) {
+      e.preventDefault()
+      e.returnValue = ''
+    }
+  }
+
   confirmDestroy(e) {
    if (this.state.portfolio.unsavedChanges) {
       return confirm('The current portfolio has unsaved changes. Are you ' +
@@ -258,60 +277,51 @@ class PortfolioPlanner extends React.Component {
     }
   }
 
-  selectPortfolio(e) {
-    if (this.state.portfolio.unsavedChanges && !this.confirmDestroy()) {
-      return
+  // Helper methods
+  calculateTotals(portfolio) {
+    return {
+      budgetImpact: portfolio.reduce((total, project) => { return total + project.budget }, 0),
+      projectNames: portfolio.map(project => project.name),
+      projectZones: portfolio.map(project => project.zones.split(','))
     }
+  }
 
-    // refactor for reuse in hydrating initial state
-    const selectedPortfolio = this.state.allPortfolios.find(
-      portfolio => portfolio.id == e.target.value
-    )
+  hydratePortfolio(portfolio, projects) {
+    const selectedProjectIds = portfolio.phases.map(phase => phase.phase)
 
-    const selectedProjectIds = selectedPortfolio.phases.map(phase => phase.phase)
-
-    const portfolioProjects = this.state.allProjects.filter(
+    const portfolioProjects = projects.filter(
       project => selectedProjectIds.includes(project.key)
     )
 
-    this.setState({
-      remainingProjects: this.state.allProjects.filter(
-        project => !selectedProjectIds.includes(project.key)
-      ),
-      portfolio: {
-        id: props.selectedPortfolio.id,
-        name: props.selectedPortfolio.name,
-        projects: portfolioProjects,
-        totals: this.calculateTotals(portfolioProjects),
-        unsavedChanges: false
-      }
-    })
+    const remainingProjects = projects.filter(
+      project => !selectedProjectIds.includes(project.key)
+    )
+
+    const portfolioObj = {
+      id: portfolio.id,
+      name: portfolio.name,
+      projects: portfolioProjects,
+      totals: this.calculateTotals(portfolioProjects),
+      unsavedChanges: false
+    }
+
+    return [ portfolioObj, remainingProjects ]
   }
 
-  createNewPortfolio(e) {
-    return new Promise((resolve, reject) => {
-      if (this.state.portfolio.unsavedChanges && !this.confirmDestroy()) {
-        reject('Could not create new portfolio')
-        return
-      }
+  registerPortfolioChange(e) {
+    // Register unsaved changes to a portfolio after a state change
+    this.setState((state, props) => ({
+      portfolio: {...state.portfolio, unsavedChanges: true}
+    }))
+  }
 
-      this.setState({
-        portfolio: {
-          id: null,
-          name: '',
-          projects: [],
-          totals: {
-            budgetImpact: 0,
-            projectNames: [],
-            projectZones: []
-          },
-          unsavedChanges: false
-        },
-        remainingProjects: this.state.allProjects
-      })
+  createRegionName(regions) {
+    // returns a CSV string of names for the different regions
+    const names = regions.map(({ name }) => {
+      return name
+    }).join(',')
 
-      resolve()
-    })
+    return names
   }
 
   getDate() {
