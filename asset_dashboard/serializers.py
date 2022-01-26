@@ -92,7 +92,7 @@ class BaseLocalAssetSerializer(GeoFeatureModelSerializer):
 
 class LocalAssetWriteSerializer(BaseLocalAssetSerializer):
     geom = GeometryField()
-    
+
     def create(self, validated_data):
         phase = validated_data.pop('phase')
         return LocalAsset.objects.create(phase=phase, **validated_data)
