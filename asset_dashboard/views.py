@@ -5,7 +5,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import HttpResponseRedirect
-from django.core.serializers import serialize
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.html import escape
@@ -19,11 +18,11 @@ from django.contrib import messages
 from django.db.models import Q
 from django.utils.html import escape
 
-from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
+from .models import HouseDistrict, LocalAsset, Project, ProjectCategory, ProjectScore, \
     Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
     PhaseFinancesForm, PhaseForm
-from .serializers import PortfolioSerializer
+from .serializers import PortfolioSerializer, LocalAssetReadSerializer
 
 
 class CipPlannerView(LoginRequiredMixin, TemplateView):
@@ -298,6 +297,16 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['project'] = Project.objects.get(id=self.kwargs['pk'])
+
+        # TODO: when I do issue # 94
+        # get the phase from context and filter
+        existing_assets = LocalAsset.objects.all()
+        geojson_serializer = LocalAssetReadSerializer(existing_assets, many=True)
+
+        if existing_assets.exists():
+            context['props'] = {
+                'existing_assets': geojson_serializer.data
+            }
 
         return context
 

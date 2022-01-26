@@ -28,8 +28,8 @@ function AssetsMap(props) {
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    if (props?.existing_geoms) {
-      setExistingGeoms(JSON.parse(props.existing_geoms))
+    if (props?.existing_assets) {
+      setExistingGeoms(props.existing_assets)
     }
   }, [setSearchedGeoms, setExistingGeoms])
 
@@ -52,7 +52,16 @@ function AssetsMap(props) {
   }
 
   function saveGeometries() {
-    fetch(window.location.pathname, {
+    const data = clippedGeoms['features'].map(feature => {
+      return {
+        'asset_id': feature['properties']['identifier'],
+        'asset_type': searchedAssetType,
+        'asset_name': feature['properties']['name'],
+        'geom': feature['geometry']
+      }
+    })
+
+    fetch('/local-assets/', {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -60,23 +69,24 @@ function AssetsMap(props) {
         },
         method: 'POST',
         mode: 'same-origin',
-        body: JSON.stringify({
-          'geojson': clippedGeoms,
-          'phase': selectedPhase.value
-        })
+        body: JSON.stringify(data)
     }).then((response) => {
-      if (response.status == 200) {
+      if (response.status == 201) {
+        // TODO: this reloads the page but clears the user search...
+        // Need to come up with way to reload by rehydrating the previous state
         location.reload()
         // TODO: show success message
         // https://stackoverflow.com/questions/13256817/django-how-to-show-messages-under-ajax-function
-      } else {
-        // TODO: catch error and show message
       }
+    }).catch(error => {
+      // TODO show error message
+      console.error(error)
     })
   }
 
   function searchAssets() {
     setIsLoading(true)
+
     const url = `/assets/?` + new URLSearchParams({
       'q': searchText,
       'asset_type': searchedAssetType
@@ -97,7 +107,7 @@ function AssetsMap(props) {
     })
     .catch(error => {
       // TODO: show an error message in the UI
-      console.log('error', error)
+      console.error('error', error)
     })
   }
  
@@ -161,9 +171,6 @@ function AssetsMap(props) {
             center={[41.8781, -87.6298]}
             zoom={11}
             whenCreated={onMapCreated}>
-            <AreaClipper 
-              geoJson={searchedGeoms}
-              onClipped={onClipped} />
             {searchedGeoms && 
               <>
                 <GeoJSON 
@@ -173,6 +180,9 @@ function AssetsMap(props) {
                   key={hash(searchedGeoms)} 
                   style={{color: 'black'}}
                 />
+                <AreaClipper 
+                  geoJson={searchedGeoms}
+                  onClipped={onClipped} />
               </>
             }
             {existingGeoms && <GeoJSON data={existingGeoms} style={{color: 'green'}}/>}

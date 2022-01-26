@@ -4,10 +4,10 @@ from django.db.models import Q
 from rest_framework import viewsets
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
-    Buildings, TrailsInfo
+    LocalAsset, Buildings, TrailsInfo
 from asset_dashboard.serializers import PortfolioSerializer, UserSerializer, \
     PortfolioPhaseSerializer, PhaseSerializer, ProjectSerializer, \
-    BuildingsSerializer, TrailsSerializer
+    BuildingsSerializer, TrailsSerializer, LocalAssetWriteSerializer, LocalAssetReadSerializer
 
 
 class PortfolioViewSet(viewsets.ModelViewSet):
@@ -73,3 +73,21 @@ class AssetViewSet(viewsets.ModelViewSet):
                     search_filter |= Q(**{f'{field}__icontains': query})
 
         return self.model_cls.objects.filter(search_filter)
+
+
+class LocalAssetViewSet(viewsets.ModelViewSet):
+    queryset = LocalAsset.objects.all()
+
+    def get_serializer(self, *args, **kwargs):
+        if isinstance(kwargs.get('data', {}), list):
+            kwargs['many'] = True
+        return super().get_serializer(*args, **kwargs)
+
+    def get_serializer_class(self):
+        """
+        Get the appropriate serializer class depending on request type.
+        See https://testdriven.io/blog/drf-serializers/#different-read-and-write-serializers
+        """
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return LocalAssetWriteSerializer
+        return LocalAssetReadSerializer

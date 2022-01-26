@@ -33,6 +33,11 @@ Run the app with a debugger:
 docker-compose run --rm -p 8000:8000 app
 ```
 
+Load the development data:
+```bash
+docker-compose run --rm app python manage.py loaddata asset_dashboard/fixtures/data.json
+```
+
 ### Restore the FPDCC database
 Download the database from Dropbox and save the tar file in this repo's root directory.
 
@@ -105,7 +110,4 @@ docker-compose run --rm app python manage.py dumpdata \
     asset_dashboard auth
 ```
 
-Load the data:
-```bash
-docker-compose run --rm app python manage.py loaddata asset_dashboard/fixtures/data.json
-```
+
