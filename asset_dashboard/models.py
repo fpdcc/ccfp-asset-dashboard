@@ -255,7 +255,7 @@ class LocalAsset(models.Model):
     We save a local copy of a geo asset with this model.
     """
 
-    phase = models.ManyToManyField('Phase')
+    phase = models.ForeignKey('Phase', on_delete=models.CASCADE)
 
     geom = models.GeometryField(srid=3435)
 

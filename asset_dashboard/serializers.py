@@ -78,12 +78,13 @@ class BaseLocalAssetSerializer(GeoFeatureModelSerializer):
 
     class Meta:
         model = LocalAsset
-        fields = ('geom', 'asset_id', 'asset_type', 'asset_name')
+        fields = ('geom', 'asset_id', 'asset_type', 'asset_name', 'phase')
         geo_field = 'geom'
 
     asset_id = serializers.IntegerField()
     asset_type = serializers.CharField(source='asset_model')
     asset_name = serializers.CharField()
+    phase = serializers.PrimaryKeyRelatedField(queryset=Phase.objects.all())
 
     def get_geom(self, obj):
         return obj.geom.transform(4326, clone=True)
@@ -91,6 +92,10 @@ class BaseLocalAssetSerializer(GeoFeatureModelSerializer):
 
 class LocalAssetWriteSerializer(BaseLocalAssetSerializer):
     geom = GeometryField()
+    
+    def create(self, validated_data):
+        phase = validated_data.pop('phase')
+        return LocalAsset.objects.create(phase=phase, **validated_data)
 
 
 class LocalAssetReadSerializer(BaseLocalAssetSerializer):
