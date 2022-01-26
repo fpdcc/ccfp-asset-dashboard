@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
-    GeometrySerializerMethodField
+    GeometrySerializerMethodField, GeometryField
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
-    Buildings, TrailsInfo
+    LocalAsset, Buildings, TrailsInfo
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -67,6 +67,34 @@ class NullableIntegerField(serializers.IntegerField):
         if self.allow_null and value is None:
             return None
         return super().to_representation(value)
+
+
+class BaseLocalAssetSerializer(GeoFeatureModelSerializer):
+    """
+    A base serializer for the LocalAssets because we need
+    different `geom` field types for read-only and write-only.
+    See https://stackoverflow.com/a/67464485.
+    """
+
+    class Meta:
+        model = LocalAsset
+        fields = ('geom', 'asset_id', 'asset_type', 'asset_name')
+        geo_field = 'geom'
+
+    asset_id = serializers.IntegerField()
+    asset_type = serializers.CharField(source='asset_model')
+    asset_name = serializers.CharField()
+
+    def get_geom(self, obj):
+        return obj.geom.transform(4326, clone=True)
+
+
+class LocalAssetWriteSerializer(BaseLocalAssetSerializer):
+    geom = GeometryField()
+
+
+class LocalAssetReadSerializer(BaseLocalAssetSerializer):
+    geom = GeometrySerializerMethodField()
 
 
 class BuildingsSerializer(GeoFeatureModelSerializer):
