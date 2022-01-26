@@ -281,9 +281,9 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
+        
         phase = Phase.objects.get(id=self.kwargs['pk'])
-
+        
         context.update({
             'phase': phase,
             'project': Project.objects.filter(phases=phase)[0],
