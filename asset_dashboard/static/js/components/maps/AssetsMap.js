@@ -6,6 +6,7 @@ import Cookies from 'js-cookie'
 import BaseMap from './BaseMap'
 import AreaClipper from '../map_utils/AreaClipper'
 import AssetSearchTable from '../tables/AssetSearchTable'
+import MapClipper from '../map_utils/MapClipper'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
@@ -186,9 +187,13 @@ function AssetsMap(props) {
                   key={hash(searchedGeoms)} 
                   style={{color: 'black'}}
                 />
-                <AreaClipper 
+                {/* <AreaClipper 
                   geoJson={searchedGeoms}
-                  onClipped={onClipped} />
+                  onClipped={onClipped} /> */}
+                  <MapClipper 
+                    geoJson={searchedGeoms}
+                    onClipped={onClipped}
+                  />
               </>
             }
             {existingGeoms && <GeoJSON data={existingGeoms} style={{color: 'green'}}/>}
