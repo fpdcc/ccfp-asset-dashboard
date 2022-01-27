@@ -14,13 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from rest_framework import routers
 
+from asset_dashboard.endpoints import PortfolioViewSet
 from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreateView, \
                                     ProjectUpdateView, ProjectListJson, \
                                     ProjectsByDistrictListView, ProjectsByDistrictListJson, \
                                     ProjectPhasesListView, PhaseCreateView, PhaseUpdateView
+
+
+# Routers provide an easy way of automatically determining the URL conf.
+router = routers.DefaultRouter()
+router.register(r'portfolios', PortfolioViewSet)
 
 urlpatterns = [
     path('', ProjectListView.as_view(), name='projects'),
@@ -35,6 +42,7 @@ urlpatterns = [
     path('cip-planner/', CipPlannerView.as_view(), name='cip-planner'),
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('', include(router.urls)),
     path('admin/', admin.site.urls),
 ]
 

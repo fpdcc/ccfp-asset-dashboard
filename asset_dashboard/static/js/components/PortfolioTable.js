@@ -1,7 +1,10 @@
 import React from 'react'
 import ReactTable from './BaseTable'
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import InputGroup from 'react-bootstrap/InputGroup'
 
-const PortfolioTable = ({ portfolioProjects, columns, onRemoveFromPortfolio }) => {
+const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, onNameChange, savePortfolio }) => {
   const onRowClick = ({ original }) => {
     return {
       onClick: e => {
@@ -12,10 +15,31 @@ const PortfolioTable = ({ portfolioProjects, columns, onRemoveFromPortfolio }) =
 
   return (
     <div className="mb-5 mt-5">
-      <h3>Portfolio</h3>
+      <h3>
+        Portfolio
+      </h3>
+      <Form onSubmit={savePortfolio}>
+        <InputGroup className="mb-3">
+          <Form.Control
+            placeholder="Enter a name for your portfolio..."
+            value={portfolio.name ? portfolio.name : ''}
+            aria-label="Portfolio name"
+            aria-describedby="portfolioName"
+            onChange={onNameChange}
+            required={true}
+          />
+          <Button
+            variant="primary"
+            type="submit"
+            id="save-portfolio"
+            disabled={portfolio.unsavedChanges ? false : true}>
+            Save portfolio
+          </Button>
+        </InputGroup>
+      </Form>
       <ReactTable
         columns={columns}
-        rows={portfolioProjects}
+        rows={portfolio.projects}
         getTrProps={onRowClick}
         rowClassNames='table-info'
         selector={() => {

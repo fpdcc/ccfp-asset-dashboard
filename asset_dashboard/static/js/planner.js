@@ -5,6 +5,8 @@ import PortfolioTable from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
 import SearchInput from './components/FilterComponent'
 import { CSVLink } from 'react-csv'
+import Cookies from 'js-cookie'
+
 
 class PortfolioPlanner extends React.Component {
   constructor(props) {
@@ -14,12 +16,15 @@ class PortfolioPlanner extends React.Component {
       allProjects: [],
       remainingProjects: [],
       portfolio: {
+        id: null,
+        name: '',
         projects: [],
         totals: {
           budgetImpact: 0,
           projectNames: [],
           projectZones: []
-        }
+        },
+        unsavedChanges: false
       },
       filterText: ''
     }
@@ -27,6 +32,8 @@ class PortfolioPlanner extends React.Component {
     this.addProjectToPortfolio = this.addProjectToPortfolio.bind(this)
     this.removeProjectFromPortfolio = this.removeProjectFromPortfolio.bind(this)
     this.searchProjects = this.searchProjects.bind(this)
+    this.savePortfolio = this.savePortfolio.bind(this)
+    this.updatePortfolioName = this.updatePortfolioName.bind(this)
   }
 
   createRegionName(regions) {
@@ -57,10 +64,35 @@ class PortfolioPlanner extends React.Component {
       }
     })
 
-    this.setState({
+    let state = {
       allProjects: projects,
       remainingProjects: projects
-    })
+    }
+
+    // Rehydate state from last edited portfolio, if one exists
+    if (props.portfolio) {
+      const selectedProjectIds = props.portfolio.phases.map(phase => phase.phase)
+
+      const portfolioProjects = projects.filter(
+        project => selectedProjectIds.includes(project.key)
+      )
+
+      state = {
+        ...state,
+        remainingProjects: projects.filter(
+          project => !selectedProjectIds.includes(project.key)
+        ),
+        portfolio: {
+          id: props.portfolio.id,
+          name: props.portfolio.name,
+          projects: portfolioProjects,
+          totals: this.calculateTotals(portfolioProjects),
+          unsavedChanges: false
+        }
+      }
+    }
+
+    this.setState(state)
   }
 
   calculateTotals(portfolio) {
@@ -75,7 +107,7 @@ class PortfolioPlanner extends React.Component {
     // add the row to the existing portfolio
     const updatedProjectsInPortfolio = [...this.state.portfolio.projects, row]
 
-    const updatedTotals =this.calculateTotals(updatedProjectsInPortfolio)
+    const updatedTotals = this.calculateTotals(updatedProjectsInPortfolio)
 
     // remove the row from the remaining projects
     const updatedRemainingProjects = this.state.remainingProjects.filter((project) => {
@@ -86,11 +118,14 @@ class PortfolioPlanner extends React.Component {
 
     this.setState({
       portfolio: {
+        ...this.state.portfolio,
         projects: updatedProjectsInPortfolio,
         totals: updatedTotals
       },
       remainingProjects: updatedRemainingProjects
     })
+
+    this.registerChange()
   }
 
   removeProjectFromPortfolio(row) {
@@ -110,11 +145,14 @@ class PortfolioPlanner extends React.Component {
 
     this.setState({
       portfolio: {
+        ...this.state.portfolio,
         projects: updatedPortfolio,
         totals: this.calculateTotals(updatedPortfolio)
       },
       remainingProjects: remainingProjects
     })
+
+    this.registerChange()
   }
 
   searchProjects(e) {
@@ -123,6 +161,58 @@ class PortfolioPlanner extends React.Component {
     this.setState({
       filterText: filterText
     })
+  }
+
+  savePortfolio(e) {
+    e.preventDefault()
+
+    const data = {
+      name: this.state.portfolio.name,
+      user: props.user_id,
+      phases: this.state.portfolio.projects.map((phase, index) => {
+        return {'phase': phase.key, 'sequence': index + 1}
+      })
+    }
+
+    const [url, method] = this.state.portfolio.id
+      ? [`/portfolios/${this.state.portfolio.id}/`, 'PATCH'] // Update
+      : ['/portfolios/', 'POST'] // Create
+
+    fetch(url, {
+      method: method,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRFTOKEN': Cookies.get('csrftoken')
+      },
+      body: JSON.stringify(data)
+    }).then(response => {
+      return response.json()
+    }).then(data => {
+      this.setState({
+        portfolio: {
+          ...this.state.portfolio,
+          id: data.id,
+          unsavedChanges: false
+        }
+      })
+    }).catch(error => {
+      console.error(error)
+    })
+  }
+
+  updatePortfolioName(e) {
+    this.setState({
+      portfolio: {...this.state.portfolio, name: e.target.value}
+    })
+
+    this.registerChange()
+  }
+
+  registerChange(e) {
+    this.setState((state, props) => ({
+      portfolio: {...state.portfolio, unsavedChanges: true}
+    }))
   }
 
   getDate() {
@@ -143,29 +233,31 @@ class PortfolioPlanner extends React.Component {
         <div className="row">
           <div className="container col card shadow-sm mt-5 ml-3 col-9">
               <>
-                <PortfolioTable 
-                  portfolioProjects={this.state.portfolio.projects} 
-                  onRemoveFromPortfolio={this.removeProjectFromPortfolio} />
-                <ProjectsTable 
+                <PortfolioTable
+                  portfolio={this.state.portfolio}
+                  onRemoveFromPortfolio={this.removeProjectFromPortfolio}
+                  savePortfolio={this.savePortfolio}
+                  onNameChange={this.updatePortfolioName} />
+                <ProjectsTable
                   allProjects={filteredRows}
                   onAddToPortfolio={this.addProjectToPortfolio}
                   searchInput={<SearchInput
-                    onFilter={this.searchProjects} 
-                    filterText={this.state.filterText} />} />
+                  onFilter={this.searchProjects}
+                  filterText={this.state.filterText} />} />
               </>
           </div>
           <div className="col">
             <PortfolioTotals totals={this.state.portfolio.totals} />
-            { this.state.portfolio.projects.length > 0 
+            { this.state.portfolio.projects.length > 0
              ? <div className="d-flex justify-content-center mt-3">
-                  <CSVLink 
+                  <CSVLink
                     data={this.state.portfolio.projects}
                     filename={`CIP-${this.getDate()}`}
                     className='btn btn-primary mx-auto'
                     >
                       Export as CSV
                   </CSVLink>
-                </div> 
+                </div>
             : null }
           </div>
         </div>
