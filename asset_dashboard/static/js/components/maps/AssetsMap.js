@@ -158,7 +158,21 @@ function AssetsMap(props) {
         </div>
       </div>
       <div className='col'>
-        {clippedGeoms 
+      <div className='d-flex justify-content-end m-2'>
+            {clippedGeoms 
+              ?
+                <button 
+                  className='btn btn-primary'
+                  onClick={() => saveGeometries()}>
+                  Save Asset
+                </button>
+              :
+                <p>Use the map toolbar to select an asset.</p>
+            }
+          </div>
+        {/* {clippedGeoms 
+
+          
           ?
           <div className='row'>
             <button 
@@ -171,7 +185,7 @@ function AssetsMap(props) {
           <div className='col-10'>
             <p>Use the map toolbar to select an asset.</p>
           </div>
-        }
+        } */}
         <div className='map-viewer' aria-label='Asset Selection Map'>
           <BaseMap
             center={[41.8781, -87.6298]}
