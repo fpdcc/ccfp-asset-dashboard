@@ -1,3 +1,5 @@
+// Code source: https://github.com/alex3165/react-leaflet-draw/blob/master/src/EditControl.js
+
 import { PropTypes } from 'prop-types';
 import Draw from 'leaflet-draw'; // eslint-disable-line
 import isEqual from 'fast-deep-equal';
