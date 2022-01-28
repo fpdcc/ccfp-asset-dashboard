@@ -1,15 +1,15 @@
 import ReactDOM from 'react-dom'
-import ReactDOMServer from 'react-dom/server'
 import React, { useState, useEffect } from 'react'
 import { GeoJSON } from 'react-leaflet'
 import hash from 'object-hash'
 import Cookies from 'js-cookie'
+import * as turf from '@turf/turf'
 import BaseMap from './BaseMap'
 import AssetSearchTable from '../tables/AssetSearchTable'
 import ExistingAssetsTable from '../tables/ExistingAssetsTable'
 import MapClipper from '../map_utils/MapClipper'
-import Popup from '../map_utils/Popup'
 import { useSessionstorageState } from 'rooks'
+import { filter } from 'lodash'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
@@ -82,8 +82,6 @@ function AssetsMap(props) {
         body: JSON.stringify(data)
     }).then((response) => {
       if (response.status == 201) {
-        // TODO: this reloads the page but clears the user search...
-        // Need to come up with way to reload by rehydrating the previous state
         location.reload()
         // TODO: show success message
         // https://stackoverflow.com/questions/13256817/django-how-to-show-messages-under-ajax-function
@@ -94,12 +92,39 @@ function AssetsMap(props) {
     })
   }
 
+  // Removes any geometries from the search geometries where they
+  // intersect with the existing geometries.
+  // 
+  function filterSearch(searchGeoms, existingGeoms) {
+    console.log('searchGeoms', searchGeoms)
+    const existingGeomsIds = existingGeoms.features.map(feature => {
+      return feature.properties.asset_id
+    })
+    console.log(existingGeomsIds)
+
+    const searchFeatures = []
+    const flattenedSearch = turf.flattenEach(searchGeoms, (currentFeature, feautureIndex, multiFeatureIndex) => {
+      console.log('currentFeature', currentFeature)
+      console.log('featureIndex', feautureIndex)
+      console.log('multiFeatureIndex', multiFeatureIndex)
+      if (!existingGeomsIds.includes(currentFeature.properties.identifier)) {
+        searchFeatures.push(currentFeature)
+      }
+    })
+    console.log('exsitingGeoms', existingGeoms)
+
+    return turf.featureCollection(searchFeatures)
+  }
+
   function searchAssets() {
     setIsLoading(true)
 
     const url = `/assets/?` + new URLSearchParams({
       'q': searchText,
-      'asset_type': searchedAssetType
+      'asset_type': searchedAssetType,
+      'exclude': existingGeoms.features.map(feature => {
+        return feature.id
+      })
     })
 
     fetch(url, {
@@ -112,8 +137,19 @@ function AssetsMap(props) {
       method: 'GET'
     }).then((response) => response.json())
     .then((data) => {
+      // Find the difference between existingGeoms
+      // and the search results, and exclude where 
+      // search results overlap the existingGeoms.
+      // console.log(existingGeoms)
+      // const multi1 = turf.combine(existingGeoms)
+      // console.log('multi1', multi1)
+      // console.log(data) 
+      // const difference = turf.difference(multi1, turf.combine(data))
+      // console.log(difference)
+      const searchResults = filterSearch(data, existingGeoms)
+      console.log('searchResults', searchResults)
       setIsLoading(false)
-      setSearchedGeoms(data)
+      setSearchedGeoms(searchResults)
     })
     .catch(error => {
       // TODO: show an error message in the UI
