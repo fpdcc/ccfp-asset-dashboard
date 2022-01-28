@@ -26,12 +26,17 @@ function AssetsMap(props) {
   const [searchText, setSearchText] = useState('')
   const [searchedAssetType, setSearchedAssetType] = useState('buildings')
   const [isLoading, setIsLoading] = useState(false)
+  const [phaseId, setPhaseId] = useState(null)
 
   useEffect(() => {
     if (props?.existing_assets) {
       setExistingGeoms(props.existing_assets)
     }
-  }, [setSearchedGeoms, setExistingGeoms])
+
+    if (props?.phase_id) {
+      setPhaseId(props.phase_id)
+    }
+  }, [setExistingGeoms, setPhaseId])
 
   function onMapCreated(map) {
     const group = new L.featureGroup()
@@ -57,7 +62,8 @@ function AssetsMap(props) {
         'asset_id': feature['properties']['identifier'],
         'asset_type': searchedAssetType,
         'asset_name': feature['properties']['name'],
-        'geom': feature['geometry']
+        'geom': feature['geometry'],
+        'phase': phaseId
       }
     })
 
