@@ -296,17 +296,23 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['project'] = Project.objects.get(id=self.kwargs['pk'])
+        phase = Phase.objects.get(id=self.kwargs['pk'])
 
-        # TODO: when I do issue # 94
-        # get the phase from context and filter
-        existing_assets = LocalAsset.objects.all()
+        context.update({
+            'phase': phase,
+            'project': Project.objects.filter(phases=phase)[0],
+            'props': {
+                'phase_id': phase.id
+            }
+        })
+
+        existing_assets = LocalAsset.objects.filter(phase=phase)
         geojson_serializer = LocalAssetReadSerializer(existing_assets, many=True)
 
         if existing_assets.exists():
-            context['props'] = {
+            context['props'].update({
                 'existing_assets': geojson_serializer.data
-            }
+            })
 
         return context
 

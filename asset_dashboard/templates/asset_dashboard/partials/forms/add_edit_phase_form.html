@@ -8,6 +8,10 @@
   {{ form.errors }}
   {{ finances_form.errors }}
 
+  <div>
+    <a href="{% url 'create-update-assets' pk=phase.id %}">Edit Assets</a>
+  </div>
+
   <div class="text-right">
     <input type="submit" value="Save Phase" class="btn btn-primary">
   </div>
@@ -56,7 +60,6 @@
   </tbody>
 </table>
 {% endif %}
-
 
 
 {% endblock %}
