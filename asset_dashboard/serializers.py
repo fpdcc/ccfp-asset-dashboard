@@ -78,7 +78,7 @@ class BaseLocalAssetSerializer(GeoFeatureModelSerializer):
 
     class Meta:
         model = LocalAsset
-        fields = ('geom', 'asset_id', 'asset_type', 'asset_name', 'phase')
+        fields = ('id', 'geom', 'asset_id', 'asset_type', 'asset_name', 'phase')
         geo_field = 'geom'
 
     asset_id = serializers.IntegerField()
