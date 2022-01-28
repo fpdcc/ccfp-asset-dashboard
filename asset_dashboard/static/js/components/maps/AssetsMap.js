@@ -4,7 +4,6 @@ import { GeoJSON } from 'react-leaflet'
 import hash from 'object-hash'
 import Cookies from 'js-cookie'
 import BaseMap from './BaseMap'
-import AreaClipper from '../map_utils/AreaClipper'
 import AssetSearchTable from '../tables/AssetSearchTable'
 import MapClipper from '../map_utils/MapClipper'
 
@@ -37,7 +36,7 @@ function AssetsMap(props) {
     if (props?.phase_id) {
       setPhaseId(props.phase_id)
     }
-  }, [setExistingGeoms, setPhaseId])
+  }, [])
 
   function onMapCreated(map) {
     const group = new L.featureGroup()
@@ -187,9 +186,6 @@ function AssetsMap(props) {
                   key={hash(searchedGeoms)} 
                   style={{color: 'black'}}
                 />
-                {/* <AreaClipper 
-                  geoJson={searchedGeoms}
-                  onClipped={onClipped} /> */}
                   <MapClipper 
                     geoJson={searchedGeoms}
                     onClipped={onClipped}

@@ -4,21 +4,11 @@ import clip from 'turf-clip'
 import EditControl from './EditControl'
 
 export default function MapClipper({ geoJson, onClipped }) {
-  console.log('i render')
-  // TODO: rename this to drawnGeometries or something like it
-  const [selectedGeometries, setSelectedGeometries] = useState(null)
-  const [deletedGeometries, setDeletedGeometries] = useState(null)
+  const [drawnGeometries, setDrawnGeometries] = useState(null)
 
   useEffect(() => {
-    console.log('useEffect', selectedGeometries)
-    if (selectedGeometries) {
-      clipGeometries(selectedGeometries)
-    }
-
-    if (deletedGeometries) {
-      
-    }
-  }, [clipGeometries])
+    clipGeometries(drawnGeometries)
+  }, [drawnGeometries])
 
   function onEdited(e) {
     const layerKeys = getLayersKeys(e.layers._layers)
@@ -36,77 +26,64 @@ export default function MapClipper({ geoJson, onClipped }) {
       }
     })
 
-    const newGeometries = {
-      ...selectedGeometries,
-      ...editedLayers
-    }
-
-    // setSelectedGeometries(newGeometries)
-
-    clipGeometries(newGeometries)
+    setDrawnGeometries(prevState => {
+      return {
+        ...prevState,
+        ...editedLayers
+      }
+    })
   }
 
   function onCreated(e) {
     const geoJSON = e.layer.toGeoJSON()
 
-    setSelectedGeometries(prevState => {
+    setDrawnGeometries(prevState => {
       return {
         ...prevState,
         [e.layer._leaflet_id]: geoJSON
       }
     })
-
-    // const newGeometries = {
-    //   ...selectedGeometries,
-    //   [e.layer._leaflet_id]: geoJSON
-    // }
-
-    // console.log('onCreated', newGeometries)
-
-    // // clipGeometries(newGeometries)
-    // setSelectedGeometries(newGeometries)
-    // clipGeometries()
-    
   }
 
   function onDeleted(e) {
     const layersKeys = getLayersKeys(e.layers._layers)
-    console.log('layersKeys', layersKeys)
-    console.log('selectedGeometries', selectedGeometries)
 
-    // let newGeometries = selectedGeometries
-
-    // console.log('newGeometries', newGeometries)
-    // layersKeys.forEach(key => {
-    //   delete newGeometries[key]
-    // })
-
-    // if (newGeometries) {
-    //   clipGeometries(newGeometries)
-    // }
+    setDrawnGeometries(prevState => {
+      layersKeys.forEach(key => {
+        delete prevState[key]
+      })
+      return {
+        ...prevState
+      }
+    })
   }
 
   function getLayersKeys(layers) {
     return Object.keys(layers).map(key => { return key })
   }
 
-  function clipGeometries(geoms) {
-    console.log('clipGeometries', geoms)
-    const bounds = {
-      'type': 'FeatureCollection',
-      'features': Object.values(geoms)
+  function clipGeometries(geometries) {
+    if (geometries) {
+      const bounds = {
+        'type': 'FeatureCollection',
+        'features': Object.values(geometries)
+      }
+  
+      const clippedFeatureCollection = clip(bounds, geoJson)
+      console.log('clippedFeatureCollection', clippedFeatureCollection)
+  
+      if (clippedFeatureCollection.features.length > 0) {
+        onClipped(clippedFeatureCollection)
+      }
+    } else {
+      // geometries aren't truthy, which means they were deleted
+      // or the component mounted the first time. In either case,
+      // send back null so that the caller has no clipped geoms.
+      onClipped(null)
     }
-
-    const clippedFeatureCollection = clip(bounds, geoJson)
-
-    if (clippedFeatureCollection.features.length > 0) {
-      onClipped(clippedFeatureCollection)
-    }
-
-    setSelectedGeometries(geoms)
   }
 
-  console.log('selectedGeometries', selectedGeometries)
+  console.log('selectedGeometries', drawnGeometries)
   
   return (
     <FeatureGroup>
