@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom'
+import ReactDOMServer from 'react-dom/server'
 import React, { useState, useEffect } from 'react'
 import { GeoJSON } from 'react-leaflet'
 import hash from 'object-hash'
@@ -7,6 +8,8 @@ import BaseMap from './BaseMap'
 import AssetSearchTable from '../tables/AssetSearchTable'
 import ExistingAssetsTable from '../tables/ExistingAssetsTable'
 import MapClipper from '../map_utils/MapClipper'
+import Popup from '../map_utils/Popup'
+import { useSessionstorageState } from 'rooks'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
@@ -21,17 +24,16 @@ function AssetTypeOptions() {
 }
 
 function AssetsMap(props) {
-  const [searchedGeoms, setSearchedGeoms] = useState()
+  const [searchedGeoms, setSearchedGeoms] = useSessionstorageState('searchGeoms', null)
   const [existingGeoms, setExistingGeoms] = useState()
   const [clippedGeoms, setClippedGeoms] = useState(null)
-  const [searchText, setSearchText] = useState('')
-  const [searchedAssetType, setSearchedAssetType] = useState('buildings')
+  const [searchText, setSearchText] = useSessionstorageState('searchText', '')
+  const [searchedAssetType, setSearchedAssetType] = useSessionstorageState('searchAssetTypes', 'buildings')
   const [isLoading, setIsLoading] = useState(false)
   const [phaseId, setPhaseId] = useState(null)
 
   useEffect(() => {
     if (props?.existing_assets) {
-      console.log(props.existing_assets)
       setExistingGeoms(props.existing_assets)
     }
 
@@ -193,7 +195,12 @@ function AssetsMap(props) {
                     />
                 </>
               }
-              {existingGeoms && <GeoJSON data={existingGeoms} style={{color: 'green'}}/>}
+              {existingGeoms && 
+                <GeoJSON 
+                  data={existingGeoms} 
+                  style={{color: 'green'}}
+                />
+              }
             </BaseMap>
           </div>
         </div>
