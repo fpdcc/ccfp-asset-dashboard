@@ -3,13 +3,13 @@ import React, { useState, useEffect } from 'react'
 import { GeoJSON } from 'react-leaflet'
 import hash from 'object-hash'
 import Cookies from 'js-cookie'
-import * as turf from '@turf/turf'
+import { useSessionstorageState } from 'rooks'
 import BaseMap from './BaseMap'
 import AssetSearchTable from '../tables/AssetSearchTable'
 import ExistingAssetsTable from '../tables/ExistingAssetsTable'
 import MapClipper from '../map_utils/MapClipper'
-import { useSessionstorageState } from 'rooks'
-import { filter } from 'lodash'
+import MapZoom from '../map_utils/MapZoom'
+import zoomToSearchGeometries from '../map_utils/zoomToSearchGeometries'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
@@ -24,11 +24,11 @@ function AssetTypeOptions() {
 }
 
 function AssetsMap(props) {
-  const [searchedGeoms, setSearchedGeoms] = useSessionstorageState('searchGeoms', null)
+  const [searchGeoms, setSearchGeoms] = useSessionstorageState('searchGeoms', null)
   const [existingGeoms, setExistingGeoms] = useState()
   const [clippedGeoms, setClippedGeoms] = useState(null)
   const [searchText, setSearchText] = useSessionstorageState('searchText', '')
-  const [searchedAssetType, setSearchedAssetType] = useSessionstorageState('searchAssetTypes', 'buildings')
+  const [searchAssetType, setSearchAssetType] = useSessionstorageState('searchAssetTypes', 'buildings')
   const [isLoading, setIsLoading] = useState(false)
   const [phaseId, setPhaseId] = useState(null)
 
@@ -44,15 +44,20 @@ function AssetsMap(props) {
 
   function onMapCreated(map) {
     const group = new L.featureGroup()
+    if (searchGeoms) {
+      zoomToSearchGeometries(map, group)
+    } else {
+      // only zoom on the existing assets
+      // if there are no search geometries
+      map.eachLayer((layer) => {
+        if (layer.feature) {
+          group.addLayer(layer)
+        }
+      })
 
-    map.eachLayer((layer) => {
-      if (layer.feature) {
-        group.addLayer(layer)
+      if (Object.keys(group._layers).length > 0) {
+        map.fitBounds(group.getBounds())
       }
-    })
-
-    if (Object.keys(group._layers).length > 0) {
-      map.fitBounds(group.getBounds())
     }
   }
 
@@ -64,7 +69,7 @@ function AssetsMap(props) {
     const data = clippedGeoms['features'].map(feature => {
       return {
         'asset_id': feature['properties']['identifier'],
-        'asset_type': searchedAssetType,
+        'asset_type': searchAssetType,
         'asset_name': feature['properties']['name'],
         'geom': feature['geometry'],
         'phase': phaseId
@@ -92,69 +97,34 @@ function AssetsMap(props) {
     })
   }
 
-  // Removes any geometries from the search geometries where they
-  // intersect with the existing geometries.
-  // 
-  function filterSearch(searchGeoms, existingGeoms) {
-    console.log('searchGeoms', searchGeoms)
-    const existingGeomsIds = existingGeoms.features.map(feature => {
-      return feature.properties.asset_id
-    })
-    console.log(existingGeomsIds)
-
-    const searchFeatures = []
-    const flattenedSearch = turf.flattenEach(searchGeoms, (currentFeature, feautureIndex, multiFeatureIndex) => {
-      console.log('currentFeature', currentFeature)
-      console.log('featureIndex', feautureIndex)
-      console.log('multiFeatureIndex', multiFeatureIndex)
-      if (!existingGeomsIds.includes(currentFeature.properties.identifier)) {
-        searchFeatures.push(currentFeature)
-      }
-    })
-    console.log('exsitingGeoms', existingGeoms)
-
-    return turf.featureCollection(searchFeatures)
-  }
-
   function searchAssets() {
-    setIsLoading(true)
+    if (searchText != '' && searchText) {
+      setIsLoading(true)
 
-    const url = `/assets/?` + new URLSearchParams({
-      'q': searchText,
-      'asset_type': searchedAssetType,
-      'exclude': existingGeoms.features.map(feature => {
-        return feature.id
+      const url = `/assets/?` + new URLSearchParams({
+        'q': searchText,
+        'asset_type': searchAssetType
       })
-    })
 
-    fetch(url, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-CSRFTOKEN': Cookies.get('csrftoken')
-      },
-      mode: 'same-origin',
-      method: 'GET'
-    }).then((response) => response.json())
-    .then((data) => {
-      // Find the difference between existingGeoms
-      // and the search results, and exclude where 
-      // search results overlap the existingGeoms.
-      // console.log(existingGeoms)
-      // const multi1 = turf.combine(existingGeoms)
-      // console.log('multi1', multi1)
-      // console.log(data) 
-      // const difference = turf.difference(multi1, turf.combine(data))
-      // console.log(difference)
-      const searchResults = filterSearch(data, existingGeoms)
-      console.log('searchResults', searchResults)
-      setIsLoading(false)
-      setSearchedGeoms(searchResults)
-    })
-    .catch(error => {
-      // TODO: show an error message in the UI
-      console.error('error', error)
-    })
+      fetch(url, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-CSRFTOKEN': Cookies.get('csrftoken')
+        },
+        mode: 'same-origin',
+        method: 'GET'
+      }).then((response) => response.json())
+      .then((data) => {
+        setIsLoading(false)
+        setSearchGeoms(data)
+      })
+      .catch(error => {
+        // TODO: show an error message in the UI
+        console.error('error', error)
+      })
+    }
+    
   }
  
   return (
@@ -176,8 +146,8 @@ function AssetsMap(props) {
               <div className='row m-1'>
                 <select
                   className='form-control col mr-1'
-                  value={searchedAssetType}
-                  onChange={(e) => setSearchedAssetType(e.target.value)}
+                  value={searchAssetType}
+                  onChange={(e) => setSearchAssetType(e.target.value)}
                 >
                   <AssetTypeOptions />
                 </select>
@@ -191,9 +161,9 @@ function AssetsMap(props) {
           </div>
           <div>
             {isLoading ? 'Loading...' : null}
-            {searchedGeoms && 
+            {searchGeoms && 
               <AssetSearchTable
-                rows={searchedGeoms.features}
+                rows={searchGeoms.features}
               />
             }
           </div>
@@ -216,19 +186,20 @@ function AssetsMap(props) {
               center={[41.8781, -87.6298]}
               zoom={11}
               whenCreated={onMapCreated}>
-              {searchedGeoms && 
+              {searchGeoms && 
                 <>
                   <GeoJSON 
-                    data={searchedGeoms} 
+                    data={searchGeoms} 
                     // Hash key tells the geojson to re-render 
                     // when the state changes: https://stackoverflow.com/a/46593710
-                    key={hash(searchedGeoms)} 
-                    style={{color: 'black'}}
+                    key={hash(searchGeoms)} 
+                    style={{color: 'black', dashArray: '5,10', weight: '0.75'}}
                   />
                     <MapClipper 
-                      geoJson={searchedGeoms}
+                      geoJson={searchGeoms}
                       onClipped={onClipped}
                     />
+                  <MapZoom searchGeoms={searchGeoms} />
                 </>
               }
               {existingGeoms && 
