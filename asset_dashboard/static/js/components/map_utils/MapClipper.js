@@ -11,20 +11,16 @@ export default function MapClipper({ geoJson, onClipped }) {
   }, [drawnGeometries])
 
   function onEdited(e) {
-    const layerKeys = getLayersKeys(e.layers._layers)
-
     let editedLayers = {}
 
-    layerKeys.forEach(layerKey => {
-      const layer = e.layers._layers[layerKey]
-
+    for (const [key, layer] of Object.entries(e.layers._layers)) {
       const geoJSON = layer.toGeoJSON()
 
       editedLayers = {
         ...editedLayers,
-        [layerKey]: geoJSON
+        [key]: geoJSON
       }
-    })
+    }
 
     setDrawnGeometries(prevState => {
       return {
@@ -46,20 +42,14 @@ export default function MapClipper({ geoJson, onClipped }) {
   }
 
   function onDeleted(e) {
-    const layersKeys = getLayersKeys(e.layers._layers)
-
     setDrawnGeometries(prevState => {
-      layersKeys.forEach(key => {
+      for (const [key, layer] of Object.entries(e.layers._layers)) {
         delete prevState[key]
-      })
+      }
       return {
         ...prevState
       }
     })
-  }
-
-  function getLayersKeys(layers) {
-    return Object.keys(layers).map(key => { return key })
   }
 
   function clipGeometries(geometries) {
