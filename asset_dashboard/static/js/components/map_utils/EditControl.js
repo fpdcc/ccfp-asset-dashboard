@@ -1,4 +1,6 @@
-// Code source: https://github.com/alex3165/react-leaflet-draw/blob/master/src/EditControl.js
+// Code source: https://github.com/alex3165/react-leaflet-draw/blob/21b65921e6e32217f964e36dc32646a4541b4f92/src/EditControl.js#L1
+// We couldn't import the code from npm due to some incompatibilites with the react-leaflet-draw library
+// and the react-leaflet library. See https://github.com/alex3165/react-leaflet-draw/issues/52 and https://github.com/alex3165/react-leaflet-draw/issues/97.
 
 import { PropTypes } from 'prop-types';
 import Draw from 'leaflet-draw'; // eslint-disable-line
