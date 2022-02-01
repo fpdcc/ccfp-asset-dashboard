@@ -270,7 +270,6 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
 
 class AssetAddEditView(LoginRequiredMixin, TemplateView):
     template_name = 'asset_dashboard/asset_create_update.html'
-    component = 'js/components/maps/AssetsMap.js'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
