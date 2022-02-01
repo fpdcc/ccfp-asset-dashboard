@@ -70,7 +70,6 @@ export default function MapClipper({ geoJson, onClipped }) {
       }
   
       const clippedFeatureCollection = clip(bounds, geoJson)
-      console.log('clippedFeatureCollection', clippedFeatureCollection)
   
       if (clippedFeatureCollection.features.length > 0) {
         onClipped(clippedFeatureCollection)
@@ -82,8 +81,6 @@ export default function MapClipper({ geoJson, onClipped }) {
       onClipped(null)
     }
   }
-
-  console.log('selectedGeometries', drawnGeometries)
   
   return (
     <FeatureGroup>
