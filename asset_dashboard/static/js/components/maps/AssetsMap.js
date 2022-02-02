@@ -4,8 +4,8 @@ import { GeoJSON } from 'react-leaflet'
 import hash from 'object-hash'
 import Cookies from 'js-cookie'
 import BaseMap from './BaseMap'
-import AreaClipper from '../map_utils/AreaClipper'
 import AssetSearchTable from '../tables/AssetSearchTable'
+import MapClipper from '../map_utils/MapClipper'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
@@ -36,7 +36,7 @@ function AssetsMap(props) {
     if (props?.phase_id) {
       setPhaseId(props.phase_id)
     }
-  }, [setExistingGeoms, setPhaseId])
+  }, [])
 
   function onMapCreated(map) {
     const group = new L.featureGroup()
@@ -158,20 +158,18 @@ function AssetsMap(props) {
         </div>
       </div>
       <div className='col'>
-        {clippedGeoms 
-          ?
-          <div className='row'>
-            <button 
-              className='btn btn-primary'
-              onClick={() => saveGeometries()}>
-              Save Asset
-            </button>
-          </div>
-          : 
-          <div className='col-10'>
-            <p>Use the map toolbar to select an asset.</p>
-          </div>
-        }
+        <div className='d-flex justify-content-end m-2'>
+          {clippedGeoms 
+            ?
+              <button 
+                className='btn btn-primary'
+                onClick={() => saveGeometries()}>
+                Save Asset
+              </button>
+            :
+              <p>Use the map toolbar to select an asset.</p>
+          }
+        </div>
         <div className='map-viewer' aria-label='Asset Selection Map'>
           <BaseMap
             center={[41.8781, -87.6298]}
@@ -186,9 +184,10 @@ function AssetsMap(props) {
                   key={hash(searchedGeoms)} 
                   style={{color: 'black'}}
                 />
-                <AreaClipper 
-                  geoJson={searchedGeoms}
-                  onClipped={onClipped} />
+                  <MapClipper 
+                    geoJson={searchedGeoms}
+                    onClipped={onClipped}
+                  />
               </>
             }
             {existingGeoms && <GeoJSON data={existingGeoms} style={{color: 'green'}}/>}
