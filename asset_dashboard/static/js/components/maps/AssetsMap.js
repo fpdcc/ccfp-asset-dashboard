@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react'
 import { GeoJSON } from 'react-leaflet'
 import hash from 'object-hash'
 import Cookies from 'js-cookie'
+import { useSessionstorageState } from 'rooks'
 import BaseMap from './BaseMap'
 import AssetSearchTable from '../tables/AssetSearchTable'
 import ExistingAssetsTable from '../tables/ExistingAssetsTable'
 import MapClipper from '../map_utils/MapClipper'
-import { useSessionstorageState } from 'rooks'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
