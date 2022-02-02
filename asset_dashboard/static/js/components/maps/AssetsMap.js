@@ -8,6 +8,8 @@ import BaseMap from './BaseMap'
 import AssetSearchTable from '../tables/AssetSearchTable'
 import ExistingAssetsTable from '../tables/ExistingAssetsTable'
 import MapClipper from '../map_utils/MapClipper'
+import MapZoom from '../map_utils/MapZoom'
+import zoomToSearchGeometries from '../map_utils/zoomToSearchGeometries'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
@@ -44,14 +46,18 @@ function AssetsMap(props) {
   function onMapCreated(map) {
     const group = new L.featureGroup()
 
-    map.eachLayer((layer) => {
-      if (layer.feature) {
-        group.addLayer(layer)
+    if (searchGeoms) {
+      zoomToSearchGeometries(map, group)
+    } else {
+      map.eachLayer((layer) => {
+        if (layer.feature) {
+          group.addLayer(layer)
+        }
+      })
+  
+      if (Object.keys(group._layers).length > 0) {
+        map.fitBounds(group.getBounds())
       }
-    })
-
-    if (Object.keys(group._layers).length > 0) {
-      map.fitBounds(group.getBounds())
     }
   }
 
@@ -192,6 +198,7 @@ function AssetsMap(props) {
                       geoJson={searchGeoms}
                       onClipped={onClipped}
                     />
+                    <MapZoom searchGeoms={searchGeoms} />
                 </>
               }
               {existingGeoms && <GeoJSON data={existingGeoms} style={{color: 'green'}}/>}
