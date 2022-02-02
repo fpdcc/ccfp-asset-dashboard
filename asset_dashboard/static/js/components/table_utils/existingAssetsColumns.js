@@ -18,13 +18,13 @@ const existingAssetsColumns = (handleDelete) => {
       Header: () => null,
       accessor: 'id',
       disableSortBy: true,
-      Cell: props => (<button onClick={() => handleDelete(props.value)}>Delete</button>)
+      Cell: props => (<button 
+                        className='btn btn-outline-danger' 
+                        onClick={() => handleDelete(props.value)}>
+                          <i className='fas fa-trash'></i> Delete
+                      </button>)
     }
   ]
 }
 
 export default existingAssetsColumns
-
-{/* <a href={`local-assets/${props.value}`}  
-                        onClick={(e) => console.log('click', e.target.value)}
-                        className='btn btn-success btn-sm'>Delete</a> */}
