@@ -34,7 +34,6 @@ function AssetsMap(props) {
 
   useEffect(() => {
     if (props?.existing_assets) {
-      console.log(props.existing_assets)
       setExistingGeoms(props.existing_assets)
     }
 
