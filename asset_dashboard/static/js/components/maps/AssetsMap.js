@@ -186,7 +186,7 @@ function AssetsMap(props) {
                     // Hash key tells the geojson to re-render 
                     // when the state changes: https://stackoverflow.com/a/46593710
                     key={hash(searchedGeoms)} 
-                    style={{color: 'black'}}
+                    style={{color: 'black', dashArray: '5,10', weight: '0.75'}}
                   />
                     <MapClipper 
                       geoJson={searchedGeoms}
