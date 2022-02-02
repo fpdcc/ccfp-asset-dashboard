@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { FeatureGroup } from 'react-leaflet'
 import clip from 'turf-clip'
+import * as turf from '@turf/turf'
 import EditControl from './EditControl'
 
 export default function MapClipper({ geoJson, onClipped }) {
   const [drawnGeometries, setDrawnGeometries] = useState(null)
 
   useEffect(() => {
-    clipGeometries(drawnGeometries)
+    if (drawnGeometries) {
+      clipGeometries(drawnGeometries)
+    }
   }, [drawnGeometries])
 
   function onEdited(e) {
@@ -52,22 +55,69 @@ export default function MapClipper({ geoJson, onClipped }) {
     })
   }
 
+  /* Separate the geometry types. We need the LineStrings to clip, 
+    and separately all of the other geometry types to see if they intersect. 
+    A LineString would be a trail that can be clipped.
+    The remaining types would be like a building or structure, etc
+    that should be treated as an entire entity and not clipped. */
+  function separateGeometryTypes() {
+    const lineStringFeatureTypes = []
+    const allOtherFeatureTypes = []
+    
+    turf.featureEach(geoJson, (currentFeature) => {
+      if (['LineString', 'MultiLineString'].includes(turf.getType(currentFeature))) {
+        lineStringFeatureTypes.push(currentFeature)
+      } else {
+        allOtherFeatureTypes.push(currentFeature)
+      }
+    })
+
+    return [
+      turf.featureCollection(lineStringFeatureTypes),
+      turf.featureCollection(allOtherFeatureTypes)
+    ]
+  }
+
+  function getIntersectingFeatures(bounds, featureCollection) {
+    if (featureCollection) {
+      const intersectingFeatures = []
+
+      turf.featureEach(featureCollection, (currentFeature) => {
+        if (turf.booleanIntersects(currentFeature, bounds)) {
+          intersectingFeatures.push(currentFeature)
+        }
+      })
+
+      return intersectingFeatures
+    }
+
+    return []
+  }
+
+  function getClippedFeatures(bounds, featureCollection) {
+    if (featureCollection) {
+      return clip(bounds, featureCollection).features
+    }
+
+    return []
+  }
+
   function clipGeometries(geometries) {
-    if (geometries) {
-      const bounds = {
-        'type': 'FeatureCollection',
-        'features': Object.values(geometries)
-      }
-  
-      const clippedFeatureCollection = clip(bounds, geoJson)
-  
-      if (clippedFeatureCollection.features.length > 0) {
-        onClipped(clippedFeatureCollection)
-      }
+    const bounds = turf.featureCollection(Object.values(geometries))
+
+    const [lineStringFeatureCollection, allOtherTypesFeatureCollection] = separateGeometryTypes()
+
+    const intersectingFeatures = getIntersectingFeatures(bounds, allOtherTypesFeatureCollection)
+
+    const clippedFeatures = getClippedFeatures(bounds, lineStringFeatureCollection)
+
+    const finalFeatureCollection = turf.featureCollection(intersectingFeatures.concat(clippedFeatures))
+
+    if (finalFeatureCollection.features.length > 0) {
+      onClipped(finalFeatureCollection)
     } else {
-      // geometries aren't truthy, which means they were deleted
-      // or the component mounted the first time. In either case,
-      // send back null so that the caller has no clipped geoms.
+      // No features exist, which means they were deleted.
+      // Send back null so that the caller has no clipped geometries.
       onClipped(null)
     }
   }
