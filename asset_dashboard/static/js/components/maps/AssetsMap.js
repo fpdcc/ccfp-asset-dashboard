@@ -48,6 +48,7 @@ function AssetsMap(props) {
     if (searchGeoms) {
       zoomToSearchGeometries(map, group)
     } else {
+      // zoom to the existing geometries
       map.eachLayer((layer) => {
         if (layer.feature) {
           group.addLayer(layer)
