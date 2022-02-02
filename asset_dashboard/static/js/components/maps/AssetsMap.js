@@ -22,11 +22,11 @@ function AssetTypeOptions() {
 }
 
 function AssetsMap(props) {
-  const [searchedGeoms, setSearchedGeoms] = useSessionstorageState('searchGeoms', null)
+  const [searchGeoms, setSearchGeoms] = useSessionstorageState('searchGeoms', null)
   const [existingGeoms, setExistingGeoms] = useState()
   const [clippedGeoms, setClippedGeoms] = useState(null)
   const [searchText, setSearchText] = useSessionstorageState('searchText', '')
-  const [searchedAssetType, setSearchedAssetType] = useSessionstorageState('searchAssetTypes', 'buildings')
+  const [searchAssetType, setSearchAssetType] = useSessionstorageState('searchAssetTypes', 'buildings')
   const [isLoading, setIsLoading] = useState(false)
   const [phaseId, setPhaseId] = useState(null)
 
@@ -63,7 +63,7 @@ function AssetsMap(props) {
     const data = clippedGeoms['features'].map(feature => {
       return {
         'asset_id': feature['properties']['identifier'],
-        'asset_type': searchedAssetType,
+        'asset_type': searchAssetType,
         'asset_name': feature['properties']['name'],
         'geom': feature['geometry'],
         'phase': phaseId
@@ -98,7 +98,7 @@ function AssetsMap(props) {
 
     const url = `/assets/?` + new URLSearchParams({
       'q': searchText,
-      'asset_type': searchedAssetType
+      'asset_type': searchAssetType
     })
 
     fetch(url, {
@@ -112,7 +112,7 @@ function AssetsMap(props) {
     }).then((response) => response.json())
     .then((data) => {
       setIsLoading(false)
-      setSearchedGeoms(data)
+      setSearchGeoms(data)
     })
     .catch(error => {
       // TODO: show an error message in the UI
@@ -139,8 +139,8 @@ function AssetsMap(props) {
               <div className='row m-1'>
                 <select
                   className='form-control col mr-1'
-                  value={searchedAssetType}
-                  onChange={(e) => setSearchedAssetType(e.target.value)}
+                  value={searchAssetType}
+                  onChange={(e) => setSearchAssetType(e.target.value)}
                 >
                   <AssetTypeOptions />
                 </select>
@@ -154,9 +154,9 @@ function AssetsMap(props) {
           </div>
           <div>
             {isLoading ? 'Loading...' : null}
-            {searchedGeoms && 
+            {searchGeoms && 
               <AssetSearchTable
-                rows={searchedGeoms.features}
+                rows={searchGeoms.features}
               />
             }
           </div>
@@ -179,17 +179,17 @@ function AssetsMap(props) {
               center={[41.8781, -87.6298]}
               zoom={11}
               whenCreated={onMapCreated}>
-              {searchedGeoms && 
+              {searchGeoms && 
                 <>
                   <GeoJSON 
-                    data={searchedGeoms} 
+                    data={searchGeoms} 
                     // Hash key tells the geojson to re-render 
                     // when the state changes: https://stackoverflow.com/a/46593710
-                    key={hash(searchedGeoms)} 
+                    key={hash(searchGeoms)} 
                     style={{color: 'black', dashArray: '5,10', weight: '0.75'}}
                   />
                     <MapClipper 
-                      geoJson={searchedGeoms}
+                      geoJson={searchGeoms}
                       onClipped={onClipped}
                     />
                 </>
