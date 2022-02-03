@@ -56,7 +56,8 @@ export default function MapClipper({ geoJson, onClipped }) {
   }
 
   /* Separate the geometry types. We need the LineStrings to clip, 
-    and separately all of the other geometry types to see if they intersect. 
+    and separately all of the other geometry types to see if they 
+    intersect with the drawnGeometries. 
     A LineString would be a trail that can be clipped.
     The remaining types would be like a building or structure, etc
     that should be treated as an entire entity and not clipped. */
@@ -103,9 +104,9 @@ export default function MapClipper({ geoJson, onClipped }) {
   }
 
   function clipGeometries(geometries) {
-    const bounds = turf.featureCollection(Object.values(geometries))
-
     const [lineStringFeatureCollection, allOtherTypesFeatureCollection] = separateGeometryTypes()
+
+    const bounds = turf.featureCollection(Object.values(geometries))
 
     const intersectingFeatures = getIntersectingFeatures(bounds, allOtherTypesFeatureCollection)
 
