@@ -15,28 +15,6 @@
           <i class="pending">Loading map...</i><br><br>
       </div>
   </div>
-
-  {% if props.existing_assets %}
-    <table class="table table-hover table-border">
-      <thead>
-        <tr>
-          <td><strong>Identifier</strong></td>
-          <td><strong>Name</strong></td>
-          <td><strong>Type</strong></td>
-        </tr>
-      </thead>
-      <tbody>
-        {% for asset in props.existing_assets.features %}
-          <tr>
-            <td>{{ asset.properties.asset_id }}</td>
-            <td>{{ asset.properties.asset_name }}</td>
-            <td>{{ asset.properties.asset_type }}</td>
-            <td>Delete</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% endif %}
 {% endblock %}
 
 {% block extra_js %}

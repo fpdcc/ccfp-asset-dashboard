@@ -118,7 +118,7 @@ class BaseLocalAssetSerializer(GeoFeatureModelSerializer):
 
     class Meta:
         model = LocalAsset
-        fields = ('geom', 'asset_id', 'asset_type', 'asset_name', 'phase')
+        fields = ('id', 'geom', 'asset_id', 'asset_type', 'asset_name', 'phase')
         geo_field = 'geom'
 
     asset_id = serializers.IntegerField()
@@ -138,10 +138,19 @@ class LocalAssetReadSerializer(BaseLocalAssetSerializer):
     geom = GeometrySerializerMethodField()
 
 
-class BuildingsSerializer(GeoFeatureModelSerializer):
+class SourceAssetSerializer(GeoFeatureModelSerializer):
+    class Meta:
+        fields = ('source')
+    
+    source = serializers.SerializerMethodField()
+    
+    def get_source(self, obj):
+        return 'search'
+
+class BuildingsSerializer(SourceAssetSerializer):
     class Meta:
         model = Buildings
-        fields = ('identifier', 'name', 'geom')
+        fields = ('identifier', 'name', 'geom', 'source')
         geo_field = 'geom'
 
     identifier = NullableIntegerField(source='fpd_uid', allow_null=True)
@@ -152,10 +161,10 @@ class BuildingsSerializer(GeoFeatureModelSerializer):
         return obj.geom.transform(4326, clone=True)
 
 
-class TrailsSerializer(GeoFeatureModelSerializer):
+class TrailsSerializer(SourceAssetSerializer):
     class Meta:
         model = TrailsInfo
-        fields = ('identifier', 'name', 'geom')
+        fields = ('identifier', 'name', 'geom', 'source')
         geo_field = 'geom'
 
     identifier = serializers.IntegerField(source='trails_id')
