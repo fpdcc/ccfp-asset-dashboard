@@ -252,9 +252,8 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
         assets = LocalAsset.objects.filter(phase=self.object)
 
         if assets.exists():
-            geojson_serializer = LocalAssetReadSerializer(assets, many=True)
             context['props'] = {
-                'assets': geojson_serializer.data
+                'assets': LocalAssetReadSerializer(assets, many=True).data
             }
 
         return context
