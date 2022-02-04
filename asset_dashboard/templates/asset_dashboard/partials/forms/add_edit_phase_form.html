@@ -8,9 +8,11 @@
   {{ form.errors }}
   {{ finances_form.errors }}
 
-  <div>
-    <a href="{% url 'create-update-assets' pk=phase.id %}">Edit Assets</a>
-  </div>
+  {% if phase %}
+    <div>
+      <a href="{% url 'create-update-assets' pk=phase.id %}">Edit Assets</a>
+    </div>
+  {% endif %}
 
   <div class="text-right">
     <input type="submit" value="Save Phase" class="btn btn-primary">
