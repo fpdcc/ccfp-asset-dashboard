@@ -41,7 +41,8 @@ const BaseTable = ({ rows = [],  getTrProps = props => props, rowClassNames, sel
         disableSortBy: true,
         Cell: props => <a href={`/projects/${props.value}`}  
                           onClick={e => e.stopPropagation()}
-                          className='btn btn-success btn-sm'>View Project</a>
+                          className='btn btn-outline-dark btn-sm'
+                          target="_blank">View Project</a>
       }
     ], []
   )

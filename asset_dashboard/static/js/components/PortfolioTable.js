@@ -29,32 +29,41 @@ const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, savePortfol
 
   return (
     <div className="mb-5 mt-5">
-      <h3>
-        Portfolio
-      </h3>
       {!edit &&
-        <h4>
+        <h3>
           {portfolio.name}
-          <div className="float-right">
-            <Button
-              variant="success"
-              size="sm"
-              type="button"
-              id="edit-portfolio"
-              className="mr-2"
-              onClick={() => setEdit(true)}>
-              Edit name
-            </Button>
-            <Button
+          <Button
+            variant="outline-success"
+            type="button"
+            id="edit-portfolio"
+            className="ml-2"
+            onClick={() => setEdit(true)}>
+            Edit name
+          </Button>
+          {portfolio.name &&
+            <div className="float-right">
+              <Button
+                variant={portfolio.unsavedChanges ? 'primary' : 'link'}
+                type="button"
+                id="save-portfolio-contents"
+                disabled={portfolio.unsavedChanges ? false : true}
+                className="mr-2 px-3"
+                onClick={savePortfolio}>
+                {portfolio.unsavedChanges
+                  ? 'Save portfolio'
+                  : 'All changes saved'
+                }
+              </Button>
+              <Button
               variant="secondary"
-              size="sm"
-              type="link"
-              id="new-portfolio"
-              onClick={_createNewPortfolio}>
-              New portfolio
-            </Button>
-          </div>
-        </h4>
+                type="link"
+                id="new-portfolio"
+                onClick={_createNewPortfolio}>
+                New portfolio
+              </Button>
+            </div>
+          }
+        </h3>
       }
       {edit &&
         <Form id="portfolio-form" onSubmit={updatePortfolioName}>
@@ -64,26 +73,26 @@ const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, savePortfol
               defaultValue={portfolio.name ? portfolio.name : ''}
               aria-label="Portfolio name"
               required={true}
-              className="mr-2"
+              className="mr-2 form-control-lg"
               id="portfolio-name"
               name="portfolio-name"
             />
             <Button
               variant="primary"
-              size="sm"
               type="submit"
               id="save-portfolio-name"
               className="mr-3">
               Save name
             </Button>
-            <Button
-              variant="link"
-              size="sm"
-              type="button"
-              id="cancel-edit"
-              onClick={() => setEdit(false)}>
-              Cancel
-            </Button>
+            {portfolio.name &&
+              <Button
+                variant="link"
+                type="button"
+                id="cancel-edit"
+                onClick={() => setEdit(false)}>
+                Cancel
+              </Button>
+            }
           </InputGroup>
         </Form>
       }
@@ -100,22 +109,6 @@ const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, savePortfol
           )
         }}
       />
-      {portfolio.name &&
-        <div className="d-flex justify-content-center">
-          <Button
-            variant={portfolio.unsavedChanges ? 'primary' : 'link'}
-            type="button"
-            id="save-portfolio-contents"
-            disabled={portfolio.unsavedChanges ? false : true}
-            className="mr-2 px-3"
-            onClick={savePortfolio}>
-            {portfolio.unsavedChanges
-              ? 'Save portfolio'
-              : 'All changes saved'
-            }
-          </Button>
-        </div>
-      }
     </div>
   )
 }
