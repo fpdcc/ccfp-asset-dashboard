@@ -5,7 +5,7 @@ import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
 
 const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, savePortfolioName, savePortfolio, createNewPortfolio }) => {
-  const [edit, setEdit] = useState(false)
+  const [edit, setEdit] = useState(portfolio.name ? false : true)
 
   const onRowClick = ({ original }) => {
     return {
