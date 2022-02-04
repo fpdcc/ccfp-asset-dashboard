@@ -3,9 +3,13 @@ import React, { useState, useEffect } from 'react'
 import { GeoJSON } from 'react-leaflet'
 import hash from 'object-hash'
 import Cookies from 'js-cookie'
+import { useSessionstorageState } from 'rooks'
 import BaseMap from './BaseMap'
 import AssetSearchTable from '../tables/AssetSearchTable'
+import ExistingAssetsTable from '../tables/ExistingAssetsTable'
 import MapClipper from '../map_utils/MapClipper'
+import MapZoom from '../map_utils/MapZoom'
+import zoomToSearchGeometries from '../map_utils/zoomToSearchGeometries'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
@@ -20,11 +24,11 @@ function AssetTypeOptions() {
 }
 
 function AssetsMap(props) {
-  const [searchedGeoms, setSearchedGeoms] = useState()
+  const [searchGeoms, setSearchGeoms] = useSessionstorageState('searchGeoms', null)
   const [existingGeoms, setExistingGeoms] = useState()
   const [clippedGeoms, setClippedGeoms] = useState(null)
-  const [searchText, setSearchText] = useState('')
-  const [searchedAssetType, setSearchedAssetType] = useState('buildings')
+  const [searchText, setSearchText] = useSessionstorageState('searchText', '')
+  const [searchAssetType, setSearchAssetType] = useSessionstorageState('searchAssetTypes', 'buildings')
   const [isLoading, setIsLoading] = useState(false)
   const [phaseId, setPhaseId] = useState(null)
 
@@ -41,14 +45,19 @@ function AssetsMap(props) {
   function onMapCreated(map) {
     const group = new L.featureGroup()
 
-    map.eachLayer((layer) => {
-      if (layer.feature) {
-        group.addLayer(layer)
+    if (searchGeoms) {
+      zoomToSearchGeometries(map, group)
+    } else {
+      // zoom to the existing geometries
+      map.eachLayer((layer) => {
+        if (layer.feature) {
+          group.addLayer(layer)
+        }
+      })
+  
+      if (Object.keys(group._layers).length > 0) {
+        map.fitBounds(group.getBounds())
       }
-    })
-
-    if (Object.keys(group._layers).length > 0) {
-      map.fitBounds(group.getBounds())
     }
   }
 
@@ -60,7 +69,7 @@ function AssetsMap(props) {
     const data = clippedGeoms['features'].map(feature => {
       return {
         'asset_id': feature['properties']['identifier'],
-        'asset_type': searchedAssetType,
+        'asset_type': searchAssetType,
         'asset_name': feature['properties']['name'],
         'geom': feature['geometry'],
         'phase': phaseId
@@ -95,7 +104,7 @@ function AssetsMap(props) {
 
     const url = `/assets/?` + new URLSearchParams({
       'q': searchText,
-      'asset_type': searchedAssetType
+      'asset_type': searchAssetType
     })
 
     fetch(url, {
@@ -109,7 +118,7 @@ function AssetsMap(props) {
     }).then((response) => response.json())
     .then((data) => {
       setIsLoading(false)
-      setSearchedGeoms(data)
+      setSearchGeoms(data)
     })
     .catch(error => {
       // TODO: show an error message in the UI
@@ -118,83 +127,93 @@ function AssetsMap(props) {
   }
  
   return (
-    <div className='row'>
-      <div className='col-4'>
-        <div className='row'>
-          <div className='col'>
-            <div className='row m-1'>
-              <label htmlFor='asset-search' className='sr-only'>Search for Assets</label>
-              <input 
-                type='search'
-                onChange={(e) => setSearchText(e.target.value)}
-                value={searchText}
-                className='form-control' 
-                aria-label='Search for assets' 
-                placeholder='Search for assets' />
-            </div>
-            <div className='row m-1'>
-              <select
-                className='form-control col mr-1'
-                value={searchedAssetType}
-                onChange={(e) => setSearchedAssetType(e.target.value)}
-              >
-                <AssetTypeOptions />
-              </select>
-              <button 
-                onClick={() => searchAssets()}
-                className='btn btn-warning'>
-                  Search
-              </button>
+    <>
+      <div className='row'>
+        <div className='col-4'>
+          <div className='row'>
+            <div className='col'>
+              <div className='row m-1'>
+                <label htmlFor='asset-search' className='sr-only'>Search for Assets</label>
+                <input 
+                  type='search'
+                  onChange={(e) => setSearchText(e.target.value)}
+                  value={searchText}
+                  className='form-control' 
+                  aria-label='Search for assets' 
+                  placeholder='Search for assets' />
+              </div>
+              <div className='row m-1'>
+                <select
+                  className='form-control col mr-1'
+                  value={searchAssetType}
+                  onChange={(e) => setSearchAssetType(e.target.value)}
+                >
+                  <AssetTypeOptions />
+                </select>
+                <button 
+                  onClick={() => searchAssets()}
+                  className='btn btn-warning'>
+                    Search
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-        <div>
-          {isLoading ? 'Loading...' : null}
-          {searchedGeoms && 
-            <AssetSearchTable
-              rows={searchedGeoms.features}
-            />
-          }
-        </div>
-      </div>
-      <div className='col'>
-        <div className='d-flex justify-content-end m-2'>
-          {clippedGeoms 
-            ?
-              <button 
-                className='btn btn-primary'
-                onClick={() => saveGeometries()}>
-                Save Asset
-              </button>
-            :
-              <p>Use the map toolbar to select an asset.</p>
-          }
-        </div>
-        <div className='map-viewer' aria-label='Asset Selection Map'>
-          <BaseMap
-            center={[41.8781, -87.6298]}
-            zoom={11}
-            whenCreated={onMapCreated}>
-            {searchedGeoms && 
-              <>
-                <GeoJSON 
-                  data={searchedGeoms} 
-                  // Hash key tells the geojson to re-render 
-                  // when the state changes: https://stackoverflow.com/a/46593710
-                  key={hash(searchedGeoms)} 
-                  style={{color: 'black'}}
-                />
-                  <MapClipper 
-                    geoJson={searchedGeoms}
-                    onClipped={onClipped}
-                  />
-              </>
+          <div>
+            {isLoading ? 'Loading...' : null}
+            {searchGeoms && 
+              <AssetSearchTable
+                rows={searchGeoms.features}
+              />
             }
-            {existingGeoms && <GeoJSON data={existingGeoms} style={{color: 'green'}}/>}
-          </BaseMap>
+          </div>
+        </div>
+        <div className='col'>
+          <div className='d-flex justify-content-end m-2'>
+            {clippedGeoms 
+              ?
+                <button 
+                  className='btn btn-primary'
+                  onClick={() => saveGeometries()}>
+                  Save Asset
+                </button>
+              :
+                <p>Use the map toolbar to select an asset.</p>
+            }
+          </div>
+          <div className='map-viewer' aria-label='Asset Selection Map'>
+            <BaseMap
+              center={[41.8781, -87.6298]}
+              zoom={11}
+              whenCreated={onMapCreated}>
+              {searchGeoms && 
+                <>
+                  <GeoJSON 
+                    data={searchGeoms} 
+                    // Hash key tells the geojson to re-render 
+                    // when the state changes: https://stackoverflow.com/a/46593710
+                    key={hash(searchGeoms)} 
+                    style={{color: 'black', dashArray: '5,10', weight: '0.75'}}
+                  />
+                    <MapClipper 
+                      geoJson={searchGeoms}
+                      onClipped={onClipped}
+                    />
+                    <MapZoom searchGeoms={searchGeoms} />
+                </>
+              }
+              {existingGeoms && <GeoJSON data={existingGeoms} style={{color: 'green'}}/>}
+            </BaseMap>
+          </div>
         </div>
       </div>
-    </div>
+      <div>
+        {existingGeoms && 
+          <ExistingAssetsTable
+            rows={existingGeoms.features}
+          />
+        }
+      </div>
+    </>
   )
 }
 
