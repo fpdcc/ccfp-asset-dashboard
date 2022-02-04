@@ -226,14 +226,30 @@ class PortfolioPlanner extends React.Component {
       body: JSON.stringify(data)
     }).then(response => {
       return response.json()
-    }).then(data => {
-      this.setState({
+    }).then(portfolioObj => {
+      let state = {
         portfolio: {
           ...this.state.portfolio,
-          id: data.id,
+          id: portfolioObj.id,
           unsavedChanges: false
         }
-      })
+      }
+
+      if (method == 'POST') {
+        // Add newly created portfolio to the portfolio array
+        this.setState({
+          ...state,
+          allPortfolios: [...this.state.allPortfolios, portfolioObj]
+        })
+      } else {
+        // Update existing portfolio in the portfolio array
+        this.setState({
+          ...state,
+          allPortfolios: this.state.allPortfolios.map(portfolio => {
+            return portfolio.id === portfolioObj.id ? portfolioObj : portfolio
+          })
+        })
+      }
     }).catch(error => {
       console.error(error)
     })
@@ -346,6 +362,7 @@ class PortfolioPlanner extends React.Component {
           <div className="col">
             <PortfolioPicker
               portfolios={this.state.allPortfolios}
+              activePortfolio={this.state.portfolio}
               changePortfolio={this.selectPortfolio}
             />
           </div>
