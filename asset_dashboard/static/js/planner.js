@@ -1,12 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import ProjectsTable from './components/ProjectsTable'
-import PortfolioTable from './components/PortfolioTable'
-import PortfolioTotals from './components/PortfolioTotals'
-import SearchInput from './components/FilterComponent'
+import Button from 'react-bootstrap/Button'
 import { CSVLink } from 'react-csv'
 import Cookies from 'js-cookie'
 
+import ProjectsTable from './components/ProjectsTable'
+import PortfolioTable from './components/PortfolioTable'
+import PortfolioTotals from './components/PortfolioTotals'
+import PortfolioPicker from './components/PortfolioPicker'
+import SearchInput from './components/FilterComponent'
 
 class PortfolioPlanner extends React.Component {
   constructor(props) {
@@ -15,6 +17,7 @@ class PortfolioPlanner extends React.Component {
     this.state = {
       allProjects: [],
       remainingProjects: [],
+      allPortfolios: [],
       portfolio: {
         id: null,
         name: '',
@@ -29,20 +32,17 @@ class PortfolioPlanner extends React.Component {
       filterText: ''
     }
 
+    this.searchProjects = this.searchProjects.bind(this)
     this.addProjectToPortfolio = this.addProjectToPortfolio.bind(this)
     this.removeProjectFromPortfolio = this.removeProjectFromPortfolio.bind(this)
-    this.searchProjects = this.searchProjects.bind(this)
+
+    this.selectPortfolio = this.selectPortfolio.bind(this)
+    this.createNewPortfolio = this.createNewPortfolio.bind(this)
     this.savePortfolio = this.savePortfolio.bind(this)
-    this.updatePortfolioName = this.updatePortfolioName.bind(this)
-  }
+    this.savePortfolioName = this.savePortfolioName.bind(this)
 
-  createRegionName(regions) {
-    // returns a CSV string of names for the different regions
-    const names = regions.map(({ name }) => {
-      return name
-    }).join(',')
-
-    return names
+    this.alertUser = this.alertUser.bind(this)
+    this.confirmDestroy = this.confirmDestroy.bind(this)
   }
 
   componentDidMount() {
@@ -66,41 +66,40 @@ class PortfolioPlanner extends React.Component {
 
     let state = {
       allProjects: projects,
-      remainingProjects: projects
+      remainingProjects: projects,
+      allPortfolios: props.portfolios
     }
 
     // Rehydate state from last edited portfolio, if one exists
-    if (props.portfolio) {
-      const selectedProjectIds = props.portfolio.phases.map(phase => phase.phase)
-
-      const portfolioProjects = projects.filter(
-        project => selectedProjectIds.includes(project.key)
+    if (props.selectedPortfolio) {
+      const [portfolioObj, remainingProjects] = this.hydratePortfolio(
+        props.selectedPortfolio,
+        projects
       )
 
       state = {
         ...state,
-        remainingProjects: projects.filter(
-          project => !selectedProjectIds.includes(project.key)
-        ),
-        portfolio: {
-          id: props.portfolio.id,
-          name: props.portfolio.name,
-          projects: portfolioProjects,
-          totals: this.calculateTotals(portfolioProjects),
-          unsavedChanges: false
-        }
+        remainingProjects: remainingProjects,
+        portfolio: portfolioObj
       }
     }
 
     this.setState(state)
+
+    window.addEventListener('beforeunload', this.alertUser)
   }
 
-  calculateTotals(portfolio) {
-    return {
-      budgetImpact: portfolio.reduce((total, project) => { return total + project.budget }, 0),
-      projectNames: portfolio.map(project => project.name),
-      projectZones: portfolio.map(project => project.zones.split(','))
-    }
+  componentWillUnmount() {
+    window.removeEventListener('beforeunload', this.alertUser)
+  }
+
+  // Project methods
+  searchProjects(e) {
+    const filterText = e.target.value
+
+    this.setState({
+      filterText: filterText
+    })
   }
 
   addProjectToPortfolio(row) {
@@ -125,7 +124,7 @@ class PortfolioPlanner extends React.Component {
       remainingProjects: updatedRemainingProjects
     })
 
-    this.registerChange()
+    this.registerPortfolioChange()
   }
 
   removeProjectFromPortfolio(row) {
@@ -152,14 +151,53 @@ class PortfolioPlanner extends React.Component {
       remainingProjects: remainingProjects
     })
 
-    this.registerChange()
+    this.registerPortfolioChange()
   }
 
-  searchProjects(e) {
-    const filterText = e.target.value
+  // Portfolio methods
+  selectPortfolio(e) {
+    if (this.state.portfolio.unsavedChanges && !this.confirmDestroy()) {
+      return
+    }
+
+    const selectedPortfolio = this.state.allPortfolios.find(
+      portfolio => portfolio.id == e.target.value
+    )
+
+    const [portfolioObj, remainingProjects] = this.hydratePortfolio(
+      selectedPortfolio,
+      this.state.allProjects
+    )
 
     this.setState({
-      filterText: filterText
+      remainingProjects: remainingProjects,
+      portfolio: portfolioObj
+    })
+  }
+
+  createNewPortfolio(e) {
+    return new Promise((resolve, reject) => {
+      if (this.state.portfolio.unsavedChanges && !this.confirmDestroy()) {
+        reject('Could not create new portfolio')
+        return
+      }
+
+      this.setState({
+        portfolio: {
+          id: null,
+          name: '',
+          projects: [],
+          totals: {
+            budgetImpact: 0,
+            projectNames: [],
+            projectZones: []
+          },
+          unsavedChanges: false
+        },
+        remainingProjects: this.state.allProjects
+      })
+
+      resolve()
     })
   }
 
@@ -168,7 +206,7 @@ class PortfolioPlanner extends React.Component {
 
     const data = {
       name: this.state.portfolio.name,
-      user: props.user_id,
+      user: props.userId,
       phases: this.state.portfolio.projects.map((phase, index) => {
         return {'phase': phase.key, 'sequence': index + 1}
       })
@@ -188,31 +226,119 @@ class PortfolioPlanner extends React.Component {
       body: JSON.stringify(data)
     }).then(response => {
       return response.json()
-    }).then(data => {
-      this.setState({
+    }).then(portfolioObj => {
+      let state = {
         portfolio: {
           ...this.state.portfolio,
-          id: data.id,
+          id: portfolioObj.id,
           unsavedChanges: false
         }
-      })
+      }
+
+      if (method == 'POST') {
+        // Add newly created portfolio to the portfolio array
+        this.setState({
+          ...state,
+          allPortfolios: [...this.state.allPortfolios, portfolioObj]
+        })
+      } else {
+        // Update existing portfolio in the portfolio array
+        this.setState({
+          ...state,
+          allPortfolios: this.state.allPortfolios.map(portfolio => {
+            return portfolio.id === portfolioObj.id ? portfolioObj : portfolio
+          })
+        })
+      }
     }).catch(error => {
       console.error(error)
     })
   }
 
-  updatePortfolioName(e) {
-    this.setState({
-      portfolio: {...this.state.portfolio, name: e.target.value}
-    })
+  savePortfolioName(e) {
+    e.persist()
 
-    this.registerChange()
+    return new Promise((resolve, reject) => {
+      const portfolioName = new FormData(e.target).get('portfolio-name')
+
+      try {
+        this.setState({
+          portfolio: {...this.state.portfolio, name: portfolioName}
+        }, () => this.savePortfolio(e))
+      } catch (err) {
+        reject(err)
+        return
+      }
+
+      resolve()
+    })
   }
 
-  registerChange(e) {
+  // Methods to alert user of unsaved changes on navigation
+  alertUser(e) {
+    if (this.state.portfolio.unsavedChanges) {
+      e.preventDefault()
+      e.returnValue = ''
+    }
+  }
+
+  confirmDestroy(e) {
+   if (this.state.portfolio.unsavedChanges) {
+      return confirm('The current portfolio has unsaved changes. Are you ' +
+        'sure you want to switch portfolios? Changes you made may not be saved.')
+
+      if (!confirmDestroy) {
+        reject('Could not create new portfolio')
+        return
+      }
+    }
+  }
+
+  // Helper methods
+  calculateTotals(portfolio) {
+    return {
+      budgetImpact: portfolio.reduce((total, project) => { return total + project.budget }, 0),
+      projectNames: portfolio.map(project => project.name),
+      projectZones: portfolio.map(project => project.zones.split(','))
+    }
+  }
+
+  hydratePortfolio(portfolio, projects) {
+    const selectedProjectIds = portfolio.phases.map(phase => phase.phase)
+
+    const portfolioProjects = projects.filter(
+      project => selectedProjectIds.includes(project.key)
+    )
+
+    const remainingProjects = projects.filter(
+      project => !selectedProjectIds.includes(project.key)
+    )
+
+    const portfolioObj = {
+      id: portfolio.id,
+      name: portfolio.name,
+      projects: portfolioProjects,
+      totals: this.calculateTotals(portfolioProjects),
+      unsavedChanges: false
+    }
+
+    return [ portfolioObj, remainingProjects ]
+  }
+
+  registerPortfolioChange(e) {
+    // Register unsaved changes to a portfolio after a state change
     this.setState((state, props) => ({
       portfolio: {...state.portfolio, unsavedChanges: true}
     }))
+  }
+
+  createRegionName(regions) {
+    // returns a CSV string of names for the different regions
+    const names = regions.map(({ name }) => {
+      return name
+    }).join(',')
+
+    return names
   }
 
   getDate() {
@@ -229,7 +355,18 @@ class PortfolioPlanner extends React.Component {
 
     return (
       <div className="m-5">
-        <h1>Build a 5-Year Plan</h1>
+        <div className="row">
+          <div className="col">
+            <h1>Build a 5-Year Plan</h1>
+          </div>
+          <div className="col">
+            <PortfolioPicker
+              portfolios={this.state.allPortfolios}
+              activePortfolio={this.state.portfolio}
+              changePortfolio={this.selectPortfolio}
+            />
+          </div>
+        </div>
         <div className="row">
           <div className="container col card shadow-sm mt-5 ml-3 col-9">
               <>
@@ -237,7 +374,8 @@ class PortfolioPlanner extends React.Component {
                   portfolio={this.state.portfolio}
                   onRemoveFromPortfolio={this.removeProjectFromPortfolio}
                   savePortfolio={this.savePortfolio}
-                  onNameChange={this.updatePortfolioName} />
+                  savePortfolioName={this.savePortfolioName}
+                  createNewPortfolio={this.createNewPortfolio} />
                 <ProjectsTable
                   allProjects={filteredRows}
                   onAddToPortfolio={this.addProjectToPortfolio}
