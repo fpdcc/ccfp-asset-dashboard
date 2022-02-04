@@ -63,10 +63,10 @@ const PortfolioTable = ({ portfolio, columns, onRemoveFromPortfolio, savePortfol
               placeholder="Enter a name for your portfolio..."
               defaultValue={portfolio.name ? portfolio.name : ''}
               aria-label="Portfolio name"
-              aria-describedby="portfolioName"
               required={true}
               className="mr-2"
               id="portfolio-name"
+              name="portfolio-name"
             />
             <Button
               variant="primary"

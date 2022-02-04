@@ -242,11 +242,11 @@ class PortfolioPlanner extends React.Component {
     e.persist()
 
     return new Promise((resolve, reject) => {
-      const nameInput = document.querySelector('#portfolio-name')
+      const portfolioName = new FormData(e.target).get('portfolio-name')
 
       try {
         this.setState({
-          portfolio: {...this.state.portfolio, name: nameInput.value}
+          portfolio: {...this.state.portfolio, name: portfolioName}
         }, () => this.savePortfolio(e))
       } catch (err) {
         reject(err)
