@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import Cookies from 'js-cookie'
 import ReactTable from '../BaseTable'
 import existingAssetsColumns from '../table_utils/existingAssetsColumns'
+import renderMessage from '../helpers/renderMessage'
 
 function ExistingAssetsTable({ rows }) {
   function handleDelete(assetId) {
@@ -17,14 +18,11 @@ function ExistingAssetsTable({ rows }) {
     }).then((response) => {
       console.log('response', response)
       if (response.status == 204) {
-        // TODO: this reloads the page but clears the user search...
-        // Need to come up with way to reload by rehydrating the previous state
+        renderMessage('Assets successfully deleted.', 'success')
         location.reload()
-        // TODO: show success message
-        // https://stackoverflow.com/questions/13256817/django-how-to-show-messages-under-ajax-function
       }
     }).catch(error => {
-      // TODO show error message
+      renderMessage('An error occurred when deleting the asset. Please try again.', 'danger')
       console.error(error)
     })
   }
