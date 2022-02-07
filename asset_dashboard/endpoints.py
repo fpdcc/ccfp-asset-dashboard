@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 
 from rest_framework import viewsets
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
     LocalAsset, Buildings, TrailsInfo
@@ -13,30 +15,42 @@ from asset_dashboard.serializers import PortfolioSerializer, UserSerializer, \
 class PortfolioViewSet(viewsets.ModelViewSet):
     queryset = Portfolio.objects.all()
     serializer_class = PortfolioSerializer
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
 
 
 class PortfolioPhaseViewSet(viewsets.ModelViewSet):
     queryset = PortfolioPhase.objects.all()
     serializer_class = PortfolioPhaseSerializer
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
 
 
 class PhaseViewSet(viewsets.ModelViewSet):
     queryset = Phase.objects.all()
     serializer_class = PhaseSerializer
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
 
 
 class AssetViewSet(viewsets.ModelViewSet):
     queryset = Buildings.objects.all()
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
 
     @property
     def asset_type(self):
@@ -77,6 +91,8 @@ class AssetViewSet(viewsets.ModelViewSet):
 
 class LocalAssetViewSet(viewsets.ModelViewSet):
     queryset = LocalAsset.objects.all()
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get_serializer(self, *args, **kwargs):
         if isinstance(kwargs.get('data', {}), list):
