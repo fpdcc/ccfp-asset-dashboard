@@ -1,5 +1,6 @@
 import os
 import subprocess
+import json
 
 import pytest
 import psycopg2
@@ -7,6 +8,9 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 from django.conf import settings
 from django.test.utils import setup_databases
+from django.contrib.gis.geos import GEOSGeometry
+
+from rest_framework.test import APIRequestFactory
 
 from asset_dashboard import models
 
@@ -175,10 +179,56 @@ def score_weights():
                                               sustainability_score=0.2, ease_score=0.6,
                                               geographic_distance_score=0.5, social_equity_score=0.4)
 
+
 @pytest.fixture
 def user():
     return models.User.objects.create_user(username='sylvie', password='lightnin')
 
+
 @pytest.fixture
 def nature_preserves():
     return models.NaturePreserves.objects.create(site_name="Lou Lou's Sanctuary")
+
+
+@pytest.fixture
+def trails_geojson():
+    with open(f'{os.path.dirname(os.path.abspath(__file__))}/geojson/trails.geojson') as f:
+        return json.load(f)
+
+
+@pytest.fixture
+def local_asset_request_body(trails_geojson, project):
+    prj = project.build()
+    
+    phase = models.Phase.objects.filter(project=prj)
+
+    return {
+        'asset_id': trails_geojson['features'][0]['properties']['identifier'],
+        'asset_type': 'trails',
+        'asset_name': trails_geojson['features'][0]['properties']['name'],
+        'geom': trails_geojson['features'][0]['geometry'],
+        'phase': phase[0].id
+    }
+
+
+@pytest.fixture
+def api():
+    return APIRequestFactory(enforce_csrf_checks=True)
+
+
+@pytest.fixture
+def search_query():
+    return {'q': 'zoo', 'asset_type': 'buildings'}
+
+
+@pytest.fixture
+def building():
+    with open(f'{os.path.dirname(os.path.abspath(__file__))}/geojson/building.geojson') as f:
+        building_geo = json.load(f)
+    
+    geo_feature = building_geo['features'][0]
+
+    return models.Buildings.objects.create(
+        **geo_feature['properties'],
+        geom=GEOSGeometry(json.dumps(geo_feature['geometry']))
+    )
