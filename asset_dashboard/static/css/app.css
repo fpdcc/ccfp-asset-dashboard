@@ -20,6 +20,6 @@ input[type="checkbox"] {
     width: 100%;
 }
 
-.map-viewer {
+.map-container {
     height: 650px;
 }

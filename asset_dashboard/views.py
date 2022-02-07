@@ -249,6 +249,13 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
 
         context['project'] = self.object.project
 
+        assets = LocalAsset.objects.filter(phase=self.object)
+
+        if assets.exists():
+            context['props'] = {
+                'assets': LocalAssetReadSerializer(assets, many=True).data
+            }
+
         return context
 
     def form_valid(self, form):
@@ -270,7 +277,7 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
 
 class AssetAddEditView(LoginRequiredMixin, TemplateView):
     template_name = 'asset_dashboard/asset_create_update.html'
-    component = 'js/components/maps/AssetsMap.js'
+    component = 'js/components/maps/SelectAssetsMap.js'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
