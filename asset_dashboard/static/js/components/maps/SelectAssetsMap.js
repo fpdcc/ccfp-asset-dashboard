@@ -10,6 +10,7 @@ import ExistingAssetsTable from '../tables/ExistingAssetsTable'
 import MapClipper from '../map_utils/MapClipper'
 import MapZoom from '../map_utils/MapZoom'
 import zoomToSearchGeometries from '../map_utils/zoomToSearchGeometries'
+import zoomToExistingGeometries from '../map_utils/zoomToExistingGeometries'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
@@ -23,7 +24,7 @@ function AssetTypeOptions() {
   })
 }
 
-function AssetsMap(props) {
+function SelectAssetsMap(props) {
   const [searchGeoms, setSearchGeoms] = useSessionstorageState('searchGeoms', null)
   const [existingGeoms, setExistingGeoms] = useState()
   const [clippedGeoms, setClippedGeoms] = useState(null)
@@ -48,16 +49,7 @@ function AssetsMap(props) {
     if (searchGeoms) {
       zoomToSearchGeometries(map, group)
     } else {
-      // zoom to the existing geometries
-      map.eachLayer((layer) => {
-        if (layer.feature) {
-          group.addLayer(layer)
-        }
-      })
-  
-      if (Object.keys(group._layers).length > 0) {
-        map.fitBounds(group.getBounds())
-      }
+      zoomToExistingGeometries(map, group)
     }
   }
 
@@ -180,7 +172,7 @@ function AssetsMap(props) {
                 <p>Use the map toolbar to select an asset.</p>
             }
           </div>
-          <div className='map-viewer' aria-label='Asset Selection Map'>
+          <div className='map-container' aria-label='Asset Selection Map'>
             <BaseMap
               center={[41.8781, -87.6298]}
               zoom={11}
@@ -218,6 +210,6 @@ function AssetsMap(props) {
 }
 
 ReactDOM.render(
-  React.createElement(AssetsMap, window.props),
+  React.createElement(SelectAssetsMap, window.props),
   window.reactMount
 )
