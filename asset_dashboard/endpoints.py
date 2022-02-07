@@ -6,10 +6,11 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
-    LocalAsset, Buildings, TrailsInfo
+    LocalAsset, Buildings, TrailsInfo, PoiInfo
 from asset_dashboard.serializers import PortfolioSerializer, UserSerializer, \
     PortfolioPhaseSerializer, PhaseSerializer, ProjectSerializer, \
-    BuildingsSerializer, TrailsSerializer, LocalAssetWriteSerializer, LocalAssetReadSerializer
+    BuildingsSerializer, TrailsSerializer, LocalAssetWriteSerializer, LocalAssetReadSerializer, \
+    PointsOfInterestSerializer
 
 
 class PortfolioViewSet(viewsets.ModelViewSet):
@@ -61,6 +62,7 @@ class AssetViewSet(viewsets.ModelViewSet):
         return {
             'buildings': Buildings,
             'trails': TrailsInfo,
+            'points_of_interest': PoiInfo
         }.get(self.asset_type, Buildings)
 
     @property
@@ -68,6 +70,7 @@ class AssetViewSet(viewsets.ModelViewSet):
         return {
             'buildings': BuildingsSerializer,
             'trails': TrailsSerializer,
+            'points_of_interest': PointsOfInterestSerializer
         }.get(self.asset_type, BuildingsSerializer)
 
     def get_serializer_class(self, *args, **kwargs):
@@ -77,14 +80,18 @@ class AssetViewSet(viewsets.ModelViewSet):
         search_filter = Q()
 
         if query := self.request.query_params.get('q', False):
+            print('query', query)
 
             for field, field_type in self.model_cls.Search.fields:
+                print('for field in field_types', field)
+                print(';field_types', field_type)
                 try:
                     field_type(query)
                 except (ValueError, TypeError):
                     continue
                 else:
                     search_filter |= Q(**{f'{field}__icontains': query})
+                    print('search_filter', search_filter)
 
         return self.model_cls.objects.filter(search_filter)
 

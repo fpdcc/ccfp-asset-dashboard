@@ -4,7 +4,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
     GeometrySerializerMethodField, GeometryField
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
-    LocalAsset, Buildings, TrailsInfo
+    LocalAsset, Buildings, TrailsInfo, PoiInfo, PointsOfInterest
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -105,6 +105,7 @@ class SourceAssetSerializer(GeoFeatureModelSerializer):
     source = serializers.SerializerMethodField()
     
     def get_source(self, obj):
+        print('get source', obj)
         return 'search'
 
 class BuildingsSerializer(SourceAssetSerializer):
@@ -137,3 +138,21 @@ class TrailsSerializer(SourceAssetSerializer):
         in viewset -> get_queryset
         '''
         return obj.trails.geom.transform(4326, clone=True)
+
+class PointsOfInterestSerializer(SourceAssetSerializer):
+    class Meta:
+        model = PoiInfo
+        fields = ('identifier', 'name', 'geom', 'source')
+        geo_field = 'geom'
+    
+    identifier = serializers.IntegerField(source='fpd_uid')
+    name = serializers.SerializerMethodField(source='nameid')
+    geom = GeometrySerializerMethodField()
+    
+    def get_geom(self, obj):
+        return PointsOfInterest.objects.get(
+            id=obj.pointsofinterest_id
+        ).geom.transform(4326, clone=True)
+    
+    def get_name(self, obj):
+        return obj.nameid.name

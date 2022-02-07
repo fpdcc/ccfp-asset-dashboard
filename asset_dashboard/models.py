@@ -882,6 +882,12 @@ class PoiInfo(GISModel):
             models.Index(fields=['parking_info_id']),
             models.Index(fields=['pointsofinterest_id'])
         ]
+    
+    class Search:
+        fields = (
+            ('fpd_uid', int),
+            ('nameid__name', str),
+        )
 
     id = models.AutoField(primary_key=True, db_column='poi_info_id')
 

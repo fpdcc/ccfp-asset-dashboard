@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom'
+import ReactDOMServer from 'react-dom/server'
 import React, { useState, useEffect } from 'react'
 import { GeoJSON } from 'react-leaflet'
 import hash from 'object-hash'
@@ -12,12 +13,14 @@ import MapZoom from '../map_utils/MapZoom'
 import zoomToSearchGeometries from '../map_utils/zoomToSearchGeometries'
 import zoomToExistingGeometries from '../map_utils/zoomToExistingGeometries'
 import Message from '../helpers/Message'
+import Popup from '../map_utils/Popup'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
   const options = [
     {value: 'buildings', label: 'Buildings'},
-    {value: 'trails', label: 'Trails'}
+    {value: 'trails', label: 'Trails'},
+    {value: 'points_of_interest', label: 'Points of Interest'}
   ]
 
   return options.map(option => {
@@ -117,6 +120,27 @@ function SelectAssetsMap(props) {
       console.error('error', error)
     })
   }
+
+  function pointToLayer(feature, latlng) {
+    return L.circleMarker(
+      latlng,
+      {
+        radius: 7,
+        fillColor: 'green',
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 1
+      }
+    )
+  }
+
+  function onEachFeature(feature, layer) {
+    const popupContent = ReactDOMServer.renderToString(
+      <Popup feature={feature} />
+    )
+
+    layer.bindPopup(popupContent)
+  }
  
   return (
     <>
@@ -192,6 +216,7 @@ function SelectAssetsMap(props) {
                     // when the state changes: https://stackoverflow.com/a/46593710
                     key={hash(searchGeoms)} 
                     style={{color: 'black', dashArray: '5,10', weight: '0.75'}}
+                    onEachFeature={onEachFeature}
                   />
                     <MapClipper 
                       geoJson={searchGeoms}
@@ -200,7 +225,13 @@ function SelectAssetsMap(props) {
                     <MapZoom searchGeoms={searchGeoms} />
                 </>
               }
-              {existingGeoms && <GeoJSON data={existingGeoms} style={{color: 'green'}}/>}
+              {existingGeoms && 
+                <GeoJSON
+                  data={existingGeoms} 
+                  style={{color: 'green'}}
+                  pointToLayer={pointToLayer}
+                  onEachFeature={onEachFeature} />
+              }
             </BaseMap>
           </div>
         </div>
