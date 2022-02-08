@@ -1,10 +1,12 @@
 from django.contrib.auth.models import User
+from django.contrib.gis.db.models import Collect
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
     GeometrySerializerMethodField, GeometryField
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
-    LocalAsset, Buildings, TrailsInfo, PoiInfo, PointsOfInterest
+    LocalAsset, Buildings, TrailsInfo, PoiInfo, PointsOfInterest, PicnicGroves, \
+    ParkingEntranceInfo, ParkingLots
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -81,7 +83,7 @@ class BaseLocalAssetSerializer(GeoFeatureModelSerializer):
         fields = ('id', 'geom', 'asset_id', 'asset_type', 'asset_name', 'phase')
         geo_field = 'geom'
 
-    asset_id = serializers.IntegerField()
+    asset_id = serializers.CharField()
     asset_type = serializers.CharField(source='asset_model')
     asset_name = serializers.CharField()
     phase = serializers.PrimaryKeyRelatedField(queryset=Phase.objects.all())
@@ -105,7 +107,6 @@ class SourceAssetSerializer(GeoFeatureModelSerializer):
     source = serializers.SerializerMethodField()
     
     def get_source(self, obj):
-        print('get source', obj)
         return 'search'
 
 class BuildingsSerializer(SourceAssetSerializer):
@@ -156,3 +157,42 @@ class PointsOfInterestSerializer(SourceAssetSerializer):
     
     def get_name(self, obj):
         return obj.nameid.name
+
+class PicnicGrovesSerializer(SourceAssetSerializer):
+    class Meta:
+        model = PicnicGroves
+        fields = ('identifier', 'name', 'geom', 'source')
+        geo_field = 'geom'
+
+    identifier = serializers.CharField(source='fpd_uid')
+    name = serializers.SerializerMethodField(source='poi_info__nameid')
+    geom = GeometrySerializerMethodField()
+    
+    def get_geom(self, obj):
+        return obj.geom.transform(4326, clone=True)
+
+    def get_name(self, obj):
+        return obj.poi_info.nameid.name
+
+class ParkingLotsSerializer(SourceAssetSerializer):
+    class Meta:
+        model = PoiInfo # Need to use PoiInfo to lookup ParkingInfo and ParkingLots
+        fields = ('identifier', 'name', 'geom', 'source')
+        geo_field = 'geom'
+
+    identifier = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    geom = GeometrySerializerMethodField()
+
+    def get_geom(self, obj):
+        feature_collection = ParkingLots.objects.filter(
+            lot_id=obj.parking_info.lot_id
+        ).aggregate(Collect('geom'))
+
+        return feature_collection['geom__collect'].transform(4326, clone=True)
+
+    def get_name(self, obj):
+        return obj.nameid.name
+    
+    def get_identifier(self, obj):
+        return  obj.fpd_uid

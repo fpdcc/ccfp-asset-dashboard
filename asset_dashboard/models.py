@@ -259,7 +259,7 @@ class LocalAsset(models.Model):
 
     geom = models.GeometryField(srid=3435)
 
-    asset_id = models.IntegerField()
+    asset_id = models.CharField(max_length=1000000)
     asset_model = models.CharField(max_length=100)
     asset_name = models.CharField(max_length=600)
 
@@ -706,6 +706,11 @@ class ParkingLots(GISModel):
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."parking_lots"'
+    
+    class Search:
+        fields = (
+            ('lot_id', int)
+        )
 
     id = models.AutoField(primary_key=True, db_column='parking_lots_id')
 
@@ -733,6 +738,12 @@ class PicnicGroves(GISModel):
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."picnicgroves"'
+    
+    class Search:
+        fields = (
+            ('fpd_uid', int),
+            ('poi_info__nameid__name', str), # TODO: get clarity from garret on this. do all picnic groves have a poi with a name?
+        )
 
     id = models.AutoField(primary_key=True, db_column='picnicgrove_id')
 
@@ -888,6 +899,8 @@ class PoiInfo(GISModel):
             ('fpd_uid', int),
             ('nameid__name', str),
         )
+        
+        not_null_fields = ['parking_info_id']
 
     id = models.AutoField(primary_key=True, db_column='poi_info_id')
 
