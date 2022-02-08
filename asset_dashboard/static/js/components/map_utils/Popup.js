@@ -2,14 +2,24 @@ import React, { useRef } from 'react'
 import deleteLocalAsset from '../helpers/deleteLocalAsset'
 
 function Popup({ feature }) {
+  const properties = feature.properties
   return (
     <>
-      {feature.properties &&
+      {properties &&
         <div>
-          <ul className='col'>
-            <li>{feature.properties.asset_id}</li>
-            <li>{feature.properties.asset_name}</li>
-            <li>{feature.properties.asset_type}</li>
+          <h6>Asset Info</h6>
+          <ul className='list-group list-group-flush'>
+            <li className='list-group-item'>
+              <strong>FPD UID:</strong> {properties.asset_id ? properties.asset_id : properties.identifier }
+            </li>
+            <li className='list-group-item'>
+              <strong>Name:</strong> {properties.asset_name ? properties.asset_name : properties.name }
+            </li>
+            {properties.asset_type 
+              && <li className='list-group-item'>
+                  <strong>Asset Type:</strong> {properties.asset_type}
+                </li>
+            }
           </ul>
         </div>
       }
