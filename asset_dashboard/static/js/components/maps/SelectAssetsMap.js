@@ -33,6 +33,7 @@ function SelectAssetsMap(props) {
   const [searchAssetType, setSearchAssetType] = useSessionstorageState('searchAssetTypes', 'buildings')
   const [isLoading, setIsLoading] = useState(false)
   const [phaseId, setPhaseId] = useState(null)
+  const [helpText, setHelpText] = useState(null)
 
   useEffect(() => {
     if (props?.existing_assets) {
@@ -80,7 +81,7 @@ function SelectAssetsMap(props) {
         body: JSON.stringify(data)
     }).then((response) => {
       if (response.status == 201) {
-        renderMessage('Assets successfully saved.', 'success')
+        setHelpText('Assets successfully saved.')
         location.reload()
       }
     }).catch(error => {
@@ -109,6 +110,7 @@ function SelectAssetsMap(props) {
     .then((data) => {
       setIsLoading(false)
       setSearchGeoms(data)
+      // setHelpText('Use the map toolbar to select an asset.')
     })
     .catch(error => {
       setIsLoading(false)
@@ -163,12 +165,11 @@ function SelectAssetsMap(props) {
             {clippedGeoms 
               ?
                 <button 
-                  className='btn btn-primary'
+                  className={helpText ? 'btn btn-secondary' : 'btn btn-primary'}
                   onClick={() => saveGeometries()}>
-                  Save Asset
+                  {helpText ? helpText : 'Save Assets'}
                 </button>
-              :
-                <p>Use the map toolbar to select an asset.</p>
+              : <p>Use the map toolbar to select assets.</p>
             }
           </div>
           <div className='map-container' aria-label='Asset Selection Map'>
