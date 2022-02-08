@@ -706,11 +706,6 @@ class ParkingLots(GISModel):
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."parking_lots"'
-    
-    class Search:
-        fields = (
-            ('lot_id', int)
-        )
 
     id = models.AutoField(primary_key=True, db_column='parking_lots_id')
 
