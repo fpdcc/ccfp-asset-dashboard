@@ -11,6 +11,7 @@ import MapClipper from '../map_utils/MapClipper'
 import MapZoom from '../map_utils/MapZoom'
 import zoomToSearchGeometries from '../map_utils/zoomToSearchGeometries'
 import zoomToExistingGeometries from '../map_utils/zoomToExistingGeometries'
+import Message from '../helpers/Message'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
@@ -32,6 +33,7 @@ function SelectAssetsMap(props) {
   const [searchAssetType, setSearchAssetType] = useSessionstorageState('searchAssetTypes', 'buildings')
   const [isLoading, setIsLoading] = useState(false)
   const [phaseId, setPhaseId] = useState(null)
+  const [ajaxMessage, setAjaxMessage] = useSessionstorageState('ajaxMessage', null)
 
   useEffect(() => {
     if (props?.existing_assets) {
@@ -79,14 +81,11 @@ function SelectAssetsMap(props) {
         body: JSON.stringify(data)
     }).then((response) => {
       if (response.status == 201) {
-        // TODO: this reloads the page but clears the user search...
-        // Need to come up with way to reload by rehydrating the previous state
+        setAjaxMessage({text: 'Assets successfully saved.', tag: 'success'})
         location.reload()
-        // TODO: show success message
-        // https://stackoverflow.com/questions/13256817/django-how-to-show-messages-under-ajax-function
       }
     }).catch(error => {
-      // TODO show error message
+      setAjaxMessage({text: 'An error occurred saving the selected assets. Please try again.', tag: 'danger'})
       console.error(error)
     })
   }
@@ -113,13 +112,22 @@ function SelectAssetsMap(props) {
       setSearchGeoms(data)
     })
     .catch(error => {
-      // TODO: show an error message in the UI
+      setIsLoading(false)
+      setAjaxMessage({text: 'An error occurred searching for selected assets. Please try again.', tag: 'danger'})
       console.error('error', error)
     })
   }
  
   return (
     <>
+      {ajaxMessage 
+        ? <Message 
+            text={ajaxMessage.text} 
+            messageTag={ajaxMessage.tag} 
+            onCloseMessage={setAjaxMessage}
+          /> 
+        : null
+      }
       <div className='row'>
         <div className='col-4'>
           <div className='row'>
@@ -166,10 +174,9 @@ function SelectAssetsMap(props) {
                 <button 
                   className='btn btn-primary'
                   onClick={() => saveGeometries()}>
-                  Save Asset
+                  Save Assets
                 </button>
-              :
-                <p>Use the map toolbar to select an asset.</p>
+              : <p>Use the map toolbar to select assets.</p>
             }
           </div>
           <div className='map-container' aria-label='Asset Selection Map'>
