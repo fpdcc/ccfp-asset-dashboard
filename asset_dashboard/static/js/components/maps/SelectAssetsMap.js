@@ -11,7 +11,7 @@ import MapClipper from '../map_utils/MapClipper'
 import MapZoom from '../map_utils/MapZoom'
 import zoomToSearchGeometries from '../map_utils/zoomToSearchGeometries'
 import zoomToExistingGeometries from '../map_utils/zoomToExistingGeometries'
-import renderMessage from '../helpers/renderMessage'
+import Message from '../helpers/Message'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
@@ -33,7 +33,7 @@ function SelectAssetsMap(props) {
   const [searchAssetType, setSearchAssetType] = useSessionstorageState('searchAssetTypes', 'buildings')
   const [isLoading, setIsLoading] = useState(false)
   const [phaseId, setPhaseId] = useState(null)
-  const [ajaxMessage, setAjaxMessage] = useState(null)
+  const [ajaxMessage, setAjaxMessage] = useSessionstorageState('ajaxMessage', null)
 
   useEffect(() => {
     if (props?.existing_assets) {
@@ -81,11 +81,11 @@ function SelectAssetsMap(props) {
         body: JSON.stringify(data)
     }).then((response) => {
       if (response.status == 201) {
-        setAjaxMessage('Assets successfully saved.')
+        setAjaxMessage({text: 'Assets successfully saved.', tag: 'success'})
         location.reload()
       }
     }).catch(error => {
-      renderMessage('An error occurred saving the selected assets. Please try again.', 'danger')
+      setAjaxMessage({text: 'An error occurred saving the selected assets. Please try again.', tag: 'danger'})
       console.error(error)
     })
   }
@@ -113,13 +113,21 @@ function SelectAssetsMap(props) {
     })
     .catch(error => {
       setIsLoading(false)
-      renderMessage('An error occurred searching for selected assets. Please try again.', 'danger')
+      setAjaxMessage({text: 'An error occurred searching for selected assets. Please try again.', tag: 'danger'})
       console.error('error', error)
     })
   }
  
   return (
     <>
+      {ajaxMessage 
+        ? <Message 
+            text={ajaxMessage.text} 
+            messageTag={ajaxMessage.tag} 
+            onCloseMessage={setAjaxMessage}
+          /> 
+        : null
+      }
       <div className='row'>
         <div className='col-4'>
           <div className='row'>
@@ -164,9 +172,9 @@ function SelectAssetsMap(props) {
             {clippedGeoms 
               ?
                 <button 
-                  className={ajaxMessage ? 'btn btn-secondary' : 'btn btn-primary'}
+                  className='btn btn-primary'
                   onClick={() => saveGeometries()}>
-                  {ajaxMessage ? ajaxMessage : 'Save Assets'}
+                  Save Assets
                 </button>
               : <p>Use the map toolbar to select assets.</p>
             }

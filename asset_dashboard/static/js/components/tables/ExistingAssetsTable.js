@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import Cookies from 'js-cookie'
+import { useSessionstorageState } from 'rooks'
 import ReactTable from '../BaseTable'
 import existingAssetsColumns from '../table_utils/existingAssetsColumns'
+import Message from '../helpers/Message'
 
 function ExistingAssetsTable({ rows }) {
-  const [ajaxMessage, setAjaxMessage] = useState(null)
+  const [ajaxMessage, setAjaxMessage] = useSessionstorageState('ajaxMessageTable', null)
 
   function handleDelete(assetId) {
     fetch(`/local-assets/${assetId}`, {
@@ -19,11 +21,11 @@ function ExistingAssetsTable({ rows }) {
     }).then((response) => {
       console.log('response', response)
       if (response.status == 204) {
-        setAjaxMessage('Asset successfully deleted.')
+        setAjaxMessage({text: 'Asset successfully deleted.', tag: 'success'})
         location.reload()
       }
     }).catch(error => {
-      setAjaxMessage('An error occurred when deleting the asset. Please try again.')
+      setAjaxMessage({text: 'An error occurred when deleting the asset. Please try again.', tag: 'danger'})
       console.error(error)
     })
   }
@@ -31,7 +33,14 @@ function ExistingAssetsTable({ rows }) {
   return (
     <div>
       <h3>Phase Assets</h3>
-      {ajaxMessage ? <p className='text-center alert alert-success'>{ajaxMessage}</p> : null}
+      {ajaxMessage 
+        ? <Message
+            text={ajaxMessage.text}
+            messageTag={ajaxMessage.tag}
+            onCloseMessage={setAjaxMessage}
+          />
+        : null
+      }
       <ReactTable
         rows={rows}
         columns={React.useMemo(() =>  existingAssetsColumns(handleDelete), [])}
