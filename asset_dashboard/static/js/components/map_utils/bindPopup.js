@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOMServer from 'react-dom/server'
 
 function Popup({ feature }) {
   const properties = feature.properties
@@ -26,4 +27,10 @@ function Popup({ feature }) {
   )
 }
 
-export default Popup
+export default function bindPopup(feature, layer, autoShow=false) {
+  const popupContent = ReactDOMServer.renderToString(
+    <Popup feature={feature} />
+  )
+
+  layer.bindPopup(popupContent)
+}
