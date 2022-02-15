@@ -10,7 +10,7 @@ function Popup({ feature }) {
           <h6>Asset Info</h6>
           <ul className='list-group list-group-flush'>
             <li className='list-group-item'>
-              <strong>FPD UID:</strong> {properties.asset_id ? properties.asset_id : properties.identifier }
+              <strong>ID:</strong> {properties.asset_id ? properties.asset_id : properties.identifier }
             </li>
             <li className='list-group-item'>
               <strong>Name:</strong> {properties.asset_name ? properties.asset_name : properties.name }

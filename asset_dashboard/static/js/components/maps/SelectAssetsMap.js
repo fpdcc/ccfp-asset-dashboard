@@ -113,9 +113,7 @@ function SelectAssetsMap(props) {
       },
       mode: 'same-origin',
       method: 'GET'
-    }).then((response) => {
-      // console.log(response.json())
-      return response.json()})
+    }).then((response) => response.json())
     .then((data) => {
       setIsLoading(false)
       setSearchGeoms(data)

@@ -86,7 +86,6 @@ class AssetViewSet(viewsets.ModelViewSet):
         search_filter = Q()
 
         if query := self.request.query_params.get('q', False):
-            print('self.model_cls', self.model_cls.get('model'))
             for field, field_type in self.model_cls.get('model').Search.fields:
                 try:
                     field_type(query)
