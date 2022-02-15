@@ -189,7 +189,7 @@ function SelectAssetsMap(props) {
       }
       <div className='row'>
         <div className='col-4'>
-          <div className='row'>
+          <div className='row mb-3'>
             <div className='col'>
               <div className='row m-1'>
                 <label htmlFor='asset-search' className='sr-only'>Search for Assets</label>
@@ -228,18 +228,24 @@ function SelectAssetsMap(props) {
           </div>
         </div>
         <div className='col'>
-          <div className='d-flex justify-content-end m-2'>
-            {geomsToSave 
-              ?
-                <button 
-                  className='btn btn-primary'
-                  onClick={() => saveGeometries()}>
-                  Save Assets
-                </button>
-              : <p>Click on an asset or use the map toolbar to select and save assets.</p>
-            }
+          <div className='card text-center bg-light mb-3 border-secondary'>
+            <div className='card-body'>
+              <h2 className='card-title'>{props.phase_name}</h2>
+                <div className=''>
+                  {geomsToSave 
+                    ?
+                      <button 
+                        className='btn btn-primary'
+                        onClick={() => saveGeometries()}>
+                        Save Assets
+                      </button>
+                    : <p className='lead'>Click on an asset or use the map toolbar to select and save assets.</p>
+                  }
+                </div>
+            </div>
           </div>
-          <div className='map-container' aria-label='Asset Selection Map'>
+          
+          <div className='map-container border border-secondary rounded' aria-label='Asset Selection Map'>
             <BaseMap
               center={[41.8781, -87.6298]}
               zoom={11}

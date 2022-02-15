@@ -13,7 +13,7 @@ function ListAssetsMap(props) {
   }
 
   return (
-    <div className='map-container'>
+    <div className='map-container border border-secondary rounded'>
       <BaseMap
       center={[41.8781, -87.6298]}
       zoom={11}

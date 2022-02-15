@@ -1,7 +1,7 @@
 import React from 'react'
 import { useTable, usePagination, useSortBy } from 'react-table'
 
-const BaseTable = ({ rows = [], columns, getTrProps = props => props, rowClassNames, sizeOfPage=15, pageSizeIncrements=[15, 30, 45] }) => {
+const BaseTable = ({ rows = [], columns, getTrProps = props => props, rowClassNames, cellClassNames, sizeOfPage=15, pageSizeIncrements=[15, 30, 45] }) => {
 
   const data = React.useMemo(
     () => rows.map((row) => {
@@ -50,7 +50,7 @@ const BaseTable = ({ rows = [], columns, getTrProps = props => props, rowClassNa
                     key={i} className={rowClassNames ? `${rowClassNames} cursor-pointer` : 'cursor-pointer'}>
                   {row.cells.map(cell => {
                     return (
-                      <td {...cell.getCellProps()} className='text-center'>
+                      <td {...cell.getCellProps()} className={`${cellClassNames && cellClassNames} text-center`}>
                         {cell.render('Cell')}
                       </td>
                     )

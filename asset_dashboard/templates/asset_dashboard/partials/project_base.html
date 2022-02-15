@@ -5,7 +5,7 @@
 <!-- Base view that contains the various forms for a Project. -->
 {% block body %}
   <div class="container">
-    <h1 class="text-right">{{ project.name }}</h1>
+    <h1 class="text-right display-4">{{ project.name }}</h1>
     <ul class="nav nav-tabs">
       <li class="nav-item">
         <a class="nav-link" id="overview" href="{% url 'project-detail' pk=project.pk %}">Overview</a>

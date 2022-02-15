@@ -15,15 +15,16 @@ function AssetSearchTable({ rows, onSelectRow }) {
   )
 
   return (
-    <>
+    <div className='border rounded border-secondary p-2'>
       <ReactTable
         rows={rows}
         columns={React.useMemo(() => assetSearchColumns, [])}
         getTrProps={onRowClick} 
         pageSizeIncrements={[10]}
         sizeOfPage={10}
+        cellClassNames='text-nowrap'
       />
-    </>
+    </div>
   )
 }
 
