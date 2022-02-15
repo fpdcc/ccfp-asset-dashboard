@@ -6,11 +6,11 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
-    LocalAsset, Buildings, TrailsInfo, PoiInfo, PicnicGroves
+    LocalAsset, Buildings, Signage, TrailsInfo, PoiInfo, PicnicGroves
 from asset_dashboard.serializers import PortfolioSerializer, UserSerializer, \
     PortfolioPhaseSerializer, PhaseSerializer, ProjectSerializer, \
     BuildingsSerializer, TrailsSerializer, LocalAssetWriteSerializer, LocalAssetReadSerializer, \
-    PointsOfInterestSerializer, PicnicGrovesSerializer, ParkingLotsSerializer
+    PointsOfInterestSerializer, PicnicGrovesSerializer, ParkingLotsSerializer, SignageSerializer
 
 
 class PortfolioViewSet(viewsets.ModelViewSet):
@@ -64,7 +64,8 @@ class AssetViewSet(viewsets.ModelViewSet):
             'trails': {'model': TrailsInfo},
             'points_of_interest': {'model': PoiInfo},
             'picnic_groves': {'model': PicnicGroves},
-            'parking_lots': {'model': PoiInfo, 'check_for_not_null': True}
+            'parking_lots': {'model': PoiInfo, 'check_for_not_null': True},
+            'signage': {'model': Signage}
         }.get(self.asset_type, Buildings)
 
     @property
@@ -74,7 +75,8 @@ class AssetViewSet(viewsets.ModelViewSet):
             'trails': TrailsSerializer,
             'points_of_interest': PointsOfInterestSerializer,
             'picnic_groves': PicnicGrovesSerializer,
-            'parking_lots': ParkingLotsSerializer
+            'parking_lots': ParkingLotsSerializer,
+            'signage': SignageSerializer
         }.get(self.asset_type, BuildingsSerializer)
 
     def get_serializer_class(self, *args, **kwargs):
@@ -84,6 +86,7 @@ class AssetViewSet(viewsets.ModelViewSet):
         search_filter = Q()
 
         if query := self.request.query_params.get('q', False):
+            print('self.model_cls', self.model_cls.get('model'))
             for field, field_type in self.model_cls.get('model').Search.fields:
                 try:
                     field_type(query)

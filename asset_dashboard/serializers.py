@@ -1,12 +1,12 @@
 from django.contrib.auth.models import User
-from django.contrib.gis.db.models import Collect
+from django.contrib.gis.geos import Point
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
     GeometrySerializerMethodField, GeometryField
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
     LocalAsset, Buildings, TrailsInfo, PoiInfo, PointsOfInterest, PicnicGroves, \
-    ParkingEntranceInfo, ParkingLots
+    ParkingLots, Signage
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -176,7 +176,7 @@ class PicnicGrovesSerializer(SourceAssetSerializer):
 
 class ParkingLotsSerializer(SourceAssetSerializer):
     class Meta:
-        model = PoiInfo # Need to use PoiInfo to lookup ParkingInfo and ParkingLots
+        model = PoiInfo # Need to use PoiInfo.name and PoiInfo.fpd_uid to lookup ParkingLots
         fields = ('identifier', 'name', 'geom', 'source')
         geo_field = 'geom'
 
@@ -185,14 +185,23 @@ class ParkingLotsSerializer(SourceAssetSerializer):
     geom = GeometrySerializerMethodField()
 
     def get_geom(self, obj):
-        feature_collection = ParkingLots.objects.filter(
-            lot_id=obj.parking_info.lot_id
-        ).aggregate(Collect('geom'))
-
-        return feature_collection['geom__collect'].transform(4326, clone=True)
+        return ParkingLots.objects.get(id=obj.parking_info.lot_id).geom.transform(4326, clone=True)
 
     def get_name(self, obj):
         return obj.nameid.name
     
     def get_identifier(self, obj):
         return  obj.fpd_uid
+
+class SignageSerializer(SourceAssetSerializer):
+    class Meta:
+        model = Signage
+        fields = ('identifier', 'name', 'geom', 'source')
+        geo_field = 'geom'
+
+    identifier = serializers.IntegerField(source='id')
+    name = serializers.CharField(source='full_path')
+    geom = GeometrySerializerMethodField()
+    
+    def get_geom(self, obj):
+        return obj.geom.transform(4326, clone=True)

@@ -14,6 +14,7 @@ import zoomToSearchGeometries from '../map_utils/zoomToSearchGeometries'
 import zoomToExistingGeometries from '../map_utils/zoomToExistingGeometries'
 import Message from '../helpers/Message'
 import Popup from '../map_utils/Popup'
+import circleMarker from '../map_utils/circleMarker'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
@@ -22,7 +23,8 @@ function AssetTypeOptions() {
     {value: 'trails', label: 'Trails'},
     {value: 'points_of_interest', label: 'Points of Interest'},
     {value: 'picnic_groves', label: 'Picnic Groves'},
-    {value: 'parking_lots', label: 'Parking Lots'}
+    {value: 'parking_lots', label: 'Parking Lots'},
+    {value: 'signage', label: 'Signage'}
   ]
 
   return options.map(option => {
@@ -111,29 +113,18 @@ function SelectAssetsMap(props) {
       },
       mode: 'same-origin',
       method: 'GET'
-    }).then((response) => response.json())
+    }).then((response) => {
+      // console.log(response.json())
+      return response.json()})
     .then((data) => {
       setIsLoading(false)
       setSearchGeoms(data)
     })
     .catch(error => {
       setIsLoading(false)
-      setAjaxMessage({text: 'An error occurred searching for selected assets. Please try again.', tag: 'danger'})
+      setAjaxMessage({text: 'An error occurred searching for assets. Please try again.', tag: 'danger'})
       console.error('error', error)
     })
-  }
-
-  function pointToLayer(feature, latlng) {
-    return L.circleMarker(
-      latlng,
-      {
-        radius: 7,
-        fillColor: 'green',
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 1
-      }
-    )
   }
 
   function onEachFeature(feature, layer) {
@@ -231,7 +222,7 @@ function SelectAssetsMap(props) {
                 <GeoJSON
                   data={existingGeoms} 
                   style={{color: 'green'}}
-                  pointToLayer={pointToLayer}
+                  pointToLayer={circleMarker}
                   onEachFeature={onEachFeature} />
               }
             </BaseMap>
