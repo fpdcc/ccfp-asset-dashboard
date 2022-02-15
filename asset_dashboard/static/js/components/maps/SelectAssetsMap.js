@@ -159,20 +159,20 @@ function SelectAssetsMap(props) {
 
   const onEachSearchFeature = useCallback(
     (feature, layer) => {
-      console.log('...on each feature running...')
       bindPopup(feature, layer)
     
       layer.on({
-        click: onSearchAssetClick
+        'click': onSearchAssetClick,
+        'popupclose': () => {
+          setGeomsToSave(null)
+          setSelectedSearchAsset(null)
+        }
       })
     }, [searchGeoms]
   )
 
   const onEachExistingAssetFeature = useCallback(
     (feature, layer) => {
-      console.log('...onEachExistingAssetFeature...')
-      console.log('onEachExistingAssetFeature', feature)
-      console.log('layer', layer)
       bindPopup(feature, layer)
     }, [existingGeoms]
   )
@@ -251,7 +251,7 @@ function SelectAssetsMap(props) {
                     // Hash key tells the geojson to re-render 
                     // when the state changes: https://stackoverflow.com/a/46593710
                     key={hash(searchGeoms)} 
-                    style={{color: 'black', dashArray: '5,10', weight: '0.75'}}
+                    style={{color: 'black', dashArray: '5,10', weight: '2'}}
                     onEachFeature={onEachSearchFeature}
                   />
                     <MapClipper 

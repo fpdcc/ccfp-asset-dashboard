@@ -8,22 +8,11 @@ function AssetSearchTable({ rows, onSelectRow }) {
     ({ original }) => {
       return {
         onClick: e => {
-          console.log('e', e)
-          console.log('original', original)
           onSelectRow(original)
         }
       }
     }, [rows]
   )
-  // const onRowClick = ({ original }) => {
-  //   return {
-  //     onClick: e => {
-  //       console.log('e', e)
-  //       console.log('original', original)
-  //       onSelectRow(original)
-  //     }
-  //   }
-  // }
 
   return (
     <>
