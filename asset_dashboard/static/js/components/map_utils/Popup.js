@@ -1,5 +1,4 @@
-import React, { useRef } from 'react'
-import deleteLocalAsset from '../helpers/deleteLocalAsset'
+import React from 'react'
 
 function Popup({ feature }) {
   const properties = feature.properties
