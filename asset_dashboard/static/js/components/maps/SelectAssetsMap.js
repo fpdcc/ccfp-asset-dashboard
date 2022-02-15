@@ -90,6 +90,21 @@ function SelectAssetsMap(props) {
       if (response.status == 201) {
         setAjaxMessage({text: 'Assets successfully saved.', tag: 'success'})
         location.reload()
+      } else {
+        response.json().then(errors => {
+          let errorMessage = ''
+
+          errors.forEach(error => {
+            for (const [key, value] of Object.entries(error)) {
+              errorMessage += `Error for field: ${key}. ${value.join(' ')}`
+            }
+          })
+
+          setAjaxMessage({
+            text: `An error occured saving the assets. ${errorMessage}`,
+            tag: 'danger'
+          })
+        })
       }
     }).catch(error => {
       setAjaxMessage({text: 'An error occurred saving the selected assets. Please try again.', tag: 'danger'})
