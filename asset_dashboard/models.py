@@ -728,7 +728,7 @@ class PicnicGroves(GISModel):
     class Search:
         fields = (
             ('fpd_uid', int),
-            ('poi_info__nameid__name', str), # TODO: get clarity from garret on this. do all picnic groves have a poi with a name?
+            ('poi_info__nameid__name', str),
         )
 
     id = models.AutoField(primary_key=True, db_column='picnicgrove_id')
