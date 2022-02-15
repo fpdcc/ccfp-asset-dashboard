@@ -188,8 +188,8 @@ function SelectAssetsMap(props) {
         : null
       }
       <div className='row'>
-        <div className='col-4'>
-          <div className='row mb-3'>
+        <div className='col-4 border rounded border-secondary py-1 ml-3'>
+          <div className='row my-3'>
             <div className='col'>
               <div className='row m-1'>
                 <label htmlFor='asset-search' className='sr-only'>Search for Assets</label>

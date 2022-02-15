@@ -15,7 +15,7 @@ function AssetSearchTable({ rows, onSelectRow }) {
   )
 
   return (
-    <div className='border rounded border-secondary p-2'>
+    <div className='p-2'>
       <ReactTable
         rows={rows}
         columns={React.useMemo(() => assetSearchColumns, [])}
