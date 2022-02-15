@@ -70,6 +70,17 @@ class NullableIntegerField(serializers.IntegerField):
         return super().to_representation(value)
 
 
+class NullableCharField(serializers.CharField):
+    def __init__(self, *args, allow_null=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.allow_null = allow_null
+    
+    def to_representation(self, value):
+        if self.allow_null and value is None:
+            return None
+        return super().to_representation(value)
+    
+
 class BaseLocalAssetSerializer(GeoFeatureModelSerializer):
     """
     A base serializer for the LocalAssets because we need
@@ -82,7 +93,7 @@ class BaseLocalAssetSerializer(GeoFeatureModelSerializer):
         fields = ('id', 'geom', 'asset_id', 'asset_type', 'asset_name', 'phase')
         geo_field = 'geom'
 
-    asset_id = serializers.CharField()
+    asset_id = NullableCharField(allow_null=True)
     asset_type = serializers.CharField(source='asset_model')
     asset_name = serializers.CharField()
     phase = serializers.PrimaryKeyRelatedField(queryset=Phase.objects.all())
@@ -102,9 +113,9 @@ class LocalAssetReadSerializer(BaseLocalAssetSerializer):
 class SourceAssetSerializer(GeoFeatureModelSerializer):
     class Meta:
         fields = ('source')
-    
+
     source = serializers.SerializerMethodField()
-    
+
     def get_source(self, obj):
         return 'search'
 

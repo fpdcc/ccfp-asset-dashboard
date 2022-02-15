@@ -259,7 +259,7 @@ class LocalAsset(models.Model):
 
     geom = models.GeometryField(srid=3435)
 
-    asset_id = models.CharField(max_length=1000000)
+    asset_id = models.CharField(max_length=1000000, null=True, blank=True)
     asset_model = models.CharField(max_length=100)
     asset_name = models.CharField(max_length=600)
 
@@ -886,7 +886,7 @@ class PoiInfo(GISModel):
             ('nameid__name', str),
         )
 
-        not_null_fields = ['parking_info_id', 'fpd_uid']
+        not_null_fields = ['parking_info_id']
 
     id = models.AutoField(primary_key=True, db_column='poi_info_id')
 
