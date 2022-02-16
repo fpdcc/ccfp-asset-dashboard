@@ -259,7 +259,7 @@ class LocalAsset(models.Model):
 
     geom = models.GeometryField(srid=3435)
 
-    asset_id = models.CharField(max_length=1000000, null=True, blank=True)
+    asset_id = models.TextField(null=True, blank=True)
     asset_model = models.CharField(max_length=100)
     asset_name = models.CharField(max_length=600)
 
