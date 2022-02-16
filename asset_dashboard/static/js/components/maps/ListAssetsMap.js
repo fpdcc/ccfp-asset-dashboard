@@ -19,12 +19,12 @@ function ListAssetsMap(props) {
     <>
       {
         props?.assets && 
-          <div className='border border-secondary rounded'>
+          <div className=''>
             <div className='row'>
               <div className='col-4 m-3'>
                 <div className="d-flex align-items-center justify-content-between m-2">
                   <h3>Phase Assets</h3>
-                  <a href={`${window.location.href}assets`} class="btn btn-warning ml-4">Edit Assets ></a>
+                  <a href={`${window.location.href}assets`} class="text-info lead">Edit Assets ></a>
                 </div>
                 <div className='map-thumbnail'>
                   <BaseMap

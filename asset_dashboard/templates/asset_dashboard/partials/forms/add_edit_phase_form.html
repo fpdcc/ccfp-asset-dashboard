@@ -6,78 +6,135 @@
 {% endblock %}
 
 {% block project %}
-<form method="post">
-  {% csrf_token %}
-
-  {{ form.errors }}
-  {{ finances_form.errors }}
-
-  <div class="text-right">
-    <input type="submit" value="Save Phase" class="btn btn-info">
+<div class="row">
+  <div class="border border-secondary rounded shadow-sm p-3 col-8 m-2">
+  
+    <form method="post">
+      {% csrf_token %}
+    
+      {{ form.errors }}
+      {{ finances_form.errors }}
+  
+      <div class="row justify-content-between mx-3">
+        <h3>{% if phase %}Update Phase{% else %}Create Phase{% endif %}</h3>
+        <input type="submit" value="Save Phase" class="btn btn-info">
+      </div>
+    
+      
+    
+      <div class="row m-4">
+        <div class="col m-4">
+          <strong>Phase</strong>
+          {{ form.phase_type }}
+        </div>
+        <div class="col m-4">
+          <strong>Status</strong>
+          {{ form.status }}
+        </div>
+      </div>
+    
+      <div class="row m-4">
+        <div class="col m-4">
+          <strong>Total Budget</strong>
+          <div class="mt-3">
+            {{ finances_form.budget }}
+          </div>
+        </div>
+        <div class="col m-4">
+          <strong>Estimated Bid Quarter</strong>
+          {{ form.estimated_bid_quarter }}
+        </div>
+      </div>
+    </form>
+    
   </div>
-
-  <div class="row m-4">
-    <div class="col m-4">
-      <strong>Phase</strong>
-      {{ form.phase_type }}
-    </div>
-    <div class="col m-4">
-      <strong>Estimated Bid Quarter</strong>
-      {{ form.estimated_bid_quarter }}
-    </div>
-    <div class="col m-4">
-      <strong>Status</strong>
-      {{ form.status }}
-    </div>
+  <div class="col border border-secondary rounded shadow-sm p-3 m-2">
+    <h3>Phase Funding</h3>
+    {% if phase_funding_year %}
+      <table class="table table-hover table-border py-4">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Funds</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for funding_year in object_list %}
+          <tr>
+            <td>{{ funding_year.year }}</td>
+            <td>{{ funding_year.funds }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <p>
+          {% if phase %}
+            This phase has no funding. <a href="#" class="text-info lead">Add funding ></a>
+          {% else %}
+            Create the phase so you can add funding.
+          {% endif %}
+      </p>
+      {% endif %}
+      
   </div>
+</div>
 
-  <div class="row m-4">
-    <div class="col m-4">
-      <strong>Total Budget</strong>
-      <div class="mt-3">
-        {{ finances_form.budget }}
+
+<div class="border border-secondary rounded shadow-sm p-3 mt-4">
+  <div class="col">
+    {% if not props %}
+      <h3 class="row">Phase Assets</h3>
+      <div class="row">
+        <p>
+          {% if phase and not props %}
+            This phase has no GIS assets. &nbsp;<a href="{% url 'create-update-assets' pk=phase.id %}" class="text-info lead">Add Assets ></a>
+          {% elif not phase and not props %}
+            Create the phase so you can add GIS assets.
+          {% else %}
+            <a href="{% url 'create-update-assets' pk=phase.id %}" class="text-info lead">Edit Assets ></a>
+          {% endif %}
+        </p>
+      </div>
+    {% else %}
+      <div id="map" class="mt-2">
+        <div class="text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+    
+    
+
+    {% if props %}
+      
+    {% endif %}
+  </div>
+</div>
+
+
+<!-- {% if props %}
+  <div id="map" class="mt-2">
+    <div class="text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
       </div>
     </div>
   </div>
-</form>
+{% endif %} -->
 
-{% if phase_funding_year %}
-<table class="table table-hover table-border py-4">
-  <thead>
-    <tr>
-      <th>Year</th>
-      <th>Funds</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for funding_year in object_list %}
-    <tr>
-      <td>{{ funding_year.year }}</td>
-      <td>{{ funding_year.funds }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-{% endif %}
-
-{% if phase %}
-  <div class="">
-    <!-- <div class="d-flex align-items-center m-2 col">
-      <h4 class="my-2 mr-4">Phase Assets</h4>
-      <a href="{% url 'create-update-assets' pk=phase.id %}" class="btn btn-warning ml-4">Edit Assets ></a>
-    </div> -->
-
-
-    <div id="map">
-      <!-- Contents get replaced by mounted React.Component -->
-      <div class="text-center">
-          <i class="fa fa-lg fa-spinner fa-spin"></i><br><br>
-          <i class="pending">Loading map...</i><br><br>
-      </div>
+<!-- {% if phase and not props %}
+  <div class="border border-secondary rounded shadow-sm p-3 mt-4">
+    <div class="col">
+      <h3 class="row">Phase Assets</h3>
+      <p>This phase has no GIS assets. &nbsp;<a href="{% url 'create-update-assets' pk=phase.id %}" class="text-info lead">Add Assets ></a></p>
     </div>
   </div>
-{% endif %}
+{% endif %} -->
+
 {% endblock %}
 
 {% block extra_js %}

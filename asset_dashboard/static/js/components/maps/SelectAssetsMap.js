@@ -188,7 +188,7 @@ function SelectAssetsMap(props) {
         : null
       }
       <div className='row'>
-        <div className='col-4 border rounded border-secondary py-1 ml-3'>
+        <div className='col-4 border rounded border-secondary shadow-sm py-1 ml-3'>
           <div className='row my-3'>
             <div className='col'>
               <div className='row m-1'>
@@ -228,7 +228,7 @@ function SelectAssetsMap(props) {
           </div>
         </div>
         <div className='col'>
-          <div className='card text-center bg-light mb-4 border-secondary'>
+          <div className='card text-center bg-light mb-4 border-secondary shadow-sm'>
             <div className='card-body'>
               <h2 className='card-title'>{props.phase_name}</h2>
                 <div className=''>
@@ -245,7 +245,7 @@ function SelectAssetsMap(props) {
             </div>
           </div>
           
-          <div className='map-container border border-secondary rounded' aria-label='Asset Selection Map'>
+          <div className='map-container border border-secondary rounded shadow-sm' aria-label='Asset Selection Map'>
             <BaseMap
               center={[41.8781, -87.6298]}
               zoom={11}
