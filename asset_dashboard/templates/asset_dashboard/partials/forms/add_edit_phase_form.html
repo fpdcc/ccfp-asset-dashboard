@@ -13,7 +13,7 @@
   {{ finances_form.errors }}
 
   <div class="text-right">
-    <input type="submit" value="Save Phase" class="btn btn-primary">
+    <input type="submit" value="Save Phase" class="btn btn-info">
   </div>
 
   <div class="row m-4">
@@ -62,11 +62,11 @@
 {% endif %}
 
 {% if phase %}
-  <div>
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <h4 class="col-2">Phase Assets</h4>
-      <a href="{% url 'create-update-assets' pk=phase.id %}" class="btn btn-warning">Edit Assets ></a>
-    </div>
+  <div class="">
+    <!-- <div class="d-flex align-items-center m-2 col">
+      <h4 class="my-2 mr-4">Phase Assets</h4>
+      <a href="{% url 'create-update-assets' pk=phase.id %}" class="btn btn-warning ml-4">Edit Assets ></a>
+    </div> -->
 
 
     <div id="map">

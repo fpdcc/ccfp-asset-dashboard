@@ -271,7 +271,8 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
 
         if assets.exists():
             context['props'] = {
-                'assets': LocalAssetReadSerializer(assets, many=True).data
+                'assets': LocalAssetReadSerializer(assets, many=True).data,
+                'phase_id': self.object.id
             }
 
         return context

@@ -228,14 +228,14 @@ function SelectAssetsMap(props) {
           </div>
         </div>
         <div className='col'>
-          <div className='card text-center bg-light mb-3 border-secondary'>
+          <div className='card text-center bg-light mb-4 border-secondary'>
             <div className='card-body'>
               <h2 className='card-title'>{props.phase_name}</h2>
                 <div className=''>
                   {geomsToSave 
                     ?
                       <button 
-                        className='btn btn-primary'
+                        className='btn btn-info'
                         onClick={() => saveGeometries()}>
                         Save Assets
                       </button>
