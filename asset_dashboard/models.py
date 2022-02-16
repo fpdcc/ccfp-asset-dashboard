@@ -701,6 +701,7 @@ class ParkingEval17(GISModel):
     photos = models.TextField()
 
 class ParkingLots(GISModel):
+    """Parking lot polygons, for all public and non-public lots."""
     class Meta(GISModel.Meta):
         db_table = '"acer"."parking_lots_union_mv"'
 
