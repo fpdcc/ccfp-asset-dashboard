@@ -5,7 +5,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
     LocalAsset, Buildings, TrailsInfo, PoiInfo, PointsOfInterest, PicnicGroves, \
-    ParkingLots, Signage
+    ParkingLots
 
 
 class UserSerializer(serializers.ModelSerializer):

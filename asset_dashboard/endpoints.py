@@ -6,11 +6,11 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
-    LocalAsset, Buildings, Signage, TrailsInfo, PoiInfo, PicnicGroves
+    LocalAsset, Buildings, TrailsInfo, PoiInfo, PicnicGroves
 from asset_dashboard.serializers import PortfolioSerializer, UserSerializer, \
     PortfolioPhaseSerializer, PhaseSerializer, ProjectSerializer, \
     BuildingsSerializer, TrailsSerializer, LocalAssetWriteSerializer, LocalAssetReadSerializer, \
-    PointsOfInterestSerializer, PicnicGrovesSerializer, ParkingLotsSerializer, SignageSerializer
+    PointsOfInterestSerializer, PicnicGrovesSerializer, ParkingLotsSerializer
 
 
 class PortfolioViewSet(viewsets.ModelViewSet):

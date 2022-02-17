@@ -23,8 +23,7 @@ function AssetTypeOptions() {
     {value: 'trails', label: 'Trails'},
     {value: 'points_of_interest', label: 'Points of Interest'},
     {value: 'picnic_groves', label: 'Picnic Groves'},
-    {value: 'parking_lots', label: 'Parking Lots'},
-    {value: 'signage', label: 'Signage'}
+    {value: 'parking_lots', label: 'Parking Lots'}
   ]
 
   return options.map(option => {
