@@ -202,16 +202,3 @@ class ParkingLotsSerializer(SourceAssetSerializer):
     
     def get_identifier(self, obj):
         return  obj.fpd_uid
-
-class SignageSerializer(SourceAssetSerializer):
-    class Meta:
-        model = Signage
-        fields = ('identifier', 'name', 'geom', 'source')
-        geo_field = 'geom'
-
-    identifier = serializers.IntegerField(source='id')
-    name = serializers.CharField(source='full_path')
-    geom = GeometrySerializerMethodField()
-    
-    def get_geom(self, obj):
-        return obj.geom.transform(4326, clone=True)

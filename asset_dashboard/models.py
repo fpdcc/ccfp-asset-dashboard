@@ -976,13 +976,6 @@ class Signage(GISModel):
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."signage"'
-    
-    class Search:
-        fields = (
-            ('id', int),
-            ('trail_system', str),
-            ('preserve', str),
-        )
 
     id = models.AutoField(primary_key=True, db_column='signage_id')
     geom = models.PointField(srid=3435, spatial_index=True)

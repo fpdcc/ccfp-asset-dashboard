@@ -64,8 +64,7 @@ class AssetViewSet(viewsets.ModelViewSet):
             'trails': {'model': TrailsInfo},
             'points_of_interest': {'model': PoiInfo},
             'picnic_groves': {'model': PicnicGroves},
-            'parking_lots': {'model': PoiInfo, 'check_for_not_null': True},
-            'signage': {'model': Signage}
+            'parking_lots': {'model': PoiInfo, 'check_for_not_null': True}
         }.get(self.asset_type, Buildings)
 
     @property
@@ -75,8 +74,7 @@ class AssetViewSet(viewsets.ModelViewSet):
             'trails': TrailsSerializer,
             'points_of_interest': PointsOfInterestSerializer,
             'picnic_groves': PicnicGrovesSerializer,
-            'parking_lots': ParkingLotsSerializer,
-            'signage': SignageSerializer
+            'parking_lots': ParkingLotsSerializer
         }.get(self.asset_type, BuildingsSerializer)
 
     def get_serializer_class(self, *args, **kwargs):
