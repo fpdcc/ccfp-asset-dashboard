@@ -4,18 +4,18 @@
 
 <!-- Base view that contains the various forms for a Project. -->
 {% block body %}
-  <div class="container">
-    <h1 class="text-right">{{ project.name }}</h1>
+  <div class="col">
+    <h1 class="text-right display-4">{{ project.name }}</h1>
     <ul class="nav nav-tabs">
       <li class="nav-item">
-        <a class="nav-link" id="overview" href="{% url 'project-detail' pk=project.pk %}">Overview</a>
+        <a class="nav-link text-info lead" id="overview" href="{% url 'project-detail' pk=project.pk %}">Overview</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="phases" href="{% url 'project-phases-list' pk=project.pk %}">Phases</a>
+        <a class="nav-link text-info lead" id="phases" href="{% url 'project-phases-list' pk=project.pk %}">Phases</a>
       </li>
     </ul>
     
-    <div class="tab-content container card p-4 shadow-sm" id="nav-tabContent">
+    <div class="tab-content card p-4 shadow-sm" id="nav-tabContent">
         {% block project %}{% endblock %}
     </div>
   </div>

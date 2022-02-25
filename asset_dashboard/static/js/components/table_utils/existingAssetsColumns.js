@@ -1,7 +1,7 @@
 import React from 'react'
 
 const existingAssetsColumns = (handleDelete) => {
-  return [
+  let columns = [
     {
       Header: 'Identifier',
       accessor: 'properties.asset_id'
@@ -13,8 +13,11 @@ const existingAssetsColumns = (handleDelete) => {
     {
       Header: 'Type',
       accessor: 'properties.asset_type'
-    },
-    {
+    }
+  ]
+
+  if (handleDelete) {
+    columns.push({
       Header: () => null,
       accessor: 'id',
       disableSortBy: true,
@@ -23,8 +26,10 @@ const existingAssetsColumns = (handleDelete) => {
                         onClick={() => handleDelete(props.value)}>
                           <i className='fas fa-trash'></i> Delete
                       </button>)
-    }
-  ]
+    })
+  }
+
+  return columns
 }
 
 export default existingAssetsColumns

@@ -303,7 +303,8 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
             'phase': phase,
             'project': Project.objects.filter(phases=phase)[0],
             'props': {
-                'phase_id': phase.id
+                'phase_id': phase.id,
+                'phase_name': phase.name
             }
         })
 

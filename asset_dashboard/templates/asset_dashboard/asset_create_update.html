@@ -7,12 +7,12 @@
 {% endblock %}
 
 {% block project %}
-  <h3 class="text-right">{{ phase.name }}</h3>
   <div id="map">
       <!-- Contents get replaced by mounted React.Component -->
       <div class="text-center">
-          <i class="fa fa-lg fa-spinner fa-spin"></i><br><br>
-          <i class="pending">Loading map...</i><br><br>
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
       </div>
   </div>
 {% endblock %}
