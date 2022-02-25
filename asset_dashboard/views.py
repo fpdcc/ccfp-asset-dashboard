@@ -1,6 +1,5 @@
 import json
 import re
-
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,18 +12,17 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
-from .models import HouseDistrict, Project, ProjectCategory, ProjectScore, \
-    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, \
-    PhaseFundingYear
-from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm,  \
+from .models import HouseDistrict, LocalAsset, Project, ProjectCategory, ProjectScore, \
+    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear
+from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
     PhaseFinancesForm, PhaseForm
-from .serializers import PortfolioSerializer
+from .serializers import PortfolioSerializer, LocalAssetReadSerializer
 
 
 class CipPlannerView(LoginRequiredMixin, TemplateView):
     title = 'CIP Planner'
     template_name = 'asset_dashboard/planner.html'
-    component = 'js/planner.js'
+    component = 'js/PortfolioPlanner.js'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -266,6 +264,13 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
 
         context['project'] = self.object.project
 
+        assets = LocalAsset.objects.filter(phase=self.object)
+
+        if assets.exists():
+            context['props'] = {
+                'assets': LocalAssetReadSerializer(assets, many=True).data
+            }
+
         return context
 
     def form_valid(self, form):
@@ -283,6 +288,34 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
             return HttpResponseRedirect(reverse('project-phases-list', kwargs={'pk': phase.project.pk}))
         else:
             return super().form_invalid(form)
+
+
+class AssetAddEditView(LoginRequiredMixin, TemplateView):
+    template_name = 'asset_dashboard/asset_create_update.html'
+    component = 'js/components/maps/SelectAssetsMap.js'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        phase = Phase.objects.get(id=self.kwargs['pk'])
+
+        context.update({
+            'phase': phase,
+            'project': Project.objects.filter(phases=phase)[0],
+            'props': {
+                'phase_id': phase.id
+            }
+        })
+
+        existing_assets = LocalAsset.objects.filter(phase=phase)
+        geojson_serializer = LocalAssetReadSerializer(existing_assets, many=True)
+
+        if existing_assets.exists():
+            context['props'].update({
+                'existing_assets': geojson_serializer.data
+            })
+
+        return context
 
 
 class ProjectsByDistrictListView(LoginRequiredMixin, ListView):

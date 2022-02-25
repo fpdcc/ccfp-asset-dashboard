@@ -1,6 +1,10 @@
 {% extends "asset_dashboard/partials/project_base.html" %}
 {% load static %}
 
+{% block extra_css %}
+  <link href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet">
+{% endblock %}
+
 {% block project %}
 <form method="post">
   {% csrf_token %}
@@ -57,6 +61,34 @@
 </table>
 {% endif %}
 
+{% if phase %}
+  <div>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h4 class="col-2">Phase Assets</h4>
+      <a href="{% url 'create-update-assets' pk=phase.id %}" class="btn btn-warning">Edit Assets ></a>
+    </div>
 
 
+    <div id="map">
+      <!-- Contents get replaced by mounted React.Component -->
+      <div class="text-center">
+          <i class="fa fa-lg fa-spinner fa-spin"></i><br><br>
+          <i class="pending">Loading map...</i><br><br>
+      </div>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+  {% load compress %}
+  {{ props|json_script:"props" }}
+  <script type="text/javascript">
+    window.props = JSON.parse(document.getElementById('props').textContent)
+    window.reactMount = document.getElementById('map')
+  </script>
+  {% compress js %}
+    <script type="text/jsx" src="{% static 'js/components/maps/ListAssetsMap.js' %}"></script>
+  {% endcompress %}
 {% endblock %}

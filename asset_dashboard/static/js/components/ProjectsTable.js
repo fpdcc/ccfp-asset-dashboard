@@ -1,13 +1,22 @@
 import React from 'react'
 import ReactTable from './BaseTable'
+import projectColumns from './table_utils/projectColumns'
 
-const ProjectsTable = ({ allProjects, columns, onAddToPortfolio, searchInput }) => {
+const ProjectsTable = ({ allProjects, onAddToPortfolio, searchInput }) => {
   const onRowClick = ({ original }) => {
     return {
       onClick: e => {
         onAddToPortfolio(original)
       }
     }
+  }
+
+  const selector = () => {
+    return (
+      <span>
+        <i className="fas fa-plus-square"></i>
+      </span>
+    )
   }
 
   return (
@@ -19,15 +28,9 @@ const ProjectsTable = ({ allProjects, columns, onAddToPortfolio, searchInput }) 
       
       <ReactTable
         rows={allProjects}
-        columns={columns}
+        columns={React.useMemo(() => projectColumns(selector), [])}
         getTrProps={onRowClick}
-        selector={() => {
-          return (
-            <span>
-              <i className="fas fa-plus-square"></i>
-            </span>
-          )
-        }} />
+      />
     </>
   )
 }

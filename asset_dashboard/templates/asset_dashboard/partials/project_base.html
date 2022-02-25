@@ -28,10 +28,8 @@
   // Remove the existing active CSS class
   Array.from(document.querySelectorAll('.nav-link')).forEach(el => el.classList.remove('active'))
 
-  // TODO: Add "assets" whenever we add that page.
-  // (just to give you an idea of how I'm thinking about this)
   const tabIds = [
-    "phases"
+    "phases",
   ]
 
   // Find the active tab in the tabIds array, based on window.location.pathname.

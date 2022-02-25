@@ -18,17 +18,17 @@ const TextField = styled.input`
 `;
 
 const SearchInput = ({ filterText, onFilter }) => {
-    return (
-      <div className="mb-4">
-        <TextField 
-          id="search" 
-          type="text" 
-          placeholder="Search for projects by name" 
-          aria-label="Search Input" 
-          value={filterText} 
-          onChange={onFilter} />
-      </div>
-    )
-  }
+  return (
+    <div className="mb-4">
+      <TextField 
+        id="search" 
+        type="text" 
+        placeholder="Search for projects by name" 
+        aria-label="Search Input" 
+        value={filterText} 
+        onChange={onFilter} />
+    </div>
+  )
+}
 
 export default SearchInput

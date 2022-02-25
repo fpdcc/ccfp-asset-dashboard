@@ -14,3 +14,12 @@ input[type="checkbox"] {
 #id_budget_1, #id_funds_1 {
     display: none;
 }
+
+.leaflet-container {
+    height: 100%;
+    width: 100%;
+}
+
+.map-container {
+    height: 650px;
+}

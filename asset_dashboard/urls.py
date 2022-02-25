@@ -18,16 +18,24 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from rest_framework import routers
 
-from asset_dashboard.endpoints import PortfolioViewSet
+from asset_dashboard.endpoints import PortfolioViewSet, UserViewSet, \
+    PortfolioPhaseViewSet, PhaseViewSet, ProjectViewSet, AssetViewSet, LocalAssetViewSet
 from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreateView, \
                                     ProjectUpdateView, ProjectListJson, \
                                     ProjectsByDistrictListView, ProjectsByDistrictListJson, \
-                                    ProjectPhasesListView, PhaseCreateView, PhaseUpdateView
+                                    ProjectPhasesListView, PhaseCreateView, PhaseUpdateView, \
+                                    AssetAddEditView
 
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'portfolios', PortfolioViewSet)
+router.register(r'users', UserViewSet)
+router.register(r'portfolio-phases', PortfolioPhaseViewSet)
+router.register(r'phases', PhaseViewSet)
+router.register(r'projects', ProjectViewSet)
+router.register(r'assets', AssetViewSet)
+router.register(r'local-assets', LocalAssetViewSet)
 
 urlpatterns = [
     path('', ProjectListView.as_view(), name='projects'),
@@ -37,6 +45,7 @@ urlpatterns = [
     path('projects/<int:pk>/phases/', ProjectPhasesListView.as_view(), name='project-phases-list'),
     path('projects/<int:pk>/phases/create/', PhaseCreateView.as_view(), name='create-phase'),
     path('projects/phases/edit/<int:pk>/', PhaseUpdateView.as_view(), name='edit-phase'),
+    path('projects/phases/edit/<int:pk>/assets/', AssetAddEditView.as_view(), name='create-update-assets'),
     path('projects/districts/', ProjectsByDistrictListView.as_view(), name='projects-by-district'),
     path('projects/districts/json/', ProjectsByDistrictListJson.as_view(), name='projects-district-json'),
     path('cip-planner/', CipPlannerView.as_view(), name='cip-planner'),

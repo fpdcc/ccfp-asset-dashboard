@@ -8,7 +8,7 @@ import ProjectsTable from './components/ProjectsTable'
 import PortfolioTable from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
 import PortfolioPicker from './components/PortfolioPicker'
-import SearchInput from './components/FilterComponent'
+import SearchInput from './components/SearchInput'
 
 class PortfolioPlanner extends React.Component {
   constructor(props) {
@@ -380,8 +380,8 @@ class PortfolioPlanner extends React.Component {
                   allProjects={filteredRows}
                   onAddToPortfolio={this.addProjectToPortfolio}
                   searchInput={<SearchInput
-                  onFilter={this.searchProjects}
-                  filterText={this.state.filterText} />} />
+                    onFilter={this.searchProjects} 
+                    filterText={this.state.filterText} />} />
               </>
           </div>
           <div className="col">

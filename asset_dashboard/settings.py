@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'asset_dashboard',
     'widget_tweaks',
     'rest_framework',
+    'rest_framework_gis',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +68,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+SERIALIZATION_MODULES = {
+    'geojson': 'django.contrib.gis.serializers.geojson',
+}
 
 ROOT_URLCONF = 'asset_dashboard.urls'
 
@@ -212,6 +217,7 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        'rest_framework.authentication.SessionAuthentication'
     ]
 }
