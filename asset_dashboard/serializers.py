@@ -111,12 +111,12 @@ class NullableCharField(serializers.CharField):
     def __init__(self, *args, allow_null=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.allow_null = allow_null
-    
+
     def to_representation(self, value):
         if self.allow_null and value is None:
             return None
         return super().to_representation(value)
-    
+
 
 class BaseLocalAssetSerializer(GeoFeatureModelSerializer):
     """
@@ -156,6 +156,7 @@ class SourceAssetSerializer(GeoFeatureModelSerializer):
     def get_source(self, obj):
         return 'search'
 
+
 class BuildingsSerializer(SourceAssetSerializer):
     class Meta:
         model = Buildings
@@ -187,23 +188,25 @@ class TrailsSerializer(SourceAssetSerializer):
         '''
         return obj.trails.geom.transform(4326, clone=True)
 
+
 class PointsOfInterestSerializer(SourceAssetSerializer):
     class Meta:
         model = PoiInfo
         fields = ('identifier', 'name', 'geom', 'source')
         geo_field = 'geom'
-    
+
     identifier = serializers.IntegerField(source='fpd_uid')
     name = serializers.SerializerMethodField(source='nameid')
     geom = GeometrySerializerMethodField()
-    
+
     def get_geom(self, obj):
         return PointsOfInterest.objects.get(
             id=obj.pointsofinterest_id
         ).geom.transform(4326, clone=True)
-    
+
     def get_name(self, obj):
         return obj.nameid.name
+
 
 class PicnicGrovesSerializer(SourceAssetSerializer):
     class Meta:
@@ -214,16 +217,17 @@ class PicnicGrovesSerializer(SourceAssetSerializer):
     identifier = serializers.CharField(source='fpd_uid')
     name = serializers.SerializerMethodField(source='poi_info__nameid')
     geom = GeometrySerializerMethodField()
-    
+
     def get_geom(self, obj):
         return obj.geom.transform(4326, clone=True)
 
     def get_name(self, obj):
         return obj.poi_info.nameid.name
 
+
 class ParkingLotsSerializer(SourceAssetSerializer):
     class Meta:
-        model = PoiInfo # Need to use PoiInfo.name and PoiInfo.fpd_uid to lookup ParkingLots
+        model = PoiInfo  # Need to use PoiInfo.name and PoiInfo.fpd_uid to lookup ParkingLots
         fields = ('identifier', 'name', 'geom', 'source')
         geo_field = 'geom'
 
@@ -236,6 +240,6 @@ class ParkingLotsSerializer(SourceAssetSerializer):
 
     def get_name(self, obj):
         return obj.nameid.name
-    
+
     def get_identifier(self, obj):
-        return  obj.fpd_uid
+        return obj.fpd_uid

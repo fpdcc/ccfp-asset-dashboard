@@ -11,12 +11,6 @@ from django.utils.html import escape
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
-from django.db.models import Q
-from django.utils.html import escape
 
 from .models import HouseDistrict, LocalAsset, Project, ProjectCategory, ProjectScore, \
     Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear

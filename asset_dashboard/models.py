@@ -700,6 +700,7 @@ class ParkingEval17(GISModel):
     remarks = models.TextField()
     photos = models.TextField()
 
+
 class ParkingLots(GISModel):
     """Parking lot polygons, for all public and non-public lots."""
     class Meta(GISModel.Meta):
@@ -725,7 +726,7 @@ class PicnicGroves(GISModel):
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."picnicgroves"'
-    
+
     class Search:
         fields = (
             ('fpd_uid', int),
@@ -880,7 +881,7 @@ class PoiInfo(GISModel):
             models.Index(fields=['parking_info_id']),
             models.Index(fields=['pointsofinterest_id'])
         ]
-    
+
     class Search:
         fields = (
             ('fpd_uid', int),
