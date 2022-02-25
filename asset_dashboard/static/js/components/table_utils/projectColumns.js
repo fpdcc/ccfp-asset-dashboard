@@ -1,14 +1,7 @@
 import React from 'react'
 
-const selector = () => {
-    return (
-      <span>
-        <i className="fa fa-minus-square bg-"></i>
-      </span>
-    )
-  }
-
-const projectColumns = [
+const projectColumns = (selector) => {
+  return [
     {
       Header: () => null,
       id: 'selector',
@@ -39,10 +32,12 @@ const projectColumns = [
       Header: () => null,
       accessor: 'key',
       disableSortBy: true,
-      Cell: props => <a href={`/projects/${props.value}`}  
+      Cell: props => <a href={`/projects/phases/edit/${props.value}/`}  
                         onClick={e => e.stopPropagation()}
-                        className='btn btn-success btn-sm'>View Project</a>
+                        className='btn btn-outline-dark btn-sm'
+                        target="_blank">View Phase</a>
     }
   ]
+}
 
 export default projectColumns

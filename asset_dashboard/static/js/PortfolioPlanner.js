@@ -9,7 +9,6 @@ import PortfolioTable from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
 import PortfolioPicker from './components/PortfolioPicker'
 import SearchInput from './components/SearchInput'
-import { CSVLink } from 'react-csv'
 
 class PortfolioPlanner extends React.Component {
   constructor(props) {

@@ -11,6 +11,14 @@ const ProjectsTable = ({ allProjects, onAddToPortfolio, searchInput }) => {
     }
   }
 
+  const selector = () => {
+    return (
+      <span>
+        <i className="fas fa-plus-square"></i>
+      </span>
+    )
+  }
+
   return (
     <>
       <div className="d-flex justify-content-between px-2">
@@ -20,7 +28,7 @@ const ProjectsTable = ({ allProjects, onAddToPortfolio, searchInput }) => {
       
       <ReactTable
         rows={allProjects}
-        columns={React.useMemo(() => projectColumns, [])}
+        columns={React.useMemo(() => projectColumns(selector), [])}
         getTrProps={onRowClick}
       />
     </>
