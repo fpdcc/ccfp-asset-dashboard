@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import BaseMap from './BaseMap'
 import { GeoJSON } from 'react-leaflet'
 import zoomToExistingGeometries from '../map_utils/zoomToExistingGeometries'
+import circleMarker from '../map_utils/circleMarker'
 
 function ListAssetsMap(props) {
 
@@ -18,7 +19,12 @@ function ListAssetsMap(props) {
       zoom={11}
       whenCreated={onMapCreated}>
         {
-          props?.assets && <GeoJSON data={props.assets} style={{color: 'green'}} />
+          props?.assets && 
+            <GeoJSON 
+              data={props.assets} 
+              style={{color: 'green'}} 
+              pointToLayer={circleMarker}
+            />
         }
       </BaseMap>
     </div>

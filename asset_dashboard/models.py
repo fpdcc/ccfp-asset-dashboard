@@ -259,7 +259,7 @@ class LocalAsset(models.Model):
 
     geom = models.GeometryField(srid=3435)
 
-    asset_id = models.IntegerField()
+    asset_id = models.TextField(null=True, blank=True)
     asset_model = models.CharField(max_length=100)
     asset_name = models.CharField(max_length=600)
 
@@ -700,32 +700,24 @@ class ParkingEval17(GISModel):
     remarks = models.TextField()
     photos = models.TextField()
 
-
 class ParkingLots(GISModel):
     """Parking lot polygons, for all public and non-public lots."""
-
     class Meta(GISModel.Meta):
-        db_table = '"quercus"."parking_lots"'
+        db_table = '"acer"."parking_lots_union_mv"'
 
-    id = models.AutoField(primary_key=True, db_column='parking_lots_id')
-
+    id = models.AutoField(primary_key=True, db_column='lot_id')
     geom = models.PolygonField(srid=3435, spatial_index=True)
-
-    lot_id = models.IntegerField()
-    zone = models.CharField(max_length=25)
+    name = models.CharField(max_length=100)
     lot_access = models.CharField(max_length=25)
-    parking_stalls = models.IntegerField()
-    lot_surface = models.CharField(max_length=25)
-    lot_part_type = models.CharField(max_length=25)
-    closed = models.CharField(max_length=10)
-    comments = models.CharField(max_length=250)
     maintained = models.CharField(max_length=10)
+    closed = models.CharField(max_length=10)
+    lot_surface = models.CharField(max_length=25)
+    square_feet = models.DecimalField(max_digits=10, decimal_places=2)
     square_yards = models.DecimalField(max_digits=10, decimal_places=2)
     acres = models.DecimalField(max_digits=10, decimal_places=2)
-    square_feet = models.DecimalField(max_digits=10, decimal_places=2)
     maintained_by = models.CharField(max_length=50)
     maintenance_comment = models.CharField(max_length=250)
-    accessible_stalls = models.IntegerField()
+    parking_info_id = models.IntegerField()
 
 
 class PicnicGroves(GISModel):
@@ -733,6 +725,12 @@ class PicnicGroves(GISModel):
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."picnicgroves"'
+    
+    class Search:
+        fields = (
+            ('fpd_uid', int),
+            ('poi_info__nameid__name', str),
+        )
 
     id = models.AutoField(primary_key=True, db_column='picnicgrove_id')
 
@@ -882,6 +880,14 @@ class PoiInfo(GISModel):
             models.Index(fields=['parking_info_id']),
             models.Index(fields=['pointsofinterest_id'])
         ]
+    
+    class Search:
+        fields = (
+            ('fpd_uid', int),
+            ('nameid__name', str),
+        )
+
+        not_null_fields = ['parking_info_id']
 
     id = models.AutoField(primary_key=True, db_column='poi_info_id')
 

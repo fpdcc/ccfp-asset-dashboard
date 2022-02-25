@@ -3,11 +3,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
     GeometrySerializerMethodField, GeometryField
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
-<<<<<<< HEAD
-    Buildings, TrailsInfo, User
-=======
-    LocalAsset, Buildings, TrailsInfo
->>>>>>> Add DRF endpoint and serializers for LocalAssets model (#106)
+    User, LocalAsset, Buildings, TrailsInfo
 
 
 class UserSerializer(serializers.ModelSerializer):

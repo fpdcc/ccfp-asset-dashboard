@@ -1,4 +1,5 @@
 import ReactDOM from 'react-dom'
+import ReactDOMServer from 'react-dom/server'
 import React, { useState, useEffect } from 'react'
 import { GeoJSON } from 'react-leaflet'
 import hash from 'object-hash'
@@ -12,12 +13,17 @@ import MapZoom from '../map_utils/MapZoom'
 import zoomToSearchGeometries from '../map_utils/zoomToSearchGeometries'
 import zoomToExistingGeometries from '../map_utils/zoomToExistingGeometries'
 import Message from '../helpers/Message'
+import Popup from '../map_utils/Popup'
+import circleMarker from '../map_utils/circleMarker'
 
 function AssetTypeOptions() {
   // these options could come from the server but hardcoding for now 
   const options = [
     {value: 'buildings', label: 'Buildings'},
-    {value: 'trails', label: 'Trails'}
+    {value: 'trails', label: 'Trails'},
+    {value: 'points_of_interest', label: 'Points of Interest'},
+    {value: 'picnic_groves', label: 'Picnic Groves'},
+    {value: 'parking_lots', label: 'Parking Lots'}
   ]
 
   return options.map(option => {
@@ -83,6 +89,21 @@ function SelectAssetsMap(props) {
       if (response.status == 201) {
         setAjaxMessage({text: 'Assets successfully saved.', tag: 'success'})
         location.reload()
+      } else {
+        response.json().then(errors => {
+          let errorMessage = ''
+
+          errors.forEach(error => {
+            for (const [key, value] of Object.entries(error)) {
+              errorMessage += `Error for field: ${key}. ${value.join(' ')}`
+            }
+          })
+
+          setAjaxMessage({
+            text: `An error occured saving the assets. ${errorMessage}`,
+            tag: 'danger'
+          })
+        })
       }
     }).catch(error => {
       setAjaxMessage({text: 'An error occurred saving the selected assets. Please try again.', tag: 'danger'})
@@ -113,9 +134,17 @@ function SelectAssetsMap(props) {
     })
     .catch(error => {
       setIsLoading(false)
-      setAjaxMessage({text: 'An error occurred searching for selected assets. Please try again.', tag: 'danger'})
+      setAjaxMessage({text: 'An error occurred searching for assets. Please try again.', tag: 'danger'})
       console.error('error', error)
     })
+  }
+
+  function onEachFeature(feature, layer) {
+    const popupContent = ReactDOMServer.renderToString(
+      <Popup feature={feature} />
+    )
+
+    layer.bindPopup(popupContent)
   }
  
   return (
@@ -192,6 +221,7 @@ function SelectAssetsMap(props) {
                     // when the state changes: https://stackoverflow.com/a/46593710
                     key={hash(searchGeoms)} 
                     style={{color: 'black', dashArray: '5,10', weight: '0.75'}}
+                    onEachFeature={onEachFeature}
                   />
                     <MapClipper 
                       geoJson={searchGeoms}
@@ -200,7 +230,13 @@ function SelectAssetsMap(props) {
                     <MapZoom searchGeoms={searchGeoms} />
                 </>
               }
-              {existingGeoms && <GeoJSON data={existingGeoms} style={{color: 'green'}}/>}
+              {existingGeoms && 
+                <GeoJSON
+                  data={existingGeoms} 
+                  style={{color: 'green'}}
+                  pointToLayer={circleMarker}
+                  onEachFeature={onEachFeature} />
+              }
             </BaseMap>
           </div>
         </div>
