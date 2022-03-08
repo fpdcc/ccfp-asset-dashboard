@@ -13,9 +13,9 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from .models import HouseDistrict, LocalAsset, Project, ProjectCategory, ProjectScore, \
-    Section, SenateDistrict, CommissionerDistrict, Phase, PhaseFinances, PhaseFundingYear
+    Section, SenateDistrict, CommissionerDistrict, Phase, FundingStream
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
-    PhaseFinancesForm, PhaseForm
+    FundingStreamForm, PhaseForm
 from .serializers import PortfolioSerializer, LocalAssetReadSerializer
 
 
@@ -43,7 +43,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
         for phase in phases:
             project_phases.append({
                 'phase': phase.name,
-                'total_budget': PhaseFinances.objects.get(phase=phase).budget.amount,
+                'total_budget': FundingStream.objects.get(phase=phase).budget.amount,
                 'pk': phase.id,
                 'name': phase.project.name,
                 'description': phase.project.description,
@@ -188,14 +188,7 @@ class ProjectPhasesListView(LoginRequiredMixin, ListView):
     paginate_by = 15
 
     def get_queryset(self):
-        return Phase.objects.filter(project=self.kwargs['pk']).values(
-            'phase_type',
-            'estimated_bid_quarter',
-            'status',
-            'project',
-            'id',
-            'phasefinances__budget'
-        ).order_by('sequence')
+        return Phase.objects.annotate().filter(project=self.kwargs['pk']).order_by('sequence')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -220,12 +213,6 @@ class PhaseCreateView(LoginRequiredMixin, CreateView):
 
             phase = Phase.objects.create(**phase_data)
 
-            if context['finances_form'].is_valid():
-                context['finances_form'].instance.phase_id = phase.id
-                context['finances_form'].save()
-            else:
-                return super().form_invalid(context['finances_form'])
-
             messages.success(self.request, 'Phase successfully created!')
             return HttpResponseRedirect(reverse('project-phases-list', kwargs={'pk': phase.project.pk}))
         else:
@@ -233,13 +220,6 @@ class PhaseCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        if self.request.POST:
-            # Hydrate the form with the post request.
-            context['finances_form'] = PhaseFinancesForm(self.request.POST)
-        else:
-            # This will execute when a new, blank form loads.
-            context['finances_form'] = PhaseFinancesForm()
 
         context['project'] = Project.objects.get(id=self.kwargs['pk'])
 
@@ -254,14 +234,6 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        phase_funding_year = PhaseFundingYear.objects.filter(phase=self.object)
-        context['phase_funding_year'] = phase_funding_year
-
-        if self.request.POST:
-            context['finances_form'] = PhaseFinancesForm(self.request.POST, instance=self.object.phasefinances)
-        else:
-            context['finances_form'] = PhaseFinancesForm(instance=self.object.phasefinances)
-
         context['project'] = self.object.project
 
         assets = LocalAsset.objects.filter(phase=self.object)
@@ -271,23 +243,72 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
                 'assets': LocalAssetReadSerializer(assets, many=True).data
             }
 
+        context['funding_streams'] = self.object.funding_streams.all()
+
         return context
 
     def form_valid(self, form):
-        context = self.get_context_data()
-
         if form.is_valid():
             phase = form.save()
-
-            if context['finances_form'].is_valid():
-                context['finances_form'].save()
-            else:
-                return super().form_invalid(context['finances_form'])
 
             messages.success(self.request, 'Phase successfully edited!')
             return HttpResponseRedirect(reverse('project-phases-list', kwargs={'pk': phase.project.pk}))
         else:
             return super().form_invalid(form)
+
+
+class FundingStreamCreateView(LoginRequiredMixin, CreateView):
+    template_name = 'asset_dashboard/partials/forms/create_update_funding_stream_form.html'
+    model = FundingStream
+    form_class = FundingStreamForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        phase = Phase.objects.get(id=self.kwargs['pk'])
+
+        context.update({
+            'phase': phase,
+            'project': Project.objects.filter(phases=phase)[0]
+        })
+
+        return context
+    
+    def form_valid(self, form):
+        context = self.get_context_data()
+        
+        phase = context['phase']
+
+        if form.is_valid():
+            funding_stream = form.save()
+            phase.funding_streams.add(funding_stream)
+
+            messages.success(self.request, 'Funding Stream successfully created!')
+            return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': phase.id}))
+        else:
+            return super().form_invalid(form)
+
+class FundingStreamUpdateView(LoginRequiredMixin, UpdateView):
+    template_name = 'asset_dashboard/partials/forms/create_update_funding_stream_form.html'
+    form_class = FundingStreamForm
+    model = FundingStream
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        phase = Phase.objects.get(id=self.kwargs['pk'])
+
+        context.update({
+            'phase': phase,
+            'project': Project.objects.filter(phases=phase)[0]
+        })
+
+        return context
+
+    def get_success_url(self):
+        context = self.get_context_data()
+        messages.success(self.request, 'Funding Stream successfully updated!')
+        return reverse('edit-phase', kwargs={'pk': context['phase'].id})
 
 
 class AssetAddEditView(LoginRequiredMixin, TemplateView):

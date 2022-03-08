@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.gis.db import models
-from django.db.models import Max
+from django.db.models import Max, Sum
 
 from djmoney.models.fields import MoneyField
 
@@ -154,6 +154,23 @@ class Phase(SequencedModel):
     estimated_bid_quarter = models.TextField(choices=BID_QUARTER_CHOICES, null=True, blank=True)
     status = models.TextField(choices=STATUS_CHOICES, default='unscheduled')
 
+    funding_streams = models.ManyToManyField('FundingStream')
+
+    completed = models.BooleanField(default=False)
+    year = models.IntegerField(null=True, blank=True)
+
+    total_estimated_cost = MoneyField(default_currency='USD',
+                                      default=0.00,
+                                      max_digits=11)
+
+    @property
+    def total_budget(self):
+        total = self.funding_streams.all().values(
+            'budget'
+        ).aggregate(Sum('budget'))['budget__sum']
+
+        return total if total else 0
+
     @property
     def sequenced_instances(self):
         return self.project.phases
@@ -221,33 +238,26 @@ class ProjectScore(models.Model):
         verbose_name_plural = 'Project Scores'
 
 
-class PhaseFinances(models.Model):
-
-    FUNDING_CHOICES = [
-        ('unfunded', 'Unfunded'),
-        ('partially funded', 'Partially Funded'),
-        ('future unfunded', 'Future Unfunded'),
-        ('funded', 'Funded')
+class FundingStream(models.Model):
+    SOURCE_TYPE_CHOICES = [
+        ('capital_improvement_fund', 'Capital Improvement Fund'),
+        ('bonds', 'General Obligation Bonds'),
+        ('construction_development', 'Construction & Development'),
+        ('grants_fees_other', 'Grants, Fees, & Other'),
+        ('rollover', 'Rollover')
     ]
 
-    phase = models.OneToOneField('Phase', on_delete=models.CASCADE)
     budget = MoneyField(default_currency='USD',
                         default=0.00,
                         max_digits=11)
+    obligated_year = models.IntegerField(null=True, blank=True)
+    # TODO: better model field type? do we need months/days?
+    obligated_completion_date = models.IntegerField(null=True, blank=True)
+    funding_secured = models.BooleanField(default=False)
+    source_type = models.TextField(choices=SOURCE_TYPE_CHOICES, default='capital_improvement_fund')
 
     class Meta:
-        verbose_name_plural = 'Phase Finances'
-
-
-class PhaseFundingYear(models.Model):
-
-    phase = models.ForeignKey('Phase',
-                              null=True,
-                              on_delete=models.CASCADE)
-    year = models.IntegerField()
-    funds = MoneyField(default_currency='USD',
-                       default=0.00,
-                       max_digits=11)
+        verbose_name_plural = 'Phase Funding Stream'
 
 
 class LocalAsset(models.Model):

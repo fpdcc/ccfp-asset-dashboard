@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'rest_framework',
     'rest_framework_gis',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
