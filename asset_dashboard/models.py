@@ -250,7 +250,6 @@ class FundingStream(models.Model):
                         default=0.00,
                         max_digits=11)
     obligated_year = models.IntegerField(null=True, blank=True)
-    # TODO: better model field type? do we need months/days?
     obligated_completion_date = models.IntegerField(null=True, blank=True)
     funding_secured = models.BooleanField(default=False)
     source_type = models.TextField(choices=SOURCE_TYPE_CHOICES, default='capital_improvement_fund')

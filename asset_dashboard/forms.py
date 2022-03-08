@@ -1,5 +1,5 @@
-from django.forms import ModelForm, TextInput, ChoiceField, RadioSelect
-from .models import Project, FundingStream, ProjectScore, ProjectCategory, Phase # PhaseFinances
+from django.forms import ModelForm, TextInput, ChoiceField
+from .models import Project, FundingStream, ProjectScore, ProjectCategory, Phase
 
 
 class StyledFormMixin(object):
