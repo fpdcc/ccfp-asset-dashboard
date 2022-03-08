@@ -151,21 +151,22 @@ function SelectAssetsMap(props) {
   }
 
   /*
-    Features for saving can come from three different user interactions:
+    The geometry features to save can come from three different user interactions:
       1. By clicking on a row in the search table. This loads up the singleFeature to save.
       2. By clicking on a single geom in the map. This also loads up the singleFeature to save.
       3. By selecting multipleFeatures via the GeometrySelector component, which loads multipleFeatures to save.
-
-    In case a user selects multipleFeatures and a singleFeature in one combination of interationcs, 
-    we need to manage all of the different states together. 
+    If a user happens to select multipleFeatures and a singleFeature in one combination of interactions, 
+    then we need to save those pieces of states together. We also need to be able to save if they've been
+    selected in separate interactions, like if a user only selects a single geometry features and clicks to 
+    save, or if they use the draw tool to select multiple features.
     
     In other words, we need to be able to handle when a user selects multipleFeatures and a singleFeature 
-    in the same interaction, without pressing the "save" button. 
+    in the same interaction, without first pressing the "save" button when they switch between two types
+    of interaction. 
     
-    To handle these variations, useEffect listens to changes to those variables. When any of the variables
-    change, we reset the geomsToSave variable. The data in geomsToSave is what gets POSTed to the API.
-    
-    So, we save all of the selected assets in one action, no matter how the user selected them.
+    To handle these variations, useEffect listens to changes to the singleFeature and multipleFeature 
+    variables. When either of those variables change, we reset the geomsToSave variable. The data 
+    in geomsToSave is what gets POSTed to the API.
   */
   useEffect(() => {
     let featureCollection = null
@@ -190,8 +191,8 @@ function SelectAssetsMap(props) {
         'popupclose': () => {
           setSingleFeature(null),
           
-          // Reset the fillColor because, when the layer was clicked on,
-          // the layer changed color to appear selected.
+          // Reset the fillColor because the layer changed color 
+          // whenever it was clicked on.
           layer.setStyle({
             fillColor: 'black',
             fillOpacity: '0.2',
