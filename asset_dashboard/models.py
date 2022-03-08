@@ -156,7 +156,6 @@ class Phase(SequencedModel):
 
     funding_streams = models.ManyToManyField('FundingStream')
 
-    completed = models.BooleanField(default=False)
     year = models.IntegerField(null=True, blank=True)
 
     total_estimated_cost = MoneyField(default_currency='USD',

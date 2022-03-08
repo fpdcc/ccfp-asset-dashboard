@@ -84,16 +84,12 @@ class FundingStreamForm(StyledFormMixin, ModelForm):
 
 
 class PhaseForm(StyledFormMixin, ModelForm):
-    COMPLETED_CHOICES = ((True, 'Yes',), (False, 'No',))
-    completed = ChoiceField(choices=COMPLETED_CHOICES)
-
     class Meta:
         model = Phase
         fields = [
             'phase_type',
             'estimated_bid_quarter',
             'status',
-            'completed',
             'year',
             'total_estimated_cost'
         ]
