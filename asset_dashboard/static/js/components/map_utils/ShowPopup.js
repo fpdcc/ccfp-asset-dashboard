@@ -8,6 +8,14 @@ export default function ShowPopup({ geojson }) {
     map.eachLayer((layer) => {
       if (layer.feature == geojson) {
         layer.openPopup()
+
+        // Make the layer appear selected.
+        layer.setStyle({
+          fillColor: '#3388ff',
+          fillOpacity: '0.2',
+          color: '#3388ff',
+          weight: '4'
+        })
       }
     })
   }, [geojson])
