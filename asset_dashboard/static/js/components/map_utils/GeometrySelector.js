@@ -4,12 +4,16 @@ import clip from 'turf-clip'
 import * as turf from '@turf/turf'
 import EditControl from './EditControl'
 
-export default function MapClipper({ geoJson, onClipped }) {
+/*
+  Allows the selection of multiple geometries at once. Also clips 
+  LineStrings based on the bounds of the drawn geometry area.
+*/
+export default function GeometrySelector({ geoJson, onGeometriesSelected }) {
   const [drawnGeometries, setDrawnGeometries] = useState(null)
 
   useEffect(() => {
     if (drawnGeometries) {
-      clipGeometries(drawnGeometries)
+      selectGeometries(drawnGeometries)
     }
   }, [drawnGeometries])
 
@@ -60,7 +64,8 @@ export default function MapClipper({ geoJson, onClipped }) {
     intersect with the drawnGeometries. 
     A LineString would be a trail that can be clipped.
     The remaining types would be like a building or structure, etc
-    that should be treated as an entire entity and not clipped. */
+    that should be treated as an entire entity and not clipped, but entirely selected. 
+  */
   function separateGeometryTypes() {
     const lineStringFeatureTypes = []
     const allOtherFeatureTypes = []
@@ -103,7 +108,7 @@ export default function MapClipper({ geoJson, onClipped }) {
     return []
   }
 
-  function clipGeometries(geometries) {
+  function selectGeometries(geometries) {
     const [lineStringFeatureCollection, allOtherTypesFeatureCollection] = separateGeometryTypes()
 
     const bounds = turf.featureCollection(Object.values(geometries))
@@ -115,11 +120,11 @@ export default function MapClipper({ geoJson, onClipped }) {
     const finalFeatureCollection = turf.featureCollection(intersectingFeatures.concat(clippedFeatures))
 
     if (finalFeatureCollection.features.length > 0) {
-      onClipped(finalFeatureCollection)
+      onGeometriesSelected(finalFeatureCollection)
     } else {
       // No features exist, which means they were deleted.
-      // Send back null so that the caller has no clipped geometries.
-      onClipped(null)
+      // Send back null so that the caller has no geometries.
+      onGeometriesSelected(null)
     }
   }
   
