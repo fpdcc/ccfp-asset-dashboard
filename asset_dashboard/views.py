@@ -203,8 +203,6 @@ class PhaseCreateView(LoginRequiredMixin, CreateView):
     form_class = PhaseForm
 
     def form_valid(self, form):
-        context = self.get_context_data()
-
         if form.is_valid():
             phase_data = {
                 **form.cleaned_data,
@@ -273,10 +271,10 @@ class FundingStreamCreateView(LoginRequiredMixin, CreateView):
         })
 
         return context
-    
+
     def form_valid(self, form):
         context = self.get_context_data()
-        
+
         phase = context['phase']
 
         if form.is_valid():
@@ -287,6 +285,7 @@ class FundingStreamCreateView(LoginRequiredMixin, CreateView):
             return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': phase.id}))
         else:
             return super().form_invalid(form)
+
 
 class FundingStreamUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'asset_dashboard/partials/forms/create_update_funding_stream_form.html'
