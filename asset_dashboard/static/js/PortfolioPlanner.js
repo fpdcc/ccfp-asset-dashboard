@@ -391,7 +391,7 @@ class PortfolioPlanner extends React.Component {
                   <CSVLink
                     data={this.state.portfolio.projects}
                     filename={`CIP-${this.getDate()}`}
-                    className='btn btn-primary mx-auto'
+                    className='btn btn-info mx-auto'
                     >
                       Export as CSV
                   </CSVLink>

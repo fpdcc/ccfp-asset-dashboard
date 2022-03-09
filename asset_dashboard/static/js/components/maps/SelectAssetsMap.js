@@ -1,23 +1,23 @@
 import ReactDOM from 'react-dom'
-import ReactDOMServer from 'react-dom/server'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { GeoJSON } from 'react-leaflet'
 import hash from 'object-hash'
 import Cookies from 'js-cookie'
 import { useSessionstorageState } from 'rooks'
+import * as turf from '@turf/turf'
 import BaseMap from './BaseMap'
 import AssetSearchTable from '../tables/AssetSearchTable'
 import ExistingAssetsTable from '../tables/ExistingAssetsTable'
-import MapClipper from '../map_utils/MapClipper'
+import GeometrySelector from '../map_utils/GeometrySelector'
 import MapZoom from '../map_utils/MapZoom'
 import zoomToSearchGeometries from '../map_utils/zoomToSearchGeometries'
 import zoomToExistingGeometries from '../map_utils/zoomToExistingGeometries'
 import Message from '../helpers/Message'
-import Popup from '../map_utils/Popup'
+import bindPopup from '../map_utils/bindPopup'
+import ShowPopup from '../map_utils/ShowPopup'
 import circleMarker from '../map_utils/circleMarker'
 
 function AssetTypeOptions() {
-  // these options could come from the server but hardcoding for now 
   const options = [
     {value: 'buildings', label: 'Buildings'},
     {value: 'trails', label: 'Trails'},
@@ -34,12 +34,14 @@ function AssetTypeOptions() {
 function SelectAssetsMap(props) {
   const [searchGeoms, setSearchGeoms] = useSessionstorageState('searchGeoms', null)
   const [existingGeoms, setExistingGeoms] = useState()
-  const [clippedGeoms, setClippedGeoms] = useState(null)
+  const [geomsToSave, setGeomsToSave] = useState(null)
   const [searchText, setSearchText] = useSessionstorageState('searchText', '')
   const [searchAssetType, setSearchAssetType] = useSessionstorageState('searchAssetTypes', 'buildings')
   const [isLoading, setIsLoading] = useState(false)
   const [phaseId, setPhaseId] = useState(null)
   const [ajaxMessage, setAjaxMessage] = useSessionstorageState('ajaxMessage', null)
+  const [multipleFeatures, setMultipleFeatures] = useState(null)
+  const [singleFeature, setSingleFeature] = useState(null)
 
   useEffect(() => {
     if (props?.existing_assets) {
@@ -61,12 +63,12 @@ function SelectAssetsMap(props) {
     }
   }
 
-  function onClipped(featureCollection) {
-    setClippedGeoms(featureCollection)
+  function onGeometriesSelected(featureCollection) {
+    setMultipleFeatures(featureCollection)
   }
 
   function saveGeometries() {
-    const data = clippedGeoms['features'].map(feature => {
+    const data = geomsToSave['features'].map(feature => {
       return {
         'asset_id': feature['properties']['identifier'],
         'asset_type': searchAssetType,
@@ -139,13 +141,72 @@ function SelectAssetsMap(props) {
     })
   }
 
-  function onEachFeature(feature, layer) {
-    const popupContent = ReactDOMServer.renderToString(
-      <Popup feature={feature} />
-    )
+  function onSearchAssetClick(e) {
+    const layer = e.target
+    const layerFeature = layer?.feature ? layer.feature : null
 
-    layer.bindPopup(popupContent)
+    if (layerFeature) {
+      setSingleFeature(layerFeature)
+    }
   }
+
+  /*
+    The geometry features to save can come from three different user interactions:
+      1. By clicking on a row in the search table. This loads up the singleFeature to save.
+      2. By clicking on a single geom in the map. This also loads up the singleFeature to save.
+      3. By selecting multipleFeatures via the GeometrySelector component, which loads multipleFeatures to save.
+    If a user happens to select multipleFeatures and a singleFeature in one combination of interactions, 
+    then we need to save those pieces of states together. We also need to be able to save if they've been
+    selected in separate interactions, like if a user only selects a single geometry features and clicks to 
+    save, or if they use the draw tool to select multiple features.
+    
+    In other words, we need to be able to handle when a user selects multipleFeatures and a singleFeature 
+    in the same interaction, without first pressing the "save" button when they switch between two types
+    of interaction. 
+    
+    To handle these variations, useEffect listens to changes to the singleFeature and multipleFeature 
+    variables. When either of those variables change, we reset the geomsToSave variable. The data 
+    in geomsToSave is what gets POSTed to the API.
+  */
+  useEffect(() => {
+    let featureCollection = null
+
+    if (multipleFeatures && singleFeature) {
+      featureCollection = turf.featureCollection([singleFeature, ...multipleFeatures.features])
+    } else if (multipleFeatures && !singleFeature) {
+      featureCollection = multipleFeatures
+    } else if (singleFeature && !multipleFeatures) {
+      featureCollection = turf.featureCollection([singleFeature])
+    }
+
+    setGeomsToSave(featureCollection)
+  }, [multipleFeatures, singleFeature])
+
+  const onEachSearchFeature = useCallback(
+    (feature, layer) => {
+      bindPopup(feature, layer)
+    
+      layer.on({
+        'click': onSearchAssetClick,
+        'popupclose': () => {
+          setSingleFeature(null),
+          
+          // Reset the fillColor because the layer changed color 
+          // whenever it was clicked on.
+          layer.setStyle({
+            fillColor: 'black',
+            fillOpacity: '0.2',
+          })
+        }
+      })
+    }, [searchGeoms]
+  )
+
+  const onEachExistingAssetFeature = useCallback(
+    (feature, layer) => {
+      bindPopup(feature, layer)
+    }, [existingGeoms]
+  )
  
   return (
     <>
@@ -158,8 +219,8 @@ function SelectAssetsMap(props) {
         : null
       }
       <div className='row'>
-        <div className='col-4'>
-          <div className='row'>
+        <div className='col-4 border rounded border-secondary shadow-sm py-1 ml-3'>
+          <div className='row my-3'>
             <div className='col'>
               <div className='row m-1'>
                 <label htmlFor='asset-search' className='sr-only'>Search for Assets</label>
@@ -192,23 +253,30 @@ function SelectAssetsMap(props) {
             {searchGeoms && 
               <AssetSearchTable
                 rows={searchGeoms.features}
+                onSelectRow={setSingleFeature}
               />
             }
           </div>
         </div>
         <div className='col'>
-          <div className='d-flex justify-content-end m-2'>
-            {clippedGeoms 
-              ?
-                <button 
-                  className='btn btn-primary'
-                  onClick={() => saveGeometries()}>
-                  Save Assets
-                </button>
-              : <p>Use the map toolbar to select assets.</p>
-            }
+          <div className='card text-center bg-light mb-4 border-secondary shadow-sm'>
+            <div className='card-body'>
+              <h2 className='card-title'>{props.phase_name}</h2>
+                <div className=''>
+                  {geomsToSave 
+                    ?
+                      <button 
+                        className='btn btn-info'
+                        onClick={() => saveGeometries()}>
+                        Add Asset to Phase
+                      </button>
+                    : <p className='lead'>Click on an asset or use the map toolbar to select and save assets.</p>
+                  }
+                </div>
+            </div>
           </div>
-          <div className='map-container' aria-label='Asset Selection Map'>
+          
+          <div className='map-container border border-secondary rounded shadow-sm' aria-label='Asset Selection Map'>
             <BaseMap
               center={[41.8781, -87.6298]}
               zoom={11}
@@ -220,14 +288,16 @@ function SelectAssetsMap(props) {
                     // Hash key tells the geojson to re-render 
                     // when the state changes: https://stackoverflow.com/a/46593710
                     key={hash(searchGeoms)} 
-                    style={{color: 'black', dashArray: '5,10', weight: '0.75'}}
-                    onEachFeature={onEachFeature}
+                    style={{color: 'black', dashArray: '5,10', weight: '2'}}
+                    onEachFeature={onEachSearchFeature}
                   />
-                    <MapClipper 
+                    <GeometrySelector 
                       geoJson={searchGeoms}
-                      onClipped={onClipped}
+                      onGeometriesSelected={onGeometriesSelected}
                     />
                     <MapZoom searchGeoms={searchGeoms} />
+                    {/* {selectedSearchAsset && <ShowPopup geojson={selectedSearchAsset} />} */}
+                    {singleFeature && <ShowPopup geojson={singleFeature} />}
                 </>
               }
               {existingGeoms && 
@@ -235,7 +305,7 @@ function SelectAssetsMap(props) {
                   data={existingGeoms} 
                   style={{color: 'green'}}
                   pointToLayer={circleMarker}
-                  onEachFeature={onEachFeature} />
+                  onEachFeature={onEachExistingAssetFeature} />
               }
             </BaseMap>
           </div>

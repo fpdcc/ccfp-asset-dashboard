@@ -31,8 +31,8 @@ function ExistingAssetsTable({ rows }) {
   }
 
   return (
-    <div>
-      <h3>Phase Assets</h3>
+    <div className='border rounded border-secondary shadow-sm mt-4'>
+      <h3 className='m-3'>Phase Assets</h3>
       {ajaxMessage 
         ? <Message
             text={ajaxMessage.text}

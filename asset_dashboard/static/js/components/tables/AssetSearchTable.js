@@ -1,20 +1,30 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import ReactTable from '../BaseTable'
 import PropTypes from 'prop-types'
 import assetSearchColumns from '../table_utils/assetSearchColumns'
 
-function AssetSearchTable({ rows }) {
+function AssetSearchTable({ rows, onSelectRow }) {
+  const onRowClick = useCallback(
+    ({ original }) => {
+      return {
+        onClick: e => {
+          onSelectRow(original)
+        }
+      }
+    }, [rows]
+  )
+
   return (
-    <>
+    <div className='p-2'>
       <ReactTable
         rows={rows}
         columns={React.useMemo(() => assetSearchColumns, [])}
-        // we could use this to select assets from the table
-        getTrProps={() => console.log('on row click')} 
+        getTrProps={onRowClick} 
         pageSizeIncrements={[10]}
         sizeOfPage={10}
+        cellClassNames='text-nowrap'
       />
-    </>
+    </div>
   )
 }
 
