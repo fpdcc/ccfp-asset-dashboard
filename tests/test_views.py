@@ -1,6 +1,6 @@
 import pytest
 from django.urls import reverse
-from asset_dashboard.models import Project, PhaseFundingYear, ProjectScore, ProjectCategory, User, Phase
+from asset_dashboard.models import Project, ProjectScore, ProjectCategory, User, Phase
 from django.forms.models import model_to_dict
 import json
 from django.utils.html import escape
@@ -249,8 +249,9 @@ def test_project_phase_form(client, project, user):
         'phase_type': 'design',
         'estimated_bid_quarter': 'Q2',
         'status': 'in-progress',
-        'budget_0': '100000',
-        'budget_1': 'USD',
+        'total_estimated_cost_0': 100000.00,
+        'total_estimated_cost_1': 'USD',
+        'year': 2022
     }
     
     form_response = client.post(phase_url, data=form_data)
@@ -262,7 +263,39 @@ def test_project_phase_form(client, project, user):
     assert phase.phase_type == form_data['phase_type']
     assert phase.estimated_bid_quarter == form_data['estimated_bid_quarter']
     assert phase.status == form_data['status']
-    assert phase.phasefinances.budget.amount == float(form_data['budget_0'])
+    assert phase.total_estimated_cost.amount == form_data['total_estimated_cost_0']
+    assert phase.year == form_data['year']
+
+
+@pytest.mark.django_db
+def test_funding_stream_form(client, project, user):
+    client.force_login(user=user)
+    prj = project.build()
+    
+    phase = Phase.objects.filter(project=prj)[0]
+    
+    create_funding_stream_url = reverse('create-funding', kwargs={'pk': phase.id})
+    response = client.get(create_funding_stream_url)
+    assert response.status_code == 200
+    
+    form_data = {
+        'budget_0': 1000000.00,
+        'budget_1': 'USD',
+        'obligated_year': 2022,
+        'obligated_completion_date': 2026,
+        'funding_secured': False,
+        'source_type': 'capital_improvement_fund'
+    }
+    
+    form_response = client.post(create_funding_stream_url, data=form_data)
+    assert form_response.status_code == 302
+    
+    funding_stream = Phase.objects.get(id=phase.id).funding_streams.all()[0]
+    assert funding_stream.budget.amount == form_data['budget_0']
+    assert funding_stream.obligated_year == form_data['obligated_year']
+    assert funding_stream.obligated_completion_date == form_data['obligated_completion_date']
+    assert funding_stream.funding_secured == form_data['funding_secured']
+    assert funding_stream.source_type == form_data['source_type']
 
 
 @pytest.mark.django_db

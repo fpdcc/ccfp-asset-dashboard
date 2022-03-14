@@ -24,7 +24,7 @@ from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreate
                                     ProjectUpdateView, ProjectListJson, \
                                     ProjectsByDistrictListView, ProjectsByDistrictListJson, \
                                     ProjectPhasesListView, PhaseCreateView, PhaseUpdateView, \
-                                    AssetAddEditView
+                                    AssetAddEditView, FundingStreamCreateView, FundingStreamUpdateView
 
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -45,6 +45,8 @@ urlpatterns = [
     path('projects/<int:pk>/phases/', ProjectPhasesListView.as_view(), name='project-phases-list'),
     path('projects/<int:pk>/phases/create/', PhaseCreateView.as_view(), name='create-phase'),
     path('projects/phases/edit/<int:pk>/', PhaseUpdateView.as_view(), name='edit-phase'),
+    path('projects/phases/<int:pk>/funding/create/', FundingStreamCreateView.as_view(), name='create-funding'),
+    path('projects/phases/<int:pk>/funding/update/', FundingStreamUpdateView.as_view(), name='update-funding'),
     path('projects/phases/edit/<int:pk>/assets/', AssetAddEditView.as_view(), name='create-update-assets'),
     path('projects/districts/', ProjectsByDistrictListView.as_view(), name='projects-by-district'),
     path('projects/districts/json/', ProjectsByDistrictListJson.as_view(), name='projects-district-json'),

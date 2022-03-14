@@ -1,5 +1,5 @@
-from django.forms import ModelForm, TextInput
-from .models import Project, PhaseFinances, ProjectScore, ProjectCategory, Phase
+from django.forms import ModelForm, TextInput, ChoiceField
+from .models import Project, FundingStream, ProjectScore, ProjectCategory, Phase
 
 
 class StyledFormMixin(object):
@@ -65,11 +65,18 @@ class ProjectCategoryForm(StyledFormMixin, ModelForm):
         ]
 
 
-class PhaseFinancesForm(StyledFormMixin, ModelForm):
+class FundingStreamForm(StyledFormMixin, ModelForm):
+    SECURED_CHOICES = ((True, 'Yes',), (False, 'No',))
+    funding_secured = ChoiceField(choices=SECURED_CHOICES)
+
     class Meta:
-        model = PhaseFinances
+        model = FundingStream
         fields = [
-            'budget'
+            'budget',
+            'obligated_year',
+            'obligated_completion_date',
+            'source_type',
+            'funding_secured'
         ]
 
     def __init__(self, *args, **kwargs):
@@ -82,7 +89,9 @@ class PhaseForm(StyledFormMixin, ModelForm):
         fields = [
             'phase_type',
             'estimated_bid_quarter',
-            'status'
+            'status',
+            'year',
+            'total_estimated_cost'
         ]
 
     def __init__(self, *args, **kwargs):

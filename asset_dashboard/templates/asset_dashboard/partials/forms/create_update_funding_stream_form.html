@@ -1,0 +1,47 @@
+{% extends "asset_dashboard/partials/project_base.html" %}
+{% load static %}
+
+{% block project %}
+<div class="row">
+  <div class="border border-secondary rounded shadow-sm p-3 m-2">
+    <form method="post">
+      {% csrf_token %}
+
+      {{ form.errors }}
+
+      <div class="row justify-content-between mx-3">
+        <h3>Funding Source</h3>
+        <input type="submit" value="Save Funding" class="btn btn-info">
+      </div>
+
+      <div class="row m-4">
+        <div class="col">
+          <strong>Budget</strong>
+          {{ form.budget }}
+        </div>
+        <div class="col">
+          <strong>Obligated Year</strong>
+          {{ form.obligated_year }}
+        </div>
+        <div class="col">
+          <strong>Obligated Completion Date</strong>
+          {{ form.obligated_completion_date }}
+        </div>
+        <div class="col">
+          <!-- TODO: implement this -->
+          <div class="row">
+            <strong>Funding Secured</strong>
+            {{ form.funding_secured }}
+          </div>
+        </div>
+        <div class="col">
+          <div class="row">
+            <strong>Source Type</strong>
+            {{ form.source_type }}
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
