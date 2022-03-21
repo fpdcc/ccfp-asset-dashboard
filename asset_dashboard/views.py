@@ -212,14 +212,15 @@ class PhaseCreateView(LoginRequiredMixin, CreateView):
             phase = Phase.objects.create(**phase_data)
 
             messages.success(self.request, 'Phase successfully created!')
-            return HttpResponseRedirect(reverse('project-phases-list', kwargs={'pk': phase.project.pk}))
+            return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': phase.pk}))
         else:
             return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
+        print('pk', self.kwargs['pk'])
         context['project'] = Project.objects.get(id=self.kwargs['pk'])
+        print('project', context['project'])
 
         return context
 
@@ -242,6 +243,9 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
             }
 
         context['funding_streams'] = self.object.funding_streams.all()
+
+        from pprint import pprint
+        pprint(context)
 
         return context
 
@@ -295,7 +299,7 @@ class FundingStreamUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        phase = Phase.objects.get(id=self.kwargs['pk'])
+        phase = self.object.phase_set.all()[0]
 
         context.update({
             'phase': phase,
