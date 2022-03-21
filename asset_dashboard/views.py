@@ -218,9 +218,8 @@ class PhaseCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print('pk', self.kwargs['pk'])
+
         context['project'] = Project.objects.get(id=self.kwargs['pk'])
-        print('project', context['project'])
 
         return context
 
@@ -243,9 +242,6 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
             }
 
         context['funding_streams'] = self.object.funding_streams.all()
-
-        from pprint import pprint
-        pprint(context)
 
         return context
 
