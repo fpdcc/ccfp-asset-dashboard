@@ -43,7 +43,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
         for phase in phases:
             project_phases.append({
                 'phase': phase.name,
-                'total_budget': FundingStream.objects.get(phase=phase).budget.amount,
+                'total_budget': phase.total_budget,
                 'pk': phase.id,
                 'name': phase.project.name,
                 'description': phase.project.description,
