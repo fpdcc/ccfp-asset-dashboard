@@ -295,7 +295,7 @@ class FundingStreamUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        phase = self.object.phase_set.all()[0]
+        phase = self.object.phase_set.get()
 
         context.update({
             'phase': phase,
