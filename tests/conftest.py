@@ -9,7 +9,6 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from django.conf import settings
 from django.test.utils import setup_databases
 from django.contrib.gis.geos import GEOSGeometry
-from django.core.management import call_command
 
 from rest_framework.test import APIRequestFactory
 
@@ -181,34 +180,6 @@ def districts():
             name='District 2',
             boundary=GEOSGeometry(json.dumps(boundary_2['features'][0]['geometry']))
         )
-    #
-    # district_1_name = 'District 1'
-    # models.SenateDistrict.objects.create(
-    #     name=fake_district_name,
-    #     geom=geom=GEOSGeometry(json.dumps(boundary_1))
-    # )
-    # models.HouseDistrict.objects.create(
-    #     name=fake_district_name,
-    #     geom=geom=GEOSGeometry(json.dumps(boundary_1))
-    # )
-    # models.HouseDistrict.objects.create(name=fake_district_name)
-    # models.CommissionerDistrict.objects.create(name=fake_district_name)
-    # models.Zone.objects.create(name=f'Zone {index+1}')
-    #
-    #
-    # for index in range(6):
-    #     fake_district_name = f'District {index+1}'
-    #     models.SenateDistrict.objects.create(name=fake_district_name)
-    #     models.HouseDistrict.objects.create(name=fake_district_name)
-    #     models.CommissionerDistrict.objects.create(name=fake_district_name)
-    #     models.Zone.objects.create(name=f'Zone {index+1}')
-    #
-    # senate_districts = models.SenateDistrict.objects.all()
-    # house_districts = models.HouseDistrict.objects.all()
-    # commissioner_districts = models.CommissionerDistrict.objects.all()
-    # zones = models.Zone.objects.all()
-    #
-    # return senate_districts, house_districts, commissioner_districts, zones
 
 
 @pytest.fixture
