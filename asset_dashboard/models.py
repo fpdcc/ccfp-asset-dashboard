@@ -151,7 +151,6 @@ class Project(models.Model):
             boundary__contains=instance.geom
         )
 
-        print('house districts', house_districts)
 
 class Phase(SequencedModel):
     """
@@ -357,6 +356,7 @@ class CommissionerDistrict(models.Model):
     class Meta:
         verbose_name_plural = 'Commissioner Districts'
 
+
 class Zone(models.Model):
     name = models.TextField(null=False)
     boundary = models.MultiPolygonField(srid=3435, null=True)
@@ -389,7 +389,7 @@ class ScoreWeights(models.Model):
     class Meta:
         verbose_name_plural = 'Score Weights'
 
-# TODO: can we remove this?
+
 class DummyProject(models.Model):
     """A Project model, based on the columns from ~/raw/simplified.csv. This is for testing."""
     name = models.CharField(max_length=100)
@@ -401,7 +401,7 @@ class DummyProject(models.Model):
         """"String for representing the model object"""
         return self.name
 
-## UNMANAGED MODELS
+# UNMANAGED MODELS
 # These models are for using their GIS database.
 # They are unmanaged and have only read privileges,
 # so there is no ability to write to these tables.
@@ -1183,30 +1183,3 @@ class FPDCCZones(GISModel):
     zone = models.CharField(max_length=10)
     geom = models.MultiPolygonField(srid=3435)
     abbr = models.CharField(max_length=10)
-
-
-class FPDCCCommissionerDistricts(GISModel):
-    class Meta(GISModel.Meta):
-        db_table = '"pinus"."commdistricts"'
-
-    id = models.AutoField(primary_key=True, db_column='id')
-    district = models.CharField(max_length=10)
-    geom = models.GeometryField(srid=3435)
-
-
-class FPDCCSenateDistricts(GISModel):
-    class Meta(GISModel.Meta):
-        db_table = '"pinus"."il_senate_cb_2017_17_sldu_500k_cc"'
-
-    id = models.AutoField(primary_key=True, db_column='id')
-    district = models.IntegerField()
-    geom = models.GeometryField(srid=3435)
-
-
-class FPDCCHouseDistricts(GISModel):
-    class Meta(GISModel.Meta):
-        db_table = '"pinus"."il_house_cb_2017_17_sldl_500k_cc"'
-
-    id = models.AutoField(primary_key=True, db_column='id')
-    district = models.IntegerField()
-    geom = models.GeometryField(srid=3435)
