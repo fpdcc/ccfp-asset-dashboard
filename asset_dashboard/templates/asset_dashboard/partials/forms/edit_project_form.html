@@ -1,4 +1,4 @@
-<form method="post"> 
+<form method="post">
     {% csrf_token %}
 
     {{ form.errors }}
@@ -7,12 +7,12 @@
             <strong>Project Name</strong>
             {{ form.name }}
         </div>
-        
+
         <div class="col-lg-4 col-md-12">
             <strong>Section Owner</strong>
             {{ form.section_owner }}
         </div>
-        
+
         <div class="col-lg-2 col-md-12 d-flex justify-content-center align-items-end">
             <input type="submit" value="Save Project" class="btn btn-info">
         </div>
@@ -25,18 +25,52 @@
 
     <div class="row mt-5">
         <div class="col">
-            <div class="m-4">
+            <div class="row m-4">
                 <strong>Project Category</strong>
                 {{ form.category }}
             </div>
 
-            <div class="row">
-                <div class="col m-4">
-                    <div class="p-2">
-                        <strong>Zones</strong>
-                    </div>
+            <div class="row m-4">
+                <div class="col">
+                    <div>
+                      <strong>Zones</strong>
 
-                    {{ form.zones }}
+                      <ul class="list-unstyled">
+                        {% for zone in project.zones.all %}
+                          <li>{{ zone.name }}</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <strong>Commissioner Districts</strong>
+
+                    <ul class="list-unstyled" >
+                      {% for district in project.commissioner_districts.all %}
+                        <li>{{ district.name }}</li>
+                      {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="col">
+                    <strong>Senate Districts</strong>
+
+                    <ul class="list-unstyled">
+                      {% for district in project.senate_districts.all %}
+                        <li>{{ district.name }}</li>
+                      {% endfor %}
+                    </ul>
+                </div>
+
+                <div class="col">
+                    <strong>House Districts</strong>
+
+                    <ul class="list-unstyled">
+                      {% for district in project.house_districts.all %}
+                        <li>{{ district.name }}</li>
+                      {% endfor %}
+                    </ul>
                 </div>
             </div>
         </div>
@@ -52,31 +86,4 @@
             </div>
         </div>
     </div>
-
-    <div class="row m-4 p-4">
-        <div class="col">
-            <div class="p-2 text-center">
-                <strong>Senate Districts</strong>
-            </div>
-
-            {{ form.senate_districts }}
-        </div>
-
-        <div class="col">
-            <div class="p-2 text-center">
-                <strong>House Districts</strong>
-            </div>
-
-            {{ form.house_districts }}
-        </div>
-
-        <div class="col">
-            <div class="p-2 text-center">
-                <strong>Commissioner Districts</strong>
-            </div>
-
-            {{ form.commissioner_districts }}
-        </div>
-    </div>
 </form>
-    

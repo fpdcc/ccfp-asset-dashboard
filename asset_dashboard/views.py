@@ -158,6 +158,8 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
 
+        print('context', context)
+
         return context
 
     def get_success_url(self):
