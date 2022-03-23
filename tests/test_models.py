@@ -1,5 +1,7 @@
+import json
 import pytest
-from asset_dashboard.models import ScoreWeights, Portfolio, PortfolioPhase
+from asset_dashboard.models import ScoreWeights, Portfolio, PortfolioPhase, \
+    LocalAsset, SenateDistrict, Phase
 
 
 @pytest.mark.django_db
@@ -94,3 +96,18 @@ def test_sequenced_model(user, project):
     assert phase_b.sequence == 1
     assert phase_c.sequence == 2
     assert phase_a.sequence == 3
+
+@pytest.mark.django_db
+def test_local_asset_signal(project, districts, trails_geojson):
+    senate_districts = SenateDistrict.objects.all()
+    project_a = project.build()
+
+    phase = Phase.objects.filter(project=project_a)[0]
+
+    for feature in trails_geojson['features']:
+        asset = LocalAsset.objects.create(
+            phase=phase,
+            geom=json.dumps(feature['geometry'])
+        )
+
+        assert asset.phase.project.senate_districts.all()[0] in senate_districts
