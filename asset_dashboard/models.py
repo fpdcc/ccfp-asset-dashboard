@@ -147,10 +147,6 @@ class Project(models.Model):
                 project_district.add(district)
                 instance.phase.project.save()
 
-        house_districts = HouseDistrict.objects.filter(
-            boundary__contains=instance.geom
-        )
-
 
 class Phase(SequencedModel):
     """
@@ -401,10 +397,12 @@ class DummyProject(models.Model):
         """"String for representing the model object"""
         return self.name
 
+
 # UNMANAGED MODELS
 # These models are for using their GIS database.
 # They are unmanaged and have only read privileges,
 # so there is no ability to write to these tables.
+
 
 class GISModel(models.Model):
     """
