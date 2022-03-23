@@ -138,12 +138,9 @@ class Project(models.Model):
         ]
 
         for attribute, model in district_models:
-            print('district', model)
             districts = model.objects.filter(
                 boundary__contains=instance.geom
             )
-
-            print('districts', districts)
 
             for district in districts:
                 project_district = getattr(instance.phase.project, attribute)
