@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.gis.db import models
 from django.db.models import Max, Sum
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from djmoney.models.fields import MoneyField
 
@@ -120,6 +122,30 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name or ''
+
+    @receiver(post_save, sender='asset_dashboard.LocalAsset')
+    def calculate_zones_and_districts(sender, instance, **kwargs):
+        zones = Zone.objects.filter(boundary__contains=instance.geom)
+
+        for zone in zones:
+            instance.phase.project.zones.add(zone)
+            instance.phase.project.save()
+
+        district_models = [
+            ('commissioner_districts', CommissionerDistrict),
+            ('senate_districts', SenateDistrict),
+            ('house_districts', HouseDistrict)
+        ]
+
+        for attribute, model in district_models:
+            districts = model.objects.filter(
+                boundary__contains=instance.geom
+            )
+
+            for district in districts:
+                project_district = getattr(instance.phase.project, attribute)
+                project_district.add(district)
+                instance.phase.project.save()
 
 
 class Phase(SequencedModel):
@@ -296,6 +322,7 @@ class ProjectCategory(models.Model):
 
 class HouseDistrict(models.Model):
     name = models.TextField()
+    boundary = models.GeometryField(srid=3435, null=True)
 
     def __str__(self):
         return self.name
@@ -306,6 +333,7 @@ class HouseDistrict(models.Model):
 
 class SenateDistrict(models.Model):
     name = models.TextField()
+    boundary = models.GeometryField(srid=3435, null=True)
 
     def __str__(self):
         return self.name
@@ -316,6 +344,7 @@ class SenateDistrict(models.Model):
 
 class CommissionerDistrict(models.Model):
     name = models.TextField()
+    boundary = models.GeometryField(srid=3435, null=True)
 
     def __str__(self):
         return self.name
@@ -326,6 +355,7 @@ class CommissionerDistrict(models.Model):
 
 class Zone(models.Model):
     name = models.TextField(null=False)
+    boundary = models.MultiPolygonField(srid=3435, null=True)
 
     def __str__(self):
         return self.name
@@ -357,7 +387,7 @@ class ScoreWeights(models.Model):
 
 
 class DummyProject(models.Model):
-    """A Project model, based on the columns from ~/raw/simplified.csv"""
+    """A Project model, based on the columns from ~/raw/simplified.csv. This is for testing."""
     name = models.CharField(max_length=100)
     project_description = models.CharField(max_length=1000)
     budget = models.IntegerField()
@@ -366,6 +396,12 @@ class DummyProject(models.Model):
     def __str__(self):
         """"String for representing the model object"""
         return self.name
+
+
+# UNMANAGED MODELS
+# These models are for using their GIS database.
+# They are unmanaged and have only read privileges,
+# so there is no ability to write to these tables.
 
 
 class GISModel(models.Model):
@@ -1137,12 +1173,11 @@ class TrailsMaintenance(GISModel):
     maintained_by = models.CharField(max_length=50)
 
 
-class Zones(GISModel):
-    """This table has been moved to pinus.zones. Should be removed from quercus in the future."""
-
+class FPDCCZones(GISModel):
     class Meta(GISModel.Meta):
-        db_table = '"quercus"."zones"'
+        db_table = '"pinus"."zones"'
 
-    id = models.AutoField(primary_key=True, db_column='zone_id')
+    id = models.AutoField(primary_key=True, db_column='id')
     zone = models.CharField(max_length=10)
     geom = models.MultiPolygonField(srid=3435)
+    abbr = models.CharField(max_length=10)

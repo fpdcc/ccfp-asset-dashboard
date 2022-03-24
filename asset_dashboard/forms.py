@@ -21,11 +21,7 @@ class ProjectForm(StyledFormMixin, ModelForm):
         fields = ['name',
                   'description',
                   'section_owner',
-                  'category',
-                  'senate_districts',
-                  'house_districts',
-                  'commissioner_districts',
-                  'zones']
+                  'category']
         widgets = {
             'name': TextInput(),
         }
