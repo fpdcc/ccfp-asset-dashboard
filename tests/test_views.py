@@ -238,7 +238,7 @@ def test_project_phase_form(client, project, user):
     form_data = {
         'phase_type': 'design',
         'estimated_bid_quarter': 'Q2',
-        'status': 'in-progress',
+        'status': 'ongoing',
         'total_estimated_cost_0': 100000.00,
         'total_estimated_cost_1': 'USD',
         'year': 2022
