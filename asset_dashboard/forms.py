@@ -1,3 +1,5 @@
+from datetime import datetime
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.forms import ModelForm, TextInput, ChoiceField
 from .models import Project, FundingStream, ProjectScore, ProjectCategory, Phase
 
@@ -60,23 +62,31 @@ class ProjectCategoryForm(StyledFormMixin, ModelForm):
             'subcategory'
         ]
 
+def get_year_choices(beginning, end):
+    valid_years = []
+
+    for year in range(beginning, end):
+        choice = (str(year), year)
+        valid_years.append(choice)
+    
+    return valid_years
 
 class FundingStreamForm(StyledFormMixin, ModelForm):
     SECURED_CHOICES = ((True, 'Yes',), (False, 'No',))
     funding_secured = ChoiceField(choices=SECURED_CHOICES)
+    
+    year = ChoiceField(
+        choices=get_year_choices(datetime.now().year, datetime.now().year+5)
+    )
 
     class Meta:
         model = FundingStream
         fields = [
             'budget',
-            'obligated_year',
-            'obligated_completion_date',
+            'year',
             'source_type',
             'funding_secured'
         ]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
 
 class PhaseForm(StyledFormMixin, ModelForm):

@@ -1,3 +1,4 @@
+import datetime
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.gis.db import models
@@ -275,8 +276,7 @@ class FundingStream(models.Model):
     budget = MoneyField(default_currency='USD',
                         default=0.00,
                         max_digits=11)
-    obligated_year = models.IntegerField(null=True, blank=True)
-    obligated_completion_date = models.IntegerField(null=True, blank=True)
+    year = models.IntegerField(null=True, blank=True)
     funding_secured = models.BooleanField(default=False)
     source_type = models.TextField(choices=SOURCE_TYPE_CHOICES, default='capital_improvement_fund')
 
