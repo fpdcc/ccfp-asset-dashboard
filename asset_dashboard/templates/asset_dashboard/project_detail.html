@@ -2,4 +2,8 @@
 
 {% block project %}
   {% include "asset_dashboard/partials/forms/edit_project_form.html" %}
+  
+  {% if phases %}
+    {% include "asset_dashboard/partials/phase_table.html" %}
+  {% endif %}
 {% endblock %}

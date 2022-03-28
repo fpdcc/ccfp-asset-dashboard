@@ -2,33 +2,44 @@
     {% csrf_token %}
 
     {{ form.errors }}
+    <div>
+      <div class="text-right">
+          <input type="submit" value="Save Project" class="btn btn-info">
+      </div>
+    </div>
+    
     <div class="row mb-4">
         <div class="col-lg-6 col-md-12">
-            <strong>Project Name</strong>
+            <label for="Project Name"><strong>Project Name</strong></label>
             {{ form.name }}
         </div>
 
-        <div class="col-lg-4 col-md-12">
-            <strong>Section Owner</strong>
+        <div class="col-lg-6 col-md-12">
+            <label for="Section Owner"><strong>Section Owner</strong></label>
             {{ form.section_owner }}
         </div>
-
-        <div class="col-lg-2 col-md-12 d-flex justify-content-center align-items-end">
-            <input type="submit" value="Save Project" class="btn btn-info">
-        </div>
+    </div>
+    <div class="row mb-4">
+      <div class="col-lg-6 col-md-12">
+          <label for="Project Manager"><strong>Project Manager</strong></label>
+          {{ form.project_manager }}
+      </div>
+      
+      <div class="col-lg-6 col-md-12">
+          <label for="Project Category"><strong>Project Category</strong></label>
+          {{ form.category }}
+      </div>
     </div>
     <div class="row">
         <div class="col">
+            <label for="Project Description"><strong>Description</strong></label>
             {{ form.description }}
         </div>
     </div>
 
     <div class="row mt-5">
         <div class="col">
-            <div class="row m-4">
-                <strong>Project Category</strong>
-                {{ form.category }}
-            </div>
+            
 
             <div class="row m-4">
                 <div class="col">
@@ -80,9 +91,9 @@
                 {{ score_form }}
             </table>
 
-            <div class="d-flex justify-content-between lead">
-                <strong>Weighted Score Total:</strong>
-                <p class="text-center">{{ total_score|floatformat:2 }}</p>
+            <div class="d-flex lead">
+                <strong>Weighted Score Total: &nbsp;</strong>
+                <p>{{ total_score|floatformat:2 }}</p>
             </div>
         </div>
     </div>

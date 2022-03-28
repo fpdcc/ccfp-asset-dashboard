@@ -22,6 +22,7 @@ class ProjectForm(StyledFormMixin, ModelForm):
         fields = ['name',
                   'description',
                   'section_owner',
+                  'project_manager',
                   'category']
         widgets = {
             'name': TextInput(),
