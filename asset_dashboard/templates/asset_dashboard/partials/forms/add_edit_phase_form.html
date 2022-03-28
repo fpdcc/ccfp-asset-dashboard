@@ -59,8 +59,7 @@
       <table class="table table-hover table-border py-4">
         <thead>
           <tr>
-            <th>Obligated Year</th>
-            <th>Obligated Completion Date</th>
+            <th>Year</th>
             <th>Funds</th>
             <th>Source</th>
             <th>Secured</th>
@@ -69,8 +68,7 @@
         <tbody>
           {% for funding in funding_streams %}
           <tr>
-            <td>{{ funding.obligated_year }}</td>
-            <td>{{ funding.obligated_completion_date }}</td>
+            <td>{{ funding.year }}</td>
             <td>{{ funding.budget }}</td>
             <td>{{ funding.get_source_type_display }}</td>
             <td>{{ funding.funding_secured }}</td>
