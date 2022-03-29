@@ -107,7 +107,8 @@ def test_add_project_view(client, section_owner, project_category, user):
         'name': 'trail maintenance project',
         'description': 'We need to clean the trail and fix some washouts.',
         'section_owner': section_owner.pk,
-        'category': project_category.pk
+        'category': project_category.pk,
+        'project_manager': 'Sylvia'
     }
 
     successful_response = client.post(url, data=valid_form_data)
@@ -116,6 +117,7 @@ def test_add_project_view(client, section_owner, project_category, user):
     new_project_from_form = Project.objects.filter(name=valid_form_data['name'])[0]
     assert new_project_from_form.name == valid_form_data['name']
     assert new_project_from_form.description == valid_form_data['description']
+    assert new_project_from_form.project_manager == valid_form_data['project_manager']
 
     # a ProjectScore should've been created, too
     project_score = ProjectScore.objects.filter(project=new_project_from_form)
@@ -134,7 +136,8 @@ def test_add_project_view(client, section_owner, project_category, user):
         {'name': ''},
         {'description': ''},
         {'name': 'name without description'},
-        {'description': 'description without name'}
+        {'description': 'description without name'},
+        {'project_manager': ''}
     ]
 
     for form_data in invalid_form_data:
@@ -168,12 +171,14 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
         'description': 'fixing erosion',
         'category': project_category.id,
         'section_owner': section_owner.id,
+        'project_manager': 'Sylvia Manager',
         'core_mission_score': 2,
         'operations_impact_score': 3,
         'sustainability_score': 4,
         'ease_score': 4,
         'geographic_distance_score': 1,
         'social_equity_score': 3,
+        'countywide': True
     })
 
     # test the form submission
@@ -188,6 +193,7 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
     assert updated_project[0].description == valid_form_data['description']
     assert updated_project[0].category_id == project_category.id
     assert updated_project[0].section_owner_id == section_owner.id
+    assert updated_project[0].countywide == valid_form_data['countywide']
 
     # ProjectScore model, related to Project
     assert updated_project[0].projectscore.core_mission_score == valid_form_data['core_mission_score']

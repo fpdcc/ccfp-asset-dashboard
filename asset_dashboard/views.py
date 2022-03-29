@@ -125,7 +125,8 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
                 'name': form.cleaned_data['name'],
                 'description': form.cleaned_data['description'],
                 'section_owner': form.cleaned_data['section_owner'],
-                'category': form.cleaned_data['category']
+                'category': form.cleaned_data['category'],
+                'project_manager': form.cleaned_data['project_manager']
             }
 
             project = Project.objects.create(**project_data)

@@ -1,5 +1,5 @@
 from datetime import datetime
-from django.forms import ModelForm, TextInput, ChoiceField
+from django.forms import ModelForm, TextInput, ChoiceField, BooleanField
 from .models import Project, FundingStream, ProjectScore, ProjectCategory, Phase
 
 
@@ -13,7 +13,6 @@ class StyledFormMixin(object):
 
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
-            field.widget.attrs['required'] = True
 
 
 class ProjectForm(StyledFormMixin, ModelForm):
@@ -23,10 +22,13 @@ class ProjectForm(StyledFormMixin, ModelForm):
                   'description',
                   'section_owner',
                   'project_manager',
-                  'category']
+                  'category',
+                  'countywide']
         widgets = {
             'name': TextInput(),
         }
+    
+    countywide = BooleanField(initial=False, required=False, label='countywide')
 
 
 class ProjectScoreForm(StyledFormMixin, ModelForm):

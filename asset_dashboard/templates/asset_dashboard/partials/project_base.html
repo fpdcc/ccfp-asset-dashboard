@@ -5,23 +5,22 @@
 <!-- Base view that contains the various forms for a Project. -->
 {% block body %}
   <div class="col">
-    <div class="text-right ">
-      <h1 class="display-4">{{ project.name }}</h1>
-      <a href="{% url 'create-phase' pk=project.id %}" class="lead text-info">Add Phase ></a>
-    </div>
+    <h1 class="display-4 mb-4">{{ project.name }}</h1>
     
     <ul class="nav nav-tabs">
       <li class="nav-item">
         <a class="nav-link text-info lead" id="overview" href="{% url 'project-detail' pk=project.pk %}">Overview</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-info lead" id="phases" href="{% url 'project-phases-list' pk=project.pk %}">Phases</a>
+        <a class="nav-link text-info lead" id="phases" href="{% url 'create-phase'  pk=project.pk %}">Add Phase</a>
       </li>
     </ul>
     
     <div class="tab-content card p-4 shadow-sm" id="nav-tabContent">
         {% block project %}{% endblock %}
     </div>
+    
+    {% block phase_list %}{% endblock %}
   </div>
 {% endblock %}
 
