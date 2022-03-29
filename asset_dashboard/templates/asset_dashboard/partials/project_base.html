@@ -7,16 +7,18 @@
   <div class="col">
     <h1 class="display-4 mb-4">{{ project.name }}</h1>
     
-    <ul class="nav nav-tabs">
-      <li class="nav-item">
-        <a class="nav-link text-info lead" id="overview" href="{% url 'project-detail' pk=project.pk %}">Overview</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link text-info lead" id="phases" href="{% url 'create-phase'  pk=project.pk %}">Add Phase</a>
-      </li>
-    </ul>
+    <nav>
+      <ul class="nav">
+        <li>
+          <a class="mx-2 btn btn-outline-primary nav-link" id="overview" href="{% url 'project-detail' pk=project.pk %}">Overview</a>
+        </li>
+        <li>
+          <a class="mx-2 btn btn-outline-primary nav-link" id="phases" href="{% url 'create-phase'  pk=project.pk %}">Phase</a>
+        </li>
+      </ul>
+    </nav>
     
-    <div class="tab-content card p-4 shadow-sm" id="nav-tabContent">
+    <div class="border border-secondary rounded shadow-sm p-3 m-2 card">
         {% block project %}{% endblock %}
     </div>
     
@@ -27,10 +29,6 @@
 {% block extra_js %}
 <script type="text/javascript">
   // JS for making the nav tab links look "active"
-
-  // Remove the existing active CSS class
-  Array.from(document.querySelectorAll('.nav-link')).forEach(el => el.classList.remove('active'))
-
   const tabIds = [
     "phases",
   ]
@@ -45,6 +43,8 @@
   // Else it is the project overview page. Since all of the path names that use this template
   // will have "projects", we're using "overview" as the default home-like page for a project.
   const elementId = active ? active : "overview"
-  document.getElementById(elementId).classList.add("active")
+  
+  document.getElementById(elementId).classList.add("btn-primary")
+  document.getElementById(elementId).classList.remove('btn-outline-primary')
 </script>
 {% endblock %}
