@@ -23,7 +23,7 @@ from asset_dashboard.endpoints import PortfolioViewSet, UserViewSet, \
 from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreateView, \
                                     ProjectUpdateView, ProjectListJson, \
                                     ProjectsByDistrictListView, ProjectsByDistrictListJson, \
-                                    ProjectPhasesListView, PhaseCreateView, PhaseUpdateView, \
+                                    PhaseCreateView, PhaseUpdateView, \
                                     AssetAddEditView, FundingStreamCreateView, FundingStreamUpdateView
 
 
@@ -42,7 +42,6 @@ urlpatterns = [
     path('projects/json/', ProjectListJson.as_view(), name='project-list-json'),
     path('projects/add-project/', ProjectCreateView.as_view(), name='add-project'),
     path('projects/<int:pk>/', ProjectUpdateView.as_view(), name='project-detail'),
-    path('projects/<int:pk>/phases/', ProjectPhasesListView.as_view(), name='project-phases-list'),
     path('projects/<int:pk>/phases/create/', PhaseCreateView.as_view(), name='create-phase'),
     path('projects/phases/edit/<int:pk>/', PhaseUpdateView.as_view(), name='edit-phase'),
     path('projects/phases/<int:pk>/funding/create/', FundingStreamCreateView.as_view(), name='create-funding'),

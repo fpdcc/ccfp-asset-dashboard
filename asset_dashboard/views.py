@@ -186,21 +186,6 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class ProjectPhasesListView(LoginRequiredMixin, ListView):
-    template_name = 'asset_dashboard/project_phases_list.html'
-    paginate_by = 15
-
-    def get_queryset(self):
-        return Phase.objects.annotate().filter(project=self.kwargs['pk']).order_by('sequence')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        # Need the project in context so the name shows up in the project_base.html template
-        context['project'] = Project.objects.get(id=self.kwargs['pk'])
-        return context
-
-
 class PhaseCreateView(LoginRequiredMixin, CreateView):
     template_name = 'asset_dashboard/partials/forms/add_edit_phase_form.html'
     form_class = PhaseForm
