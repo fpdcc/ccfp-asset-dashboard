@@ -261,8 +261,11 @@ function SelectAssetsMap(props) {
         <div className='col'>
           <div className='card text-center bg-light mb-4 border-secondary shadow-sm'>
             <div className='card-body'>
-              <h2 className='card-title'>{props.phase_name}</h2>
-                <div className=''>
+                <div className='d-flex justify-content-start'>
+                  <a href={`/projects/phases/edit/${phaseId}`} className='text-info'>{'<'} Back to phase</a>
+                </div>
+                <h2 className='card-title'>{props.phase_name}</h2>
+                <div>
                   {geomsToSave 
                     ?
                       <button 
