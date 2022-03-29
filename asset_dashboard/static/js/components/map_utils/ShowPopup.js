@@ -7,9 +7,6 @@ export default function ShowPopup({ geojson }) {
   useEffect(() => {
     map.eachLayer((layer) => {
       if (layer.feature == geojson) {
-        console.log('layer.feature == geojson')
-        console.log('layer.feature', layer.feature)
-        console.log('geojson', geojson)
         layer.openPopup()
 
         // Make the layer appear selected.

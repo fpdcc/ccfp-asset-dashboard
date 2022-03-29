@@ -189,14 +189,16 @@ function SelectAssetsMap(props) {
       layer.on({
         'click': onSearchAssetClick,
         'popupclose': () => {
-          setSingleFeature(null),
+          setSingleFeature(null)
           
           // Reset the fillColor because the layer changed color 
           // whenever it was clicked on.
-          layer.setStyle({
-            fillColor: 'black',
-            fillOpacity: '0.2',
-          })
+          if (layer.setStyle) {
+            layer.setStyle({
+              fillColor: 'black',
+              fillOpacity: '0.2',
+            })
+          }
         }
       })
     }, [searchGeoms]
