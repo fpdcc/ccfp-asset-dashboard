@@ -117,7 +117,7 @@ def project(section_owner, project_category):
                 project=project,
                 phase_type='feasibility',
                 estimated_bid_quarter='Q1',
-                status='in-progress'
+                status='ongoing'
             )
 
             return project

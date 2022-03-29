@@ -3,7 +3,7 @@
 
 {% block project %}
 <div class="row">
-  <div class="border border-secondary rounded shadow-sm p-3 m-2">
+  <div class="col border border-secondary rounded shadow-sm p-3 m-2">
     <form method="post">
       {% csrf_token %}
 
@@ -20,25 +20,16 @@
           {{ form.budget }}
         </div>
         <div class="col">
-          <strong>Obligated Year</strong>
-          {{ form.obligated_year }}
+          <strong>Source Type</strong>
+          {{ form.source_type }}
         </div>
         <div class="col">
-          <strong>Obligated Completion Date</strong>
-          {{ form.obligated_completion_date }}
+          <strong>Year</strong>
+          {{ form.year }}
         </div>
         <div class="col">
-          <!-- TODO: implement this -->
-          <div class="row">
-            <strong>Funding Secured</strong>
-            {{ form.funding_secured }}
-          </div>
-        </div>
-        <div class="col">
-          <div class="row">
-            <strong>Source Type</strong>
-            {{ form.source_type }}
-          </div>
+          <strong>Funding Secured</strong>
+          {{ form.funding_secured }}
         </div>
       </div>
     </form>

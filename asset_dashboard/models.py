@@ -170,15 +170,15 @@ class Phase(SequencedModel):
     ]
 
     STATUS_CHOICES = [
-        ('unscheduled', 'Unscheduled'),
-        ('in-progress', 'In Progress'),
-        ('done', 'Done'),
+        ('new', 'New'),
+        ('ongoing', 'Ongoing'),
+        ('complete', 'Complete'),
     ]
 
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='phases')
     phase_type = models.TextField(choices=PHASE_TYPE_CHOICES, null=True, blank=True)
     estimated_bid_quarter = models.TextField(choices=BID_QUARTER_CHOICES, null=True, blank=True)
-    status = models.TextField(choices=STATUS_CHOICES, default='unscheduled')
+    status = models.TextField(choices=STATUS_CHOICES, default='new')
 
     funding_streams = models.ManyToManyField('FundingStream')
 
@@ -275,8 +275,7 @@ class FundingStream(models.Model):
     budget = MoneyField(default_currency='USD',
                         default=0.00,
                         max_digits=11)
-    obligated_year = models.IntegerField(null=True, blank=True)
-    obligated_completion_date = models.IntegerField(null=True, blank=True)
+    year = models.IntegerField(null=True, blank=True)
     funding_secured = models.BooleanField(default=False)
     source_type = models.TextField(choices=SOURCE_TYPE_CHOICES, default='capital_improvement_fund')
 

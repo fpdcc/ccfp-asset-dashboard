@@ -238,7 +238,7 @@ def test_project_phase_form(client, project, user):
     form_data = {
         'phase_type': 'design',
         'estimated_bid_quarter': 'Q2',
-        'status': 'in-progress',
+        'status': 'ongoing',
         'total_estimated_cost_0': 100000.00,
         'total_estimated_cost_1': 'USD',
         'year': 2022
@@ -271,8 +271,7 @@ def test_funding_stream_form(client, project, user):
     form_data = {
         'budget_0': 1000000.00,
         'budget_1': 'USD',
-        'obligated_year': 2022,
-        'obligated_completion_date': 2026,
+        'year': 2022,
         'funding_secured': False,
         'source_type': 'capital_improvement_fund'
     }
@@ -282,8 +281,7 @@ def test_funding_stream_form(client, project, user):
 
     funding_stream = Phase.objects.get(id=phase.id).funding_streams.all()[0]
     assert funding_stream.budget.amount == form_data['budget_0']
-    assert funding_stream.obligated_year == form_data['obligated_year']
-    assert funding_stream.obligated_completion_date == form_data['obligated_completion_date']
+    assert funding_stream.year == form_data['year']
     assert funding_stream.funding_secured == form_data['funding_secured']
     assert funding_stream.source_type == form_data['source_type']
 
