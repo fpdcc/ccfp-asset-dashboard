@@ -103,7 +103,7 @@ class PhaseForm(StyledFormMixin, ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-    
+
     year = ChoiceField(
         choices=get_year_choices(datetime.now().year, datetime.now().year+5)
     )
