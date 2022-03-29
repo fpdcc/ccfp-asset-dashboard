@@ -425,6 +425,7 @@ class Buildings(GISModel):
         fields = (
             ('fpd_uid', int),
             ('building_name', str),
+            ('complex', str)
         )
 
     id = models.AutoField(primary_key=True, db_column='buildings_id')
@@ -774,6 +775,7 @@ class PicnicGroves(GISModel):
         fields = (
             ('fpd_uid', int),
             ('poi_info__nameid__name', str),
+            ('grove', int)
         )
 
     id = models.AutoField(primary_key=True, db_column='picnicgrove_id')
