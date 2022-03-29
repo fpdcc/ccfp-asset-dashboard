@@ -158,7 +158,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
             context['total_score'] = ProjectScore.objects.get(project=self.object).total_score
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
-            
+
             context['phases'] = Phase.objects.annotate().filter(project=self.kwargs['pk']).order_by('sequence')
 
         return context

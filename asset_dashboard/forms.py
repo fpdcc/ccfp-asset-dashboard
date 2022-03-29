@@ -27,7 +27,7 @@ class ProjectForm(StyledFormMixin, ModelForm):
         widgets = {
             'name': TextInput(),
         }
-    
+
     countywide = BooleanField(initial=False, required=False, label='countywide')
 
 
