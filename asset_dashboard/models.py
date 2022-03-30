@@ -427,7 +427,7 @@ class Buildings(GISModel):
             ('building_name', str),
             ('complex', str)
         )
-        
+
         and_fields = (
             ('ownership', 'fpdcc'),
             ('demolished', 'no')
@@ -937,7 +937,7 @@ class PoiInfo(GISModel):
             ('fpd_uid', int),
             ('nameid__name', str),
         )
-        
+
         and_fields = (
             ('parking_info_id__isnull', False),
         )

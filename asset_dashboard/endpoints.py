@@ -91,7 +91,7 @@ class AssetViewSet(viewsets.ModelViewSet):
                     continue
                 else:
                     search_filter |= Q(**{f'{field}__icontains': query})
-            
+
             try:
                 for field, field_value in self.model_cls.get('model').Search.and_fields:
                     search_filter &= Q(**{field: field_value})
