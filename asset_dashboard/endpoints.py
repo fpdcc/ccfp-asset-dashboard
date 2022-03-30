@@ -79,7 +79,7 @@ class AssetViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self, *args, **kwargs):
         return self.serializer_cls
-    
+
     def get_queryset(self, *args, **kwargs):
         search_filter = Q()
 
@@ -100,24 +100,6 @@ class AssetViewSet(viewsets.ModelViewSet):
                 pass
 
         return self.model_cls.get('model').objects.filter(search_filter)
-
-    # def get_queryset(self, *args, **kwargs):
-    #     search_filter = Q()
-    # 
-    #     if query := self.request.query_params.get('q', False):
-    #         for field, field_type in self.model_cls.get('model').Search.fields:
-    #             try:
-    #                 field_type(query)
-    #             except (ValueError, TypeError):
-    #                 continue
-    #             else:
-    #                 search_filter |= Q(**{f'{field}__icontains': query})
-    # 
-    #         if self.model_cls.get('check_for_not_null'):
-    #             for field in self.model_cls.get('model').Search.not_null_fields:
-    #                 search_filter &= Q(**{f'{field}__isnull': False})
-    # 
-    #     return self.model_cls.get('model').objects.filter(search_filter)
 
 
 class LocalAssetViewSet(viewsets.ModelViewSet):
