@@ -422,10 +422,15 @@ class Buildings(GISModel):
         db_table = '"quercus"."buildings"'
 
     class Search:
-        fields = (
+        or_fields = (
             ('fpd_uid', int),
             ('building_name', str),
             ('complex', str)
+        )
+        
+        and_fields = (
+            ('ownership', 'fpdcc'),
+            ('demolished', 'no')
         )
 
     id = models.AutoField(primary_key=True, db_column='buildings_id')
@@ -772,7 +777,7 @@ class PicnicGroves(GISModel):
         db_table = '"quercus"."picnicgroves"'
 
     class Search:
-        fields = (
+        or_fields = (
             ('fpd_uid', int),
             ('poi_info__nameid__name', str),
             ('grove', int)
@@ -928,12 +933,14 @@ class PoiInfo(GISModel):
         ]
 
     class Search:
-        fields = (
+        or_fields = (
             ('fpd_uid', int),
             ('nameid__name', str),
         )
-
-        not_null_fields = ['parking_info_id']
+        
+        and_fields = (
+            ('parking_info_id__isnull', False),
+        )
 
     id = models.AutoField(primary_key=True, db_column='poi_info_id')
 
@@ -1124,7 +1131,7 @@ class TrailsInfo(GISModel):
         db_table = '"quercus"."trails_info"'
 
     class Search:
-        fields = (
+        or_fields = (
             ('trails', int),
             ('trail_subsystem', str),
         )

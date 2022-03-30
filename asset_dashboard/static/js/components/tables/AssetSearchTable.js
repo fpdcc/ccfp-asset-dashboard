@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useState } from 'react'
 import ReactTable from '../BaseTable'
 import PropTypes from 'prop-types'
 import assetSearchColumns from '../table_utils/assetSearchColumns'
+import makeColumns from '../table_utils/makeColumns'
 
 function AssetSearchTable({ rows, onSelectRow }) {
-  const [columns, setColumns] = useState(assetSearchColumns)
+  const [columns, setColumns] = useState([])
 
   const onRowClick = useCallback(
     ({ original }) => {
@@ -17,29 +18,8 @@ function AssetSearchTable({ rows, onSelectRow }) {
   )
   
   useEffect(() => {
-    if (rows[0].properties.grove_number) {
-      const newColumns = [
-        {
-          Header: 'Grove',
-          accessor: 'properties.grove_number', 
-        },
-        ...columns
-      ]
-    
-      setColumns(newColumns)
-    }
-    
-    if (rows[0].properties.complex) {
-      const newColumns = [
-        ...columns, 
-        {
-          Header: 'Complex',
-          accessor: 'properties.complex', 
-        }
-      ]
-    
-      setColumns(newColumns)
-    }
+    const newColumns = makeColumns(rows, assetSearchColumns)
+    setColumns(newColumns)
   }, [rows])
 
   return (

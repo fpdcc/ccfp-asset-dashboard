@@ -3,7 +3,7 @@ import ReactDOMServer from 'react-dom/server'
 
 function Popup({ feature }) {
   const properties = feature.properties
-  console.log('properties', properties)
+
   return (
     <>
       {properties &&
