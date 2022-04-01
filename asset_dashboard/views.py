@@ -125,7 +125,8 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
                 'name': form.cleaned_data['name'],
                 'description': form.cleaned_data['description'],
                 'section_owner': form.cleaned_data['section_owner'],
-                'category': form.cleaned_data['category']
+                'category': form.cleaned_data['category'],
+                'project_manager': form.cleaned_data['project_manager']
             }
 
             project = Project.objects.create(**project_data)
@@ -158,6 +159,8 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
             context['score_form'] = ProjectScoreForm(instance=self.object.projectscore)
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
 
+            context['phases'] = Phase.objects.annotate().filter(project=self.kwargs['pk']).order_by('sequence')
+
         return context
 
     def get_success_url(self):
@@ -181,21 +184,6 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
 
         messages.success(self.request, 'Project successfully saved!')
         return super().form_valid(form)
-
-
-class ProjectPhasesListView(LoginRequiredMixin, ListView):
-    template_name = 'asset_dashboard/project_phases_list.html'
-    paginate_by = 15
-
-    def get_queryset(self):
-        return Phase.objects.annotate().filter(project=self.kwargs['pk']).order_by('sequence')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        # Need the project in context so the name shows up in the project_base.html template
-        context['project'] = Project.objects.get(id=self.kwargs['pk'])
-        return context
 
 
 class PhaseCreateView(LoginRequiredMixin, CreateView):

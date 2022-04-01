@@ -120,6 +120,10 @@ class Project(models.Model):
     commissioner_districts = models.ManyToManyField('CommissionerDistrict', blank=True)
     zones = models.ManyToManyField('Zone', blank=True)
 
+    project_manager = models.CharField(max_length=100, null=True, blank=True)
+
+    countywide = models.BooleanField(default=False)
+
     def __str__(self):
         return self.name or ''
 

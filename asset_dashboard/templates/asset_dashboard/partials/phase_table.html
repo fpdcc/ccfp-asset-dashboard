@@ -1,11 +1,7 @@
-{% extends "asset_dashboard/partials/project_base.html" %}
 {% load humanize %}
 
-{% block project %}
+{% block phase_table %}
   <div>
-    <div class="text-right mb-4">
-      <a href="{% url 'create-phase' pk=project.id %}" class="lead text-info">Add Phase ></a>
-    </div>
     <table class="table table-hover table-border py-4">
       <thead>
         <tr>
@@ -17,7 +13,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for phase in object_list %}
+        {% for phase in phases %}
           <tr>
             <td>{{ phase.phase_type }}</td>
             <td>{{ phase.status }}</td>
@@ -29,5 +25,4 @@
       </tbody>
     </table>
   </div>
-    
 {% endblock %}
