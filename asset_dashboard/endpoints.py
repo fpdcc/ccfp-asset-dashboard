@@ -64,7 +64,7 @@ class AssetViewSet(viewsets.ModelViewSet):
             'trails': {'model': TrailsInfo},
             'points_of_interest': {'model': PoiInfo},
             'picnic_groves': {'model': PicnicGroves},
-            'parking_lots': {'model': PoiInfo, 'check_for_not_null': True}
+            'parking_lots': {'model': PoiInfo}
         }.get(self.asset_type, Buildings)
 
     @property
@@ -84,7 +84,7 @@ class AssetViewSet(viewsets.ModelViewSet):
         search_filter = Q()
 
         if query := self.request.query_params.get('q', False):
-            for field, field_type in self.model_cls.get('model').Search.fields:
+            for field, field_type in self.model_cls.get('model').Search.or_fields:
                 try:
                     field_type(query)
                 except (ValueError, TypeError):
@@ -92,9 +92,12 @@ class AssetViewSet(viewsets.ModelViewSet):
                 else:
                     search_filter |= Q(**{f'{field}__icontains': query})
 
-            if self.model_cls.get('check_for_not_null'):
-                for field in self.model_cls.get('model').Search.not_null_fields:
-                    search_filter &= Q(**{f'{field}__isnull': False})
+            try:
+                for field, field_value in self.model_cls.get('model').Search.and_fields:
+                    search_filter &= Q(**{field: field_value})
+            except AttributeError:
+                # model.Search doesn't have 'and_fields' attribute
+                pass
 
         return self.model_cls.get('model').objects.filter(search_filter)
 

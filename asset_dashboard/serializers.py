@@ -160,12 +160,13 @@ class SourceAssetSerializer(GeoFeatureModelSerializer):
 class BuildingsSerializer(SourceAssetSerializer):
     class Meta:
         model = Buildings
-        fields = ('identifier', 'name', 'geom', 'source')
+        fields = ('identifier', 'name', 'geom', 'source', 'complex')
         geo_field = 'geom'
 
     identifier = NullableIntegerField(source='fpd_uid', allow_null=True)
     name = serializers.CharField(source='building_name')
     geom = GeometrySerializerMethodField()
+    complex = serializers.CharField()
 
     def get_geom(self, obj):
         return obj.geom.transform(4326, clone=True)
@@ -211,11 +212,12 @@ class PointsOfInterestSerializer(SourceAssetSerializer):
 class PicnicGrovesSerializer(SourceAssetSerializer):
     class Meta:
         model = PicnicGroves
-        fields = ('identifier', 'name', 'geom', 'source')
+        fields = ('identifier', 'name', 'geom', 'source', 'grove_number')
         geo_field = 'geom'
 
     identifier = serializers.CharField(source='fpd_uid')
     name = serializers.SerializerMethodField(source='poi_info__nameid')
+    grove_number = serializers.IntegerField(source='grove')
     geom = GeometrySerializerMethodField()
 
     def get_geom(self, obj):

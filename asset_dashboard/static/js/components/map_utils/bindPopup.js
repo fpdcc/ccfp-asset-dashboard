@@ -3,6 +3,7 @@ import ReactDOMServer from 'react-dom/server'
 
 function Popup({ feature }) {
   const properties = feature.properties
+
   return (
     <>
       {properties &&
@@ -18,6 +19,17 @@ function Popup({ feature }) {
             {properties.asset_type 
               && <li className='list-group-item'>
                   <strong>Asset Type:</strong> {properties.asset_type}
+                </li>
+            }
+            {properties.grove_number 
+              && <li className='list-group-item'>
+                  <strong>Grove:</strong> {properties.grove_number}
+                </li>
+            }
+            
+            {properties.complex 
+              && <li className='list-group-item'>
+                  <strong>Complex:</strong> {properties.complex}
                 </li>
             }
           </ul>

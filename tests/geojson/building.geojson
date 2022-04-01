@@ -28,7 +28,7 @@
         "commissioner_district": 16,
         "wastewater": null,
         "water": null,
-        "ownership": null,
+        "ownership": "fpdcc",
         "latitude": 41.831582689998974,
         "longitude": -87.83579124652252,
         "managing_department": null,

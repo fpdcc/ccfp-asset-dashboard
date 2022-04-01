@@ -189,14 +189,16 @@ function SelectAssetsMap(props) {
       layer.on({
         'click': onSearchAssetClick,
         'popupclose': () => {
-          setSingleFeature(null),
+          setSingleFeature(null)
           
           // Reset the fillColor because the layer changed color 
           // whenever it was clicked on.
-          layer.setStyle({
-            fillColor: 'black',
-            fillOpacity: '0.2',
-          })
+          if (layer.setStyle) {
+            layer.setStyle({
+              fillColor: 'black',
+              fillOpacity: '0.2',
+            })
+          }
         }
       })
     }, [searchGeoms]
@@ -261,8 +263,11 @@ function SelectAssetsMap(props) {
         <div className='col'>
           <div className='card text-center bg-light mb-4 border-secondary shadow-sm'>
             <div className='card-body'>
-              <h2 className='card-title'>{props.phase_name}</h2>
-                <div className=''>
+                <div className='d-flex justify-content-start'>
+                  <a href={`/projects/phases/edit/${phaseId}`} className='text-info'>{'<'} Back to phase</a>
+                </div>
+                <h2 className='card-title'>{props.phase_name}</h2>
+                <div>
                   {geomsToSave 
                     ?
                       <button 
