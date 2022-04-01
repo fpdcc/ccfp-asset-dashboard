@@ -49,7 +49,7 @@ $(document).ready(function() {
         dom: "<'row'<'col-sm-12'tr>>" +
             "<'row'<'col'l><'col'i><'col'p>>",
         
-        sDom: '<"#buttons">Bfrtip',
+        sDom: 'Bfrtip',
         buttons: [
           {
               extend:    'csv',
@@ -61,8 +61,6 @@ $(document).ready(function() {
               }
           }
         ],
-        
-        
 
         // add callback functions to the select widgets for filtering
         initComplete: function () {
@@ -88,8 +86,6 @@ $(document).ready(function() {
                         return column.search(val ? val : '', true, false).draw();
                       });
                 }
-
-                    
             });
         },
         
