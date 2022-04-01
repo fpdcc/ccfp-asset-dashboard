@@ -126,10 +126,6 @@ $(document).ready(function() {
     $('div.dataTables_paginate').addClass('pt-1');
     $('div.dataTables_info').addClass('text-center');
   });
-  
-  // $.extend($.fn.dataTable.defaults, {
-  //   buttons: [ 'csv' ]
-  // })
 
   function resetFilters() {
     $('#senate-select').val('')

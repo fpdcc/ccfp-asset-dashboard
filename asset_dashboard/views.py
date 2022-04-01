@@ -335,9 +335,9 @@ class ProjectsByDistrictListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['senate_districts'] = SenateDistrict.objects.all()
-        context['house_districts'] = HouseDistrict.objects.all()
-        context['commissioner_districts'] = CommissionerDistrict.objects.all()
+        context['senate_districts'] = SenateDistrict.objects.all().order_by('name')
+        context['house_districts'] = HouseDistrict.objects.all().order_by('name')
+        context['commissioner_districts'] = CommissionerDistrict.objects.all().order_by('name')
 
         return context
 
@@ -353,16 +353,18 @@ class ProjectsByDistrictListJson(LoginRequiredMixin, BaseDatatableView):
         house_district = self.request.GET.get('columns[3][search][value]', None)
         commissioner_district = self.request.GET.get('columns[4][search][value]', None)
 
+        search_filter = Q()
+        
         if senate_district:
-            qs = qs.filter(senate_districts__name=senate_district)
+            search_filter |= Q(**{'senate_districts__name': senate_district})
 
         if house_district:
-            qs = qs.filter(house_districts__name=house_district)
+            search_filter |= Q(**{'house_districts__name': house_district})
 
         if commissioner_district:
-            qs = qs.filter(commissioner_districts__name=commissioner_district)
+            search_filter |= Q(**{'commissioner_districts__name': commissioner_district})
 
-        return qs
+        return qs.filter(search_filter).distinct()
 
     def prepare_results(self, qs):
         # prepare list with output column data
