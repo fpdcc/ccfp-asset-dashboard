@@ -354,7 +354,7 @@ class ProjectsByDistrictListJson(LoginRequiredMixin, BaseDatatableView):
         commissioner_district = self.request.GET.get('columns[4][search][value]', None)
 
         search_filter = Q()
-        
+
         if senate_district:
             search_filter |= Q(**{'senate_districts__name': senate_district})
 
