@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    resetFilters()
     var table = $('#project-by-district-list').DataTable({
         serverSide: true,
         ajax: 'json/',
