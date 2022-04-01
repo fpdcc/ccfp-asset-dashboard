@@ -1,4 +1,7 @@
 $(document).ready(function() {
+    // soft refresh doesn't clear the filters, 
+    // so always do it when the page loads 
+    resetFilters()
     var table = $('#project-list-table').DataTable({
         serverSide: true,
         ajax: 'projects/json/',
@@ -87,9 +90,20 @@ $(document).ready(function() {
     $('#search-filter').on('keyup', function() {
         table.search(this.value).draw();
     });
+    
+    $('#reset').on('click', function () {
+      table.search( '' ).columns().search( '' ).draw()
+      resetFilters()
+    })
 
     // styling configuration for the table's pagination components
     $('div.dataTables_length').addClass('pt-3');
     $('div.dataTables_length label').addClass('d-flex flex-row');
     $('div.dataTables_paginate').addClass('pt-1');
   });
+  
+  function resetFilters() {
+    $('#section-select').val('')
+    $('#category-select').val('')
+    $('#search-filter').val('')
+  }
