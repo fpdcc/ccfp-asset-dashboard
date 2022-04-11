@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    resetFilters()
     var table = $('#project-by-district-list').DataTable({
         serverSide: true,
         ajax: 'json/',
@@ -47,6 +48,19 @@ $(document).ready(function() {
         // see https://datatables.net/reference/option/dom
         dom: "<'row'<'col-sm-12'tr>>" +
             "<'row'<'col'l><'col'i><'col'p>>",
+        
+        sDom: 'Bfrtip',
+        buttons: [
+          {
+              extend:    'csv',
+              text:      'Export CSV',
+              titleAttr: 'CSV',
+              className: 'btn btn-info',
+              exportOptions: {
+                  columns: ':visible'
+              }
+          }
+        ],
 
         // add callback functions to the select widgets for filtering
         initComplete: function () {
@@ -72,8 +86,6 @@ $(document).ready(function() {
                         return column.search(val ? val : '', true, false).draw();
                       });
                 }
-
-                    
             });
         },
         
@@ -91,11 +103,18 @@ $(document).ready(function() {
             return row
         }
     });
+    
+    table.buttons().container().appendTo('#heading');
 
     // listen to click event for redirecting to a project detail page
     $('#project-by-district-list tbody').on('click', 'tr', function () {
         const id = $(this).data('project-id')
         window.location = id ? '/projects/' + id : ''
+    })
+    
+    $('#reset').on('click', function () {
+      table.search( '' ).columns().search( '' ).draw()
+      resetFilters()
     })
 
     // styling configuration for the table's pagination components
@@ -104,3 +123,9 @@ $(document).ready(function() {
     $('div.dataTables_paginate').addClass('pt-1');
     $('div.dataTables_info').addClass('text-center');
   });
+
+  function resetFilters() {
+    $('#senate-select').val('')
+    $('#house-select').val('')
+    $('#commissioner-select').val('')
+  }
