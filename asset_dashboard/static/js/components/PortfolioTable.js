@@ -4,17 +4,10 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import InputGroup from 'react-bootstrap/InputGroup'
 import projectColumns from './table_utils/projectColumns'
+import SubRow from './table_utils/SubRow'
 
 const PortfolioTable = ({ portfolio, onRemoveFromPortfolio, savePortfolioName, savePortfolio, createNewPortfolio }) => {
-  const [edit, setEdit] = useState(portfolio.name ? false : true)
-
-  const onRowClick = ({ original }) => {
-    return {
-      onClick: e => {
-        onRemoveFromPortfolio(original)
-      }
-    }
-  }
+  const [edit, setEdit] = useState(portfolio.name == '' ? false : true)
 
   const updatePortfolioName = (e) => {
     savePortfolioName(e).then(
@@ -27,12 +20,16 @@ const PortfolioTable = ({ portfolio, onRemoveFromPortfolio, savePortfolioName, s
       setEdit(true)
     ).catch(err => console.error(err))
   }
-
-  const selector = () => {
+  
+  const Selector = (row) => {
     return (
-      <span>
-        <i className="fa fa-minus-square bg-"></i>
-      </span>
+      <button 
+        class='btn'
+        type='button'
+        onClick={() => onRemoveFromPortfolio(row)} 
+        aria-label='Remove project from portfolio'>
+          <i className="fa fa-minus-square fa-lg"></i>
+      </button>
     )
   }
 
@@ -43,6 +40,7 @@ const PortfolioTable = ({ portfolio, onRemoveFromPortfolio, savePortfolioName, s
           {portfolio.name}
           <Button
             variant="outline-success"
+            size="sm"
             type="button"
             id="edit-portfolio"
             className="ml-2"
@@ -53,6 +51,7 @@ const PortfolioTable = ({ portfolio, onRemoveFromPortfolio, savePortfolioName, s
             <div className="float-right">
               <Button
                 variant={portfolio.unsavedChanges ? 'primary' : 'link'}
+                size="sm"
                 type="button"
                 id="save-portfolio-contents"
                 disabled={portfolio.unsavedChanges ? false : true}
@@ -64,7 +63,8 @@ const PortfolioTable = ({ portfolio, onRemoveFromPortfolio, savePortfolioName, s
                 }
               </Button>
               <Button
-              variant="secondary"
+                variant="secondary"
+                size="sm"
                 type="link"
                 id="new-portfolio"
                 onClick={_createNewPortfolio}>
@@ -91,7 +91,7 @@ const PortfolioTable = ({ portfolio, onRemoveFromPortfolio, savePortfolioName, s
               type="submit"
               id="save-portfolio-name"
               className="mr-3">
-              Save name
+              Save
             </Button>
             {portfolio.name &&
               <Button
@@ -106,10 +106,9 @@ const PortfolioTable = ({ portfolio, onRemoveFromPortfolio, savePortfolioName, s
         </Form>
       }
       <ReactTable
-        columns={React.useMemo(() => projectColumns(selector), [])}
+        columns={React.useMemo(() => projectColumns(Selector, onRemoveFromPortfolio), [])}
         rows={portfolio.projects}
-        getTrProps={onRowClick}
-        rowClassNames='table-info'
+        renderRowSubComponent={React.useCallback(SubRow, [])}
       />
     </div>
   )

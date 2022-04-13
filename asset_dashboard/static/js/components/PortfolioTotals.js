@@ -1,4 +1,5 @@
 import React from 'react'
+import PortfolioTotalsTable from './tables/PortfolioTotalsTable'
 
 const PortfolioTotals = ({ totals }) => {
     return (
@@ -8,31 +9,31 @@ const PortfolioTotals = ({ totals }) => {
           <h3>${totals.budgetImpact.toLocaleString() || 0}</h3>
         </div>
 
-        <div className="mt-2 col card shadow-sm pt-2 text-center">
-          <h5>Projects</h5>
-          <ul className="list-unstyled">
-            {totals.projectNames.length > 0 ?
-              totals.projectNames.map(
-                (name, index) => { 
-                  return <li key={index}>{name || 'N/A'}</li>})
-                  : 'N/A'
-            }
-          </ul>
-        </div>
-
-        <div className="mt-2 col card shadow-sm pt-2 text-center">
-          <h5>Zones</h5>
-          <ul className="list-unstyled">
-            {
-              totals.projectZones.length > 0 ?
-                totals.projectZones.map((zones) => {
-                  return zones.map((zone, index) => {
-                    return <li key={index}>{zone || 'N/A'}</li> 
-                  })
-                }): 'N/A'
-            }
-          </ul>
-        </div>
+        {
+          totals.totalEstimatedCostByYear && 
+          <div className="mt-2 col card shadow-sm pt-2 text-center">
+            <h5>Total Estimated Cost by Fiscal Year</h5>
+            <PortfolioTotalsTable totals={totals.totalEstimatedCostByYear} />
+          </div>
+        }
+        
+        {
+          totals.totalFundedAmountByYear &&
+            <div className="mt-2 col card shadow-sm pt-2 text-center">
+              <h5>Total Funded Amount by Fiscal Year</h5>
+              <ul className="list-unstyled">
+                <PortfolioTotalsTable totals={totals.totalFundedAmountByYear} />
+              </ul>
+            </div>
+        }
+        
+        {
+          totals.totalEstimatedCostByZone &&
+            <div className="mt-2 col card shadow-sm pt-2 text-center">
+              <h5>Total Cost by Zone by Fiscal Year</h5>
+              <p>todo</p>
+            </div>
+        }
       </div>
     )
   }

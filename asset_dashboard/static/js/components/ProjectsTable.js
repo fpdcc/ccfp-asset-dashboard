@@ -1,21 +1,17 @@
 import React from 'react'
 import ReactTable from './BaseTable'
 import projectColumns from './table_utils/projectColumns'
+import SubRow from './table_utils/SubRow'
 
 const ProjectsTable = ({ allProjects, onAddToPortfolio, searchInput }) => {
-  const onRowClick = ({ original }) => {
-    return {
-      onClick: e => {
-        onAddToPortfolio(original)
-      }
-    }
-  }
-
-  const selector = () => {
+  const Selector = (row) => {
     return (
-      <span>
-        <i className="fas fa-plus-square"></i>
-      </span>
+      <button 
+        class='btn'
+        type='button'
+        onClick={() => onAddToPortfolio(row)}>
+        <i className="fas fa-plus-square fa-lg" aria-label='Add project to portfolio.'></i>
+      </button>
     )
   }
 
@@ -28,8 +24,8 @@ const ProjectsTable = ({ allProjects, onAddToPortfolio, searchInput }) => {
       
       <ReactTable
         rows={allProjects}
-        columns={React.useMemo(() => projectColumns(selector), [])}
-        getTrProps={onRowClick}
+        columns={React.useMemo(() => projectColumns(Selector), [])}
+        renderRowSubComponent={React.useCallback(SubRow, [])}
       />
     </>
   )

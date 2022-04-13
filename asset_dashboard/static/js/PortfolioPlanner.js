@@ -56,11 +56,18 @@ class PortfolioPlanner extends React.Component {
         budget: parseFloat(project.total_budget) || 0,
         score: project.total_score || 'N/A',
         phase: project.phase || 'N/A',
-        zones: this.createRegionName(project.zones) || 'N/A',
-        house_districts: this.createRegionName(project.house_districts),
-        senate_districts: this.createRegionName(project.senate_districts),
-        commissioner_districts: this.createRegionName(project.commissioner_districts),
-        key: project.pk
+        zones: project.zones || 'N/A',
+        house_districts: project.house_districts,
+        senate_districts: project.senate_districts,
+        commissioner_districts: project.commissioner_districts,
+        key: project.pk,
+        funding_streams: project.funding_streams,
+        total_estimated_cost: parseFloat(project.total_estimated_cost),
+        year: project.year,
+        estimated_bid_quarter: project.estimated_bid_quarter,
+        status: project.status,
+        project_manager: project.project_manager,
+        countywide: project.countywide,
       }
     })
 
@@ -298,9 +305,63 @@ class PortfolioPlanner extends React.Component {
   calculateTotals(portfolio) {
     return {
       budgetImpact: portfolio.reduce((total, project) => { return total + project.budget }, 0),
-      projectNames: portfolio.map(project => project.name),
-      projectZones: portfolio.map(project => project.zones.split(','))
+      totalEstimatedCostByYear: this.calculateEstimatedCostByKey(portfolio, 'year', 'total_estimated_cost'),
+      totalFundedAmountByYear: this.calculateFundedAmountByYear(portfolio)
+      // totalEstimatedCostByZone: this.calculateEstimatedCostByKey(portfolio, 'zone', 'total_estimated_cost')
     }
+  }
+  
+  getEstimatedCostByYear(portfolio) {
+    let costByYear = {}
+    
+    portfolio.forEach(project => {
+      const year = project.year ? project.year : 'N/A' // test data has no year...
+      
+      let yearTotal = costByYear[year] ? costByYear[year] : 0
+      
+      costByYear = {
+        ...costByYear,
+        [year]: yearTotal += project.total_estimated_cost
+      }
+
+    })
+
+    return costByYear
+  }
+  
+  calculateEstimatedCostByKey(rows, accumulatorKey, addendField) {
+    let results = {}
+    
+    rows.forEach(project => {
+      const key = project[accumulatorKey] ? project[accumulatorKey] : 'N/A' // test data has no key value...
+      
+      let total = results[key] ? results[key] : 0
+      
+      results = {
+        ...results,
+        [key]: total += parseFloat(project[addendField])
+      }
+
+    })
+
+    return results
+  }
+  
+  calculateFundedAmountByYear(portfolio) {
+    let results = {}
+    portfolio.forEach(project => {
+      const fundingByYear = this.calculateEstimatedCostByKey(project.funding_streams, 'year', 'budget')
+
+      for (const [key, value] of Object.entries(fundingByYear)) {
+        let yearTotal = results[key] ? results[key] : 0
+        results = {
+          ...results,
+          [key]: yearTotal += value
+        }
+      }
+    })
+
+    return results
   }
 
   hydratePortfolio(portfolio, projects) {
@@ -330,15 +391,6 @@ class PortfolioPlanner extends React.Component {
     this.setState((state, props) => ({
       portfolio: {...state.portfolio, unsavedChanges: true}
     }))
-  }
-
-  createRegionName(regions) {
-    // returns a CSV string of names for the different regions
-    const names = regions.map(({ name }) => {
-      return name
-    }).join(',')
-
-    return names
   }
 
   getDate() {

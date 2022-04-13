@@ -199,6 +199,10 @@ class Phase(SequencedModel):
         ).aggregate(Sum('budget'))['budget__sum']
 
         return total if total else 0
+    
+    @property
+    def total_estimated_cost_by_zone_per_year(self):
+        ...
 
     @property
     def sequenced_instances(self):
