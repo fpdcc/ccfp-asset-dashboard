@@ -19,7 +19,7 @@ export default function SubRow({ row }) {
               return (
                 <tr>
                   <td>{source.year}</td>
-                  <td>{source.budget}</td>
+                  <td>${parseInt(source.budget).toLocaleString()}</td>
                   <td>{source.source_type}</td>
                   <td>{source.funding_secured ? 'Yes' : 'No'}</td>
                 </tr>
