@@ -57,6 +57,7 @@ class PortfolioPlanner extends React.Component {
         score: project.total_score || 'N/A',
         phase: project.phase || 'N/A',
         zones: project.zones || 'N/A',
+        zone_distribution: project.zone_distribution,
         house_districts: project.house_districts,
         senate_districts: project.senate_districts,
         commissioner_districts: project.commissioner_districts,
@@ -70,6 +71,8 @@ class PortfolioPlanner extends React.Component {
         countywide: project.countywide,
       }
     })
+    
+    console.log('projects', projects)
 
     let state = {
       allProjects: projects,
@@ -306,8 +309,8 @@ class PortfolioPlanner extends React.Component {
     return {
       budgetImpact: portfolio.reduce((total, project) => { return total + project.budget }, 0),
       totalEstimatedCostByYear: this.calculateEstimatedCostByKey(portfolio, 'year', 'total_estimated_cost'),
-      totalFundedAmountByYear: this.calculateFundedAmountByYear(portfolio)
-      // totalEstimatedCostByZone: this.calculateEstimatedCostByKey(portfolio, 'zone', 'total_estimated_cost')
+      totalFundedAmountByYear: this.calculateFundedAmountByYear(portfolio),
+      totalEstimatedCostByZone: this.calculateZoneFundingAmountByYear(portfolio)
     }
   }
   
@@ -362,6 +365,41 @@ class PortfolioPlanner extends React.Component {
     })
 
     return results
+  }
+  
+  calculateZoneFundingAmountByYear(portfolio) {
+    
+    // let yearTotals = {
+    //   2022: {
+    //     'zone_a': 20,
+    //     'zone_b': 80
+    //   }
+    // }
+    
+    let yearTotals = {}
+    portfolio.forEach(phase => {
+      const year = phase['year']
+      if (!yearTotals[year]) {
+        yearTotals[year] = {}
+      }
+
+      phase.zone_distribution.forEach(zone => {
+        console.log('zone', zone)
+        console.log('year', year)
+        console.log('yearTotals', yearTotals)
+        
+        const zoneKey = zone['zone__name']
+        console.log('zoneKey', yearTotals[year][zoneKey])
+        let zoneTotalByYear = yearTotals[year][zoneKey] ? yearTotals[year][zoneKey] : 0
+        console.log('zoneTotalByYear', zoneTotalByYear)
+        yearTotals[year] = {
+          ...yearTotals[year],
+          [zoneKey]: zoneTotalByYear += zone.zone_distribution_percentage
+        }
+      })
+    })
+    
+    console.log('zoneTotals', yearTotals)
   }
 
   hydratePortfolio(portfolio, projects) {

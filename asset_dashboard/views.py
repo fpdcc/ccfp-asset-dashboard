@@ -13,7 +13,7 @@ from django.views.generic import TemplateView, ListView, CreateView, UpdateView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from .models import HouseDistrict, LocalAsset, Project, ProjectCategory, ProjectScore, \
-    Section, SenateDistrict, CommissionerDistrict, Phase, FundingStream
+    Section, SenateDistrict, CommissionerDistrict, Phase, FundingStream, PhaseZoneDistribution
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
     FundingStreamForm, PhaseForm
 from .serializers import PortfolioSerializer, LocalAssetReadSerializer
@@ -61,6 +61,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
                 'project_manager': phase.project.project_manager,
                 'countywide': phase.project.countywide,
                 'zones': list(phase.project.zones.all().values('name')),
+                'zone_distribution': list(PhaseZoneDistribution.objects.filter(phase=phase).values('zone_distribution_percentage', 'zone__name')),
                 'house_districts': list(phase.project.house_districts.all().values('name')),
                 'senate_districts': list(phase.project.senate_districts.all().values('name')),
                 'commissioner_districts': list(phase.project.commissioner_districts.all().values('name'))
@@ -142,7 +143,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
             project = Project.objects.create(**project_data)
             ProjectScore.objects.get_or_create(project=project)
 
-            messages.success(self.request, 'Project successfully created!')
+            messages.success(self.request, 'Project successfully created.')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
             return super().form_invalid(form)
@@ -192,7 +193,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
             else:
                 return super().form_invalid(form)
 
-        messages.success(self.request, 'Project successfully saved!')
+        messages.success(self.request, 'Project successfully saved.')
         return super().form_valid(form)
 
 
@@ -209,7 +210,7 @@ class PhaseCreateView(LoginRequiredMixin, CreateView):
 
             phase = Phase.objects.create(**phase_data)
 
-            messages.success(self.request, 'Phase successfully created!')
+            messages.success(self.request, 'Phase successfully created.')
             return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': phase.pk}))
         else:
             return super().form_invalid(form)
@@ -247,8 +248,8 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
         if form.is_valid():
             phase = form.save()
 
-            messages.success(self.request, 'Phase successfully edited!')
-            return HttpResponseRedirect(reverse('project-phases-list', kwargs={'pk': phase.project.pk}))
+            messages.success(self.request, 'Phase successfully updated.')
+            return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': phase.pk}))
         else:
             return super().form_invalid(form)
 
@@ -279,7 +280,7 @@ class FundingStreamCreateView(LoginRequiredMixin, CreateView):
             funding_stream = form.save()
             phase.funding_streams.add(funding_stream)
 
-            messages.success(self.request, 'Funding Stream successfully created!')
+            messages.success(self.request, 'Funding Stream successfully created.')
             return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': phase.id}))
         else:
             return super().form_invalid(form)
@@ -304,7 +305,7 @@ class FundingStreamUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         context = self.get_context_data()
-        messages.success(self.request, 'Funding Stream successfully updated!')
+        messages.success(self.request, 'Funding Stream successfully updated.')
         return reverse('edit-phase', kwargs={'pk': context['phase'].id})
 
 

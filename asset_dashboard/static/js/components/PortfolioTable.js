@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import ReactTable from './BaseTable'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
@@ -7,7 +7,12 @@ import projectColumns from './table_utils/projectColumns'
 import SubRow from './table_utils/SubRow'
 
 const PortfolioTable = ({ portfolio, onRemoveFromPortfolio, savePortfolioName, savePortfolio, createNewPortfolio }) => {
-  const [edit, setEdit] = useState(portfolio.name == '' ? false : true)
+  console.log('porfolio', portfolio)
+  const [edit, setEdit] = useState(false)
+  
+  useEffect(() => {
+    setEdit(portfolio.id == null ? true : false)
+  }, [portfolio])
 
   const updatePortfolioName = (e) => {
     savePortfolioName(e).then(

@@ -106,6 +106,9 @@ class PhaseForm(StyledFormMixin, ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        for field_name, field in self.fields.items():
+            field.widget.attrs['required'] = True
 
     year = ChoiceField(
         choices=get_year_choices(datetime.now().year, datetime.now().year+5)

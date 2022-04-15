@@ -4,8 +4,10 @@ from django.contrib.gis.db import models
 from django.db.models import Max, Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.contrib.gis.geos import GEOSGeometry
 
 from djmoney.models.fields import MoneyField
+
 
 
 class SequencedModel(models.Model):
@@ -126,30 +128,165 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name or ''
-
+    
     @receiver(post_save, sender='asset_dashboard.LocalAsset')
-    def calculate_zones_and_districts(sender, instance, **kwargs):
+    def save_zones_and_districts(sender, instance, **kwargs):
+        # Get all the assets for this instance's phase, including this instance.
+        # phase_assets = LocalAsset.objects.filter(phase=instance.phase)
+        # 
+        # 
+        # phase_polygons = LocalAsset.aggregate_polygons(phase_assets)['geom__union']
+        # phase_linestrings = LocalAsset.aggregate_linestrings(phase_assets)['geom__union']
+        # phase_points = LocalAsset.aggregate_points(phase_assets)
+        # total_asset_distributions = {
+        #     'area': phase_polygons.area if phase_polygons else 0,
+        #     'length': phase_linestrings.length if phase_linestrings else 0,
+        #     'point_count': phase_points.count() if phase_points else 0
+        # }
+        
         zones = Zone.objects.filter(boundary__contains=instance.geom)
-
+        # distributions_by_zone = {}
+        # 
         for zone in zones:
             instance.phase.project.zones.add(zone)
             instance.phase.project.save()
+        # 
+        #     # Calculate the geographic distribution by zone
+        #     if phase_polygons:
+        #         polygons = zone.boundary.intersection(phase_polygons)
+        # 
+        #     if phase_linestrings:
+        #         linestrings = zone.boundary.intersection(phase_linestrings)
+        # 
+        #     if phase_points:
+        #         points = self.get_points_geom(zone, phase_points)
+        #     distributions_by_zone[zone] = {
+        #         'area': polygons.area if phase_polygons else 0,
+        #         'length': linestrings.length if phase_linestrings else 0,
+        #         'point_count': get_points_geom.num_coords if phase_points else 0
+        #     }
+        # 
+        # total_asset_distributions = {
+        #     'area': phase_polygons.area if phase_polygons else 0,
+        #     'length': phase_linestrings.length if phase_linestrings else 0,
+        #     'point_count': phase_points.count() if phase_points else 0
+        # }
+        # 
+        # print('distribution by zone', distributions_by_zone)
+        # zone_percentages = instance.phase.project.calculate_zone_percentage(
+        #     distributions_by_zone,
+        #     total_asset_distributions
+        # )
+        # 
+        # for zone, percentage in zone_percentages.items():
+        #     PhaseZoneDistribution.objects.create(
+        #         phase=instance.phase,
+        #         zone=zone,
+        #         zone_distribution_percentage=percentage
+        #     )
+        
+        instance.phase.project.add_districts_to_project(instance)
 
+    def add_districts_to_project(self, instance):
         district_models = [
             ('commissioner_districts', CommissionerDistrict),
             ('senate_districts', SenateDistrict),
             ('house_districts', HouseDistrict)
         ]
-
+        
         for attribute, model in district_models:
             districts = model.objects.filter(
                 boundary__contains=instance.geom
             )
-
+        
             for district in districts:
                 project_district = getattr(instance.phase.project, attribute)
                 project_district.add(district)
                 instance.phase.project.save()
+    
+    # def calculate_zone_percentage(self, distributions_by_zone, total_asset_distributions):
+    #     percentages_by_zone = {}
+    # 
+    #     for zone, distribution in distributions_by_zone.items():
+    #         quotient = sum(distribution.values()) / sum(total_asset_distributions.values())
+    #         percent = quotient * 100
+    # 
+    #         percentages_by_zone[zone] = percent
+    # 
+    #     return percentages_by_zone
+
+
+class PhaseZoneDistribution(models.Model):
+    phase = models.ForeignKey('Phase', on_delete=models.CASCADE, related_name='phase')
+    zone = models.ForeignKey('Zone', on_delete=models.CASCADE, related_name='zone')
+    zone_distribution_percentage = models.FloatField()
+    
+    @receiver(post_save, sender='asset_dashboard.LocalAsset')
+    def save_zone_distribution(sender, instance, **kwargs):
+        # Get all the assets for this instance's phase, including this instance.
+        phase_assets = LocalAsset.objects.filter(phase=instance.phase)
+        
+        phase_polygons = LocalAsset.aggregate_polygons(phase_assets)['geom__union']
+        phase_linestrings = LocalAsset.aggregate_linestrings(phase_assets)['geom__union']
+        phase_points = LocalAsset.aggregate_points(phase_assets)
+        total_asset_distributions = {
+            'area': phase_polygons.area if phase_polygons else 0,
+            'length': phase_linestrings.length if phase_linestrings else 0,
+            'point_count': phase_points.count() if phase_points else 0
+        }
+        
+        zones = Zone.objects.all()
+        distributions_by_zone = {}
+        
+        for zone in zones:
+            print('zone', zone.boundary)
+            # Calculate the geographic distribution by zone
+            if zone.boundary:
+                if phase_polygons:
+                    print('phase_polygons', phase_polygons)
+                    polygons = zone.boundary.intersection(phase_polygons)
+                
+                if phase_linestrings:
+                    linestrings = zone.boundary.intersection(phase_linestrings)
+                
+                if phase_points:
+                    points = self.get_points_geom(zone, phase_points)
+
+                distributions_by_zone[zone] = {
+                    'area': polygons.area if phase_polygons else 0,
+                    'length': linestrings.length if phase_linestrings else 0,
+                    'point_count': get_points_geom.num_coords if phase_points else 0
+                }
+        
+        total_asset_distributions = {
+            'area': phase_polygons.area if phase_polygons else 0,
+            'length': phase_linestrings.length if phase_linestrings else 0,
+            'point_count': phase_points.count() if phase_points else 0
+        }
+
+        zone_percentages = PhaseZoneDistribution.calculate_zone_percentage(
+            distributions_by_zone,
+            total_asset_distributions
+        )
+        
+        for zone, percentage in zone_percentages.items():
+            PhaseZoneDistribution.objects.create(
+                phase=instance.phase,
+                zone=zone,
+                zone_distribution_percentage=percentage
+            )
+    
+    @classmethod
+    def calculate_zone_percentage(cls, distributions_by_zone, total_asset_distributions):
+        percentages_by_zone = {}
+        
+        for zone, distribution in distributions_by_zone.items():
+            quotient = sum(distribution.values()) / sum(total_asset_distributions.values())
+            percent = quotient * 100
+            
+            percentages_by_zone[zone] = percent
+        
+        return percentages_by_zone
 
 
 class Phase(SequencedModel):
@@ -199,10 +336,6 @@ class Phase(SequencedModel):
         ).aggregate(Sum('budget'))['budget__sum']
 
         return total if total else 0
-    
-    @property
-    def total_estimated_cost_by_zone_per_year(self):
-        ...
 
     @property
     def sequenced_instances(self):
@@ -214,6 +347,10 @@ class Phase(SequencedModel):
 
     def __str__(self):
         return f'{self.phase_type} - {self.estimated_bid_quarter} - {self.status}'
+    
+    # @receiver(post_save, sender='asset_dashboard.LocalAsset')
+    # def calculate_asset_distribution_across_zones(self):
+    #     ...
 
 
 class ScoreField(models.IntegerField):
@@ -303,6 +440,38 @@ class LocalAsset(models.Model):
     asset_id = models.TextField(null=True, blank=True)
     asset_model = models.CharField(max_length=100)
     asset_name = models.CharField(max_length=600)
+    
+    @classmethod
+    def aggregate_polygons(cls, qs):
+        assets = qs.extra(where=["""
+                                    geometrytype(geom) LIKE 'POLYGON' 
+                                        OR geometrytype(geom) LIKE 'MULTIPOLYGON'
+                                 """]).aggregate(models.Union('geom'))
+
+        return assets
+    
+    @classmethod
+    def aggregate_linestrings(cls, qs):
+        assets = qs.extra(
+            where=["""
+                    geometrytype(geom) LIKE 'LINESTRING' 
+                        OR geometrytype(geom) LIKE 'MULTILINESTRING'
+                   """]).aggregate(models.Union('geom'))
+
+        return assets
+    
+    @classmethod
+    def aggregate_points(cls, qs):
+        assets = qs.extra(where=["""
+                                    geometrytype(geom) LIKE 'POINT'
+                                 """])
+        return assets
+    
+    @classmethod
+    def get_points_geom(self, zone, points):
+        return zone.boundary.intersection(
+            points.aggregate(models.Union('geom'))['geom__union']
+        )
 
 
 class ProjectCategory(models.Model):
