@@ -6,7 +6,7 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import projectColumns from './table_utils/projectColumns'
 import SubRow from './table_utils/SubRow'
 
-const PortfolioTable = ({ portfolio, onRemoveFromPortfolio, savePortfolioName, savePortfolio, createNewPortfolio }) => {
+const PortfolioTable = ({ portfolio, rows, onRemoveFromPortfolio, savePortfolioName, savePortfolio, createNewPortfolio }) => {
   const [edit, setEdit] = useState(false)
   
   useEffect(() => {
@@ -111,7 +111,7 @@ const PortfolioTable = ({ portfolio, onRemoveFromPortfolio, savePortfolioName, s
       }
       <ReactTable
         columns={React.useMemo(() => projectColumns(Selector, onRemoveFromPortfolio), [])}
-        rows={portfolio.projects}
+        rows={rows}
         renderRowSubComponent={React.useCallback(SubRow, [])}
       />
     </div>

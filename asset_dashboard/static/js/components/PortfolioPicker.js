@@ -2,7 +2,7 @@ import React from 'react'
 
 const PortfolioPicker = ({ portfolios, activePortfolio, changePortfolio }) => {
   return (
-    <div className="form-group">
+    <div className="col form-group">
       <label htmlFor="portfolio-select">
         <h5>Select portfolio</h5>
       </label>

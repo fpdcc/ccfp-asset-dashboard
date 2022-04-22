@@ -8,6 +8,7 @@ import ProjectsTable from './components/ProjectsTable'
 import PortfolioTable from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
 import PortfolioPicker from './components/PortfolioPicker'
+import SectionPicker from './components/SectionPicker'
 import SearchInput from './components/SearchInput'
 
 class PortfolioPlanner extends React.Component {
@@ -18,6 +19,7 @@ class PortfolioPlanner extends React.Component {
       allProjects: [],
       remainingProjects: [],
       allPortfolios: [],
+      sections: [],
       portfolio: {
         id: null,
         name: '',
@@ -29,7 +31,8 @@ class PortfolioPlanner extends React.Component {
         },
         unsavedChanges: false
       },
-      filterText: ''
+      filterText: '',
+      selectedSection: ''
     }
 
     this.searchProjects = this.searchProjects.bind(this)
@@ -43,6 +46,7 @@ class PortfolioPlanner extends React.Component {
 
     this.alertUser = this.alertUser.bind(this)
     this.confirmDestroy = this.confirmDestroy.bind(this)
+    this.changeSection = this.changeSection.bind(this)
   }
 
   componentDidMount() {
@@ -75,7 +79,8 @@ class PortfolioPlanner extends React.Component {
     let state = {
       allProjects: projects,
       remainingProjects: projects,
-      allPortfolios: props.portfolios
+      allPortfolios: props.portfolios,
+      sections: [...new Set(projects.map(project => { return project.section }))]
     }
 
     // Rehydate state from last edited portfolio, if one exists
@@ -107,6 +112,16 @@ class PortfolioPlanner extends React.Component {
 
     this.setState({
       filterText: filterText
+    })
+  }
+  
+  filterBySection(projects){ 
+    const filteredProjects = projects.filter(project => {
+      if (this.state.selectedSection !== '') {
+        return project.section.toLowerCase().includes(this.state.selectedSection.toLowerCase())
+      } else {
+        return project
+      }
     })
   }
 
@@ -404,12 +419,38 @@ class PortfolioPlanner extends React.Component {
     const date = new Date(new Date().toString().split('GMT')[0]+' UTC').toISOString().split('T')[0]
     return date
   }
+  
+  changeSection(e) {
+    const newSection = e.target.value
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        selectedSection: newSection
+      }
+    })
+  }
 
   render() {
     // This filters on every re-render, so that this.state.remainingProjects can be the source of truth.
     // Could also chain filtering here for other things (like "department" from the wireframe).
     const filteredRows = this.state.remainingProjects && this.state.remainingProjects.filter(project => {
       return project.description.toLowerCase().includes(this.state.filterText.toLowerCase())
+    }).filter(project => {
+      if (this.state.selectedSection !== '') {
+        return project.section.toLowerCase().includes(this.state.selectedSection.toLowerCase())
+      } else {
+        return project
+      }
+    })
+    
+    const filteredPortfolio = this.state.portfolio.projects && this.state.portfolio.projects.filter(project => {
+      return project
+    }).filter(project => {
+      if (this.state.selectedSection !== '') {
+        return project.section.toLowerCase().includes(this.state.selectedSection.toLowerCase())
+      } else {
+        return project
+      }
     })
 
     return (
@@ -418,11 +459,16 @@ class PortfolioPlanner extends React.Component {
           <div className="col">
             <h1>Build a 5-Year Plan</h1>
           </div>
-          <div className="col">
+          <div className="row col">
             <PortfolioPicker
               portfolios={this.state.allPortfolios}
               activePortfolio={this.state.portfolio}
               changePortfolio={this.selectPortfolio}
+            />
+            <SectionPicker 
+              sections={this.state.sections}
+              activeSection={this.state.selectedSection}
+              changeSection={this.changeSection}
             />
           </div>
         </div>
@@ -431,6 +477,7 @@ class PortfolioPlanner extends React.Component {
               <>
                 <PortfolioTable
                   portfolio={this.state.portfolio}
+                  rows={filteredPortfolio}
                   onRemoveFromPortfolio={this.removeProjectFromPortfolio}
                   savePortfolio={this.savePortfolio}
                   savePortfolioName={this.savePortfolioName}
