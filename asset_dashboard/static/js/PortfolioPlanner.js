@@ -57,7 +57,6 @@ class PortfolioPlanner extends React.Component {
         score: project.total_score || 'N/A',
         phase: project.phase || 'N/A',
         zones: project.zones || 'N/A',
-        zone_distribution: project.zone_distribution,
         cost_by_zone: project.cost_by_zone,
         house_districts: project.house_districts,
         senate_districts: project.senate_districts,
@@ -72,8 +71,6 @@ class PortfolioPlanner extends React.Component {
         countywide: project.countywide,
       }
     })
-    
-    console.log('projects', projects)
 
     let state = {
       allProjects: projects,
@@ -315,24 +312,6 @@ class PortfolioPlanner extends React.Component {
     }
   }
   
-  getEstimatedCostByYear(portfolio) {
-    let costByYear = {}
-    
-    portfolio.forEach(project => {
-      const year = project.year ? project.year : 'N/A' // test data has no year...
-      
-      let yearTotal = costByYear[year] ? costByYear[year] : 0
-      
-      costByYear = {
-        ...costByYear,
-        [year]: yearTotal += project.total_estimated_cost
-      }
-
-    })
-
-    return costByYear
-  }
-  
   calculateEstimatedCostByKey(rows, accumulatorKey, addendField) {
     let results = {}
     
@@ -353,6 +332,7 @@ class PortfolioPlanner extends React.Component {
   
   calculateFundedAmountByYear(portfolio) {
     let results = {}
+
     portfolio.forEach(project => {
       const fundingByYear = this.calculateEstimatedCostByKey(project.funding_streams, 'year', 'budget')
 
@@ -369,46 +349,25 @@ class PortfolioPlanner extends React.Component {
   }
   
   calculateZoneCostByYear(portfolio) {
-    
     let yearTotals = {}
+
     portfolio.forEach(phase => {
       const year = phase['year']
+
       if (!yearTotals[year] && year !== null) {
         yearTotals[year] = {}
       }
       
-      console.log('year', year)
-      console.log('phase', phase)
-      
       for (const [key, value] of Object.entries(phase.cost_by_zone)) {
-        console.log('key', key)
-        console.log('value', value)
         let total = yearTotals[year][key] ? yearTotals[year][key] : 0
+
         yearTotals[year] = {
           ...yearTotals[year],
           [key]: total += value
         }
       }
-      
-      console.log('yearTotals', yearTotals)
-
-      // phase.cost_by_zone.forEach(zone => {
-      //   console.log('zone', zone)
-      //   console.log('year', year)
-      //   console.log('yearTotals', yearTotals)
-      // 
-      //   const zoneKey = zone['zone__name']
-      //   console.log('zoneKey', yearTotals[year][zoneKey])
-      //   let zoneTotalByYear = yearTotals[year][zoneKey] ? yearTotals[year][zoneKey] : 0
-      //   console.log('zoneTotalByYear', zoneTotalByYear)
-      //   yearTotals[year] = {
-      //     ...yearTotals[year],
-      //     [zoneKey]: zoneTotalByYear += zone.zone_distribution_percentage
-      //   }
-      // })
     })
-    
-    console.log('zoneTotals', yearTotals)
+
     return yearTotals
   }
 

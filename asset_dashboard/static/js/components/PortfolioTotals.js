@@ -34,7 +34,6 @@ const PortfolioTotals = ({ totals }) => {
               <h5>Total Cost by Zone by Fiscal Year</h5>
               {
                 Object.entries(totals.totalEstimatedZoneCostByYear).map(total => {
-                  
                   return (
                     <div className='mt-3'>
                       <h6>{total[0]}</h6>

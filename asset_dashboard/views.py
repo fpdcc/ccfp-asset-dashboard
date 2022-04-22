@@ -42,7 +42,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
         project_phases = []
         for phase in phases:
             funding_streams = phase.funding_streams.all()
-            print('funding_streams', funding_streams)
+
             project_phases.append({
                 'pk': phase.id,
                 'phase': phase.name,
@@ -61,7 +61,6 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
                 'project_manager': phase.project.project_manager,
                 'countywide': phase.project.countywide,
                 'zones': list(phase.project.zones.all().values('name')),
-                'zone_distribution': list(PhaseZoneDistribution.objects.filter(phase=phase).values('zone_distribution_percentage', 'zone__name')),
                 'cost_by_zone': phase.cost_by_zone,
                 'house_districts': list(phase.project.house_districts.all().values('name')),
                 'senate_districts': list(phase.project.senate_districts.all().values('name')),

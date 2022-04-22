@@ -45,7 +45,6 @@ class Command(BaseCommand):
             
             if not district:
                 district = feature['properties'].get('District_1')
-            print('district', district)
 
             model.objects.filter(
                 name=f'District {district}',

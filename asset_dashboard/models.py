@@ -11,7 +11,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from djmoney.models.fields import MoneyField
 
 
-
 class SequencedModel(models.Model):
 
     class Meta:
@@ -136,6 +135,16 @@ class Project(models.Model):
         phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
         instance.phase.project.update_project_zones(instance, phase_geoms)
         instance.phase.project.update_project_districts(instance, phase_geoms)
+    
+    def update_project_zones(self, instance, phase_geoms):
+        zones = Zone.objects.filter(boundary__intersects=phase_geoms)
+        
+        # Delete existing relationships so we can have a fresh start.
+        instance.phase.project.zones.clear()
+
+        for zone in zones:
+            instance.phase.project.zones.add(zone)
+            instance.phase.project.save()
 
     def update_project_districts(self, instance, phase_geoms):
         district_models = [
@@ -154,15 +163,6 @@ class Project(models.Model):
                 project_district.add(district)
                 instance.phase.project.save()
 
-    def update_project_zones(self, instance, phase_geoms):
-        zones = Zone.objects.filter(boundary__intersects=phase_geoms)
-        
-        # Delete existing relationships so we can have a fresh start.
-        instance.phase.project.zones.clear()
-
-        for zone in zones:
-            instance.phase.project.zones.add(zone)
-            instance.phase.project.save()
 
 class PhaseZoneDistribution(models.Model):
     phase = models.ForeignKey('Phase', on_delete=models.CASCADE, related_name='phase')
@@ -364,6 +364,17 @@ class LocalAsset(models.Model):
     asset_id = models.TextField(null=True, blank=True)
     asset_model = models.CharField(max_length=100)
     asset_name = models.CharField(max_length=600)
+    
+    @classmethod
+    def get_distribution_by_zone(cls, phase_geoms: GEOSGeometry) -> dict:
+        distributions_by_zone = {}
+
+        for zone in Zone.objects.all():
+            if zone.boundary:
+                intersection = zone.boundary.intersection(phase_geoms)
+                distributions_by_zone[zone] = intersection.area
+
+        return distributions_by_zone
 
     @classmethod
     def get_aggregated_assets_by_phase(cls, phase: Phase) -> GeometryCollection:
@@ -383,17 +394,6 @@ class LocalAsset(models.Model):
             filtered_geoms = tuple([geom for geom in filter(None, geoms)])
 
             return GeometryCollection(filtered_geoms)
-
-    @classmethod
-    def get_distribution_by_zone(cls, phase_geoms: GEOSGeometry) -> dict:
-        distributions_by_zone = {}
-
-        for zone in Zone.objects.all():
-            if zone.boundary:
-                intersection = zone.boundary.intersection(phase_geoms)
-                distributions_by_zone[zone] = intersection.area
-
-        return distributions_by_zone
 
     @classmethod
     def aggregate_polygons(cls, qs: QuerySet) -> Union[GEOSGeometry, None]:

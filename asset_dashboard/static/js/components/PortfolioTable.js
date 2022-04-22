@@ -7,7 +7,6 @@ import projectColumns from './table_utils/projectColumns'
 import SubRow from './table_utils/SubRow'
 
 const PortfolioTable = ({ portfolio, onRemoveFromPortfolio, savePortfolioName, savePortfolio, createNewPortfolio }) => {
-  console.log('porfolio', portfolio)
   const [edit, setEdit] = useState(false)
   
   useEffect(() => {
@@ -25,7 +24,7 @@ const PortfolioTable = ({ portfolio, onRemoveFromPortfolio, savePortfolioName, s
       setEdit(true)
     ).catch(err => console.error(err))
   }
-  
+
   const Selector = (row) => {
     return (
       <button 
