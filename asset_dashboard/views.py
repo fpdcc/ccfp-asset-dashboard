@@ -62,6 +62,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
                 'countywide': phase.project.countywide,
                 'zones': list(phase.project.zones.all().values('name')),
                 'zone_distribution': list(PhaseZoneDistribution.objects.filter(phase=phase).values('zone_distribution_percentage', 'zone__name')),
+                'cost_by_zone': phase.cost_by_zone,
                 'house_districts': list(phase.project.house_districts.all().values('name')),
                 'senate_districts': list(phase.project.senate_districts.all().values('name')),
                 'commissioner_districts': list(phase.project.commissioner_districts.all().values('name'))

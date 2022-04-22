@@ -37,10 +37,15 @@ class Command(BaseCommand):
     def load_districts(self, geojson: dict, file_path: str):
         model = self._get_model(file_path)
         self.stdout.write(f'Importing {model} boundaries from {file_path}.')
+        print('model', model)
 
         for feature in geojson['features']:
             # house & senate is 'DISTRICT_INT' and commissioner is 'District_1'
-            district = feature['properties'].get('DISTRICT_INT', 'District_1')
+            district = feature['properties'].get('DISTRICT_INT')
+            
+            if not district:
+                district = feature['properties'].get('District_1')
+            print('district', district)
 
             model.objects.filter(
                 name=f'District {district}',

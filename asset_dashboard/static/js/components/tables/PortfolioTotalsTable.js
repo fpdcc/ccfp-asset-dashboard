@@ -1,12 +1,15 @@
 import React from 'react'
 
-export default function PortfolioTotalsTable({ totals }) {
+export default function PortfolioTotalsTable({ totals, headers }) {
   return (
     <table class='table table-sm'>
       <thead>
         <tr>
-          <th>Year</th>
-          <th>Amount</th>
+          {
+            headers.map(header => {
+              return (<th>{header}</th>)
+            })
+          }
         </tr>
       </thead>
       <tbody>
@@ -15,7 +18,7 @@ export default function PortfolioTotalsTable({ totals }) {
             return (
               <tr>
                 <td>{total[0]}</td>
-                <td>${total[1].toLocaleString()}</td>
+                <td>${Math.round(total[1]).toLocaleString()}</td>
               </tr>
             )
           })

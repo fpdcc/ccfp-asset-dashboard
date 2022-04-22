@@ -13,7 +13,7 @@ const PortfolioTotals = ({ totals }) => {
           totals.totalEstimatedCostByYear && 
           <div className="mt-2 col card shadow-sm pt-2 text-center">
             <h5>Total Estimated Cost by Fiscal Year</h5>
-            <PortfolioTotalsTable totals={totals.totalEstimatedCostByYear} />
+            <PortfolioTotalsTable totals={totals.totalEstimatedCostByYear} headers={['Year', 'Amount']} />
           </div>
         }
         
@@ -21,17 +21,31 @@ const PortfolioTotals = ({ totals }) => {
           totals.totalFundedAmountByYear &&
             <div className="mt-2 col card shadow-sm pt-2 text-center">
               <h5>Total Funded Amount by Fiscal Year</h5>
-              <ul className="list-unstyled">
-                <PortfolioTotalsTable totals={totals.totalFundedAmountByYear} />
-              </ul>
+              <PortfolioTotalsTable 
+                totals={totals.totalFundedAmountByYear} 
+                headers={['Year', 'Amount']}
+                />
             </div>
         }
         
         {
-          totals.totalEstimatedCostByZone &&
+          totals.totalEstimatedZoneCostByYear &&
             <div className="mt-2 col card shadow-sm pt-2 text-center">
               <h5>Total Cost by Zone by Fiscal Year</h5>
-              <p>todo</p>
+              {
+                Object.entries(totals.totalEstimatedZoneCostByYear).map(total => {
+                  
+                  return (
+                    <div className='mt-3'>
+                      <h6>{total[0]}</h6>
+                      <PortfolioTotalsTable 
+                        totals={total[1]} 
+                        headers={['Zone', 'Amount']}
+                        />
+                    </div>
+                  )
+                })
+              }
             </div>
         }
       </div>
