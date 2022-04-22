@@ -37,7 +37,6 @@ class Command(BaseCommand):
     def load_districts(self, geojson: dict, file_path: str):
         model = self._get_model(file_path)
         self.stdout.write(f'Importing {model} boundaries from {file_path}.')
-        print('model', model)
 
         for feature in geojson['features']:
             # house & senate is 'DISTRICT_INT' and commissioner is 'District_1'
