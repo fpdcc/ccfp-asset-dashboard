@@ -6,6 +6,7 @@ from django.db.models import Max, Sum, QuerySet
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.contrib.gis.geos import GEOSGeometry, GeometryCollection
+from django.core.exceptions import ObjectDoesNotExist
 
 from djmoney.models.fields import MoneyField
 
@@ -153,7 +154,7 @@ class Project(models.Model):
                 project_district.add(district)
                 instance.phase.project.save()
 
-    def update_project_zones(instance, phase_geoms):
+    def update_project_zones(self, instance, phase_geoms):
         zones = Zone.objects.filter(boundary__intersects=phase_geoms)
         
         # Delete existing relationships so we can have a fresh start.
