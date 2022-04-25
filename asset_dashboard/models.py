@@ -243,6 +243,12 @@ class Phase(SequencedModel):
     total_estimated_cost = MoneyField(default_currency='USD',
                                       default=0.00,
                                       max_digits=11)
+    
+    actual_cost = MoneyField(default_currency='USD',
+                             default=0.00,
+                             max_digits=11,
+                             blank=True,
+                             null=True)
 
     @property
     def total_budget(self):

@@ -45,6 +45,11 @@
           <strong>Estimated Cost</strong>
           {{ form.total_estimated_cost }}
         </div>
+        
+        <div class="col" id='actualCost'>
+          <strong>Actual Cost</strong>
+          {{ form.actual_cost }}
+        </div>
       </div>
     </form>
     
@@ -116,6 +121,16 @@
     {% endif %}
   </div>
 </div>
+
+<script type="text/javascript">
+  const status = document.getElementById('id_status').value
+  const actualCost = document.getElementById('actualCost')
+
+  if (status !== 'complete') {
+    console.log("does not equal completed")
+    actualCost.style.display = 'none'
+  }
+</script>
 {% endblock %}
 
 {% block extra_js %}
