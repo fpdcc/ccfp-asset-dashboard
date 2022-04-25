@@ -4,6 +4,7 @@ import pytest
 from rest_framework.test import force_authenticate
 
 from asset_dashboard.endpoints import LocalAssetViewSet, AssetViewSet
+from asset_dashboard.models import LocalAsset, Phase, PhaseZoneDistribution
 
 
 @pytest.mark.django_db
@@ -22,7 +23,7 @@ def test_post_local_assets_unauthenticated(api, local_asset_request_body):
 
 
 @pytest.mark.django_db
-def test_post_local_assets_authenticated(api, local_asset_request_body, user):
+def test_post_local_assets_authenticated(api, local_asset_request_body, user, districts):
     request = api.post(
         '/local-assets/',
         json.dumps(local_asset_request_body),
@@ -35,8 +36,6 @@ def test_post_local_assets_authenticated(api, local_asset_request_body, user):
     response = view(request)
 
     assert response.status_code == 201
-
-    # test the LocalAsset signal worked
 
 
 def test_list_assets_unauthenticated(api, search_query):
