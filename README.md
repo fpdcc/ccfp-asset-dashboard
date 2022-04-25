@@ -38,6 +38,11 @@ Load the development data:
 docker-compose run --rm app python manage.py loaddata asset_dashboard/fixtures/data.json
 ```
 
+Import the district boundaries:
+```bash
+docker-compose run --rm app make districts
+```
+
 ### Restore the FPDCC database
 Download the database from Dropbox and save the tar file in this repo's root directory.
 
