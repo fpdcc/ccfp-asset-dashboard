@@ -107,9 +107,9 @@ class PhaseForm(StyledFormMixin, ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         for field_name, field in self.fields.items():
-            if field_name is not 'actual_cost':
+            if field_name != 'actual_cost':
                 field.widget.attrs['required'] = True
 
     year = ChoiceField(

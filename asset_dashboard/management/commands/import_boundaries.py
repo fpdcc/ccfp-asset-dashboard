@@ -41,7 +41,7 @@ class Command(BaseCommand):
         for feature in geojson['features']:
             # house & senate is 'DISTRICT_INT' and commissioner is 'District_1'
             district = feature['properties'].get('DISTRICT_INT')
-            
+
             if not district:
                 district = feature['properties'].get('District_1')
 
