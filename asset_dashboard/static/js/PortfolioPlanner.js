@@ -114,16 +114,6 @@ class PortfolioPlanner extends React.Component {
       filterText: filterText
     })
   }
-  
-  filterBySection(projects){ 
-    const filteredProjects = projects.filter(project => {
-      if (this.state.selectedSection !== '') {
-        return project.section.toLowerCase().includes(this.state.selectedSection.toLowerCase())
-      } else {
-        return project
-      }
-    })
-  }
 
   addProjectToPortfolio(row) {
     // add the row to the existing portfolio
@@ -431,8 +421,6 @@ class PortfolioPlanner extends React.Component {
   }
 
   render() {
-    // This filters on every re-render, so that this.state.remainingProjects can be the source of truth.
-    // Could also chain filtering here for other things (like "department" from the wireframe).
     const filteredRows = this.state.remainingProjects && this.state.remainingProjects.filter(project => {
       return project.description.toLowerCase().includes(this.state.filterText.toLowerCase())
     }).filter(project => {
