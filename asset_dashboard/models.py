@@ -6,6 +6,7 @@ from django.db.models import Max, Sum, QuerySet
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from django.contrib.gis.geos import GEOSGeometry, GeometryCollection
+from django.conf import settings
 
 from djmoney.models.fields import MoneyField
 
@@ -166,7 +167,7 @@ class Project(models.Model):
 class PhaseZoneDistribution(models.Model):
     phase = models.ForeignKey('Phase', on_delete=models.CASCADE, related_name='phase')
     zone = models.ForeignKey('Zone', on_delete=models.CASCADE, related_name='zone')
-    zone_distribution_percentage = models.FloatField(null=True, blank=True)
+    zone_distribution_proportion = models.FloatField(null=True, blank=True)
 
     @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
     def save_zone_distribution(sender, instance, **kwargs):
@@ -176,31 +177,29 @@ class PhaseZoneDistribution(models.Model):
 
         distributions_by_zone = LocalAsset.get_distribution_by_zone(phase_geoms)
 
-        zone_percentages = PhaseZoneDistribution.calculate_zone_percentage(
+        zone_proportions = PhaseZoneDistribution.calculate_zone_proportion(
             distributions_by_zone,
             total_distribution_area
         )
 
-        for zone, percentage in zone_percentages.items():
+        for zone, proportion in zone_proportions.items():
             zone_distribution, _ = PhaseZoneDistribution.objects.get_or_create(
                 phase=instance.phase,
                 zone=zone
             )
 
-            zone_distribution.zone_distribution_percentage = percentage
+            zone_distribution.zone_distribution_proportion = proportion
             zone_distribution.save()
 
     @classmethod
-    def calculate_zone_percentage(cls, distributions_by_zone, total_distribution_area):
-        percentages_by_zone = {}
+    def calculate_zone_proportion(cls, distributions_by_zone, total_distribution_area):
+        proportions_by_zone = {}
 
         for zone, distribution in distributions_by_zone.items():
-            quotient = distribution / total_distribution_area
-            percent = quotient * 100
+            proportion = distribution / total_distribution_area
+            proportions_by_zone[zone] = proportion
 
-            percentages_by_zone[zone] = percent
-
-        return percentages_by_zone
+        return proportions_by_zone
 
 
 class Phase(SequencedModel):
@@ -265,7 +264,7 @@ class Phase(SequencedModel):
         for distribution in zone_distributions:
             zone_name = distribution.zone.name
             cost_by_zone[zone_name] = (
-                float(self.total_estimated_cost.amount) * (distribution.zone_distribution_percentage / 100)
+                float(self.total_estimated_cost.amount) * distribution.zone_distribution_proportion
             )
 
         return cost_by_zone
@@ -425,7 +424,7 @@ class LocalAsset(models.Model):
             # The Geometries are in degrees, so use the 6th decimal place for
             # creating the buffer. See https://gis.stackexchange.com/a/8674
             # and https://docs.djangoproject.com/en/3.1/ref/contrib/gis/geos/#django.contrib.gis.geos.GEOSGeometry.buffer
-            return assets.buffer(.000005)
+            return assets.buffer(settings.GEOM_BUFFER)
 
         return None
 
@@ -436,7 +435,7 @@ class LocalAsset(models.Model):
                                  """]).aggregate(models.Union('geom'))['geom__union']
 
         if assets:
-            return assets.buffer(.000005)
+            return assets.buffer(settings.GEOM_BUFFER)
 
         return None
 
