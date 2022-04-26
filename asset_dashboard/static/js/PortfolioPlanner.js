@@ -8,6 +8,7 @@ import ProjectsTable from './components/ProjectsTable'
 import PortfolioTable from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
 import PortfolioPicker from './components/PortfolioPicker'
+import SectionPicker from './components/SectionPicker'
 import SearchInput from './components/SearchInput'
 
 class PortfolioPlanner extends React.Component {
@@ -18,6 +19,7 @@ class PortfolioPlanner extends React.Component {
       allProjects: [],
       remainingProjects: [],
       allPortfolios: [],
+      sections: [],
       portfolio: {
         id: null,
         name: '',
@@ -29,7 +31,8 @@ class PortfolioPlanner extends React.Component {
         },
         unsavedChanges: false
       },
-      filterText: ''
+      filterText: '',
+      selectedSection: ''
     }
 
     this.searchProjects = this.searchProjects.bind(this)
@@ -43,6 +46,8 @@ class PortfolioPlanner extends React.Component {
 
     this.alertUser = this.alertUser.bind(this)
     this.confirmDestroy = this.confirmDestroy.bind(this)
+    this.changeSection = this.changeSection.bind(this)
+    this.filterSection = this.filterSection.bind(this)
   }
 
   componentDidMount() {
@@ -56,18 +61,27 @@ class PortfolioPlanner extends React.Component {
         budget: parseFloat(project.total_budget) || 0,
         score: project.total_score || 'N/A',
         phase: project.phase || 'N/A',
-        zones: this.createRegionName(project.zones) || 'N/A',
-        house_districts: this.createRegionName(project.house_districts),
-        senate_districts: this.createRegionName(project.senate_districts),
-        commissioner_districts: this.createRegionName(project.commissioner_districts),
-        key: project.pk
+        zones: project.zones || 'N/A',
+        cost_by_zone: project.cost_by_zone,
+        house_districts: project.house_districts,
+        senate_districts: project.senate_districts,
+        commissioner_districts: project.commissioner_districts,
+        key: project.pk,
+        funding_streams: project.funding_streams,
+        total_estimated_cost: parseFloat(project.total_estimated_cost),
+        year: project.year,
+        estimated_bid_quarter: project.estimated_bid_quarter,
+        status: project.status,
+        project_manager: project.project_manager,
+        countywide: project.countywide,
       }
     })
 
     let state = {
       allProjects: projects,
       remainingProjects: projects,
-      allPortfolios: props.portfolios
+      allPortfolios: props.portfolios,
+      sections: [...new Set(projects.map(project => { return project.section }))]
     }
 
     // Rehydate state from last edited portfolio, if one exists
@@ -298,9 +312,69 @@ class PortfolioPlanner extends React.Component {
   calculateTotals(portfolio) {
     return {
       budgetImpact: portfolio.reduce((total, project) => { return total + project.budget }, 0),
-      projectNames: portfolio.map(project => project.name),
-      projectZones: portfolio.map(project => project.zones.split(','))
+      totalEstimatedCostByYear: this.calculateEstimatedCostByKey(portfolio, 'year', 'total_estimated_cost'),
+      totalFundedAmountByYear: this.calculateFundedAmountByYear(portfolio),
+      totalEstimatedZoneCostByYear: this.calculateZoneCostByYear(portfolio)
     }
+  }
+  
+  calculateEstimatedCostByKey(rows, accumulatorKey, addendField) {
+    let results = {}
+    
+    rows.forEach(project => {
+      const key = project[accumulatorKey] ? project[accumulatorKey] : 'N/A' // test data has no key value...
+      
+      let total = results[key] ? results[key] : 0
+      
+      results = {
+        ...results,
+        [key]: total += parseFloat(project[addendField])
+      }
+
+    })
+
+    return results
+  }
+  
+  calculateFundedAmountByYear(portfolio) {
+    let results = {}
+
+    portfolio.forEach(project => {
+      const fundingByYear = this.calculateEstimatedCostByKey(project.funding_streams, 'year', 'budget')
+
+      for (const [key, value] of Object.entries(fundingByYear)) {
+        let yearTotal = results[key] ? results[key] : 0
+        results = {
+          ...results,
+          [key]: yearTotal += value
+        }
+      }
+    })
+
+    return results
+  }
+  
+  calculateZoneCostByYear(portfolio) {
+    let yearTotals = {}
+
+    portfolio.forEach(phase => {
+      const year = phase['year']
+
+      if (!yearTotals[year] && year !== null) {
+        yearTotals[year] = {}
+      }
+      
+      for (const [key, value] of Object.entries(phase.cost_by_zone)) {
+        let total = yearTotals[year][key] ? yearTotals[year][key] : 0
+
+        yearTotals[year] = {
+          ...yearTotals[year],
+          [key]: total += value
+        }
+      }
+    })
+
+    return yearTotals
   }
 
   hydratePortfolio(portfolio, projects) {
@@ -332,26 +406,46 @@ class PortfolioPlanner extends React.Component {
     }))
   }
 
-  createRegionName(regions) {
-    // returns a CSV string of names for the different regions
-    const names = regions.map(({ name }) => {
-      return name
-    }).join(',')
-
-    return names
-  }
-
   getDate() {
     const date = new Date(new Date().toString().split('GMT')[0]+' UTC').toISOString().split('T')[0]
     return date
   }
+  
+  changeSection(e) {
+    const newSection = e.target.value
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        selectedSection: newSection
+      }
+    })
+  }
+  
+  within(source, target) {
+     return source.toLowerCase().includes(target.toLowerCase())
+  }
+  
+  filterSection(project) {
+    if (this.state.selectedSection) {
+      return this.within(project.section, this.state.selectedSection)
+    } else {
+      return project
+    }
+  }
+  
+  filterRemainingProjects(projects) {
+    return projects.filter(project => {
+      return this.within(project.description, this.state.filterText)
+    }).filter(this.filterSection)
+  }
+  
+  filterPortfolio(projects) {
+    return projects.filter(this.filterSection)
+  }
 
   render() {
-    // This filters on every re-render, so that this.state.remainingProjects can be the source of truth.
-    // Could also chain filtering here for other things (like "department" from the wireframe).
-    const filteredRows = this.state.remainingProjects && this.state.remainingProjects.filter(project => {
-      return project.description.toLowerCase().includes(this.state.filterText.toLowerCase())
-    })
+    const portfolioTableRows = this.filterPortfolio(this.state.portfolio.projects)
+    const projectTableRows = this.filterRemainingProjects(this.state.remainingProjects)
 
     return (
       <div className="m-5">
@@ -359,11 +453,16 @@ class PortfolioPlanner extends React.Component {
           <div className="col">
             <h1>Build a 5-Year Plan</h1>
           </div>
-          <div className="col">
+          <div className="row col">
             <PortfolioPicker
               portfolios={this.state.allPortfolios}
               activePortfolio={this.state.portfolio}
               changePortfolio={this.selectPortfolio}
+            />
+            <SectionPicker 
+              sections={this.state.sections}
+              activeSection={this.state.selectedSection}
+              changeSection={this.changeSection}
             />
           </div>
         </div>
@@ -372,12 +471,13 @@ class PortfolioPlanner extends React.Component {
               <>
                 <PortfolioTable
                   portfolio={this.state.portfolio}
+                  rows={portfolioTableRows}
                   onRemoveFromPortfolio={this.removeProjectFromPortfolio}
                   savePortfolio={this.savePortfolio}
                   savePortfolioName={this.savePortfolioName}
                   createNewPortfolio={this.createNewPortfolio} />
                 <ProjectsTable
-                  allProjects={filteredRows}
+                  allProjects={projectTableRows}
                   onAddToPortfolio={this.addProjectToPortfolio}
                   searchInput={<SearchInput
                     onFilter={this.searchProjects} 

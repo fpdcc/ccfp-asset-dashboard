@@ -41,16 +41,27 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
 
         project_phases = []
         for phase in phases:
+            funding_streams = phase.funding_streams.all()
+
             project_phases.append({
+                'pk': phase.id,
                 'phase': phase.name,
                 'total_budget': phase.total_budget,
-                'pk': phase.id,
+                'funding_streams': list(funding_streams.values()) if funding_streams else [],
+                'total_estimated_cost': phase.total_estimated_cost.amount,
+                'year': phase.year,
+                'estimated_bid_quarter': phase.estimated_bid_quarter,
+                'status': phase.status,
+                'phase_type': phase.phase_type,
                 'name': phase.project.name,
                 'description': phase.project.description,
                 'section': phase.project.section_owner.name,
                 'category': phase.project.category.name,
                 'total_score': phase.project.projectscore.total_score,
+                'project_manager': phase.project.project_manager,
+                'countywide': phase.project.countywide,
                 'zones': list(phase.project.zones.all().values('name')),
+                'cost_by_zone': phase.cost_by_zone,
                 'house_districts': list(phase.project.house_districts.all().values('name')),
                 'senate_districts': list(phase.project.senate_districts.all().values('name')),
                 'commissioner_districts': list(phase.project.commissioner_districts.all().values('name'))
@@ -132,7 +143,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
             project = Project.objects.create(**project_data)
             ProjectScore.objects.get_or_create(project=project)
 
-            messages.success(self.request, 'Project successfully created!')
+            messages.success(self.request, 'Project successfully created.')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
         else:
             return super().form_invalid(form)
@@ -182,7 +193,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
             else:
                 return super().form_invalid(form)
 
-        messages.success(self.request, 'Project successfully saved!')
+        messages.success(self.request, 'Project successfully saved.')
         return super().form_valid(form)
 
 
@@ -199,7 +210,7 @@ class PhaseCreateView(LoginRequiredMixin, CreateView):
 
             phase = Phase.objects.create(**phase_data)
 
-            messages.success(self.request, 'Phase successfully created!')
+            messages.success(self.request, 'Phase successfully created.')
             return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': phase.pk}))
         else:
             return super().form_invalid(form)
@@ -237,8 +248,8 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
         if form.is_valid():
             phase = form.save()
 
-            messages.success(self.request, 'Phase successfully edited!')
-            return HttpResponseRedirect(reverse('project-phases-list', kwargs={'pk': phase.project.pk}))
+            messages.success(self.request, 'Phase successfully updated.')
+            return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': phase.pk}))
         else:
             return super().form_invalid(form)
 
@@ -269,7 +280,7 @@ class FundingStreamCreateView(LoginRequiredMixin, CreateView):
             funding_stream = form.save()
             phase.funding_streams.add(funding_stream)
 
-            messages.success(self.request, 'Funding Stream successfully created!')
+            messages.success(self.request, 'Funding Stream successfully created.')
             return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': phase.id}))
         else:
             return super().form_invalid(form)
@@ -294,7 +305,7 @@ class FundingStreamUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         context = self.get_context_data()
-        messages.success(self.request, 'Funding Stream successfully updated!')
+        messages.success(self.request, 'Funding Stream successfully updated.')
         return reverse('edit-phase', kwargs={'pk': context['phase'].id})
 
 

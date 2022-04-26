@@ -183,6 +183,18 @@ def districts():
 
 
 @pytest.fixture
+def zones():
+    with open(f'{os.path.dirname(os.path.abspath(__file__))}/geojson/zones.geojson') as f:
+        geojson = json.load(f)
+    
+    for zone in geojson['features']:
+        models.Zone.objects.create(
+            name=zone['properties']['zone'],
+            boundary=GEOSGeometry(json.dumps(zone['geometry']))
+        )
+
+
+@pytest.fixture
 def score_weights():
     return models.ScoreWeights.objects.create(core_mission_score=0.7, operations_impact_score=0.8,
                                               sustainability_score=0.2, ease_score=0.6,
@@ -218,6 +230,12 @@ def local_asset_request_body(trails_geojson, project):
         'geom': trails_geojson['features'][0]['geometry'],
         'phase': phase[0].id
     }
+
+
+@pytest.fixture
+def signs_geojson():
+    with open(f'{os.path.dirname(os.path.abspath(__file__))}/geojson/signs.geojson') as f:
+        return json.load(f)
 
 
 @pytest.fixture

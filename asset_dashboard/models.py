@@ -1,9 +1,12 @@
+from typing import Union
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.gis.db import models
-from django.db.models import Max, Sum
-from django.db.models.signals import post_save
+from django.db.models import Max, Sum, QuerySet
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from django.contrib.gis.geos import GEOSGeometry, GeometryCollection
+from django.conf import settings
 
 from djmoney.models.fields import MoneyField
 
@@ -127,14 +130,23 @@ class Project(models.Model):
     def __str__(self):
         return self.name or ''
 
-    @receiver(post_save, sender='asset_dashboard.LocalAsset')
-    def calculate_zones_and_districts(sender, instance, **kwargs):
-        zones = Zone.objects.filter(boundary__contains=instance.geom)
+    @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
+    def save_zones_and_districts(sender, instance, **kwargs):
+        phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
+        instance.phase.project.update_project_zones(instance, phase_geoms)
+        instance.phase.project.update_project_districts(instance, phase_geoms)
+
+    def update_project_zones(self, instance, phase_geoms):
+        zones = Zone.objects.filter(boundary__intersects=phase_geoms)
+
+        # Delete existing relationships so we can have a fresh start.
+        instance.phase.project.zones.clear()
 
         for zone in zones:
             instance.phase.project.zones.add(zone)
             instance.phase.project.save()
 
+    def update_project_districts(self, instance, phase_geoms):
         district_models = [
             ('commissioner_districts', CommissionerDistrict),
             ('senate_districts', SenateDistrict),
@@ -142,14 +154,52 @@ class Project(models.Model):
         ]
 
         for attribute, model in district_models:
-            districts = model.objects.filter(
-                boundary__contains=instance.geom
-            )
+            districts = model.objects.filter(boundary__intersects=phase_geoms)
+
+            project_district = getattr(instance.phase.project, attribute)
+            project_district.clear()
 
             for district in districts:
-                project_district = getattr(instance.phase.project, attribute)
                 project_district.add(district)
                 instance.phase.project.save()
+
+
+class PhaseZoneDistribution(models.Model):
+    phase = models.ForeignKey('Phase', on_delete=models.CASCADE, related_name='phase')
+    zone = models.ForeignKey('Zone', on_delete=models.CASCADE, related_name='zone')
+    zone_distribution_proportion = models.FloatField(null=True, blank=True)
+
+    @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
+    def save_zone_distribution(sender, instance, **kwargs):
+        phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
+
+        total_distribution_area = phase_geoms.area
+
+        distributions_by_zone = LocalAsset.get_distribution_by_zone(phase_geoms)
+
+        zone_proportions = PhaseZoneDistribution.calculate_zone_proportion(
+            distributions_by_zone,
+            total_distribution_area
+        )
+
+        for zone, proportion in zone_proportions.items():
+            zone_distribution, _ = PhaseZoneDistribution.objects.get_or_create(
+                phase=instance.phase,
+                zone=zone
+            )
+
+            zone_distribution.zone_distribution_proportion = proportion
+            zone_distribution.save()
+
+    @classmethod
+    def calculate_zone_proportion(cls, distributions_by_zone, total_distribution_area):
+        proportions_by_zone = {}
+
+        for zone, distribution in distributions_by_zone.items():
+            proportion = distribution / total_distribution_area
+            proportions_by_zone[zone] = proportion
+
+        return proportions_by_zone
 
 
 class Phase(SequencedModel):
@@ -192,6 +242,12 @@ class Phase(SequencedModel):
                                       default=0.00,
                                       max_digits=11)
 
+    actual_cost = MoneyField(default_currency='USD',
+                             default=0.00,
+                             max_digits=11,
+                             blank=True,
+                             null=True)
+
     @property
     def total_budget(self):
         total = self.funding_streams.all().values(
@@ -199,6 +255,19 @@ class Phase(SequencedModel):
         ).aggregate(Sum('budget'))['budget__sum']
 
         return total if total else 0
+
+    @property
+    def cost_by_zone(self):
+        zone_distributions = PhaseZoneDistribution.objects.filter(phase=self)
+
+        cost_by_zone = {}
+        for distribution in zone_distributions:
+            zone_name = distribution.zone.name
+            cost_by_zone[zone_name] = (
+                float(self.total_estimated_cost.amount) * distribution.zone_distribution_proportion
+            )
+
+        return cost_by_zone
 
     @property
     def sequenced_instances(self):
@@ -299,6 +368,76 @@ class LocalAsset(models.Model):
     asset_id = models.TextField(null=True, blank=True)
     asset_model = models.CharField(max_length=100)
     asset_name = models.CharField(max_length=600)
+
+    @classmethod
+    def get_distribution_by_zone(cls, phase_geoms: GEOSGeometry) -> dict:
+        distributions_by_zone = {}
+
+        for zone in Zone.objects.all():
+            if zone.boundary:
+                intersection = zone.boundary.intersection(phase_geoms)
+                distributions_by_zone[zone] = intersection.area
+
+        return distributions_by_zone
+
+    @classmethod
+    def get_aggregated_assets_by_phase(cls, phase: Phase) -> GeometryCollection:
+        phase_assets = LocalAsset.objects.filter(phase=phase)
+
+        phase_polygons = LocalAsset.aggregate_polygons(phase_assets)
+        phase_linestrings = LocalAsset.aggregate_linestrings(phase_assets)
+        phase_points = LocalAsset.aggregate_points(phase_assets)
+
+        geoms = (
+            phase_polygons,
+            phase_linestrings,
+            phase_points
+        )
+
+        # filter out None
+        filtered_geoms = tuple([geom for geom in filter(None, geoms)])
+
+        return GeometryCollection(filtered_geoms)
+
+    @classmethod
+    def aggregate_polygons(cls, qs: QuerySet) -> Union[GEOSGeometry, None]:
+        assets = qs.extra(where=["""
+                                    geometrytype(geom) LIKE 'POLYGON'
+                                        OR geometrytype(geom) LIKE 'MULTIPOLYGON'
+                                 """]).aggregate(models.Union('geom'))['geom__union']
+
+        if assets:
+            return assets
+
+        return None
+
+    @classmethod
+    def aggregate_linestrings(cls, qs: QuerySet) -> Union[GEOSGeometry, None]:
+        assets = qs.extra(
+            where=["""
+                    geometrytype(geom) LIKE 'LINESTRING'
+                        OR geometrytype(geom) LIKE 'MULTILINESTRING'
+                   """]).aggregate(models.Union('geom'))['geom__union']
+
+        if assets:
+            # Return a buffered geometry so we can use the area of the buffer.
+            # The Geometries are in degrees, so use the 6th decimal place for
+            # creating the buffer. See https://gis.stackexchange.com/a/8674
+            # and https://docs.djangoproject.com/en/3.1/ref/contrib/gis/geos/#django.contrib.gis.geos.GEOSGeometry.buffer
+            return assets.buffer(settings.GEOM_BUFFER)
+
+        return None
+
+    @classmethod
+    def aggregate_points(cls, qs: QuerySet) -> Union[GEOSGeometry, None]:
+        assets = qs.extra(where=["""
+                                    geometrytype(geom) LIKE 'POINT'
+                                 """]).aggregate(models.Union('geom'))['geom__union']
+
+        if assets:
+            return assets.buffer(settings.GEOM_BUFFER)
+
+        return None
 
 
 class ProjectCategory(models.Model):

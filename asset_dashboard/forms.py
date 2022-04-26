@@ -101,11 +101,16 @@ class PhaseForm(StyledFormMixin, ModelForm):
             'estimated_bid_quarter',
             'status',
             'year',
-            'total_estimated_cost'
+            'total_estimated_cost',
+            'actual_cost'
         ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        for field_name, field in self.fields.items():
+            if field_name != 'actual_cost':
+                field.widget.attrs['required'] = True
 
     year = ChoiceField(
         choices=get_year_choices(datetime.now().year, datetime.now().year+5)

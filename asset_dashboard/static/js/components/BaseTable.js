@@ -1,7 +1,7 @@
 import React from 'react'
-import { useTable, usePagination, useSortBy } from 'react-table'
+import { useTable, usePagination, useSortBy, useExpanded } from 'react-table'
 
-const BaseTable = ({ rows = [], columns, getTrProps = props => props, rowClassNames, cellClassNames, sizeOfPage=15, pageSizeIncrements=[15, 30, 45] }) => {
+const BaseTable = ({ rows = [], columns, getTrProps = props => props, rowClassNames, cellClassNames, sizeOfPage=15, pageSizeIncrements=[15, 30, 45], renderRowSubComponent }) => {
 
   const data = React.useMemo(
     () => rows.map((row) => {
@@ -22,8 +22,9 @@ const BaseTable = ({ rows = [], columns, getTrProps = props => props, rowClassNa
     nextPage,
     previousPage,
     setPageSize,
-    state: { pageIndex, pageSize },
-  } = useTable({ columns, data, initialState: { pageIndex: 0, pageSize: sizeOfPage }}, useSortBy, usePagination)
+    visibleColumns,
+    state: { pageIndex, pageSize, expanded },
+  } = useTable({ columns, data, initialState: { pageIndex: 0, pageSize: sizeOfPage }}, useSortBy, useExpanded, usePagination)
 
   return (
     <div className="table-responsive">
@@ -46,16 +47,26 @@ const BaseTable = ({ rows = [], columns, getTrProps = props => props, rowClassNa
             {page.map((row, i) => {
               prepareRow(row)
               return (
-                <tr {...getTrProps(row.getRowProps(row))} 
-                    key={i} className={rowClassNames ? `${rowClassNames} cursor-pointer` : 'cursor-pointer'}>
-                  {row.cells.map(cell => {
-                    return (
-                      <td {...cell.getCellProps()} className={`${cellClassNames && cellClassNames} text-center`}>
-                        {cell.render('Cell')}
-                      </td>
-                    )
-                  })}
-                </tr>
+                <>
+                  <tr {...getTrProps(row.getRowProps(row))} 
+                      key={i} className={rowClassNames ? `${rowClassNames} cursor-pointer` : 'cursor-pointer'}>
+                    {row.cells.map(cell => {
+                      return (
+                        <td {...cell.getCellProps()} className={cellClassNames ? `${cellClassNames} text-center` : 'text-center'}>
+                          {cell.render('Cell')}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                  
+                  {renderRowSubComponent && row.isExpanded ? (
+                      <tr>
+                        <td colSpan={visibleColumns.length}>
+                          {renderRowSubComponent({ row })}
+                        </td>
+                      </tr>
+                    ) : null}
+                </>
               )
             })}
           </tbody>

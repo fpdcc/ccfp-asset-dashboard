@@ -1,7 +1,7 @@
 import json
 import pytest
 from asset_dashboard.models import ScoreWeights, Portfolio, PortfolioPhase, \
-    LocalAsset, SenateDistrict, Phase
+    LocalAsset, SenateDistrict, Phase, PhaseZoneDistribution
 
 
 @pytest.mark.django_db
@@ -111,3 +111,42 @@ def test_local_asset_signal(project, districts, trails_geojson):
         )
 
         assert asset.phase.project.senate_districts.all()[0] in senate_districts
+    
+@pytest.mark.django_db
+def test_phase_zone_distribution_signal(project, zones, signs_geojson, trails_geojson):
+    prj = project.build()
+    phase = Phase.objects.filter(project=prj)[0]
+    
+    for feature in signs_geojson['features']:
+        asset = LocalAsset.objects.create(
+            phase=phase,
+            geom=json.dumps(feature['geometry'])
+        )
+    
+    phase_zone_distributions = PhaseZoneDistribution.objects.filter(phase=phase)
+    assert sum([dist.zone_distribution_proportion for dist in phase_zone_distributions]) == 1.0
+
+    zone_with_all_geos = list(filter(lambda d: d.zone_distribution_proportion > 0, phase_zone_distributions))
+    assert len(zone_with_all_geos) == 1
+    
+    # Add some more assets, which should change the distribution.
+    for feature in trails_geojson['features']:
+        asset = LocalAsset.objects.create(
+            phase=phase,
+            geom=json.dumps(feature['geometry'])
+        )
+
+    # Query the new distributions. They should've changed when the new assets were created.
+    phase_zone_distributions_reload = PhaseZoneDistribution.objects.filter(phase=phase)
+    zones_with_geos = list(filter(lambda d: d.zone_distribution_proportion > 0, phase_zone_distributions_reload))
+    assert len(zones_with_geos) > 1
+    assert sum([round(dist.zone_distribution_proportion) for dist in phase_zone_distributions_reload]) == 1.0
+
+    # Add an estimated cost to the phase so we can test the total cost by zone.
+    phase.total_estimated_cost = 250000
+    phase.save()
+
+    for distribution in phase_zone_distributions_reload:
+        cost = phase.cost_by_zone.get(distribution.zone.name)
+        assert cost == 250000 * distribution.zone_distribution_proportion
+        

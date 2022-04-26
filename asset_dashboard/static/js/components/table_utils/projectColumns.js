@@ -1,11 +1,20 @@
 import React from 'react'
 
+function createZoneNames(regions) {
+  // returns an HTML-friendly list of names for the different regions/zones
+  const names = regions.map(({ name }) => {
+    return name
+  }).join('\n')
+
+  return names
+}
+
 const projectColumns = (selector) => {
   return [
     {
       Header: () => null,
       id: 'selector',
-      Cell: selector ? selector : <span></span>,
+      Cell: props => selector(props.row.original),
       disableSortBy: true
     },
     {
@@ -17,16 +26,59 @@ const projectColumns = (selector) => {
       accessor: 'description', 
     },
     {
-      Header: 'Total Score',
+      Header: 'Zones',
+      accessor: 'zones',
+      Cell: props => createZoneNames(props.value)
+    },
+    {
+      Header: 'Phase',
+      accessor: 'phase'
+    },
+    {
+      Header: 'Year',
+      accessor: 'year'
+    },
+    {
+      Header: 'Quarter',
+      accessor: 'estimated_bid_quarter'
+    },
+    {
+      Header: 'Estimated Cost',
+      accessor: 'total_estimated_cost',
+      Cell: props => props.value.toLocaleString() // adds commas
+    },
+    {
+      Header: 'Score',
       accessor: 'score',
     },
     {
       Header: 'Total Budget',
       accessor: 'budget',
+      Cell: props => props.value.toLocaleString()
     },
     {
-      Header: 'Phase',
-      accessor: 'phase'
+      Header: 'Funding',
+      id: 'funding_streams',
+      accessor: 'funding_streams',
+      Cell: ({ row }) => (
+        <span {...row.getToggleRowExpandedProps()}>
+          {
+            row.isExpanded ? 
+              <button
+                className='btn'
+                type='button'
+                aria-label="Hide funding">
+                  <i className="fa fa-chevron-circle-up fa-lg"></i> 
+              </button>
+            : <button
+                className='btn'
+                type='button'
+                aria-label="Show funding">
+                  <i className="fa fa-chevron-circle-down fa-lg"></i>
+            </button>
+          }
+        </span>
+      ),
     },
     {
       Header: () => null,

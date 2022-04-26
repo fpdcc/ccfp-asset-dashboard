@@ -11,7 +11,7 @@ input[type="checkbox"] {
 }
 
 /* hides the currency type dropdown in the form input for money fields */
-#id_budget_1, #id_funds_1, #id_total_estimated_cost_1 {
+#id_budget_1, #id_funds_1, #id_total_estimated_cost_1, #id_actual_cost_1 {
     display: none;
 }
 
