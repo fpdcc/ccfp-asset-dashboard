@@ -47,6 +47,7 @@ class PortfolioPlanner extends React.Component {
     this.alertUser = this.alertUser.bind(this)
     this.confirmDestroy = this.confirmDestroy.bind(this)
     this.changeSection = this.changeSection.bind(this)
+    this.filterSection = this.filterSection.bind(this)
   }
 
   componentDidMount() {
@@ -419,27 +420,32 @@ class PortfolioPlanner extends React.Component {
       }
     })
   }
+  
+  within(source, target) {
+     return source.toLowerCase().includes(target.toLowerCase())
+  }
+  
+  filterSection(project) {
+    if (this.state.selectedSection) {
+      return this.within(project.section, this.state.selectedSection)
+    } else {
+      return project
+    }
+  }
+  
+  filterRemainingProjects(projects) {
+    return projects.filter(project => {
+      return this.within(project.description, this.state.filterText)
+    }).filter(this.filterSection)
+  }
+  
+  filterPortfolio(projects) {
+    return projects.filter(this.filterSection)
+  }
 
   render() {
-    const filteredRows = this.state.remainingProjects && this.state.remainingProjects.filter(project => {
-      return project.description.toLowerCase().includes(this.state.filterText.toLowerCase())
-    }).filter(project => {
-      if (this.state.selectedSection !== '') {
-        return project.section.toLowerCase().includes(this.state.selectedSection.toLowerCase())
-      } else {
-        return project
-      }
-    })
-    
-    const filteredPortfolio = this.state.portfolio.projects && this.state.portfolio.projects.filter(project => {
-      return project
-    }).filter(project => {
-      if (this.state.selectedSection !== '') {
-        return project.section.toLowerCase().includes(this.state.selectedSection.toLowerCase())
-      } else {
-        return project
-      }
-    })
+    const portfolioTableRows = this.filterPortfolio(this.state.portfolio.projects)
+    const projectTableRows = this.filterRemainingProjects(this.state.remainingProjects)
 
     return (
       <div className="m-5">
@@ -465,13 +471,13 @@ class PortfolioPlanner extends React.Component {
               <>
                 <PortfolioTable
                   portfolio={this.state.portfolio}
-                  rows={filteredPortfolio}
+                  rows={portfolioTableRows}
                   onRemoveFromPortfolio={this.removeProjectFromPortfolio}
                   savePortfolio={this.savePortfolio}
                   savePortfolioName={this.savePortfolioName}
                   createNewPortfolio={this.createNewPortfolio} />
                 <ProjectsTable
-                  allProjects={filteredRows}
+                  allProjects={projectTableRows}
                   onAddToPortfolio={this.addProjectToPortfolio}
                   searchInput={<SearchInput
                     onFilter={this.searchProjects} 
