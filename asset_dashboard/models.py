@@ -352,6 +352,9 @@ class FundingStream(models.Model):
     funding_secured = models.BooleanField(default=False)
     source_type = models.TextField(choices=SOURCE_TYPE_CHOICES, default='capital_improvement_fund')
 
+    def __str__(self):
+        return f'{self.budget} - {self.source_type} - {self.year}'
+
     class Meta:
         verbose_name_plural = 'Phase Funding Stream'
 

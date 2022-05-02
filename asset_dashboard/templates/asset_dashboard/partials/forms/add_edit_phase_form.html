@@ -68,6 +68,8 @@
             <th>Funds</th>
             <th>Source</th>
             <th>Secured</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -78,6 +80,7 @@
             <td>{{ funding.get_source_type_display }}</td>
             <td>{{ funding.funding_secured }}</td>
             <td><a href="{% url 'update-funding' pk=funding.id %}" class="text-info lead">Edit</a></td>
+            <td style="width: 12%;"><a href="{% url 'delete-funding' pk=phase.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
           </tr>
           {% endfor %}
         </tbody>
@@ -140,14 +143,11 @@
 {% block extra_js %}
   {{ block.super }}
   {% load compress %}
-
   {{ props|json_script:"props" }}
   <script type="text/javascript">
-    console.log('get element by id')
     window.props = JSON.parse(document.getElementById('props').textContent)
     window.reactMount = document.getElementById('map')
   </script>
-  
   {% compress js %}
     <script type="text/jsx" src="{% static 'js/components/maps/ListAssetsMap.js' %}"></script>
   {% endcompress %}
