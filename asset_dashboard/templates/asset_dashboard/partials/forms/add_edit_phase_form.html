@@ -123,12 +123,16 @@
 </div>
 
 <script type="text/javascript">
+  console.log('loading')
   const status = document.getElementById('id_status').value
   const actualCost = document.getElementById('actualCost')
 
   if (status !== 'complete') {
-    console.log("does not equal completed")
     actualCost.style.display = 'none'
+  } else {
+    <!-- if they're trying to update the phase actual cost once it's "complete", then turn of the year validation. -->
+        console.log("go")
+    document.getElementById('id_year').removeAttribute('min')
   }
 </script>
 {% endblock %}
@@ -136,11 +140,14 @@
 {% block extra_js %}
   {{ block.super }}
   {% load compress %}
+
   {{ props|json_script:"props" }}
   <script type="text/javascript">
+    console.log('get element by id')
     window.props = JSON.parse(document.getElementById('props').textContent)
     window.reactMount = document.getElementById('map')
   </script>
+  
   {% compress js %}
     <script type="text/jsx" src="{% static 'js/components/maps/ListAssetsMap.js' %}"></script>
   {% endcompress %}

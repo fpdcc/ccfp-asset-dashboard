@@ -78,10 +78,12 @@ def get_year_choices(beginning, end):
 class FundingStreamForm(StyledFormMixin, ModelForm):
     SECURED_CHOICES = ((True, 'Yes',), (False, 'No',))
     funding_secured = ChoiceField(choices=SECURED_CHOICES)
-
-    year = ChoiceField(
-        choices=get_year_choices(datetime.now().year, datetime.now().year+5)
-    )
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        year_field = self.fields['year']
+        year_field.widget.attrs['min'] = datetime.now().year + 1
 
     class Meta:
         model = FundingStream
@@ -107,11 +109,10 @@ class PhaseForm(StyledFormMixin, ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        year_field = self.fields['year']
+        year_field.widget.attrs['min'] = datetime.now().year + 1
 
         for field_name, field in self.fields.items():
             if field_name != 'actual_cost':
                 field.widget.attrs['required'] = True
-
-    year = ChoiceField(
-        choices=get_year_choices(datetime.now().year, datetime.now().year+5)
-    )
