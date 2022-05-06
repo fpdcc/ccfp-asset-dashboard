@@ -68,10 +68,10 @@ class ProjectCategoryForm(StyledFormMixin, ModelForm):
 class FundingStreamForm(StyledFormMixin, ModelForm):
     SECURED_CHOICES = ((True, 'Yes',), (False, 'No',))
     funding_secured = ChoiceField(choices=SECURED_CHOICES)
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         year_field = self.fields['year']
         year_field.widget.attrs['min'] = datetime.now().year + 1
 
@@ -99,7 +99,7 @@ class PhaseForm(StyledFormMixin, ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         year_field = self.fields['year']
         year_field.widget.attrs['min'] = datetime.now().year + 1
 

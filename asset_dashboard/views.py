@@ -262,6 +262,7 @@ class PhaseDeleteView(LoginRequiredMixin, DeleteView):
         messages.success(self.request, 'Phase successfully deleted.')
         return reverse('project-detail', kwargs={'pk': context['phase'].project.id})
 
+
 class FundingStreamCreateView(LoginRequiredMixin, CreateView):
     template_name = 'asset_dashboard/partials/forms/create_update_funding_stream_form.html'
     model = FundingStream
