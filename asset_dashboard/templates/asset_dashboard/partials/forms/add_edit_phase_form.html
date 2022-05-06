@@ -126,7 +126,6 @@
 </div>
 
 <script type="text/javascript">
-  console.log('loading')
   const status = document.getElementById('id_status').value
   const actualCost = document.getElementById('actualCost')
 
@@ -134,7 +133,6 @@
     actualCost.style.display = 'none'
   } else {
     <!-- if they're trying to update the phase actual cost once it's "complete", then turn of the year validation. -->
-        console.log("go")
     document.getElementById('id_year').removeAttribute('min')
   }
 </script>

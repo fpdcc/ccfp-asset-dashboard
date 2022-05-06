@@ -49,7 +49,6 @@ class PortfolioPlanner extends React.Component {
     this.changeSection = this.changeSection.bind(this)
     this.filterSection = this.filterSection.bind(this)
     this.makeExportData = this.makeExportData.bind(this)
-    // this.getCostByZone = this.getCostByZone.bind(this)
   }
 
   componentDidMount() {
