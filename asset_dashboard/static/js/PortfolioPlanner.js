@@ -48,6 +48,7 @@ class PortfolioPlanner extends React.Component {
     this.confirmDestroy = this.confirmDestroy.bind(this)
     this.changeSection = this.changeSection.bind(this)
     this.filterSection = this.filterSection.bind(this)
+    this.makeExportData = this.makeExportData.bind(this)
   }
 
   componentDidMount() {
@@ -405,11 +406,6 @@ class PortfolioPlanner extends React.Component {
       portfolio: {...state.portfolio, unsavedChanges: true}
     }))
   }
-
-  getDate() {
-    const date = new Date(new Date().toString().split('GMT')[0]+' UTC').toISOString().split('T')[0]
-    return date
-  }
   
   changeSection(e) {
     const newSection = e.target.value
@@ -441,6 +437,69 @@ class PortfolioPlanner extends React.Component {
   
   filterPortfolio(projects) {
     return projects.filter(this.filterSection)
+  }
+  
+  getExportFileName() {
+    const date = new Date(new Date().toString().split('GMT')[0]+' UTC').toISOString().split('T')[0]
+    const portfolioName = this.state.portfolio.name.replace(' ', '-')
+    return `${portfolioName}-${date}.csv`
+  }
+  
+  makeExportData() {
+    let rows = []
+    
+    this.state.portfolio.projects.forEach(project => {
+      const costByZone = this.getCostByZone(project)
+
+      let row = {
+        ...project,
+        ...costByZone,
+        'zones': project.zones.map(zone => zone.name).join('; '),
+        'house_districts': project.house_districts.map(dist => dist.name).join('; '),
+        'senate_districts': project.senate_districts.map(dist => dist.name).join('; '),
+        'commissioner_districts': project.commissioner_districts.map(dist => dist.name).join('; '),
+      }
+
+      // don't want this key since we parsed the cost_by_zone into their own columns
+      delete row['cost_by_zone']
+
+      if (project.funding_streams.length > 0) {
+        // If there are funding streams, then treat that each 
+        // funding stream instance as an individual row.
+        
+        project.funding_streams.forEach(funding => {
+          row = {
+            ...row,
+            'funding_amount': funding['budget'],
+            'funding_source': funding['source_type'],
+            'funding_year': funding['year']
+          }
+          
+          // remove funding_streams key from the row since the spread operator 
+          // adds it but we don't need it after parsing the funding out.
+          delete row.funding_streams
+
+          rows.push(row)
+        })
+      } else {
+        rows.push(row)
+      }
+    })
+    
+    return rows
+  }
+  
+  getCostByZone(project) {
+    let costByZone = {}
+    
+    Object.entries(project['cost_by_zone']).forEach(([zone, cost]) => {
+      costByZone = {
+        ...costByZone,
+        [`cost_by_${zone.toLowerCase()}_zone`]: Math.round(cost)
+      }
+    })
+    
+    return costByZone
   }
 
   render() {
@@ -489,8 +548,8 @@ class PortfolioPlanner extends React.Component {
             { this.state.portfolio.projects.length > 0
              ? <div className="d-flex justify-content-center mt-3">
                   <CSVLink
-                    data={this.state.portfolio.projects}
-                    filename={`CIP-${this.getDate()}`}
+                    data={this.makeExportData()}
+                    filename={this.getExportFileName()}
                     className='btn btn-info mx-auto'
                     >
                       Export as CSV

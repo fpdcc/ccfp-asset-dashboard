@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.html import escape
-from django.views.generic import TemplateView, ListView, CreateView, UpdateView
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
@@ -254,6 +254,15 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
             return super().form_invalid(form)
 
 
+class PhaseDeleteView(LoginRequiredMixin, DeleteView):
+    model = Phase
+
+    def get_success_url(self):
+        context = self.get_context_data()
+        messages.success(self.request, 'Phase successfully deleted.')
+        return reverse('project-detail', kwargs={'pk': context['phase'].project.id})
+
+
 class FundingStreamCreateView(LoginRequiredMixin, CreateView):
     template_name = 'asset_dashboard/partials/forms/create_update_funding_stream_form.html'
     model = FundingStream
@@ -307,6 +316,15 @@ class FundingStreamUpdateView(LoginRequiredMixin, UpdateView):
         context = self.get_context_data()
         messages.success(self.request, 'Funding Stream successfully updated.')
         return reverse('edit-phase', kwargs={'pk': context['phase'].id})
+
+
+class FundingStreamDeleteView(LoginRequiredMixin, DeleteView):
+    model = FundingStream
+
+    def get_success_url(self):
+        context = self.get_context_data()
+        messages.success(self.request, 'Funding Stream successfully deleted.')
+        return reverse('edit-phase', kwargs={'pk': context['fundingstream'].phase_set.get().id})
 
 
 class AssetAddEditView(LoginRequiredMixin, TemplateView):

@@ -68,6 +68,8 @@
             <th>Funds</th>
             <th>Source</th>
             <th>Secured</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -78,6 +80,7 @@
             <td>{{ funding.get_source_type_display }}</td>
             <td>{{ funding.funding_secured }}</td>
             <td><a href="{% url 'update-funding' pk=funding.id %}" class="text-info lead">Edit</a></td>
+            <td style="width: 12%;"><a href="{% url 'delete-funding' pk=phase.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
           </tr>
           {% endfor %}
         </tbody>
@@ -127,8 +130,10 @@
   const actualCost = document.getElementById('actualCost')
 
   if (status !== 'complete') {
-    console.log("does not equal completed")
     actualCost.style.display = 'none'
+  } else {
+    <!-- if they're trying to update the phase actual cost once it's "complete", then turn of the year validation. -->
+    document.getElementById('id_year').removeAttribute('min')
   }
 </script>
 {% endblock %}
