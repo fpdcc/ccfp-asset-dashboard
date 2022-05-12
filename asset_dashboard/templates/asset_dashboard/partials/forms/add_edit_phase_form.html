@@ -98,32 +98,7 @@
 </div>
 
 
-<div class="border border-secondary rounded shadow-sm p-3 mt-4">
-  <div class="col">
-    {% if not props %}
-      <h3 class="row">Phase Assets</h3>
-      <div class="row">
-        <p>
-          {% if phase and not props %}
-            This phase has no GIS assets. &nbsp;<a href="{% url 'create-update-assets' pk=phase.id %}" class="text-info lead">Add Assets ></a>
-          {% elif not phase and not props %}
-            Create the phase so you can add GIS assets.
-          {% else %}
-            <a href="{% url 'create-update-assets' pk=phase.id %}" class="text-info lead">Edit Assets ></a>
-          {% endif %}
-        </p>
-      </div>
-    {% else %}
-      <div id="map" class="mt-2">
-        <div class="text-center">
-          <div class="spinner-border text-primary" role="status">
-            <span class="sr-only">Loading...</span>
-          </div>
-        </div>
-      </div>
-    {% endif %}
-  </div>
-</div>
+{% include "asset_dashboard/partials/map_thumbnail.html" %}
 
 <script type="text/javascript">
   const statusInput = document.getElementById('id_status')
