@@ -472,7 +472,8 @@ class PortfolioPlanner extends React.Component {
             ...row,
             'funding_amount': funding['budget'],
             'funding_source': funding['source_type'],
-            'funding_year': funding['year']
+            'funding_year': funding['year'],
+            'funding_secured': funding['funding_secured']
           }
           
           // remove funding_streams key from the row since the spread operator 
@@ -501,10 +502,14 @@ class PortfolioPlanner extends React.Component {
     
     return costByZone
   }
+  
+  
 
   render() {
     const portfolioTableRows = this.filterPortfolio(this.state.portfolio.projects)
     const projectTableRows = this.filterRemainingProjects(this.state.remainingProjects)
+    
+    console.log('projects', this.state.portfolio.projects)
 
     return (
       <div className="m-5">
