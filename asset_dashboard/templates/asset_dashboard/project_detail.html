@@ -1,4 +1,9 @@
 {% extends "asset_dashboard/partials/project_base.html" %}
+{% load static %}
+
+{% block extra_css %}
+  <link href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet">
+{% endblock %}
 
 {% block project %}
   {% include "asset_dashboard/partials/forms/edit_project_form.html" %}
@@ -14,4 +19,31 @@
       {% include "asset_dashboard/partials/phase_table.html" %}
     {% endif %}
   </div>
+  
+  {% if props %}
+    <section class="my-4 mx-2 border border-secondary rounded shadow-sm p-3 tab-content card">
+      <div class="col">
+        <div id="map" class="mt-2">
+          <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    {% block extra_js %}
+      {{ block.super }}
+      {% load compress %}
+      {{ props|json_script:"props" }}
+      <script type="text/javascript">
+        window.props = JSON.parse(document.getElementById('props').textContent)
+        window.reactMount = document.getElementById('map')
+      </script>
+      {% compress js %}
+        <script type="text/jsx" src="{% static 'js/components/maps/ListAssetsMap.js' %}"></script>
+      {% endcompress %}
+    {% endblock %}
+  {% endif %}
 {% endblock %}
