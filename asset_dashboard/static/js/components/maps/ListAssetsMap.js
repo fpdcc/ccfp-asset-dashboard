@@ -14,8 +14,6 @@ function ListAssetsMap(props) {
     const group = new L.featureGroup()
     zoomToExistingGeometries(map, group)
   }
-  
-  console.log("props.assets", props.assets)
 
   return (
     <>
