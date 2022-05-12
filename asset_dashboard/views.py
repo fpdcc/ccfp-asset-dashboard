@@ -171,6 +171,13 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
 
             context['phases'] = Phase.objects.annotate().filter(project=self.kwargs['pk']).order_by('sequence')
+            
+            assets = LocalAsset.objects.filter(phase__project=self.object)
+            
+            if assets.exists():
+                context['props'] = {
+                    'assets': LocalAssetReadSerializer(assets, many=True).data
+                }
 
             assets = LocalAsset.objects.filter(phase__project=self.object)
 

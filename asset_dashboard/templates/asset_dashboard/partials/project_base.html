@@ -13,7 +13,7 @@
           <a class="mx-2 btn btn-outline-primary nav-link" id="overview" href="{% url 'project-detail' pk=project.pk %}">Overview</a>
         </li>
         <li>
-          <a class="mx-2 btn btn-outline-primary nav-link" id="phases" href="{% url 'create-phase'  pk=project.pk %}">Phase</a>
+          <a class="mx-2 btn btn-outline-primary nav-link" id="phases" href="{% url 'create-phase'  pk=project.pk %}">Create Phase</a>
         </li>
       </ul>
     </nav>
@@ -23,6 +23,8 @@
     </div>
     
     {% block phase_list %}{% endblock %}
+    
+    {% block asset_thumbnail %}{% endblock %}
   </div>
 {% endblock %}
 
