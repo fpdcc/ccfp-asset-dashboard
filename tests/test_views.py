@@ -1,6 +1,6 @@
 import pytest
 from django.urls import reverse
-from asset_dashboard.models import Project, ProjectScore, ProjectCategory, User, Phase
+from asset_dashboard.models import Project, ProjectScore, ProjectCategory, User, Phase, LocalAsset
 from django.forms.models import model_to_dict
 import json
 from django.utils.html import escape
@@ -290,7 +290,47 @@ def test_funding_stream_form(client, project, user):
     assert funding_stream.year == form_data['year']
     assert funding_stream.funding_secured == form_data['funding_secured']
     assert funding_stream.source_type == form_data['source_type']
+    
+@pytest.mark.django_db
+def test_promote_assets_to_new_phase(client, user, project, signs_geojson):
+    prj = project.build()
+    
+    phase_a = Phase.objects.filter(project=prj)[0]
 
+    # Save assets to the existing phase
+    for feature in signs_geojson['features']:
+        asset = LocalAsset.objects.create(
+            phase=phase_a,
+            geom=json.dumps(feature['geometry'])
+        )
+
+    # Create new phase
+    phase_b = Phase.objects.create(
+        project=prj,
+        phase_type='design',
+        estimated_bid_quarter='Q2',
+        status='new'
+    )
+    
+    # Visit the form to promote assets
+    client.force_login(user=user)
+    promote_assets_url = reverse('promote-assets-phase', kwargs={'pk': phase_a.id})
+    response = client.get(promote_assets_url)
+    assert response.status_code == 200
+    
+    form_data = {
+        'phase': phase_b.id
+    }
+    form_response = client.post(promote_assets_url, data=form_data)
+    assert form_response.status_code == 302
+    
+    # Test the two assets
+    phase_a_assets = LocalAsset.objects.filter(phase=phase_a)
+    assert len(phase_a_assets) == 0
+    
+    phase_b_assets = LocalAsset.objects.filter(phase=phase_b)
+    # Make sure it has all the assets that we started with
+    assert len(phase_b_assets) == len(signs_geojson['features'])
 
 @pytest.mark.django_db
 def test_unauthenticated_user_cannot_access_site(client):
