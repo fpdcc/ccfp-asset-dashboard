@@ -502,14 +502,10 @@ class PortfolioPlanner extends React.Component {
     
     return costByZone
   }
-  
-  
 
   render() {
     const portfolioTableRows = this.filterPortfolio(this.state.portfolio.projects)
     const projectTableRows = this.filterRemainingProjects(this.state.remainingProjects)
-    
-    console.log('projects', this.state.portfolio.projects)
 
     return (
       <div className="m-5">
