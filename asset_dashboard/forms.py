@@ -1,7 +1,7 @@
 from datetime import datetime
 from django.forms import ModelForm, TextInput, ChoiceField, BooleanField, Form
 from .models import Project, FundingStream, ProjectScore, ProjectCategory, \
-    Phase, LocalAsset
+    Phase
 
 
 class StyledFormMixin(object):
@@ -112,7 +112,7 @@ class PhaseForm(StyledFormMixin, ModelForm):
 class PromoteAssetsForm(Form):
     class Meta:
         fields = ('phase',)
-    
+
     def __init__(self, phase_pk, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -124,6 +124,5 @@ class PromoteAssetsForm(Form):
             initial=phase_pk,
             required=True
         )
-        
-        self.fields['phase'].widget.attrs['class'] = 'form-control'
 
+        self.fields['phase'].widget.attrs['class'] = 'form-control'
