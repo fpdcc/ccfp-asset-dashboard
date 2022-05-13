@@ -268,8 +268,9 @@ function SelectAssetsMap(props) {
         <div className='col'>
           <div className='card text-center bg-light mb-4 border-secondary shadow-sm'>
             <div className='card-body'>
-                <div className='d-flex justify-content-start'>
+                <div className='d-flex justify-content-between'>
                   <a href={`/projects/phases/edit/${phaseId}`} className='text-info'>{'<'} Back to phase</a>
+                  <a href={`/projects/phases/promote/${phaseId}/assets`} className='text-info'>Promote Assets to New Phase</a>
                 </div>
                 <h2 className='card-title'>{props.phase_name}</h2>
                 <div>

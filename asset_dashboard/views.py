@@ -8,14 +8,14 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.html import escape
-from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, FormView
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from .models import HouseDistrict, LocalAsset, Project, ProjectCategory, ProjectScore, \
-    Section, SenateDistrict, CommissionerDistrict, Phase, FundingStream
+    Section, SenateDistrict, CommissionerDistrict, Phase, FundingStream, LocalAsset
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
-    FundingStreamForm, PhaseForm
+    FundingStreamForm, PhaseForm, PromoteAssetsForm
 from .serializers import PortfolioSerializer, LocalAssetReadSerializer
 
 
@@ -375,6 +375,35 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
             })
 
         return context
+
+
+class AssetPromotePhaseView(LoginRequiredMixin, FormView):
+    template_name = 'asset_dashboard/local_asset_phase_promotion.html'
+    form_class = PromoteAssetsForm
+    
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = {
+            'phase_pk': self.kwargs['pk']
+        }
+        
+        if self.request.method == 'POST':
+            kwargs.update({
+                'data': self.request.POST
+            })
+
+        return kwargs
+        
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            new_phase_id = form.cleaned_data['phase']
+            old_phase_id = self.kwargs['pk']
+            local_assets = LocalAsset.objects.filter(phase=old_phase_id).update(phase=new_phase_id)
+            
+            messages.success(self.request, 'Assets successfully promoted to phase.')
+            return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': new_phase_id}))
+        else:
+            return super().form_invalid(form)
 
 
 class ProjectsByDistrictListView(LoginRequiredMixin, ListView):
