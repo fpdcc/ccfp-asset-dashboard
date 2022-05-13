@@ -182,14 +182,8 @@ class PhaseZoneDistribution(models.Model):
             total_distribution_area
         )
 
-        for zone, proportion in zone_proportions.items():
-            zone_distribution, _ = PhaseZoneDistribution.objects.get_or_create(
-                phase=instance.phase,
-                zone=zone
-            )
-
-            zone_distribution.zone_distribution_proportion = proportion
-            zone_distribution.save()
+        PhaseZoneDistribution.save_distributions(zone_proportions, instance)
+        PhaseZoneDistribution.save_scores(zone_proportions, instance)
 
     @classmethod
     def calculate_zone_proportion(cls, distributions_by_zone, total_distribution_area):
@@ -203,6 +197,32 @@ class PhaseZoneDistribution(models.Model):
             proportions_by_zone[zone] = proportion
 
         return proportions_by_zone
+    
+    @classmethod
+    def save_distributions(cls, zone_proportions, instance):
+        for zone, proportion in zone_proportions.items():
+            zone_distribution, _ = PhaseZoneDistribution.objects.get_or_create(
+                phase=instance.phase,
+                zone=zone
+            )
+
+            zone_distribution.zone_distribution_proportion = proportion
+            zone_distribution.save()
+    
+    @classmethod
+    def save_scores(cls, zone_proportions, instance):
+        project_score, _ = ProjectScore.objects.get_or_create(
+            project=instance.phase.project
+        )
+        
+        zone_score = 0
+        
+        for key, value in zone_proportions.items():
+            if value > 0:
+                zone_score += 1
+        
+        project_score.geographic_distance_score = zone_score
+        project_score.save()
 
 
 class Phase(SequencedModel):
@@ -330,9 +350,6 @@ class ProjectScore(models.Model):
             total_score += score_field_value * weight_field_value
 
         return total_score
-
-    def add_score_to_queryset(self):
-        """we'll need to add the total scores to the queryset"""
 
     def __str__(self):
         return self.project.name
