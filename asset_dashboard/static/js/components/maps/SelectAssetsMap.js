@@ -226,7 +226,7 @@ function SelectAssetsMap(props) {
         : null
       }
       <div className='row'>
-        <div className='col-4 border rounded border-secondary shadow-sm py-1 ml-3'>
+        <div className='col-4 border rounded border-secondary shadow-sm py-1 card'>
           <div className='row my-3'>
             <div className='col'>
               <div className='row m-1'>
@@ -266,11 +266,11 @@ function SelectAssetsMap(props) {
           </div>
         </div>
         <div className='col'>
-          <div className='card text-center bg-light mb-4 border-secondary shadow-sm'>
+          <div className='card text-center mb-3 border-secondary shadow-sm'>
             <div className='card-body'>
                 <div className='d-flex justify-content-between'>
                   <a href={`/projects/phases/edit/${phaseId}`} className='text-info'>{'<'} Back to phase</a>
-                  <a href={`/projects/phases/promote/${phaseId}/assets`} className='text-info'>Promote Assets to New Phase</a>
+                  <a href={`/projects/phases/promote/${phaseId}/assets`} className='btn btn-info btn-sm'>Promote Assets to Phase</a>
                 </div>
                 <h2 className='card-title'>{props.phase_name}</h2>
                 <div>
@@ -322,20 +322,19 @@ function SelectAssetsMap(props) {
           </div>
         </div>
       </div>
-      <div>
-      <div className='border rounded border-secondary shadow-sm mt-4'>
-        <h3 className='m-3'>Phase Assets</h3>
-        {
-          existingGeoms 
-            ? <ExistingAssetsTable
-                rows={existingGeoms.features}
-                setAjaxMessage={setAjaxMessage}
-              />
-            : <p className='m-4'>Phase has no assets.</p>
-        }
-      </div>
-        
-      </div>
+      <section class="row">
+        <div className='col border rounded border-secondary shadow-sm mt-4 card'>
+          <h3 className='m-3'>Phase Assets</h3>
+          {
+            existingGeoms 
+              ? <ExistingAssetsTable
+                  rows={existingGeoms.features}
+                  setAjaxMessage={setAjaxMessage}
+                />
+              : <p className='m-4'>Phase has no assets.</p>
+          }
+        </div>
+      </section>
     </>
   )
 }
