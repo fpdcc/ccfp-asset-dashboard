@@ -2,37 +2,39 @@
 {% load static %}
 
 {% block project %}
-<div class="row">
-  <div class="col border border-secondary rounded shadow-sm p-3 m-2">
-    <form method="post">
-      {% csrf_token %}
+<section class="m-2">
+  <div class="row">
+    <div class="col border border-secondary rounded shadow-sm p-3 m-2 card">
+      <form method="post">
+        {% csrf_token %}
 
-      {{ form.errors }}
+        {{ form.errors }}
 
-      <div class="row justify-content-between mx-3">
-        <h3>Funding Source</h3>
-        <input type="submit" value="Save Funding" class="btn btn-info">
-      </div>
+        <div class="row justify-content-between mx-3">
+          <h3>Funding Source</h3>
+          <input type="submit" value="Save Funding" class="btn btn-info">
+        </div>
 
-      <div class="row m-4">
-        <div class="col">
-          <strong>Budget</strong>
-          {{ form.budget }}
+        <div class="row m-4">
+          <div class="col">
+            <strong>Budget</strong>
+            {{ form.budget }}
+          </div>
+          <div class="col">
+            <strong>Source Type</strong>
+            {{ form.source_type }}
+          </div>
+          <div class="col">
+            <strong>Year</strong>
+            {{ form.year }}
+          </div>
+          <div class="col">
+            <strong>Funding Secured</strong>
+            {{ form.funding_secured }}
+          </div>
         </div>
-        <div class="col">
-          <strong>Source Type</strong>
-          {{ form.source_type }}
-        </div>
-        <div class="col">
-          <strong>Year</strong>
-          {{ form.year }}
-        </div>
-        <div class="col">
-          <strong>Funding Secured</strong>
-          {{ form.funding_secured }}
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
-</div>
+</section>
 {% endblock %}

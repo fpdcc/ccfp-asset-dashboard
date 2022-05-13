@@ -7,14 +7,16 @@
 {% endblock %}
 
 {% block project %}
-  <div id="map">
-      <!-- Contents get replaced by mounted React.Component -->
-      <div class="text-center">
-        <div class="spinner-border text-primary" role="status">
-          <span class="sr-only">Loading...</span>
+  <section class="border border-secondary rounded shadow-sm p-3 m-2 card">
+    <div id="map">
+        <!-- Contents get replaced by mounted React.Component -->
+        <div class="text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
         </div>
-      </div>
-  </div>
+    </div>
+  </section>
 {% endblock %}
 
 {% block extra_js %}
