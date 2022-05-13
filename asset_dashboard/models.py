@@ -242,11 +242,13 @@ class Phase(SequencedModel):
     year = models.IntegerField(null=True, blank=True)
 
     total_estimated_cost = MoneyField(default_currency='USD',
-                                      default=0.00,
+                                      default=0,
+                                      decimal_places=0,
                                       max_digits=11)
 
     actual_cost = MoneyField(default_currency='USD',
-                             default=0.00,
+                             default=0,
+                             decimal_places=0,
                              max_digits=11,
                              blank=True,
                              null=True)
@@ -349,7 +351,8 @@ class FundingStream(models.Model):
     ]
 
     budget = MoneyField(default_currency='USD',
-                        default=0.00,
+                        default=0,
+                        decimal_places=0,
                         max_digits=11)
     year = models.IntegerField(null=True, blank=True)
     funding_secured = models.BooleanField(default=False)

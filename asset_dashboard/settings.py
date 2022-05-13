@@ -224,3 +224,6 @@ REST_FRAMEWORK = {
 }
 
 GEOM_BUFFER = .000005
+
+# remove decimal places for djmoney
+CURRENCY_DECIMAL_PLACES = 0

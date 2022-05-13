@@ -58,7 +58,7 @@
     <h3>Phase Funding</h3>
     {% if funding_streams %}
       <div class="d-flex justify-content-between m-3">
-        <p class="lead"><strong>Total Funding:</strong> ${{ phase.total_budget|floatformat:2|intcomma }}</p>
+        <p class="lead"><strong>Total Funding:</strong> ${{ phase.total_budget|intcomma }}</p>
         <a href="{% url 'create-funding' pk=phase.id %}" class="text-info lead">Add funding ></a>
       </div>
       <table class="table table-hover table-border py-4">

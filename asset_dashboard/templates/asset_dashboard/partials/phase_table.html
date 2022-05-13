@@ -18,7 +18,7 @@
           <tr>
             <td>{{ phase.phase_type }}</td>
             <td>{{ phase.status }}</td>
-            <td>${{ phase.total_budget|floatformat:2|intcomma }}</td>
+            <td>${{ phase.total_budget|intcomma }}</td>
             <td>{{ phase.estimated_bid_quarter }}</td>
             <td><a href="{% url 'edit-phase' pk=phase.id %}" class="text-info lead">Edit</a></td>
             <td style="width: 10%;"><a href="{% url 'delete-phase' pk=phase.id %}" class='btn btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
