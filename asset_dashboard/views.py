@@ -172,6 +172,13 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
 
             context['phases'] = Phase.objects.annotate().filter(project=self.kwargs['pk']).order_by('sequence')
 
+            assets = LocalAsset.objects.filter(phase__project=self.object)
+
+            if assets.exists():
+                context['props'] = {
+                    'assets': LocalAssetReadSerializer(assets, many=True).data
+                }
+
         return context
 
     def get_success_url(self):

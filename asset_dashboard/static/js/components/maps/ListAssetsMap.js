@@ -23,8 +23,8 @@ function ListAssetsMap(props) {
             <div className='row'>
               <div className='col-4 m-3'>
                 <div className="d-flex align-items-center justify-content-between m-2">
-                  <h3>Phase Assets</h3>
-                  <a href={`${window.location.href}assets`} class="text-info lead">Edit Assets ></a>
+                  <h3>Assets</h3>
+                  <a href={`/projects/phases/edit/${props.assets.features[0].properties.phase}/assets`} class="text-info lead">Edit Assets ></a>
                 </div>
                 <div className='map-thumbnail'>
                   <BaseMap
