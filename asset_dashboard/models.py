@@ -195,6 +195,9 @@ class PhaseZoneDistribution(models.Model):
     def calculate_zone_proportion(cls, distributions_by_zone, total_distribution_area):
         proportions_by_zone = {}
 
+        if total_distribution_area == 0.0:
+            return distributions_by_zone
+
         for zone, distribution in distributions_by_zone.items():
             proportion = distribution / total_distribution_area
             proportions_by_zone[zone] = proportion
