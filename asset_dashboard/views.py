@@ -9,11 +9,12 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.html import escape
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, FormView
+from django.db.models.signals import post_save
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from .models import HouseDistrict, LocalAsset, Project, ProjectCategory, ProjectScore, \
-    Section, SenateDistrict, CommissionerDistrict, Phase, FundingStream
+    Section, SenateDistrict, CommissionerDistrict, Phase, FundingStream, PhaseZoneDistribution
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
     FundingStreamForm, PhaseForm, PromoteAssetsForm
 from .serializers import PortfolioSerializer, LocalAssetReadSerializer
@@ -398,7 +399,15 @@ class AssetPromotePhaseView(LoginRequiredMixin, FormView):
         if form.is_valid():
             new_phase_id = form.cleaned_data['phase']
             old_phase_id = self.kwargs['pk']
-            LocalAsset.objects.filter(phase=old_phase_id).update(phase=new_phase_id)
+            assets = LocalAsset.objects.filter(phase=old_phase_id)
+            
+            for asset in assets:
+                asset.phase_id = new_phase_id
+                asset.save()
+            
+            # Clean up the old PhaseZoneDistributions since we can't 
+            # pass the old_phase_id to the signal.
+            PhaseZoneDistribution.objects.filter(phase=old_phase_id).delete()
 
             messages.success(self.request, 'Assets successfully promoted to phase.')
             return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': new_phase_id}))
