@@ -14,11 +14,6 @@ Build application containers:
 docker-compose build
 ```
 
-Load the dummy data for development:
-```
-docker-compose run --rm app python manage.py load_development_data
-```
-
 Run the app:
 
 ```
