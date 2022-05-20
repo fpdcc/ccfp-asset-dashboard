@@ -12,15 +12,12 @@ export default function CountywideForm({ currentCountywideValue, onCountywideCha
   
   function saveSelection() {
     const api = new ApiService(onResponse)
-    api.setCountywideSelection(isCountywide, phaseId)
-    console.log('save selection')
+    api.saveCountywideSelection(isCountywide, phaseId)
   }
-  
-  console.log('isCountywide', isCountywide)
 
   return (
     <div className='border rounded border-secondary p-4 text-center'>
-      <h6>Countywide</h6>
+      <h6><strong>Countywide</strong></h6>
       <label>Toggle for a countywide phase</label>
       <input type="checkbox" onChange={onCheckboxChange} checked={isCountywide} />
       <button className="btn btn-info" onClick={saveSelection}>Save</button>

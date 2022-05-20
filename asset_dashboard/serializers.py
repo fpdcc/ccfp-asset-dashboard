@@ -274,5 +274,5 @@ class CountywideSerializer(serializers.Serializer):
     
     def save(self):
         project = Phase.objects.get(id=self.validated_data['phase_id']).project
-        
         project.countywide = self.validated_data['countywide']
+        project.save()

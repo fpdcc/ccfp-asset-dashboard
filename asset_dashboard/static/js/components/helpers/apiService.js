@@ -62,7 +62,7 @@ class ApiService {
     })
   }
   
-  setCountywideSelection(isCountywide, phaseId) {
+  saveCountywideSelection(isCountywide, phaseId) {
     const data = {
       'countywide': isCountywide,
       'phase_id': phaseId
