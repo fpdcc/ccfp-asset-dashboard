@@ -55,6 +55,7 @@ class ApiService {
       }
     }).catch(error => {
       console.error(error)
+
       this.onResponse({
         text: 'An error occurred promoting the assets. Please try again.',
         tag: 'danger'
@@ -67,6 +68,7 @@ class ApiService {
       'countywide': isCountywide,
       'phase_id': phaseId
     }
+
     fetch(`/projects/phases/assets/countywide/`, {
         ...this.requestConfig,
         method: 'POST',
@@ -93,6 +95,7 @@ class ApiService {
         text: 'An error occurred saving the countywide selection. Please try again.',
         tag: 'danger'
       })
+
       location.reload()
     })
   }

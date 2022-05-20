@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import ApiService from './apiService'
 
-export default function PromotePhase({ phases, currentPhase, setAjaxMessage }) {
+export default function PromotePhaseForm({ phases, currentPhase, setAjaxMessage }) {
   const [selectedPhase, setSelectedPhase] = useState(null)
   
   useEffect(() => {
@@ -16,8 +16,6 @@ export default function PromotePhase({ phases, currentPhase, setAjaxMessage }) {
     const api = new ApiService(setAjaxMessage)
     
     const responseDetails = api.setNewPhase(selectedPhase, currentPhase, setAjaxMessage)
-    // console.log('responseDetails', responseDetails)
-    // setAjaxMessage(responseDetails)
   }
 
   return (

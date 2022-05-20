@@ -5,7 +5,6 @@ export default function CountywideForm({ currentCountywideValue, onCountywideCha
   const [isCountywide, setIsCountywide] = useState(currentCountywideValue)
 
   function onCheckboxChange(event) {
-    console.log(event.currentTarget.checked)
     setIsCountywide(event.currentTarget.checked)
     onCountywideChange(event.currentTarget.checked)
   }

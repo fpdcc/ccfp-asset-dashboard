@@ -16,7 +16,7 @@ import Message from '../helpers/Message'
 import bindPopup from '../map_utils/bindPopup'
 import ShowPopup from '../map_utils/ShowPopup'
 import circleMarker from '../map_utils/circleMarker'
-import PromotePhase from '../helpers/PromotePhase'
+import PromotePhaseForm from '../helpers/PromotePhaseForm'
 import CountywideForm from '../helpers/CountywideForm'
 
 function AssetTypeOptions() {
@@ -54,8 +54,10 @@ function SelectAssetsMap(props) {
     if (props?.phase_id) {
       setPhaseId(props.phase_id)
     }
-    console.log('props.is_countywide', props.is_countywide)
-    setIsCountywide(props.is_countywide)
+    
+    if (props?.is_countywide) {
+      setIsCountywide(props.is_countywide)
+    }
   }, [])
 
   function onMapCreated(map) {
@@ -272,7 +274,7 @@ function SelectAssetsMap(props) {
                   </div>
                 </div>
                 <div className="row my-4">
-                  <PromotePhase 
+                  <PromotePhaseForm 
                     phases={JSON.parse(props.phases)}
                     currentPhase={phaseId} 
                     setAjaxMessage={setAjaxMessage} />

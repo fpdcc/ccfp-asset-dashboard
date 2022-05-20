@@ -8,8 +8,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.html import escape
-from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, FormView
-from django.db.models.signals import post_save
+from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 

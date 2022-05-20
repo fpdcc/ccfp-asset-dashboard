@@ -137,6 +137,7 @@ class PromotePhaseView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class CountywideView(APIView):
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
