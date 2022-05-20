@@ -179,6 +179,13 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
                     'assets': LocalAssetReadSerializer(assets, many=True).data
                 }
 
+            assets = LocalAsset.objects.filter(phase__project=self.object)
+
+            if assets.exists():
+                context['props'] = {
+                    'assets': LocalAssetReadSerializer(assets, many=True).data
+                }
+
         return context
 
     def get_success_url(self):

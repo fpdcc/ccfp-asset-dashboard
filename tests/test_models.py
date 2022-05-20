@@ -149,4 +149,15 @@ def test_phase_zone_distribution_signal(project, zones, signs_geojson, trails_ge
     for distribution in phase_zone_distributions_reload:
         cost = phase.cost_by_zone.get(distribution.zone.name)
         assert cost == 250000 * distribution.zone_distribution_proportion
+
+
+    # Test delete signal
+    assets = LocalAsset.objects.filter(phase=phase)
+    for asset in assets:
+        asset.delete()
+    
+    phase_zone_distributions = PhaseZoneDistribution.objects.filter(phase=phase)
+    for zone_dist in phase_zone_distributions:
+        assert zone_dist.zone_distribution_proportion == 0.0
+
         

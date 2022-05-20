@@ -195,6 +195,9 @@ class PhaseZoneDistribution(models.Model):
     def calculate_zone_proportion(cls, distributions_by_zone, total_distribution_area):
         proportions_by_zone = {}
 
+        if total_distribution_area == 0.0:
+            return distributions_by_zone
+
         for zone, distribution in distributions_by_zone.items():
             proportion = distribution / total_distribution_area
             proportions_by_zone[zone] = proportion
@@ -239,11 +242,13 @@ class Phase(SequencedModel):
     year = models.IntegerField(null=True, blank=True)
 
     total_estimated_cost = MoneyField(default_currency='USD',
-                                      default=0.00,
+                                      default=0,
+                                      decimal_places=0,
                                       max_digits=11)
 
     actual_cost = MoneyField(default_currency='USD',
-                             default=0.00,
+                             default=0,
+                             decimal_places=0,
                              max_digits=11,
                              blank=True,
                              null=True)
@@ -346,7 +351,8 @@ class FundingStream(models.Model):
     ]
 
     budget = MoneyField(default_currency='USD',
-                        default=0.00,
+                        default=0,
+                        decimal_places=0,
                         max_digits=11)
     year = models.IntegerField(null=True, blank=True)
     funding_secured = models.BooleanField(default=False)

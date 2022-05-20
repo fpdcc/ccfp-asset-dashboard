@@ -6,8 +6,7 @@ import ReactTable from '../BaseTable'
 import existingAssetsColumns from '../table_utils/existingAssetsColumns'
 import Message from '../helpers/Message'
 
-function ExistingAssetsTable({ rows }) {
-  const [ajaxMessage, setAjaxMessage] = useSessionstorageState('ajaxMessageTable', null)
+function ExistingAssetsTable({ rows, setAjaxMessage }) {
 
   function handleDelete(assetId) {
     fetch(`/local-assets/${assetId}`, {
@@ -19,7 +18,6 @@ function ExistingAssetsTable({ rows }) {
       method: 'DELETE',
       mode: 'same-origin'
     }).then((response) => {
-      console.log('response', response)
       if (response.status == 204) {
         setAjaxMessage({text: 'Asset successfully deleted.', tag: 'success'})
         location.reload()
@@ -31,23 +29,12 @@ function ExistingAssetsTable({ rows }) {
   }
 
   return (
-    <div className='border rounded border-secondary shadow-sm mt-4'>
-      <h3 className='m-3'>Phase Assets</h3>
-      {ajaxMessage 
-        ? <Message
-            text={ajaxMessage.text}
-            messageTag={ajaxMessage.tag}
-            onCloseMessage={setAjaxMessage}
-          />
-        : null
-      }
-      <ReactTable
-        rows={rows}
-        columns={React.useMemo(() =>  existingAssetsColumns(handleDelete), [])}
-        pageSizeIncrements={[10, 20, 30]}
-        sizeOfPage={10}
-      />
-    </div>
+    <ReactTable
+      rows={rows}
+      columns={React.useMemo(() =>  existingAssetsColumns(handleDelete), [])}
+      pageSizeIncrements={[10, 20, 30]}
+      sizeOfPage={10}
+    />
   )
 }
 

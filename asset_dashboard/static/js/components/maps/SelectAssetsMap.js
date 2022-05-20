@@ -132,6 +132,11 @@ function SelectAssetsMap(props) {
     }).then((response) => response.json())
     .then((data) => {
       setIsLoading(false)
+      
+      if (data.features.length == 0) {
+        setAjaxMessage({text: 'No assets found with search query.', tag: 'info'})
+      }
+      
       setSearchGeoms(data)
     })
     .catch(error => {
@@ -254,9 +259,9 @@ function SelectAssetsMap(props) {
             {isLoading ? 'Loading...' : null}
             {searchGeoms && 
               <AssetSearchTable
-                rows={searchGeoms.features}
-                onSelectRow={setSingleFeature}
-              />
+                  rows={searchGeoms.features}
+                  onSelectRow={setSingleFeature}
+                />
             }
           </div>
         </div>
@@ -317,11 +322,18 @@ function SelectAssetsMap(props) {
         </div>
       </div>
       <div>
-        {existingGeoms && 
-          <ExistingAssetsTable
-            rows={existingGeoms.features}
-          />
+      <div className='border rounded border-secondary shadow-sm mt-4'>
+        <h3 className='m-3'>Phase Assets</h3>
+        {
+          existingGeoms 
+            ? <ExistingAssetsTable
+                rows={existingGeoms.features}
+                setAjaxMessage={setAjaxMessage}
+              />
+            : <p className='m-4'>Phase has no assets.</p>
         }
+      </div>
+        
       </div>
     </>
   )

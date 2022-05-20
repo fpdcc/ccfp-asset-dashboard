@@ -245,7 +245,7 @@ def test_project_phase_form(client, project, user):
         'phase_type': 'design',
         'estimated_bid_quarter': 'Q2',
         'status': 'ongoing',
-        'total_estimated_cost_0': 100000.00,
+        'total_estimated_cost_0': 100000,
         'total_estimated_cost_1': 'USD',
         'year': 2022
     }
@@ -275,7 +275,7 @@ def test_funding_stream_form(client, project, user):
     assert response.status_code == 200
 
     form_data = {
-        'budget_0': 1000000.00,
+        'budget_0': 1000000,
         'budget_1': 'USD',
         'year': 2022,
         'funding_secured': False,
