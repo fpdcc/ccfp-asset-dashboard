@@ -357,13 +357,18 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         phase = Phase.objects.get(id=self.kwargs['pk'])
+        phase_list = Phase.objects.filter(project=phase.project).values(
+            'id', 'phase_type', 'estimated_bid_quarter', 'status', 'year'
+        )
 
         context.update({
             'phase': phase,
-            'project': Project.objects.filter(phases=phase)[0],
+            'project': phase.project,
             'props': {
                 'phase_id': phase.id,
-                'phase_name': phase.name
+                'phase_name': phase.name,
+                'phases': json.dumps(list(phase_list), cls=DjangoJSONEncoder),
+                'is_countywide': phase.project.countywide
             }
         })
 
@@ -378,41 +383,41 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class AssetPromotePhaseView(LoginRequiredMixin, FormView):
-    template_name = 'asset_dashboard/local_asset_phase_promotion.html'
-    form_class = PromoteAssetsForm
-
-    def get_form_kwargs(self, *args, **kwargs):
-        kwargs = {
-            'phase_pk': self.kwargs['pk']
-        }
-
-        if self.request.method == 'POST':
-            kwargs.update({
-                'data': self.request.POST
-            })
-
-        return kwargs
-
-    def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        if form.is_valid():
-            new_phase_id = form.cleaned_data['phase']
-            old_phase_id = self.kwargs['pk']
-            assets = LocalAsset.objects.filter(phase=old_phase_id)
-            
-            for asset in assets:
-                asset.phase_id = new_phase_id
-                asset.save()
-            
-            # Clean up the old PhaseZoneDistributions since we can't 
-            # pass the old_phase_id to the signal.
-            PhaseZoneDistribution.objects.filter(phase=old_phase_id).delete()
-
-            messages.success(self.request, 'Assets successfully promoted to phase.')
-            return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': new_phase_id}))
-        else:
-            return super().form_invalid(form)
+# class AssetPromotePhaseView(LoginRequiredMixin, FormView):
+#     template_name = 'asset_dashboard/local_asset_phase_promotion.html'
+#     form_class = PromoteAssetsForm
+# 
+#     def get_form_kwargs(self, *args, **kwargs):
+#         kwargs = {
+#             'phase_pk': self.kwargs['pk']
+#         }
+# 
+#         if self.request.method == 'POST':
+#             kwargs.update({
+#                 'data': self.request.POST
+#             })
+# 
+#         return kwargs
+# 
+#     def post(self, request, *args, **kwargs):
+#         form = self.get_form()
+#         if form.is_valid():
+#             new_phase_id = form.cleaned_data['phase']
+#             old_phase_id = self.kwargs['pk']
+#             assets = LocalAsset.objects.filter(phase=old_phase_id)
+# 
+#             for asset in assets:
+#                 asset.phase_id = new_phase_id
+#                 asset.save()
+# 
+#             # Clean up the old PhaseZoneDistributions since we can't 
+#             # pass the old_phase_id to the signal.
+#             PhaseZoneDistribution.objects.filter(phase=old_phase_id).delete()
+# 
+#             messages.success(self.request, 'Assets successfully promoted to phase.')
+#             return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': new_phase_id}))
+#         else:
+#             return super().form_invalid(form)
 
 
 class ProjectsByDistrictListView(LoginRequiredMixin, ListView):

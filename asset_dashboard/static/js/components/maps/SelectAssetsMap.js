@@ -16,6 +16,8 @@ import Message from '../helpers/Message'
 import bindPopup from '../map_utils/bindPopup'
 import ShowPopup from '../map_utils/ShowPopup'
 import circleMarker from '../map_utils/circleMarker'
+import PromotePhase from '../helpers/PromotePhase'
+import CountywideForm from '../helpers/CountywideForm'
 
 function AssetTypeOptions() {
   const options = [
@@ -42,6 +44,7 @@ function SelectAssetsMap(props) {
   const [ajaxMessage, setAjaxMessage] = useSessionstorageState('ajaxMessage', null)
   const [multipleFeatures, setMultipleFeatures] = useState(null)
   const [singleFeature, setSingleFeature] = useState(null)
+  const [isCountywide, setIsCountywide] = useState(null)
 
   useEffect(() => {
     if (props?.existing_assets) {
@@ -51,6 +54,8 @@ function SelectAssetsMap(props) {
     if (props?.phase_id) {
       setPhaseId(props.phase_id)
     }
+    console.log('props.is_countywide', props.is_countywide)
+    setIsCountywide(props.is_countywide)
   }, [])
 
   function onMapCreated(map) {
@@ -225,7 +230,58 @@ function SelectAssetsMap(props) {
           /> 
         : null
       }
-      <div className='row'>
+      <div className='row mb-3'>
+        <div className='col card border-secondary shadow-sm mr-3'>
+          <div className="card-body d-flex flex-column text-center">
+            <h2>Phase Assets</h2>
+            {geomsToSave 
+              ?
+                <div className='mt-5'>
+                  <button 
+                    className='btn btn-info'
+                    onClick={() => saveGeometries()}>
+                    Add Asset to Phase
+                  </button>
+                </div>
+              : (
+                <div class='d-flex flex-column'>
+                  {!isCountywide && <p className='lead'>Click on an asset or use the map toolbar to select and save assets.</p>}
+                  
+                  {
+                    isCountywide !== null 
+                      ? <CountywideForm 
+                        currentCountywideValue={isCountywide} 
+                        onCountywideChange={setIsCountywide}
+                        phaseId={phaseId}
+                        onResponse={setAjaxMessage} />
+                      : null
+                  }
+                </div>
+              )
+            }
+          </div>
+        </div>
+        
+        <div className='col card border-secondary shadow-sm'>
+          <div className='card-body'>
+              <div className="d-flex flex-column">
+                <div className='row d-flex flex-column'>
+                  <h2 className='card-title'>{props.phase_name}</h2>
+                  <div>
+                    <a href={`/projects/phases/edit/${phaseId}`} className='text-info'>{'<'} Back to phase</a>
+                  </div>
+                </div>
+                <div className="row my-4">
+                  <PromotePhase 
+                    phases={JSON.parse(props.phases)}
+                    currentPhase={phaseId} 
+                    setAjaxMessage={setAjaxMessage} />
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div className='row' style={isCountywide ? {pointerEvents: "none", opacity: "0.4"} : {}}>
         <div className='col-4 border rounded border-secondary shadow-sm py-1 card'>
           <div className='row my-3'>
             <div className='col'>
@@ -266,27 +322,6 @@ function SelectAssetsMap(props) {
           </div>
         </div>
         <div className='col'>
-          <div className='card text-center mb-3 border-secondary shadow-sm'>
-            <div className='card-body'>
-                <div className='d-flex justify-content-between'>
-                  <a href={`/projects/phases/edit/${phaseId}`} className='text-info'>{'<'} Back to phase</a>
-                  <a href={`/projects/phases/promote/${phaseId}/assets`} className='btn btn-info btn-sm'>Promote Assets to Phase</a>
-                </div>
-                <h2 className='card-title'>{props.phase_name}</h2>
-                <div>
-                  {geomsToSave 
-                    ?
-                      <button 
-                        className='btn btn-info'
-                        onClick={() => saveGeometries()}>
-                        Add Asset to Phase
-                      </button>
-                    : <p className='lead'>Click on an asset or use the map toolbar to select and save assets.</p>
-                  }
-                </div>
-            </div>
-          </div>
-          
           <div className='map-container border border-secondary rounded shadow-sm' aria-label='Asset Selection Map'>
             <BaseMap
               center={[41.8781, -87.6298]}
@@ -307,7 +342,6 @@ function SelectAssetsMap(props) {
                       onGeometriesSelected={onGeometriesSelected}
                     />
                     <MapZoom searchGeoms={searchGeoms} />
-                    {/* {selectedSearchAsset && <ShowPopup geojson={selectedSearchAsset} />} */}
                     {singleFeature && <ShowPopup geojson={singleFeature} />}
                 </>
               }

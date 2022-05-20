@@ -19,13 +19,14 @@ from django.contrib.auth import views as auth_views
 from rest_framework import routers
 
 from asset_dashboard.endpoints import PortfolioViewSet, UserViewSet, \
-    PortfolioPhaseViewSet, PhaseViewSet, ProjectViewSet, AssetViewSet, LocalAssetViewSet
+    PortfolioPhaseViewSet, PhaseViewSet, ProjectViewSet, AssetViewSet, LocalAssetViewSet, \
+    PromotePhaseView, CountywideView
 from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreateView, \
                                     ProjectUpdateView, ProjectListJson, \
                                     ProjectsByDistrictListView, ProjectsByDistrictListJson, \
                                     PhaseCreateView, PhaseUpdateView, \
                                     AssetAddEditView, FundingStreamCreateView, FundingStreamUpdateView, \
-                                    PhaseDeleteView, FundingStreamDeleteView, AssetPromotePhaseView
+                                    PhaseDeleteView, FundingStreamDeleteView
 
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -50,7 +51,8 @@ urlpatterns = [
     path('projects/phases/<int:pk>/funding/update/', FundingStreamUpdateView.as_view(), name='update-funding'),
     path('projects/phases/<int:pk>/funding/delete', FundingStreamDeleteView.as_view(), name='delete-funding'),
     path('projects/phases/edit/<int:pk>/assets/', AssetAddEditView.as_view(), name='create-update-assets'),
-    path('projects/phases/promote/<int:pk>/assets/', AssetPromotePhaseView.as_view(), name='promote-assets-phase'),
+    path('projects/phases/promote/assets/', PromotePhaseView.as_view(), name='promote-assets-phase'),
+    path('projects/phases/assets/countywide/', CountywideView.as_view(), name='countwide'),
     path('projects/districts/', ProjectsByDistrictListView.as_view(), name='projects-by-district'),
     path('projects/districts/json/', ProjectsByDistrictListJson.as_view(), name='projects-district-json'),
     path('cip-planner/', CipPlannerView.as_view(), name='cip-planner'),

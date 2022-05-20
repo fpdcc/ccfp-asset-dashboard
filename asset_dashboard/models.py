@@ -283,7 +283,7 @@ class Phase(SequencedModel):
         return str(self)
 
     def __str__(self):
-        return f'{self.phase_type} - {self.estimated_bid_quarter} - {self.status}'
+        return f'{self.phase_type} - {self.estimated_bid_quarter} - {self.year} -  {self.status}'
 
 
 class ScoreField(models.IntegerField):

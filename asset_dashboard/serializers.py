@@ -5,7 +5,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
     LocalAsset, Buildings, TrailsInfo, PoiInfo, PointsOfInterest, PicnicGroves, \
-    ParkingLots
+    ParkingLots, PhaseZoneDistribution
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -245,3 +245,34 @@ class ParkingLotsSerializer(SourceAssetSerializer):
 
     def get_identifier(self, obj):
         return obj.fpd_uid
+
+class PromotePhaseSerializer(serializers.Serializer):
+    new_phase_id = serializers.IntegerField(required=True)
+    old_phase_id = serializers.IntegerField(required=True)
+    
+    def save(self):
+        # Get all assets related to the outgoing phase
+        old_phase_id =  self.validated_data['old_phase_id']
+        new_phase_id = self.validated_data['new_phase_id']
+
+        assets = LocalAsset.objects.filter(phase=old_phase_id)
+        
+        # Loop over each once because a bulk_update doesn't call
+        # the PhaseZoneDistribution signal.
+        for asset in assets:
+            asset.phase_id = new_phase_id
+            asset.save()
+        
+        # Clean up the old PhaseZoneDistributions since we can't 
+        # pass the old_phase_id to the signal.
+        PhaseZoneDistribution.objects.filter(phase=old_phase_id).delete()
+
+
+class CountywideSerializer(serializers.Serializer):
+    phase_id = serializers.IntegerField(required=True)
+    countywide = serializers.BooleanField(required=True)
+    
+    def save(self):
+        project = Phase.objects.get(id=self.validated_data['phase_id']).project
+        
+        project.countywide = self.validated_data['countywide']
