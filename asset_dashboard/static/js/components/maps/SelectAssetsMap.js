@@ -55,9 +55,7 @@ function SelectAssetsMap(props) {
       setPhaseId(props.phase_id)
     }
     
-    if (props?.is_countywide) {
-      setIsCountywide(props.is_countywide)
-    }
+    setIsCountywide(props.is_countywide)
   }, [])
 
   function onMapCreated(map) {

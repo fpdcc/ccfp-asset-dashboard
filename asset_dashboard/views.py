@@ -352,6 +352,8 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
         phase_list = Phase.objects.filter(project=phase.project).values(
             'id', 'phase_type', 'estimated_bid_quarter', 'status', 'year'
         )
+        
+        print('phase.project.countywide', phase.project.countywide)
 
         context.update({
             'phase': phase,
