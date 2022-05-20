@@ -107,22 +107,3 @@ class PhaseForm(StyledFormMixin, ModelForm):
         for field_name, field in self.fields.items():
             if field_name != 'actual_cost':
                 field.widget.attrs['required'] = True
-
-
-class PromoteAssetsForm(Form):
-    class Meta:
-        fields = ('phase',)
-
-    def __init__(self, phase_pk, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        project = Phase.objects.get(id=phase_pk).project
-        choices = Phase.objects.filter(project=project).distinct()
-
-        self.fields['phase'] = ChoiceField(
-            choices=((c.id, c.__str__()) for c in choices),
-            initial=phase_pk,
-            required=True
-        )
-
-        self.fields['phase'].widget.attrs['class'] = 'form-control'

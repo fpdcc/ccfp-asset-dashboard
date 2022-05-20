@@ -14,9 +14,9 @@ from django.db.models.signals import post_save
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from .models import HouseDistrict, LocalAsset, Project, ProjectCategory, ProjectScore, \
-    Section, SenateDistrict, CommissionerDistrict, Phase, FundingStream, PhaseZoneDistribution
+    Section, SenateDistrict, CommissionerDistrict, Phase, FundingStream
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
-    FundingStreamForm, PhaseForm, PromoteAssetsForm
+    FundingStreamForm, PhaseForm
 from .serializers import PortfolioSerializer, LocalAssetReadSerializer
 
 
@@ -172,20 +172,6 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
             context['category_form'] = ProjectCategoryForm(instance=self.object.category)
 
             context['phases'] = Phase.objects.annotate().filter(project=self.kwargs['pk']).order_by('sequence')
-
-            assets = LocalAsset.objects.filter(phase__project=self.object)
-
-            if assets.exists():
-                context['props'] = {
-                    'assets': LocalAssetReadSerializer(assets, many=True).data
-                }
-
-            assets = LocalAsset.objects.filter(phase__project=self.object)
-
-            if assets.exists():
-                context['props'] = {
-                    'assets': LocalAssetReadSerializer(assets, many=True).data
-                }
 
             assets = LocalAsset.objects.filter(phase__project=self.object)
 
@@ -388,43 +374,6 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
             })
 
         return context
-
-
-# class AssetPromotePhaseView(LoginRequiredMixin, FormView):
-#     template_name = 'asset_dashboard/local_asset_phase_promotion.html'
-#     form_class = PromoteAssetsForm
-# 
-#     def get_form_kwargs(self, *args, **kwargs):
-#         kwargs = {
-#             'phase_pk': self.kwargs['pk']
-#         }
-# 
-#         if self.request.method == 'POST':
-#             kwargs.update({
-#                 'data': self.request.POST
-#             })
-# 
-#         return kwargs
-# 
-#     def post(self, request, *args, **kwargs):
-#         form = self.get_form()
-#         if form.is_valid():
-#             new_phase_id = form.cleaned_data['phase']
-#             old_phase_id = self.kwargs['pk']
-#             assets = LocalAsset.objects.filter(phase=old_phase_id)
-# 
-#             for asset in assets:
-#                 asset.phase_id = new_phase_id
-#                 asset.save()
-# 
-#             # Clean up the old PhaseZoneDistributions since we can't 
-#             # pass the old_phase_id to the signal.
-#             PhaseZoneDistribution.objects.filter(phase=old_phase_id).delete()
-# 
-#             messages.success(self.request, 'Assets successfully promoted to phase.')
-#             return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': new_phase_id}))
-#         else:
-#             return super().form_invalid(form)
 
 
 class ProjectsByDistrictListView(LoginRequiredMixin, ListView):
