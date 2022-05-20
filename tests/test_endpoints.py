@@ -3,8 +3,8 @@ from pprint import pprint
 import pytest
 from rest_framework.test import force_authenticate
 
-from asset_dashboard.endpoints import LocalAssetViewSet, AssetViewSet
-from asset_dashboard.models import LocalAsset, Phase, PhaseZoneDistribution
+from asset_dashboard.endpoints import LocalAssetViewSet, AssetViewSet, PromotePhaseView, CountywideView
+from asset_dashboard.models import LocalAsset, Phase, PhaseZoneDistribution, Project
 
 
 @pytest.mark.django_db
@@ -62,3 +62,82 @@ def test_list_assets_authenticated(api, search_query, user, building):
 
     assert feature_properties['identifier'] == building.fpd_uid
     assert feature_properties['name'] == building.building_name
+
+
+@pytest.mark.django_db
+def test_promote_assets_to_new_phase(api, user,  project, signs_geojson):
+    # Set up the project and phase
+    prj = project.build()
+    phase_a = Phase.objects.filter(project=prj)[0]
+    
+    # Relate the assets with the existing phase
+    for feature in signs_geojson['features']:
+        asset = LocalAsset.objects.create(
+            phase=phase_a,
+            geom=json.dumps(feature['geometry'])
+        )
+    
+    # Create new phase so we can promote it
+    phase_b = Phase.objects.create(
+        project=prj,
+        phase_type='design',
+        estimated_bid_quarter='Q2',
+        status='new'
+    )
+    
+    form_data = {
+        'old_phase_id': phase_a.id,
+        'new_phase_id': phase_b.id
+    }
+    
+    request = api.post(
+        '/projects/phases/promote/assets/',
+        json.dumps(form_data),
+        content_type='application/json'
+    )
+
+    force_authenticate(request, user=user)
+
+    view = PromotePhaseView.as_view()
+    response = view(request)
+    assert response.status_code == 201
+    
+    # Ensure the data for the two phases match our expectations.
+    phase_a_assets = LocalAsset.objects.filter(phase=phase_a)
+    assert len(phase_a_assets) == 0
+
+    # Make sure it has all the assets that we started with
+    phase_b_assets = LocalAsset.objects.filter(phase=phase_b)
+    assert len(phase_b_assets) == len(signs_geojson['features'])
+
+
+@pytest.mark.django_db
+def test_promote_assets_to_new_phase(api, user,  project):
+    # Set up the project and phase
+    prj = project.build()
+    phase = Phase.objects.filter(project=prj)[0]
+    
+    # Do the opposite of the instance's current setting
+    new_countywide_setting = not prj.countywide
+    
+    form_data = {
+        'countywide':  new_countywide_setting, 
+        'phase_id': phase.id
+    }
+    
+    request = api.post(
+        '/projects/phases/assets/countywide/',
+        json.dumps(form_data),
+        content_type='application/json'
+    )
+
+    force_authenticate(request, user=user)
+    view = CountywideView.as_view()
+    response = view(request)
+    assert response.status_code == 201
+    
+    # Ensure the data matches our expectations.
+    # Reload the project.
+    prj.refresh_from_db()
+    assert prj.countywide == new_countywide_setting
+    
