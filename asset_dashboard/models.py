@@ -241,11 +241,6 @@ class Phase(SequencedModel):
 
     year = models.IntegerField(null=True, blank=True)
 
-    total_estimated_cost = MoneyField(default_currency='USD',
-                                      default=0,
-                                      decimal_places=0,
-                                      max_digits=11)
-
     actual_cost = MoneyField(default_currency='USD',
                              default=0,
                              decimal_places=0,
@@ -269,6 +264,7 @@ class Phase(SequencedModel):
         for distribution in zone_distributions:
             zone_name = distribution.zone.name
             cost_by_zone[zone_name] = (
+                # TODO: UGH how to get this without total estimated cost?
                 float(self.total_estimated_cost.amount) * distribution.zone_distribution_proportion
             )
 
