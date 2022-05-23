@@ -42,11 +42,11 @@ const projectColumns = (selector) => {
       Header: 'Quarter',
       accessor: 'estimated_bid_quarter'
     },
-    {
-      Header: 'Estimated Cost',
-      accessor: 'total_estimated_cost',
-      Cell: props => props.value.toLocaleString() // adds commas
-    },
+    // {
+    //   Header: 'Estimated Cost',
+    //   accessor: 'total_estimated_cost',
+    //   Cell: props => props.value.toLocaleString() // adds commas
+    // },
     {
       Header: 'Score',
       accessor: 'score',

@@ -68,6 +68,12 @@ class ProjectCategoryForm(StyledFormMixin, ModelForm):
 class FundingStreamForm(StyledFormMixin, ModelForm):
     SECURED_CHOICES = ((True, 'Yes',), (False, 'No',))
     funding_secured = ChoiceField(choices=SECURED_CHOICES)
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for field_name, field in self.fields.items():
+            field.widget.attrs['required'] = True
 
     class Meta:
         model = FundingStream
@@ -87,7 +93,6 @@ class PhaseForm(StyledFormMixin, ModelForm):
             'estimated_bid_quarter',
             'status',
             'year',
-            'total_estimated_cost',
             'actual_cost'
         ]
 

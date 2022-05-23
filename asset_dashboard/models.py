@@ -255,6 +255,15 @@ class Phase(SequencedModel):
         ).aggregate(Sum('budget'))['budget__sum']
 
         return total if total else 0
+    
+    @property
+    def total_funding(self):
+        # Only total where funding_secured = True
+        total = self.funding_streams.all().values(
+            'budget', 'funding_secured'
+        ).filter(funding_secured=True).aggregate(Sum('budget'))['budget__sum']
+        
+        return total if total else 0
 
     @property
     def cost_by_zone(self):
@@ -264,8 +273,7 @@ class Phase(SequencedModel):
         for distribution in zone_distributions:
             zone_name = distribution.zone.name
             cost_by_zone[zone_name] = (
-                # TODO: UGH how to get this without total estimated cost?
-                float(self.total_estimated_cost.amount) * distribution.zone_distribution_proportion
+                float(self.total_budget.amount) * distribution.zone_distribution_proportion
             )
 
         return cost_by_zone

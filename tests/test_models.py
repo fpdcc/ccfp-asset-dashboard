@@ -143,8 +143,9 @@ def test_phase_zone_distribution_signal(project, zones, signs_geojson, trails_ge
     assert sum([round(dist.zone_distribution_proportion) for dist in phase_zone_distributions_reload]) == 1.0
 
     # Add an estimated cost to the phase so we can test the total cost by zone.
-    phase.total_estimated_cost = 250000
-    phase.save()
+    # TODO: calculate this with new attribute
+    # phase.total_estimated_cost = 250000
+    # phase.save()
 
     for distribution in phase_zone_distributions_reload:
         cost = phase.cost_by_zone.get(distribution.zone.name)
