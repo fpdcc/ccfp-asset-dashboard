@@ -231,6 +231,24 @@ function SelectAssetsMap(props) {
         : null
       }
       <div className='row mb-3'>
+        <div className='col card border-secondary shadow-sm'>
+          <div className='card-body'>
+              <div className="d-flex flex-column">
+                <div className='row d-flex flex-column'>
+                  <h2 className='card-title'>{props.phase_name}</h2>
+                  <div>
+                    <a href={`/projects/phases/edit/${phaseId}`} className='text-info'>{'<'} Back to phase</a>
+                  </div>
+                </div>
+                <div className="row my-4">
+                  <PromotePhaseForm 
+                    phases={JSON.parse(props.phases)}
+                    currentPhase={phaseId} 
+                    setAjaxMessage={setAjaxMessage} />
+                </div>
+              </div>
+          </div>
+        </div>
         <div className='col card border-secondary shadow-sm mr-3'>
           <div className="card-body d-flex flex-column text-center">
             <h2>Phase Assets</h2>
@@ -259,25 +277,6 @@ function SelectAssetsMap(props) {
                 </div>
               )
             }
-          </div>
-        </div>
-        
-        <div className='col card border-secondary shadow-sm'>
-          <div className='card-body'>
-              <div className="d-flex flex-column">
-                <div className='row d-flex flex-column'>
-                  <h2 className='card-title'>{props.phase_name}</h2>
-                  <div>
-                    <a href={`/projects/phases/edit/${phaseId}`} className='text-info'>{'<'} Back to phase</a>
-                  </div>
-                </div>
-                <div className="row my-4">
-                  <PromotePhaseForm 
-                    phases={JSON.parse(props.phases)}
-                    currentPhase={phaseId} 
-                    setAjaxMessage={setAjaxMessage} />
-                </div>
-              </div>
           </div>
         </div>
       </div>
