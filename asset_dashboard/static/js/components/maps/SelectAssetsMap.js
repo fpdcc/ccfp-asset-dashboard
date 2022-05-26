@@ -231,7 +231,7 @@ function SelectAssetsMap(props) {
         : null
       }
       <div className='row mb-3'>
-        <div className='col card border-secondary shadow-sm'>
+        <div className='col card border-secondary shadow-sm mr-3'>
           <div className='card-body'>
               <div className="d-flex flex-column">
                 <div className='row d-flex flex-column'>
@@ -249,7 +249,7 @@ function SelectAssetsMap(props) {
               </div>
           </div>
         </div>
-        <div className='col card border-secondary shadow-sm mr-3'>
+        <div className='col card border-secondary shadow-sm'>
           <div className="card-body d-flex flex-column text-center">
             <h2>Phase Assets</h2>
             {geomsToSave 
