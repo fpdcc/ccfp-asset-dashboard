@@ -77,7 +77,7 @@ class ApiService {
       console.log('response')
       if (response.status == 201) {
         this.onResponse({
-          text: 'Phase successfully set as countywide.',
+          text: 'Countywide succesfully changed for phase.',
           tag: 'success'
         })
         
