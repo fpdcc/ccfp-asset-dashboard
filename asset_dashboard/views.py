@@ -179,13 +179,6 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
                     'assets': LocalAssetReadSerializer(assets, many=True).data
                 }
 
-            assets = LocalAsset.objects.filter(phase__project=self.object)
-
-            if assets.exists():
-                context['props'] = {
-                    'assets': LocalAssetReadSerializer(assets, many=True).data
-                }
-
         return context
 
     def get_success_url(self):
@@ -246,13 +239,18 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
 
         context['project'] = self.object.project
+        
+        context['props'] = {
+            'phase_id': self.object.pk,
+            'is_countywide': self.object.project.countywide
+        }
 
         assets = LocalAsset.objects.filter(phase=self.object)
 
         if assets.exists():
-            context['props'] = {
+            context['props'].update({
                 'assets': LocalAssetReadSerializer(assets, many=True).data
-            }
+            })
 
         context['funding_streams'] = self.object.funding_streams.all()
 

@@ -19,12 +19,12 @@ export default function PromotePhaseForm({ phases, currentPhase, setAjaxMessage 
   }
 
   return (
-    <div class="col">
-      <div>
-        <label className="row">Promote Assets to New Phase</label>
+    <div class='col'>
+      <div class='row'>
+        <label className="h5">Copy Assets to Another Phase</label>
       </div>
       <div className='row'>
-        <select className='form-control col-6 mr-1' value={selectedPhase} onChange={(e) => onPhaseChange(e.target.value)}>
+        <select className='form-control col' value={selectedPhase} onChange={(e) => onPhaseChange(e.target.value)}>
           {
             phases.map(phase => {
               const phaseName = `${phase.phase_type} - ${phase.estimated_bid_quarter} - ${phase.year} - ${phase.status}`
@@ -34,13 +34,15 @@ export default function PromotePhaseForm({ phases, currentPhase, setAjaxMessage 
             })
           }
         </select>
-        
-        {
-          (currentPhase !== selectedPhase) 
-            ? <button className="btn btn-info" onClick={saveNewPhase}>Promote Phase</button>
-            : null
-        }
       </div>
+      
+      {
+        (currentPhase !== selectedPhase) 
+          ? <div className='row d-flex justify-content-center mt-2'>
+              <button className="btn btn-info" onClick={saveNewPhase}>Copy Assets</button>
+            </div>
+          : null
+      }
     </div>
   )
 }

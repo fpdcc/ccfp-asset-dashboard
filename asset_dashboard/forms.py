@@ -1,5 +1,5 @@
 from datetime import datetime
-from django.forms import ModelForm, TextInput, ChoiceField, BooleanField
+from django.forms import ModelForm, TextInput, ChoiceField, BooleanField, Form
 from .models import Project, FundingStream, ProjectScore, ProjectCategory, \
     Phase
 

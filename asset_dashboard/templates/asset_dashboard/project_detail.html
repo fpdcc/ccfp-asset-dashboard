@@ -20,7 +20,7 @@
     {% endif %}
   </div>
   
-  {% if props %}
+  {% if props and not project.countywide %}
     <section class="my-4 mx-2 border border-secondary rounded shadow-sm p-3 tab-content card">
       <div class="col">
         <div id="map" class="mt-2">
@@ -42,7 +42,7 @@
         window.reactMount = document.getElementById('map')
       </script>
       {% compress js %}
-        <script type="text/jsx" src="{% static 'js/components/maps/ListAssetsMap.js' %}"></script>
+        <script type="text/jsx" src="{% static 'js/components/ProjectAssetTable.js' %}"></script>
       {% endcompress %}
     {% endblock %}
   {% endif %}

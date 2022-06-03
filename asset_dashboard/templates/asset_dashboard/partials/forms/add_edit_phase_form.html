@@ -112,7 +112,7 @@
         </p>
       </div>
     {% else %}
-      <div id="map" class="mt-2">
+      <div id="map">
         <div class="text-center">
           <div class="spinner-border text-primary" role="status">
             <span class="sr-only">Loading...</span>
@@ -146,6 +146,6 @@
     window.reactMount = document.getElementById('map')
   </script>
   {% compress js %}
-    <script type="text/jsx" src="{% static 'js/components/maps/ListAssetsMap.js' %}"></script>
+    <script type="text/jsx" src="{% static 'js/components/PhaseAssetTable.js' %}"></script>
   {% endcompress %}
 {% endblock %}
