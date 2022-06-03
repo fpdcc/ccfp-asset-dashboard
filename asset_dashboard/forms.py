@@ -60,8 +60,7 @@ class ProjectCategoryForm(StyledFormMixin, ModelForm):
     class Meta:
         model = ProjectCategory
         fields = [
-            'category',
-            'subcategory'
+            'name'
         ]
 
 

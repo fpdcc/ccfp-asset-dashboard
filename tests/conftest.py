@@ -91,7 +91,7 @@ def section_owner():
 
 @pytest.fixture
 def project_category():
-    return models.ProjectCategory.objects.create(category='land improvement', subcategory='restoration')
+    return models.ProjectCategory.objects.create(name='land improvement')
 
 
 @pytest.fixture
@@ -136,8 +136,7 @@ def project_list():
         description = f'description text for this project'
         section_owner = models.Section.objects.create(name=f'Section{index}')
         category = models.ProjectCategory.objects.create(
-            category=f'category {index}',
-            subcategory=f'subcategory {index}'
+            name=f'category {index}',
         )
         project = models.Project.objects.create(
             name=name,

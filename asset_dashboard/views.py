@@ -43,6 +43,11 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
         for phase in phases:
             funding_streams = phase.funding_streams.all()
 
+            section = phase.project.section_owner.name \
+                if phase.project.section_owner else ''
+            category = phase.project.category.name \
+                if phase.project.category else ''
+
             project_phases.append({
                 'pk': phase.id,
                 'phase': phase.name,
@@ -55,8 +60,8 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
                 'phase_type': phase.phase_type,
                 'name': phase.project.name,
                 'description': phase.project.description,
-                'section': phase.project.section_owner.name,
-                'category': phase.project.category.name,
+                'section': section,
+                'category': category,
                 'total_score': phase.project.projectscore.total_score,
                 'project_manager': phase.project.project_manager,
                 'countywide': phase.project.countywide,
@@ -106,7 +111,7 @@ class ProjectListView(LoginRequiredMixin, ListView):
 class ProjectListJson(LoginRequiredMixin, BaseDatatableView):
     model = Project
     columns = ['name', 'description', 'section_owner', 'category', 'id']
-    order_columns = ['name', 'description', 'section_owner__name', 'category__category']
+    order_columns = ['name', 'description', 'section_owner__name', 'category__name']
     max_display_length = 500
 
     def filter_queryset(self, qs):
