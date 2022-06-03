@@ -183,7 +183,7 @@ class PhaseZoneDistribution(models.Model):
         )
 
         PhaseZoneDistribution.save_distributions(zone_proportions, instance)
-        PhaseZoneDistribution.save_scores(zone_proportions, instance)
+        ProjectScore.save_geographic_distance_scores(zone_proportions, instance)
 
     @classmethod
     def calculate_zone_proportion(cls, distributions_by_zone, total_distribution_area):
@@ -209,20 +209,7 @@ class PhaseZoneDistribution(models.Model):
             zone_distribution.zone_distribution_proportion = proportion
             zone_distribution.save()
     
-    @classmethod
-    def save_scores(cls, zone_proportions, instance):
-        project_score, _ = ProjectScore.objects.get_or_create(
-            project=instance.phase.project
-        )
-        
-        zone_score = 0
-        
-        for key, value in zone_proportions.items():
-            if value > 0:
-                zone_score += 1
-        
-        project_score.geographic_distance_score = zone_score
-        project_score.save()
+    
 
 
 class Phase(SequencedModel):
@@ -350,6 +337,29 @@ class ProjectScore(models.Model):
             total_score += score_field_value * weight_field_value
 
         return total_score
+    
+    @classmethod
+    def save_geographic_distance_scores(cls, zone_proportions, instance):
+        project_score, _ = cls.objects.get_or_create(
+            project=instance.phase.project
+        )
+        
+        zone_score = 0
+        
+        for key, value in zone_proportions.items():
+            if value > 0:
+                zone_score += 1
+        
+        project_score.geographic_distance_score = zone_score
+        project_score.save()
+    
+    @classmethod
+    def save_social_equity_score(cls, instance, assets):
+        project_score, _ = cls.objects.get_or_create(
+            project=instance.phase.project
+        )
+        
+        
 
     def __str__(self):
         return self.project.name
@@ -1358,3 +1368,14 @@ class FPDCCZones(GISModel):
     zone = models.CharField(max_length=10)
     geom = models.MultiPolygonField(srid=3435)
     abbr = models.CharField(max_length=10)
+
+
+class SocioEconomicZones(GISModel):
+    class Meta(GISModel.Meta):
+        db_table = '"pinus"."cmap_cook_econ_disadvantaged_areas"'
+    
+    id = models.AutoField(primary_key=True, db_column='id')
+    geom = models.MultiPolygonField(srid=3435)
+    displaygro = models.CharField(max_length=50)
+    shape_leng = models.FloatField()
+    shape_area = models.FloatField()
