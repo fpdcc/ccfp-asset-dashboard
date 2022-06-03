@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import AssetsListMap from './maps/AssetsListMap'
 
-function PhaseAssetTable(props) {
+function ProjectDetailAssetTable(props) {
   return (
     <div>
       <div className="d-flex align-items-center justify-content-between m-2 col-4">
@@ -15,6 +15,6 @@ function PhaseAssetTable(props) {
 }
 
 ReactDOM.render(
-  React.createElement(PhaseAssetTable, window.props),
+  React.createElement(ProjectDetailAssetTable, window.props),
   window.reactMount
 )

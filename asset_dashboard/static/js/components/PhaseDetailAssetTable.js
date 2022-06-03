@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import AssetsListMap from './maps/AssetsListMap'
 import CountywideForm from './helpers/CountywideForm'
 
-function PhaseAssetTable(props) {
+function PhaseDetailAssetTable(props) {
   const [phaseId, setPhaseId] = useState(null)
   const [isCountywide, setIsCountywide] = useState(null)
   
@@ -40,6 +40,6 @@ function PhaseAssetTable(props) {
 }
 
 ReactDOM.render(
-  React.createElement(PhaseAssetTable, window.props),
+  React.createElement(PhaseDetailAssetTable, window.props),
   window.reactMount
 )
