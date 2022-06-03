@@ -27,7 +27,6 @@ function PhaseDetailAssetTable(props) {
           isCountywide !== null 
             ? <CountywideForm 
               currentCountywideValue={isCountywide} 
-              onCountywideChange={setIsCountywide}
               phaseId={phaseId} />
             : null
         }
