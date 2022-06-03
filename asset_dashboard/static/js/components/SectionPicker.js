@@ -13,7 +13,6 @@ const SectionPicker = ({ sections, activeSection, changeSection }) => {
         value={activeSection ? activeSection : ''}>
         <option value="">All Sections</option>
         {sections.map(section => {
-          console.log('section', section)
           return <option key={section} value={section}>{section}</option>
         })}
       </select>
