@@ -13,9 +13,9 @@ export default function PromotePhaseForm({ phases, currentPhase, setAjaxMessage 
   }
   
   function saveNewPhase() {
-    const api = new ApiService(setAjaxMessage)
+    const api = new ApiService({ onResponse: setAjaxMessage })
     
-    const responseDetails = api.setNewPhase(selectedPhase, currentPhase, setAjaxMessage)
+    const responseDetails = api.setNewPhase(selectedPhase, currentPhase)
   }
 
   return (

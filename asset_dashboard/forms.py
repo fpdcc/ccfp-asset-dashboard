@@ -1,7 +1,6 @@
 from datetime import datetime
 from django.forms import ModelForm, TextInput, ChoiceField, BooleanField
-from .models import Project, FundingStream, ProjectScore, ProjectCategory, \
-    Phase
+from .models import Project, FundingStream, ProjectScore, ProjectCategory, Phase
 
 
 class StyledFormMixin(object):

@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie'
 
 class ApiService {
-  constructor(onResponse) {
+  constructor({ onResponse }) {
     this.requestConfig = {
       headers: {
           'Accept': 'application/json',
