@@ -239,7 +239,7 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
 
         context['project'] = self.object.project
-        
+
         context['props'] = {
             'phase_id': self.object.pk,
             'is_countywide': self.object.project.countywide
