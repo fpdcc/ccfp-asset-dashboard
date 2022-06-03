@@ -357,8 +357,7 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
             'props': {
                 'phase_id': phase.id,
                 'phase_name': phase.name,
-                'phases': json.dumps(list(phase_list), cls=DjangoJSONEncoder),
-                'is_countywide': phase.project.countywide
+                'phases': json.dumps(list(phase_list), cls=DjangoJSONEncoder)
             }
         })
 
