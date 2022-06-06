@@ -179,13 +179,6 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
                     'assets': LocalAssetReadSerializer(assets, many=True).data
                 }
 
-            assets = LocalAsset.objects.filter(phase__project=self.object)
-
-            if assets.exists():
-                context['props'] = {
-                    'assets': LocalAssetReadSerializer(assets, many=True).data
-                }
-
         return context
 
     def get_success_url(self):
@@ -247,12 +240,17 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
 
         context['project'] = self.object.project
 
+        context['props'] = {
+            'phase_id': self.object.pk,
+            'is_countywide': self.object.project.countywide
+        }
+
         assets = LocalAsset.objects.filter(phase=self.object)
 
         if assets.exists():
-            context['props'] = {
+            context['props'].update({
                 'assets': LocalAssetReadSerializer(assets, many=True).data
-            }
+            })
 
         context['funding_streams'] = self.object.funding_streams.all()
 
@@ -349,13 +347,17 @@ class AssetAddEditView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         phase = Phase.objects.get(id=self.kwargs['pk'])
+        phase_list = Phase.objects.filter(project=phase.project).values(
+            'id', 'phase_type', 'estimated_bid_quarter', 'status', 'year'
+        )
 
         context.update({
             'phase': phase,
-            'project': Project.objects.filter(phases=phase)[0],
+            'project': phase.project,
             'props': {
                 'phase_id': phase.id,
-                'phase_name': phase.name
+                'phase_name': phase.name,
+                'phases': json.dumps(list(phase_list), cls=DjangoJSONEncoder)
             }
         })
 

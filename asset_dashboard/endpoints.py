@@ -2,15 +2,19 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework import status
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
     LocalAsset, Buildings, TrailsInfo, PoiInfo, PicnicGroves
 from asset_dashboard.serializers import PortfolioSerializer, UserSerializer, \
     PortfolioPhaseSerializer, PhaseSerializer, ProjectSerializer, \
     BuildingsSerializer, TrailsSerializer, LocalAssetWriteSerializer, LocalAssetReadSerializer, \
-    PointsOfInterestSerializer, PicnicGrovesSerializer, ParkingLotsSerializer
+    PointsOfInterestSerializer, PicnicGrovesSerializer, ParkingLotsSerializer, \
+    PromotePhaseSerializer, CountywideSerializer
 
 
 class PortfolioViewSet(viewsets.ModelViewSet):
@@ -120,3 +124,28 @@ class LocalAssetViewSet(viewsets.ModelViewSet):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             return LocalAssetWriteSerializer
         return LocalAssetReadSerializer
+
+
+class PromotePhaseView(APIView):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        serializer = PromotePhaseSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CountywideView(APIView):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        serializer = CountywideSerializer(data=request.data)
+        print('data', request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

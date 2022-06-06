@@ -1,6 +1,6 @@
 import pytest
 from django.urls import reverse
-from asset_dashboard.models import Project, ProjectScore, ProjectCategory, User, Phase
+from asset_dashboard.models import Project, ProjectScore, ProjectCategory, User, Phase, LocalAsset
 from django.forms.models import model_to_dict
 import json
 from django.utils.html import escape
@@ -177,8 +177,7 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
         'sustainability_score': 4,
         'ease_score': 4,
         'geographic_distance_score': 1,
-        'social_equity_score': 3,
-        'countywide': True
+        'social_equity_score': 3
     })
 
     # test the form submission
@@ -193,7 +192,6 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
     assert updated_project[0].description == valid_form_data['description']
     assert updated_project[0].category_id == project_category.id
     assert updated_project[0].section_owner_id == section_owner.id
-    assert updated_project[0].countywide == valid_form_data['countywide']
 
     # ProjectScore model, related to Project
     assert updated_project[0].projectscore.core_mission_score == valid_form_data['core_mission_score']

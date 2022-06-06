@@ -7,54 +7,52 @@
 {% endblock %}
 
 {% block project %}
+<section class="m-2">
 <div class="row">
-  <div class="border border-secondary rounded shadow-sm p-3 col-4 m-2">
+  <div class="border border-secondary rounded shadow-sm col m-2 p-3 card">
   
     <form method="post">
       {% csrf_token %}
     
       {{ form.errors }}
   
-      <div class="row justify-content-between mx-3">
+      <div class="row col justify-content-between">
         <h3>{% if phase %}Update Phase{% else %}Create Phase{% endif %}</h3>
         <input type="submit" value="Save Phase" class="btn btn-info">
       </div>
 
       <div class="row my-4">
-        <div class="col">
+        <div class="col-2">
           <strong>Phase</strong>
           {{ form.phase_type }}
         </div>
-        <div class="col">
+        <div class="col-2">
           <strong>Status</strong>
           {{ form.status }}
         </div>
-        <div class="col">
+        <div class="col-2">
           <strong>Bid Quarter</strong>
           {{ form.estimated_bid_quarter }}
         </div>
-      </div>
-    
-      <div class="row align-items-center">
-        <div class="col-3">
+        <div class="col-2">
           <strong>Year</strong>
           {{ form.year }}
         </div>
-
-        <div class="col">
+        <div class="col-2">
           <strong>Estimated Cost</strong>
           {{ form.total_estimated_cost }}
         </div>
-        
-        <div class="col" id='actualCost'>
+        <div class="col-2" id='actualCost'>
           <strong>Actual Cost</strong>
           {{ form.actual_cost }}
         </div>
       </div>
     </form>
-    
   </div>
-  <div class="col border border-secondary rounded shadow-sm p-3 m-2">
+</div>
+
+<div class="row">
+  <div class="col border border-secondary rounded shadow-sm p-3 m-2 card">
     <h3>Phase Funding</h3>
     {% if funding_streams %}
       <div class="d-flex justify-content-between m-3">
@@ -98,11 +96,11 @@
 </div>
 
 
-<div class="border border-secondary rounded shadow-sm p-3 mt-4">
-  <div class="col">
+<div class="row">
+  <div class="col border border-secondary rounded shadow-sm p-3 m-2 card">
     {% if not props %}
-      <h3 class="row">Phase Assets</h3>
-      <div class="row">
+      <h3>Phase Assets</h3>
+      <div>
         <p>
           {% if phase and not props %}
             This phase has no GIS assets. &nbsp;<a href="{% url 'create-update-assets' pk=phase.id %}" class="text-info lead">Add Assets ></a>
@@ -114,7 +112,7 @@
         </p>
       </div>
     {% else %}
-      <div id="map" class="mt-2">
+      <div id="map">
         <div class="text-center">
           <div class="spinner-border text-primary" role="status">
             <span class="sr-only">Loading...</span>
@@ -136,6 +134,7 @@
     }
   })
 </script>
+</section
 {% endblock %}
 
 {% block extra_js %}
@@ -147,6 +146,6 @@
     window.reactMount = document.getElementById('map')
   </script>
   {% compress js %}
-    <script type="text/jsx" src="{% static 'js/components/maps/ListAssetsMap.js' %}"></script>
+    <script type="text/jsx" src="{% static 'js/components/PhaseDetailAssetTable.js' %}"></script>
   {% endcompress %}
 {% endblock %}

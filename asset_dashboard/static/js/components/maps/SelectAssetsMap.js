@@ -16,6 +16,7 @@ import Message from '../helpers/Message'
 import bindPopup from '../map_utils/bindPopup'
 import ShowPopup from '../map_utils/ShowPopup'
 import circleMarker from '../map_utils/circleMarker'
+import PromotePhaseForm from '../helpers/PromotePhaseForm'
 
 function AssetTypeOptions() {
   const options = [
@@ -226,7 +227,7 @@ function SelectAssetsMap(props) {
         : null
       }
       <div className='row'>
-        <div className='col-4 border rounded border-secondary shadow-sm py-1 ml-3'>
+        <div className='col-4 bg-white border rounded border-secondary shadow-sm py-1 ml-3'>
           <div className='row my-3'>
             <div className='col'>
               <div className='row m-1'>
@@ -266,10 +267,10 @@ function SelectAssetsMap(props) {
           </div>
         </div>
         <div className='col'>
-          <div className='card text-center bg-light mb-4 border-secondary shadow-sm'>
+          <div className='card text-center bg-white mb-3 border-secondary shadow-sm'>
             <div className='card-body'>
                 <div className='d-flex justify-content-start'>
-                  <a href={`/projects/phases/edit/${phaseId}`} className='text-info'>{'<'} Back to phase</a>
+                  <a href={`/projects/phases/edit/${phaseId}`} className='text-info lead'>{'<'} Back to phase</a>
                 </div>
                 <h2 className='card-title'>{props.phase_name}</h2>
                 <div>
@@ -286,7 +287,7 @@ function SelectAssetsMap(props) {
             </div>
           </div>
           
-          <div className='map-container border border-secondary rounded shadow-sm' aria-label='Asset Selection Map'>
+          <div className='map-container bg-white border border-secondary rounded shadow-sm' aria-label='Asset Selection Map'>
             <BaseMap
               center={[41.8781, -87.6298]}
               zoom={11}
@@ -322,18 +323,36 @@ function SelectAssetsMap(props) {
         </div>
       </div>
       <div>
-      <div className='border rounded border-secondary shadow-sm mt-4'>
-        <h3 className='m-3'>Phase Assets</h3>
-        {
-          existingGeoms 
-            ? <ExistingAssetsTable
-                rows={existingGeoms.features}
-                setAjaxMessage={setAjaxMessage}
-              />
-            : <p className='m-4'>Phase has no assets.</p>
-        }
-      </div>
+      
+      <div className='row mt-3 mx-1'>
+        <div className='col bg-white border rounded border-secondary shadow-sm'>
+          <h3 className='m-3'>Phase Assets</h3>
+          {
+            existingGeoms 
+              ? <ExistingAssetsTable
+                  rows={existingGeoms.features}
+                  setAjaxMessage={setAjaxMessage}
+                />
+              : <p className='m-4'>Phase has no assets.</p>
+          }
+        </div>
         
+        <div className='col-4 card bg-white border-secondary shadow-sm ml-3'>
+          <div className='card-body'>
+            <div className="d-flex flex-column">
+              <div className='row d-flex flex-column'>
+                <h4 className='card-title'>{props.phase_name}</h4>
+              </div>
+              <div className="row my-4">
+                <PromotePhaseForm 
+                  phases={JSON.parse(props.phases)}
+                  currentPhase={phaseId} 
+                  setAjaxMessage={setAjaxMessage} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
     </>
   )
