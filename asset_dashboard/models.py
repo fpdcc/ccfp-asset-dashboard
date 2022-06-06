@@ -377,14 +377,22 @@ class ProjectScore(models.Model):
         )
         
         disinvested_areas = SocioEconomicZones.objects.get(displaygro='Both')
-        print('disinvested_areas', disinvested_areas.geom)
+
+        buffer = 0.00001
         
-        intersection = disinvested_areas.geom.intersection(phase_geoms.buffer(0)) # fix self-intersecting ring with a zero buffer for the geometry collection
+        phase_polygons = LocalAsset.aggregate_polygons(instance.phase, buffer=buffer)
+        phase_linestrings = LocalAsset.aggregate_linestrings(instance.phase, buffer=buffer)
+        phase_points = LocalAsset.aggregate_points(instance.phase, buffer=buffer)
+
+        disinvested_area = 0
         
-        disinvested_area = intersection.area / phase_geoms.area
-        print('disinvested_area', disinvested_area)
+        for geoms in [phase_polygons, phase_linestrings, phase_points]:
+            intersection = disinvested_areas.geom.intersection(geoms)
+            disinvested_area += intersection.area
         
-        
+        disinvested_proportion = disinvested_area / total_phase_geoms.area
+        project_score.social_equity_score = disinvested_proportion * 5
+        project_score.save()
 
     def __str__(self):
         return self.project.name
