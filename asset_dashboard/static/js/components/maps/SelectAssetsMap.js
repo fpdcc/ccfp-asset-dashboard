@@ -39,6 +39,7 @@ function SelectAssetsMap(props) {
   const [searchText, setSearchText] = useSessionstorageState('searchText', '')
   const [searchAssetType, setSearchAssetType] = useSessionstorageState('searchAssetTypes', 'buildings')
   const [isLoading, setIsLoading] = useState(false)
+  const [isSavingAssets, setIsSavingAssets] = useState(false)
   const [phaseId, setPhaseId] = useState(null)
   const [ajaxMessage, setAjaxMessage] = useSessionstorageState('ajaxMessage', null)
   const [multipleFeatures, setMultipleFeatures] = useState(null)
@@ -77,7 +78,9 @@ function SelectAssetsMap(props) {
         'geom': feature['geometry'],
         'phase': phaseId
       }
-    })
+    }) 
+    
+    setIsSavingAssets(true)
 
     fetch('/local-assets/', {
         headers: {
@@ -90,6 +93,7 @@ function SelectAssetsMap(props) {
         body: JSON.stringify(data)
     }).then((response) => {
       if (response.status == 201) {
+        setIsSavingAssets(false)
         setAjaxMessage({text: 'Assets successfully saved.', tag: 'success'})
         location.reload()
       } else {
@@ -282,6 +286,14 @@ function SelectAssetsMap(props) {
                         Add Asset to Phase
                       </button>
                     : <p className='lead'>Click on an asset or use the map toolbar to select and save assets.</p>
+                  }
+                  {
+                    isSavingAssets 
+                      ? <div className='mt-3'>
+                          <div class="spinner-border text-primary" role="status"></div>
+                          <p>Assets are saving...</p>
+                      </div>
+                      : null
                   }
                 </div>
             </div>

@@ -338,10 +338,8 @@ class ProjectScore(models.Model):
         return total_score
         
     @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
-    def save_zone_distribution(sender, instance, **kwargs):
-        phase_geoms = LocalAsset.get_aggregated_assets_by_phase(
-            instance.phase, buffer=0.00001
-        )
+    def save_project_scores(sender, instance, **kwargs):
+        phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
 
         total_distribution_area = phase_geoms.area
 
@@ -371,7 +369,7 @@ class ProjectScore(models.Model):
         project_score.save()
     
     @classmethod
-    def save_social_equity_score(cls, phase_geoms, instance):
+    def save_social_equity_score(cls, total_phase_geoms, instance):
         project_score, _ = cls.objects.get_or_create(
             project=instance.phase.project
         )
@@ -379,17 +377,21 @@ class ProjectScore(models.Model):
         disinvested_areas = SocioEconomicZones.objects.get(displaygro='Both')
 
         buffer = 0.00001
-        
-        phase_polygons = LocalAsset.aggregate_polygons(instance.phase, buffer=buffer)
-        phase_linestrings = LocalAsset.aggregate_linestrings(instance.phase, buffer=buffer)
-        phase_points = LocalAsset.aggregate_points(instance.phase, buffer=buffer)
+        phase_assets = LocalAsset.objects.filter(phase=instance.phase)
+        phase_polygons = LocalAsset.aggregate_polygons(phase_assets, buffer=buffer)
+        phase_linestrings = LocalAsset.aggregate_linestrings(phase_assets, buffer=buffer)
+        phase_points = LocalAsset.aggregate_points(phase_assets, buffer=buffer)
 
         disinvested_area = 0
         
         for geoms in [phase_polygons, phase_linestrings, phase_points]:
-            intersection = disinvested_areas.geom.intersection(geoms)
-            disinvested_area += intersection.area
-        
+            if geoms:
+                intersection = disinvested_areas.geom.intersection(geoms)
+                print('intersection.area', intersection.area)
+                disinvested_area += intersection.area
+
+        print('disinvested_area', disinvested_area)
+        print('total_phase_geoms', total_phase_geoms.area)
         disinvested_proportion = disinvested_area / total_phase_geoms.area
         project_score.social_equity_score = disinvested_proportion * 5
         project_score.save()
@@ -450,12 +452,12 @@ class LocalAsset(models.Model):
         return distributions_by_zone
 
     @classmethod
-    def get_aggregated_assets_by_phase(cls, phase: Phase, buffer=None) -> GeometryCollection:
+    def get_aggregated_assets_by_phase(cls, phase: Phase) -> GeometryCollection:
         phase_assets = LocalAsset.objects.filter(phase=phase)
 
-        phase_polygons = LocalAsset.aggregate_polygons(phase_assets, buffer)
-        phase_linestrings = LocalAsset.aggregate_linestrings(phase_assets, buffer)
-        phase_points = LocalAsset.aggregate_points(phase_assets, buffer)
+        phase_polygons = LocalAsset.aggregate_polygons(phase_assets)
+        phase_linestrings = LocalAsset.aggregate_linestrings(phase_assets)
+        phase_points = LocalAsset.aggregate_points(phase_assets)
 
         geoms = (
             phase_polygons,
@@ -474,11 +476,10 @@ class LocalAsset(models.Model):
                                     geometrytype(geom) LIKE 'POLYGON'
                                         OR geometrytype(geom) LIKE 'MULTIPOLYGON'
                                  """]).aggregate(models.Union('geom'))['geom__union']
-        
-        if buffer:
-            assets.buffer(buffer)
 
         if assets:
+            if buffer:
+                assets.buffer(buffer)
             return assets
 
         return None
