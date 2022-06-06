@@ -431,7 +431,7 @@ class PortfolioPlanner extends React.Component {
   
   filterRemainingProjects(projects) {
     return projects.filter(project => {
-      return this.within(project.description, this.state.filterText)
+      return this.within(project.name, this.state.filterText)
     }).filter(this.filterSection)
   }
   
