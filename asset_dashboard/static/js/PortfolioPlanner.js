@@ -502,8 +502,6 @@ class PortfolioPlanner extends React.Component {
     
     return costByZone
   }
-  
-  
 
   render() {
     const portfolioTableRows = this.filterPortfolio(this.state.portfolio.projects)
