@@ -182,9 +182,14 @@ class PhaseZoneDistribution(models.Model):
             total_distribution_area
         )
 
-        PhaseZoneDistribution.save_distributions(zone_proportions, instance)
-        # ProjectScore.save_geographic_distance_scores(zone_proportions, instance)
-        # ProjectScore.save_social_equity_score(zone_pro)
+        for zone, proportion in zone_proportions.items():
+            zone_distribution, _ = PhaseZoneDistribution.objects.get_or_create(
+                phase=instance.phase,
+                zone=zone
+            )
+
+            zone_distribution.zone_distribution_proportion = proportion
+            zone_distribution.save()
 
     @classmethod
     def calculate_zone_proportion(cls, distributions_by_zone, total_distribution_area):
@@ -198,17 +203,6 @@ class PhaseZoneDistribution(models.Model):
             proportions_by_zone[zone] = proportion
 
         return proportions_by_zone
-    
-    @classmethod
-    def save_distributions(cls, zone_proportions, instance):
-        for zone, proportion in zone_proportions.items():
-            zone_distribution, _ = PhaseZoneDistribution.objects.get_or_create(
-                phase=instance.phase,
-                zone=zone
-            )
-
-            zone_distribution.zone_distribution_proportion = proportion
-            zone_distribution.save()
 
 
 class Phase(SequencedModel):
