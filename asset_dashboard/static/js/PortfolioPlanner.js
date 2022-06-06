@@ -475,14 +475,16 @@ class PortfolioPlanner extends React.Component {
             'funding_year': funding['year'],
             'funding_secured': funding['funding_secured']
           }
+          
+          // remove funding_streams key from the row since the spread operator 
+          // adds it but we don't need it after parsing the funding out.
+          delete row.funding_streams
+
+          rows.push(row)
         })
+      } else {
+        rows.push(row)
       }
-      
-      // remove funding_streams key from the row since the spread operator 
-      // adds it but we don't need it after parsing the funding out.
-      delete row.funding_streams
-      
-      rows.push(row)
     })
     
     return rows
