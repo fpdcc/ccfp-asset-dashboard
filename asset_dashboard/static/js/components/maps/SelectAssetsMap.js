@@ -92,8 +92,8 @@ function SelectAssetsMap(props) {
         mode: 'same-origin',
         body: JSON.stringify(data)
     }).then((response) => {
+      setIsSavingAssets(false)
       if (response.status == 201) {
-        setIsSavingAssets(false)
         setAjaxMessage({text: 'Assets successfully saved.', tag: 'success'})
         location.reload()
       } else {
