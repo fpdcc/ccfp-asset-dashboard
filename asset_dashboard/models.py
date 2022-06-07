@@ -330,7 +330,7 @@ class ProjectScore(models.Model):
             total_score += score_field_value * weight_field_value
 
         return total_score
-        
+
     @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
     def save_project_scores(sender, instance, **kwargs):
         phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
@@ -346,28 +346,28 @@ class ProjectScore(models.Model):
 
         ProjectScore.save_geographic_distance_scores(zone_proportions, instance)
         ProjectScore.save_social_equity_score(phase_geoms, instance)
-    
+
     @classmethod
     def save_geographic_distance_scores(cls, zone_proportions, instance):
         project_score, _ = cls.objects.get_or_create(
             project=instance.phase.project
         )
-        
+
         zone_score = 0
-        
+
         for key, value in zone_proportions.items():
             if value > 0:
                 zone_score += 1
-        
+
         project_score.geographic_distance_score = zone_score
         project_score.save()
-    
+
     @classmethod
     def save_social_equity_score(cls, total_phase_geoms, instance):
         project_score, _ = cls.objects.get_or_create(
             project=instance.phase.project
         )
-        
+
         if total_phase_geoms.area == 0.0:
             disinvested_proportion = 0
         else:
@@ -380,7 +380,7 @@ class ProjectScore(models.Model):
             phase_points = LocalAsset.aggregate_points(phase_assets, buffer=buffer)
 
             disinvested_area = 0
-            
+
             for geoms in [phase_polygons, phase_linestrings, phase_points]:
                 if geoms:
                     intersection = disinvested_areas.geom.intersection(geoms)
@@ -1411,7 +1411,7 @@ class FPDCCZones(GISModel):
 class SocioEconomicZones(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"pinus"."cmap_cook_econ_disadvantaged_areas"'
-    
+
     id = models.AutoField(primary_key=True, db_column='id')
     geom = models.MultiPolygonField(srid=3435)
     displaygro = models.CharField(max_length=50)
