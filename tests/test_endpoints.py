@@ -22,8 +22,8 @@ def test_post_local_assets_unauthenticated(api, local_asset_request_body):
     assert response.status_code == 403
 
 
-@pytest.mark.django_db
-def test_post_local_assets_authenticated(api, local_asset_request_body, user, districts):
+@pytest.mark.django_db(databases=['default', 'fp_postgis'])
+def test_post_local_assets_authenticated(api, local_asset_request_body, user, districts, socio_economic_zones):
     request = api.post(
         '/local-assets/',
         json.dumps(local_asset_request_body),

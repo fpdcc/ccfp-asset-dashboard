@@ -97,8 +97,8 @@ def test_sequenced_model(user, project):
     assert phase_c.sequence == 2
     assert phase_a.sequence == 3
 
-@pytest.mark.django_db
-def test_local_asset_signal(project, districts, trails_geojson):
+@pytest.mark.django_db(databases=['default', 'fp_postgis'])
+def test_local_asset_signal(project, districts, trails_geojson, socio_economic_zones):
     senate_districts = SenateDistrict.objects.all()
     project_a = project.build()
 
@@ -112,8 +112,8 @@ def test_local_asset_signal(project, districts, trails_geojson):
 
         assert asset.phase.project.senate_districts.all()[0] in senate_districts
     
-@pytest.mark.django_db
-def test_phase_zone_distribution_signal(project, zones, signs_geojson, trails_geojson):
+@pytest.mark.django_db(databases=['default', 'fp_postgis'])
+def test_phase_zone_distribution_signal(project, zones, signs_geojson, trails_geojson, socio_economic_zones):
     prj = project.build()
     phase = Phase.objects.filter(project=prj)[0]
     

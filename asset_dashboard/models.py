@@ -368,23 +368,26 @@ class ProjectScore(models.Model):
             project=instance.phase.project
         )
         
-        disinvested_areas = SocioEconomicZones.objects.get(displaygro='Both')
+        if total_phase_geoms.area == 0.0:
+            disinvested_proportion = 0
+        else:
+            disinvested_areas = SocioEconomicZones.objects.get(displaygro='Both')
 
-        buffer = 0.00001
-        phase_assets = LocalAsset.objects.filter(phase=instance.phase)
-        phase_polygons = LocalAsset.aggregate_polygons(phase_assets, buffer=buffer)
-        phase_linestrings = LocalAsset.aggregate_linestrings(phase_assets, buffer=buffer)
-        phase_points = LocalAsset.aggregate_points(phase_assets, buffer=buffer)
+            buffer = 0.00001
+            phase_assets = LocalAsset.objects.filter(phase=instance.phase)
+            phase_polygons = LocalAsset.aggregate_polygons(phase_assets, buffer=buffer)
+            phase_linestrings = LocalAsset.aggregate_linestrings(phase_assets, buffer=buffer)
+            phase_points = LocalAsset.aggregate_points(phase_assets, buffer=buffer)
 
-        disinvested_area = 0
-        
-        for geoms in [phase_polygons, phase_linestrings, phase_points]:
-            if geoms:
-                intersection = disinvested_areas.geom.intersection(geoms)
-                print('intersection.area', intersection.area)
-                disinvested_area += intersection.area
+            disinvested_area = 0
+            
+            for geoms in [phase_polygons, phase_linestrings, phase_points]:
+                if geoms:
+                    intersection = disinvested_areas.geom.intersection(geoms)
+                    disinvested_area += intersection.area
 
-        disinvested_proportion = disinvested_area / total_phase_geoms.area
+            disinvested_proportion = disinvested_area / total_phase_geoms.area
+
         project_score.social_equity_score = disinvested_proportion * 5
         project_score.save()
 
