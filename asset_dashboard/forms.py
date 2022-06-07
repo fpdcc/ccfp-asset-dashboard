@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.forms import ModelForm, TextInput, ChoiceField, BooleanField
 from .models import Project, FundingStream, ProjectScore, ProjectCategory, Phase
 
@@ -60,7 +59,8 @@ class ProjectCategoryForm(StyledFormMixin, ModelForm):
     class Meta:
         model = ProjectCategory
         fields = [
-            'name'
+            'category',
+            'subcategory'
         ]
 
 
@@ -71,9 +71,8 @@ class FundingStreamForm(StyledFormMixin, ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        for field_name, field in self.fields.items():
-            if field_name != 'actual_cost':
-                field.widget.attrs['required'] = True
+        year_field = self.fields['year']
+        year_field.widget.attrs['min'] = datetime.now().year + 1
 
     class Meta:
         model = FundingStream
@@ -81,8 +80,7 @@ class FundingStreamForm(StyledFormMixin, ModelForm):
             'budget',
             'year',
             'source_type',
-            'funding_secured',
-            'actual_cost'
+            'funding_secured'
         ]
 
 
@@ -94,10 +92,16 @@ class PhaseForm(StyledFormMixin, ModelForm):
             'estimated_bid_quarter',
             'status',
             'year',
+            'total_estimated_cost',
+            'actual_cost'
         ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        year_field = self.fields['year']
+        year_field.widget.attrs['min'] = datetime.now().year + 1
+
         for field_name, field in self.fields.items():
-            field.widget.attrs['required'] = True
+            if field_name != 'actual_cost':
+                field.widget.attrs['required'] = True
