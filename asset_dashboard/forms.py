@@ -92,7 +92,9 @@ class PhaseForm(StyledFormMixin, ModelForm):
             'phase_type',
             'estimated_bid_quarter',
             'status',
-            'year'
+            'year',
+            'total_estimated_cost',
+            'actual_cost'
         ]
 
     def __init__(self, *args, **kwargs):
