@@ -22,29 +22,21 @@
       </div>
 
       <div class="row my-4">
-        <div class="col-2">
+        <div class="col">
           <strong>Phase</strong>
           {{ form.phase_type }}
         </div>
-        <div class="col-2">
+        <div class="col">
           <strong>Status</strong>
           {{ form.status }}
         </div>
-        <div class="col-2">
+        <div class="col">
           <strong>Bid Quarter</strong>
           {{ form.estimated_bid_quarter }}
         </div>
-        <div class="col-2">
+        <div class="col">
           <strong>Year</strong>
           {{ form.year }}
-        </div>
-        <div class="col-2">
-          <strong>Estimated Cost</strong>
-          {{ form.total_estimated_cost }}
-        </div>
-        <div class="col-2" id='actualCost'>
-          <strong>Actual Cost</strong>
-          {{ form.actual_cost }}
         </div>
       </div>
     </form>
@@ -56,7 +48,10 @@
     <h3>Phase Funding</h3>
     {% if funding_streams %}
       <div class="d-flex justify-content-between m-3">
-        <p class="lead"><strong>Total Funding:</strong> ${{ phase.total_budget|intcomma }}</p>
+        <div>
+          <p class="lead"><strong>Estimated Cost:</strong> ${{ phase.total_budget|intcomma }}</p>
+          <p class="lead"><strong>Funded Amount:</strong> ${{ phase.total_funded_amount|intcomma }}</p>
+        </div>
         <a href="{% url 'create-funding' pk=phase.id %}" class="text-info lead">Add funding ></a>
       </div>
       <table class="table table-hover table-border py-4">
@@ -125,7 +120,6 @@
 
 <script type="text/javascript">
   const statusInput = document.getElementById('id_status')
-  const actualCost = document.getElementById('actualCost')
   
   statusInput.addEventListener('change', function() {
     if (statusInput.value == 'complete') {

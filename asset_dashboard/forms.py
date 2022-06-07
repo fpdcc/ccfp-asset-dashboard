@@ -71,8 +71,9 @@ class FundingStreamForm(StyledFormMixin, ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        year_field = self.fields['year']
-        year_field.widget.attrs['min'] = datetime.now().year + 1
+        for field_name, field in self.fields.items():
+            if field_name != 'actual_cost':
+                field.widget.attrs['required'] = True
 
     class Meta:
         model = FundingStream
@@ -80,7 +81,8 @@ class FundingStreamForm(StyledFormMixin, ModelForm):
             'budget',
             'year',
             'source_type',
-            'funding_secured'
+            'funding_secured',
+            'actual_cost'
         ]
 
 
@@ -92,16 +94,10 @@ class PhaseForm(StyledFormMixin, ModelForm):
             'estimated_bid_quarter',
             'status',
             'year',
-            'total_estimated_cost',
-            'actual_cost'
         ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        year_field = self.fields['year']
-        year_field.widget.attrs['min'] = datetime.now().year + 1
-
         for field_name, field in self.fields.items():
-            if field_name != 'actual_cost':
-                field.widget.attrs['required'] = True
+            field.widget.attrs['required'] = True

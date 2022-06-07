@@ -241,18 +241,6 @@ class Phase(SequencedModel):
 
     year = models.IntegerField(null=True, blank=True)
 
-    total_estimated_cost = MoneyField(default_currency='USD',
-                                      default=0,
-                                      decimal_places=0,
-                                      max_digits=11)
-
-    actual_cost = MoneyField(default_currency='USD',
-                             default=0,
-                             decimal_places=0,
-                             max_digits=11,
-                             blank=True,
-                             null=True)
-
     @property
     def total_budget(self):
         total = self.funding_streams.all().values(
@@ -260,6 +248,29 @@ class Phase(SequencedModel):
         ).aggregate(Sum('budget'))['budget__sum']
 
         return total if total else 0
+    
+    @property
+    def total_funded_amount(self):
+        # Only total where funding_secured = True
+        total = self.funding_streams.all().values(
+            'budget', 'funding_secured'
+        ).filter(funding_secured=True).aggregate(Sum('budget'))['budget__sum']
+        print('total_funded_amount', total)
+
+        return total if total else 0
+    
+    @property
+    def funded_amount_by_year(self):
+        total_by_year = {}
+
+        funded_sources = self.funding_streams.all().values(
+            'budget', 'funding_secured', 'year'
+        ).filter(funding_secured=True)
+        
+        for source in funded_sources:
+            total_by_year[source['year']] = total_by_year.get(source['year'], 0) + source['budget']
+        
+        return total_by_year
 
     @property
     def cost_by_zone(self):
@@ -269,10 +280,23 @@ class Phase(SequencedModel):
         for distribution in zone_distributions:
             zone_name = distribution.zone.name
             cost_by_zone[zone_name] = (
-                float(self.total_estimated_cost.amount) * distribution.zone_distribution_proportion
+                float(self.total_budget) * distribution.zone_distribution_proportion
             )
 
         return cost_by_zone
+    
+    @property
+    def funded_by_zone(self):
+        zone_distributions = PhaseZoneDistribution.objects.filter(phase=self)
+        
+        funded_by_zone = {}
+        for distribution in zone_distributions:
+            zone_name = distribution.zone.name
+            funded_by_zone[zone_name] = (
+                float(self.total_funded_amount) * distribution.zone_distribution_proportion
+            )
+        
+        return funded_by_zone
 
     @property
     def sequenced_instances(self):
@@ -357,6 +381,12 @@ class FundingStream(models.Model):
     year = models.IntegerField(null=True, blank=True)
     funding_secured = models.BooleanField(default=False)
     source_type = models.TextField(choices=SOURCE_TYPE_CHOICES, default='capital_improvement_fund')
+    actual_cost = MoneyField(default_currency='USD',
+                             default=0,
+                             decimal_places=0,
+                             max_digits=11,
+                             blank=True,
+                             null=True)
 
     def __str__(self):
         return f'{self.budget} - {self.source_type} - {self.year}'

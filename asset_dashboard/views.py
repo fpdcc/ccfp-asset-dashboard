@@ -42,6 +42,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
         project_phases = []
         for phase in phases:
             funding_streams = phase.funding_streams.all()
+            print('phase.funded_amount_by_year', phase.funded_amount_by_year)
 
             section = phase.project.section_owner.name \
                 if phase.project.section_owner else ''
@@ -50,10 +51,11 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
 
             project_phases.append({
                 'pk': phase.id,
-                'phase': phase.name,
+                'phase': phase.phase_type,
                 'total_budget': phase.total_budget,
+                'funded_amount': phase.total_funded_amount,
+                'funded_amount_by_year': phase.funded_amount_by_year,
                 'funding_streams': list(funding_streams.values()) if funding_streams else [],
-                'total_estimated_cost': phase.total_estimated_cost.amount,
                 'year': phase.year,
                 'estimated_bid_quarter': phase.estimated_bid_quarter,
                 'status': phase.status,
