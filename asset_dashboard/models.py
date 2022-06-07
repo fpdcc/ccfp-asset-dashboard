@@ -248,17 +248,16 @@ class Phase(SequencedModel):
         ).aggregate(Sum('budget'))['budget__sum']
 
         return total if total else 0
-    
+
     @property
     def total_funded_amount(self):
         # Only total where funding_secured = True
         total = self.funding_streams.all().values(
             'budget', 'funding_secured'
         ).filter(funding_secured=True).aggregate(Sum('budget'))['budget__sum']
-        print('total_funded_amount', total)
 
         return total if total else 0
-    
+
     @property
     def funded_amount_by_year(self):
         total_by_year = {}
@@ -266,10 +265,10 @@ class Phase(SequencedModel):
         funded_sources = self.funding_streams.all().values(
             'budget', 'funding_secured', 'year'
         ).filter(funding_secured=True)
-        
+
         for source in funded_sources:
             total_by_year[source['year']] = total_by_year.get(source['year'], 0) + source['budget']
-        
+
         return total_by_year
 
     @property
@@ -284,18 +283,18 @@ class Phase(SequencedModel):
             )
 
         return cost_by_zone
-    
+
     @property
     def funded_by_zone(self):
         zone_distributions = PhaseZoneDistribution.objects.filter(phase=self)
-        
+
         funded_by_zone = {}
         for distribution in zone_distributions:
             zone_name = distribution.zone.name
             funded_by_zone[zone_name] = (
                 float(self.total_funded_amount) * distribution.zone_distribution_proportion
             )
-        
+
         return funded_by_zone
 
     @property

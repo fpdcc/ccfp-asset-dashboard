@@ -71,7 +71,6 @@ class PortfolioPlanner extends React.Component {
         commissioner_districts: project.commissioner_districts,
         key: project.pk,
         funding_streams: project.funding_streams,
-        // total_estimated_cost: parseFloat(project.total_estimated_cost),
         year: project.year,
         estimated_bid_quarter: project.estimated_bid_quarter,
         status: project.status,
@@ -100,8 +99,6 @@ class PortfolioPlanner extends React.Component {
         portfolio: portfolioObj
       }
     }
-    
-    console.log('projects', projects)
 
     this.setState(state)
 
@@ -365,8 +362,6 @@ class PortfolioPlanner extends React.Component {
   
   calculateZoneCostByYear(portfolio) {
     let yearTotals = {}
-    
-    console.log('portfolio', portfolio)
 
     portfolio.forEach(phase => {
       const year = phase['year']

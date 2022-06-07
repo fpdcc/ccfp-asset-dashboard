@@ -42,7 +42,6 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
         project_phases = []
         for phase in phases:
             funding_streams = phase.funding_streams.all()
-            print('phase.funded_amount_by_year', phase.funded_amount_by_year)
 
             section = phase.project.section_owner.name \
                 if phase.project.section_owner else ''
