@@ -410,8 +410,6 @@ class ProjectScore(models.Model):
                     disinvested_area += intersection.area
 
             disinvested_proportion = disinvested_area / total_phase_geoms.area
-        
-        print('disinvested_proportion', disinvested_proportion)
 
         project_score.social_equity_score = disinvested_proportion * 5
         project_score.save()
