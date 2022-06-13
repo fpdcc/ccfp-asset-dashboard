@@ -396,7 +396,7 @@ class ProjectScore(models.Model):
         else:
             disinvested_areas = SocioEconomicZones.objects.get(displaygro='Both')
 
-            buffer = 0.00002
+            buffer = 0.00001
             phase_assets = LocalAsset.objects.filter(phase=instance.phase)
             phase_polygons = LocalAsset.aggregate_polygons(phase_assets, buffer=buffer)
             phase_linestrings = LocalAsset.aggregate_linestrings(phase_assets, buffer=buffer)
