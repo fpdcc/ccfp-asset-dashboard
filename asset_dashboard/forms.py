@@ -80,7 +80,8 @@ class FundingStreamForm(StyledFormMixin, ModelForm):
             'budget',
             'year',
             'source_type',
-            'funding_secured'
+            'funding_secured',
+            'actual_cost'
         ]
 
 

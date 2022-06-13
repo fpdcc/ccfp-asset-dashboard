@@ -455,6 +455,8 @@ class PortfolioPlanner extends React.Component {
     
     this.state.portfolio.projects.forEach(project => {
       const costByZone = this.getCostByZone(project)
+      delete project.cost_by_zone
+      delete project.funded_amount_by_year
 
       let row = {
         ...project,
@@ -477,15 +479,17 @@ class PortfolioPlanner extends React.Component {
             'funding_year': funding['year'],
             'funding_secured': funding['funding_secured']
           }
+          delete row.funding_streams
+          rows.push(row)
         })
+      } else {
+        delete row.funding_streams
+        rows.push(row)
       }
       
       // Clean up data for export — remove unused columns.
-      delete row.funding_streams
-      delete row.cost_by_zone
-      delete row.funded_amount_by_year
       
-      rows.push(row)
+      
     })
     
     return rows

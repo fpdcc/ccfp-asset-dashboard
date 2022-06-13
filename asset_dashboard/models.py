@@ -207,16 +207,16 @@ class PhaseZoneDistribution(models.Model):
 
 class Phase(SequencedModel):
     """
-    A sub-project unit of work. Projects without defined phases are assigned a
-    default Phase of type "implementation".
+    A sub-project unit of work.
     """
 
     PHASE_TYPE_CHOICES = [
-        ('feasibility', 'Feasibility'),
-        ('design', 'Design'),
-        ('engineering', 'Engineering'),
+        ('planning_feasibility', 'Planning/Feasibility'),
+        ('preliminary_engineering', 'Preliminary Engineering'),
+        ('design_engineering', 'Design Engineering'),
         ('construction', 'Construction'),
-        ('implementation', 'Implementation'),
+        ('construction_engineering', 'Construction Engineering'),
+        ('maintenance_repair', 'Maintenance/Repair'),
     ]
 
     BID_QUARTER_CHOICES = [
@@ -396,7 +396,7 @@ class ProjectScore(models.Model):
         else:
             disinvested_areas = SocioEconomicZones.objects.get(displaygro='Both')
 
-            buffer = 0.00001
+            buffer = 0.00002
             phase_assets = LocalAsset.objects.filter(phase=instance.phase)
             phase_polygons = LocalAsset.aggregate_polygons(phase_assets, buffer=buffer)
             phase_linestrings = LocalAsset.aggregate_linestrings(phase_assets, buffer=buffer)
@@ -410,6 +410,8 @@ class ProjectScore(models.Model):
                     disinvested_area += intersection.area
 
             disinvested_proportion = disinvested_area / total_phase_geoms.area
+        
+        print('disinvested_proportion', disinvested_proportion)
 
         project_score.social_equity_score = disinvested_proportion * 5
         project_score.save()
