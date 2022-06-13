@@ -331,8 +331,65 @@ class ProjectScore(models.Model):
 
         return total_score
 
-    def add_score_to_queryset(self):
-        """we'll need to add the total scores to the queryset"""
+    @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
+    def save_project_scores(sender, instance, **kwargs):
+        phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
+
+        total_distribution_area = phase_geoms.area
+
+        distributions_by_zone = LocalAsset.get_distribution_by_zone(phase_geoms)
+
+        zone_proportions = PhaseZoneDistribution.calculate_zone_proportion(
+            distributions_by_zone,
+            total_distribution_area
+        )
+
+        ProjectScore.save_geographic_distance_scores(zone_proportions, instance)
+        ProjectScore.save_social_equity_score(phase_geoms, instance)
+
+    @classmethod
+    def save_geographic_distance_scores(cls, zone_proportions, instance):
+        project_score, _ = cls.objects.get_or_create(
+            project=instance.phase.project
+        )
+
+        zone_score = 0
+
+        for key, value in zone_proportions.items():
+            if value > 0:
+                zone_score += 1
+
+        project_score.geographic_distance_score = zone_score
+        project_score.save()
+
+    @classmethod
+    def save_social_equity_score(cls, total_phase_geoms, instance):
+        project_score, _ = cls.objects.get_or_create(
+            project=instance.phase.project
+        )
+
+        if total_phase_geoms.area == 0.0:
+            disinvested_proportion = 0
+        else:
+            disinvested_areas = SocioEconomicZones.objects.get(displaygro='Both')
+
+            buffer = 0.00001
+            phase_assets = LocalAsset.objects.filter(phase=instance.phase)
+            phase_polygons = LocalAsset.aggregate_polygons(phase_assets, buffer=buffer)
+            phase_linestrings = LocalAsset.aggregate_linestrings(phase_assets, buffer=buffer)
+            phase_points = LocalAsset.aggregate_points(phase_assets, buffer=buffer)
+
+            disinvested_area = 0
+
+            for geoms in [phase_polygons, phase_linestrings, phase_points]:
+                if geoms:
+                    intersection = disinvested_areas.geom.intersection(geoms)
+                    disinvested_area += intersection.area
+
+            disinvested_proportion = disinvested_area / total_phase_geoms.area
+
+        project_score.social_equity_score = disinvested_proportion * 5
+        project_score.save()
 
     def __str__(self):
         return self.project.name
@@ -409,19 +466,24 @@ class LocalAsset(models.Model):
         return GeometryCollection(filtered_geoms)
 
     @classmethod
-    def aggregate_polygons(cls, qs: QuerySet) -> Union[GEOSGeometry, None]:
+    def aggregate_polygons(cls, qs: QuerySet, buffer=None) -> Union[GEOSGeometry, None]:
         assets = qs.extra(where=["""
                                     geometrytype(geom) LIKE 'POLYGON'
                                         OR geometrytype(geom) LIKE 'MULTIPOLYGON'
                                  """]).aggregate(models.Union('geom'))['geom__union']
 
         if assets:
+            if buffer:
+                assets.buffer(buffer)
             return assets
 
         return None
 
     @classmethod
-    def aggregate_linestrings(cls, qs: QuerySet) -> Union[GEOSGeometry, None]:
+    def aggregate_linestrings(cls, qs: QuerySet, buffer=None) -> Union[GEOSGeometry, None]:
+        if buffer is None:
+            buffer = settings.GEOM_BUFFER
+
         assets = qs.extra(
             where=["""
                     geometrytype(geom) LIKE 'LINESTRING'
@@ -433,12 +495,15 @@ class LocalAsset(models.Model):
             # The Geometries are in degrees, so use the 6th decimal place for
             # creating the buffer. See https://gis.stackexchange.com/a/8674
             # and https://docs.djangoproject.com/en/3.1/ref/contrib/gis/geos/#django.contrib.gis.geos.GEOSGeometry.buffer
-            return assets.buffer(settings.GEOM_BUFFER)
+            return assets.buffer(buffer)
 
         return None
 
     @classmethod
-    def aggregate_points(cls, qs: QuerySet) -> Union[GEOSGeometry, None]:
+    def aggregate_points(cls, qs: QuerySet, buffer=None) -> Union[GEOSGeometry, None]:
+        if buffer is None:
+            buffer = settings.GEOM_BUFFER
+
         assets = qs.extra(where=["""
                                     geometrytype(geom) LIKE 'POINT'
                                  """]).aggregate(models.Union('geom'))['geom__union']
@@ -1329,3 +1394,14 @@ class FPDCCZones(GISModel):
     zone = models.CharField(max_length=10)
     geom = models.MultiPolygonField(srid=3435)
     abbr = models.CharField(max_length=10)
+
+
+class SocioEconomicZones(GISModel):
+    class Meta(GISModel.Meta):
+        db_table = '"pinus"."cmap_cook_econ_disadvantaged_areas"'
+
+    id = models.AutoField(primary_key=True, db_column='id')
+    geom = models.MultiPolygonField(srid=3435)
+    displaygro = models.CharField(max_length=50)
+    shape_leng = models.FloatField()
+    shape_area = models.FloatField()

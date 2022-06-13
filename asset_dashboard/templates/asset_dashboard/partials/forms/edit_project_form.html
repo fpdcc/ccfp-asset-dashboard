@@ -88,7 +88,49 @@
 
           <div class="col-4 border border-secondary rounded shadow-sm p-3 m-4">
               <table class="mb-3">
-                  {{ score_form }}
+                  <tbody>
+                      <tr>
+                        <th>
+                          <label for="Core Mission Score"><strong>Core mission score:</strong></label>
+                        </th>
+                        <td>{{ score_form.core_mission_score }}</td>
+                      </tr>
+                      
+                      <tr>
+                        <th>
+                          <label for="Operations impact score"><strong>Operations impact score:</strong></label>
+                        </th>
+                        <td>{{ score_form.operations_impact_score }}</td>
+                      </tr>
+                      
+                      <tr>
+                        <th>
+                          <label for="Sustainability score"><strong>Sustainability score:</strong></label>
+                        </th>
+                        <td>{{ score_form.sustainability_score }}</td>
+                      </tr>
+                      
+                      <tr>
+                        <th>
+                          <label for="Ease score"><strong>Ease score:</strong></label>
+                        </th>
+                        <td>{{ score_form.ease_score }}</td>
+                      </tr>
+                      
+                      <tr>
+                        <th>
+                          <strong>Geographic distance score:</strong>
+                        </th>
+                        <td>{{ project.projectscore.geographic_distance_score }}</td>
+                      </tr>
+                      
+                      <tr>
+                        <th>
+                          <strong>Social equity score:</strong>
+                        </th>
+                        <td>{{ project.projectscore.social_equity_score|floatformat:2 }}</td>
+                      </tr>
+                  </tbody>
               </table>
 
               <div class="d-flex lead">

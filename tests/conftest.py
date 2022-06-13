@@ -209,6 +209,18 @@ def user():
 def nature_preserves():
     return models.NaturePreserves.objects.create(site_name="Lou Lou's Sanctuary")
 
+@pytest.fixture
+def socio_economic_zones():
+    with open(f'{os.path.dirname(os.path.abspath(__file__))}/geojson/socio_economic_zone.geojson') as f:
+        zone = json.load(f)
+    
+    geo_feature = zone['features'][0]
+
+    return models.SocioEconomicZones.objects.create(
+        displaygro='Both',
+        geom=GEOSGeometry(json.dumps(geo_feature['geometry']))
+    )
+
 
 @pytest.fixture
 def trails_geojson():
