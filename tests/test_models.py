@@ -1,7 +1,7 @@
 import json
 import pytest
 from asset_dashboard.models import ScoreWeights, Portfolio, PortfolioPhase, \
-    LocalAsset, SenateDistrict, Phase, PhaseZoneDistribution
+    LocalAsset, SenateDistrict, Phase, PhaseZoneDistribution, FundingStream
 
 
 @pytest.mark.django_db
@@ -143,7 +143,12 @@ def test_phase_zone_distribution_signal(project, zones, signs_geojson, trails_ge
     assert sum([round(dist.zone_distribution_proportion) for dist in phase_zone_distributions_reload]) == 1.0
 
     # Add an estimated cost to the phase so we can test the total cost by zone.
-    phase.total_estimated_cost = 250000
+    funding_stream = FundingStream.objects.create(
+        budget=250000,
+        year=2023,
+        funding_secured=True,
+    )
+    phase.funding_streams.add(funding_stream)
     phase.save()
 
     for distribution in phase_zone_distributions_reload:

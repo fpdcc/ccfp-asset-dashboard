@@ -243,8 +243,6 @@ def test_project_phase_form(client, project, user):
         'phase_type': 'design',
         'estimated_bid_quarter': 'Q2',
         'status': 'ongoing',
-        'total_estimated_cost_0': 100000,
-        'total_estimated_cost_1': 'USD',
         'year': 2022
     }
 
@@ -257,7 +255,6 @@ def test_project_phase_form(client, project, user):
     assert phase.phase_type == form_data['phase_type']
     assert phase.estimated_bid_quarter == form_data['estimated_bid_quarter']
     assert phase.status == form_data['status']
-    assert phase.total_estimated_cost.amount == form_data['total_estimated_cost_0']
     assert phase.year == form_data['year']
 
 

@@ -104,11 +104,7 @@
     "phase_type": "feasibility",
     "estimated_bid_quarter": "Q1",
     "status": "unscheduled",
-    "year": null,
-    "total_estimated_cost_currency": "USD",
-    "total_estimated_cost": "0",
-    "actual_cost_currency": "USD",
-    "actual_cost": "0",
+    "year": 2024,
     "funding_streams": []
   }
 },
@@ -121,11 +117,7 @@
     "phase_type": "feasibility",
     "estimated_bid_quarter": "Q3",
     "status": "done",
-    "year": null,
-    "total_estimated_cost_currency": "USD",
-    "total_estimated_cost": "0",
-    "actual_cost_currency": "USD",
-    "actual_cost": "0",
+    "year": 2024,
     "funding_streams": []
   }
 },
@@ -138,11 +130,7 @@
     "phase_type": "design",
     "estimated_bid_quarter": "Q4",
     "status": "in-progress",
-    "year": null,
-    "total_estimated_cost_currency": "USD",
-    "total_estimated_cost": "0",
-    "actual_cost_currency": "USD",
-    "actual_cost": "0",
+    "year": 2023,
     "funding_streams": []
   }
 },
@@ -155,11 +143,7 @@
     "phase_type": "construction",
     "estimated_bid_quarter": "Q3",
     "status": "in-progress",
-    "year": null,
-    "total_estimated_cost_currency": "USD",
-    "total_estimated_cost": "0",
-    "actual_cost_currency": "USD",
-    "actual_cost": "0",
+    "year": 2023,
     "funding_streams": []
   }
 },
@@ -172,11 +156,7 @@
     "phase_type": "implementation",
     "estimated_bid_quarter": "Q3",
     "status": "in-progress",
-    "year": null,
-    "total_estimated_cost_currency": "USD",
-    "total_estimated_cost": "0",
-    "actual_cost_currency": "USD",
-    "actual_cost": "0",
+    "year": 2024,
     "funding_streams": []
   }
 },
@@ -189,11 +169,7 @@
     "phase_type": "design",
     "estimated_bid_quarter": "Q1",
     "status": "in-progress",
-    "year": null,
-    "total_estimated_cost_currency": "USD",
-    "total_estimated_cost": "0",
-    "actual_cost_currency": "USD",
-    "actual_cost": "0",
+    "year": 2023,
     "funding_streams": []
   }
 },
@@ -206,11 +182,7 @@
     "phase_type": "design",
     "estimated_bid_quarter": "Q2",
     "status": "done",
-    "year": null,
-    "total_estimated_cost_currency": "USD",
-    "total_estimated_cost": "0",
-    "actual_cost_currency": "USD",
-    "actual_cost": "0",
+    "year": 2024,
     "funding_streams": []
   }
 },
@@ -223,11 +195,7 @@
     "phase_type": "feasibility",
     "estimated_bid_quarter": "Q2",
     "status": "in-progress",
-    "year": null,
-    "total_estimated_cost_currency": "USD",
-    "total_estimated_cost": "0",
-    "actual_cost_currency": "USD",
-    "actual_cost": "0",
+    "year": 2025,
     "funding_streams": []
   }
 },
@@ -240,11 +208,7 @@
     "phase_type": "feasibility",
     "estimated_bid_quarter": "Q1",
     "status": "in-progress",
-    "year": null,
-    "total_estimated_cost_currency": "USD",
-    "total_estimated_cost": "0",
-    "actual_cost_currency": "USD",
-    "actual_cost": "0",
+    "year": 2023,
     "funding_streams": []
   }
 },

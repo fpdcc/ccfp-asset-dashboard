@@ -60,6 +60,8 @@ class PortfolioPlanner extends React.Component {
         section: project.section,
         category: project.category,
         budget: parseFloat(project.total_budget) || 0,
+        funded_amount: parseFloat(project.funded_amount) || 0,
+        funded_amount_by_year: project.funded_amount_by_year,
         score: project.total_score || 'N/A',
         phase: project.phase || 'N/A',
         zones: project.zones || 'N/A',
@@ -69,7 +71,6 @@ class PortfolioPlanner extends React.Component {
         commissioner_districts: project.commissioner_districts,
         key: project.pk,
         funding_streams: project.funding_streams,
-        total_estimated_cost: parseFloat(project.total_estimated_cost),
         year: project.year,
         estimated_bid_quarter: project.estimated_bid_quarter,
         status: project.status,
@@ -313,7 +314,7 @@ class PortfolioPlanner extends React.Component {
   calculateTotals(portfolio) {
     return {
       budgetImpact: portfolio.reduce((total, project) => { return total + project.budget }, 0),
-      totalEstimatedCostByYear: this.calculateEstimatedCostByKey(portfolio, 'year', 'total_estimated_cost'),
+      totalEstimatedCostByYear: this.calculateEstimatedCostByKey(portfolio, 'year', 'budget'),
       totalFundedAmountByYear: this.calculateFundedAmountByYear(portfolio),
       totalEstimatedZoneCostByYear: this.calculateZoneCostByYear(portfolio)
     }
@@ -340,14 +341,18 @@ class PortfolioPlanner extends React.Component {
   calculateFundedAmountByYear(portfolio) {
     let results = {}
 
-    portfolio.forEach(project => {
-      const fundingByYear = this.calculateEstimatedCostByKey(project.funding_streams, 'year', 'budget')
+    portfolio.forEach(phase => {
+      const year = phase['year']
+      
+      if (!results[year] && year !== null) {
+        results[year] = 0
+      }
 
-      for (const [key, value] of Object.entries(fundingByYear)) {
+      for (const [key, value] of Object.entries(phase.funded_amount_by_year)) {
         let yearTotal = results[key] ? results[key] : 0
         results = {
           ...results,
-          [key]: yearTotal += value
+          [key]: yearTotal += parseInt(value)
         }
       }
     })
@@ -460,11 +465,8 @@ class PortfolioPlanner extends React.Component {
         'commissioner_districts': project.commissioner_districts.map(dist => dist.name).join('; '),
       }
 
-      // don't want this key since we parsed the cost_by_zone into their own columns
-      delete row['cost_by_zone']
-
       if (project.funding_streams.length > 0) {
-        // If there are funding streams, then treat that each 
+        // If there are funding streams, then treat each 
         // funding stream instance as an individual row.
         
         project.funding_streams.forEach(funding => {
@@ -475,16 +477,15 @@ class PortfolioPlanner extends React.Component {
             'funding_year': funding['year'],
             'funding_secured': funding['funding_secured']
           }
-          
-          // remove funding_streams key from the row since the spread operator 
-          // adds it but we don't need it after parsing the funding out.
-          delete row.funding_streams
-
-          rows.push(row)
         })
-      } else {
-        rows.push(row)
       }
+      
+      // Clean up data for export — remove unused columns.
+      delete row.funding_streams
+      delete row.cost_by_zone
+      delete row.funded_amount_by_year
+      
+      rows.push(row)
     })
     
     return rows
