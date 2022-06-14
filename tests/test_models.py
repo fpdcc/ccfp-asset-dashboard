@@ -38,7 +38,7 @@ def test_project_score_total_method(project, score_weights):
         score_field_value = getattr(project_score_instance, score_field_name)
         total_score += score_field_value * weight_field_value
 
-    assert project_score_instance.total_score == total_score / weights_sum
+    assert int(project_score_instance.total_score) == int(total_score / weights_sum)
 
     # test that an error will raise if there is no score weight
     with pytest.raises(ValueError):
