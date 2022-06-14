@@ -340,10 +340,12 @@ class ProjectScore(models.Model):
         # this tuple unpacking will throw an error if that's not so
         score_weights, = ScoreWeights.objects.all()
         total_score = 0
+        weights_sum = 0
 
         for field in score_fields:
             score_field_value = field.value_from_object(self)
             weight_field_value = field.value_from_object(score_weights)
+            weights_sum += weight_field_value
 
             # return a total of 0 if any of the fields are missing a score
             if score_field_value is None:
@@ -352,7 +354,7 @@ class ProjectScore(models.Model):
 
             total_score += score_field_value * weight_field_value
 
-        return total_score
+        return total_score / weights_sum
 
     @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
     def save_project_scores(sender, instance, **kwargs):
