@@ -1,58 +1,65 @@
 [
 {
   "model": "asset_dashboard.section",
-  "pk": 1,
+  "pk": 18,
   "fields": {
-    "name": "Architecture"
+    "name": "Civil"
   }
 },
 {
   "model": "asset_dashboard.section",
-  "pk": 2,
+  "pk": 19,
   "fields": {
-    "name": "Landscaping"
+    "name": "Landscape Architecture"
   }
 },
 {
   "model": "asset_dashboard.section",
-  "pk": 3,
-  "fields": {
-    "name": "Civil Engineering"
-  }
-},
-{
-  "model": "asset_dashboard.section",
-  "pk": 13,
-  "fields": {
-    "name": "Planning"
-  }
-},
-{
-  "model": "asset_dashboard.section",
-  "pk": 14,
-  "fields": {
-    "name": "Surveyor"
-  }
-},
-{
-  "model": "asset_dashboard.section",
-  "pk": 15,
-  "fields": {
-    "name": "GIS"
-  }
-},
-{
-  "model": "asset_dashboard.section",
-  "pk": 16,
+  "pk": 20,
   "fields": {
     "name": "Building Architecture"
   }
 },
 {
   "model": "asset_dashboard.section",
-  "pk": 17,
+  "pk": 21,
   "fields": {
-    "name": "Landscape Architecture"
+    "name": "Landscape Maintenance"
+  }
+},
+{
+  "model": "asset_dashboard.section",
+  "pk": 22,
+  "fields": {
+    "name": "Facilities & Fleet Maintenance"
+  }
+},
+{
+  "model": "asset_dashboard.section",
+  "pk": 23,
+  "fields": {
+    "name": "Conservation and Experiential Programming"
+  }
+},
+{
+  "model": "asset_dashboard.section",
+  "pk": 24,
+  "fields": {
+    "name": "Permits, Rentals, and Concessions"
+  }
+},
+{
+  "model": "asset_dashboard.section",
+  "pk": 25,
+  "fields": {
+    "name": "Law Enforcement"
+  }
+},
+{
+  "model": "asset_dashboard.section",
+  "pk": 26,
+  "fields": {
+    "name": "ADA"
   }
 },
 {
@@ -62,7 +69,7 @@
     "name": "trail construction",
     "description": "trail construction example.",
     "category": null,
-    "section_owner": 13,
+    "section_owner": null,
     "project_manager": null,
     "countywide": false,
     "house_districts": [
@@ -86,7 +93,7 @@
     "name": "building repairs",
     "description": "test test test",
     "category": 40,
-    "section_owner": 13,
+    "section_owner": null,
     "project_manager": null,
     "countywide": false,
     "house_districts": [],
@@ -112,11 +119,11 @@
   "model": "asset_dashboard.phase",
   "pk": 2,
   "fields": {
-    "sequence": 1,
+    "sequence": 2,
     "project": 2,
-    "phase_type": "feasibility",
+    "phase_type": "planning_feasibility",
     "estimated_bid_quarter": "Q3",
-    "status": "done",
+    "status": "new",
     "year": 2024,
     "funding_streams": []
   }
@@ -125,7 +132,7 @@
   "model": "asset_dashboard.phase",
   "pk": 3,
   "fields": {
-    "sequence": 3,
+    "sequence": 4,
     "project": 2,
     "phase_type": "design",
     "estimated_bid_quarter": "Q4",
@@ -138,7 +145,7 @@
   "model": "asset_dashboard.phase",
   "pk": 4,
   "fields": {
-    "sequence": 2,
+    "sequence": 3,
     "project": 2,
     "phase_type": "construction",
     "estimated_bid_quarter": "Q3",
@@ -151,7 +158,7 @@
   "model": "asset_dashboard.phase",
   "pk": 5,
   "fields": {
-    "sequence": 4,
+    "sequence": 5,
     "project": 2,
     "phase_type": "implementation",
     "estimated_bid_quarter": "Q3",
@@ -164,7 +171,7 @@
   "model": "asset_dashboard.phase",
   "pk": 6,
   "fields": {
-    "sequence": 5,
+    "sequence": 6,
     "project": 2,
     "phase_type": "design",
     "estimated_bid_quarter": "Q1",
@@ -177,7 +184,7 @@
   "model": "asset_dashboard.phase",
   "pk": 7,
   "fields": {
-    "sequence": 6,
+    "sequence": 7,
     "project": 2,
     "phase_type": "design",
     "estimated_bid_quarter": "Q2",
@@ -190,7 +197,7 @@
   "model": "asset_dashboard.phase",
   "pk": 8,
   "fields": {
-    "sequence": 7,
+    "sequence": 8,
     "project": 2,
     "phase_type": "feasibility",
     "estimated_bid_quarter": "Q2",
@@ -203,7 +210,7 @@
   "model": "asset_dashboard.phase",
   "pk": 9,
   "fields": {
-    "sequence": 8,
+    "sequence": 9,
     "project": 2,
     "phase_type": "feasibility",
     "estimated_bid_quarter": "Q1",
@@ -5359,7 +5366,7 @@
   "pk": 2,
   "fields": {
     "password": "pbkdf2_sha256$216000$D1etxVIYj4p8$7XEgewZMwhIJ6kYCkY5iU/9h9vpAbvTnunnh/ZYeTUY=",
-    "last_login": "2022-06-03T21:33:20.454Z",
+    "last_login": "2022-06-13T21:19:19.576Z",
     "is_superuser": true,
     "username": "garretwais",
     "first_name": "",

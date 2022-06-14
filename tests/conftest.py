@@ -115,7 +115,7 @@ def project(section_owner, project_category):
             models.ProjectScore.objects.create(project=project)
             models.Phase.objects.create(
                 project=project,
-                phase_type='feasibility',
+                phase_type='planning_feasibility',
                 estimated_bid_quarter='Q1',
                 status='ongoing'
             )

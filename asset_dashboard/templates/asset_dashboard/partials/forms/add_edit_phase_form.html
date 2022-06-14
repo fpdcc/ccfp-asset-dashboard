@@ -119,17 +119,6 @@
     {% endif %}
   </div>
 </div>
-
-<script type="text/javascript">
-  const statusInput = document.getElementById('id_status')
-  
-  statusInput.addEventListener('change', function() {
-    if (statusInput.value == 'complete') {
-      <!-- if they're trying to update the phase actual cost once it's "complete", then turn of the year validation. -->
-      document.getElementById('id_year').removeAttribute('min')
-    }
-  })
-</script>
 </section
 {% endblock %}
 

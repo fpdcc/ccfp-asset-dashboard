@@ -207,16 +207,16 @@ class PhaseZoneDistribution(models.Model):
 
 class Phase(SequencedModel):
     """
-    A sub-project unit of work. Projects without defined phases are assigned a
-    default Phase of type "implementation".
+    A sub-project unit of work.
     """
 
     PHASE_TYPE_CHOICES = [
-        ('feasibility', 'Feasibility'),
-        ('design', 'Design'),
-        ('engineering', 'Engineering'),
+        ('planning_feasibility', 'Planning/Feasibility'),
+        ('preliminary_engineering', 'Preliminary Engineering'),
+        ('design_engineering', 'Design Engineering'),
         ('construction', 'Construction'),
-        ('implementation', 'Implementation'),
+        ('construction_engineering', 'Construction Engineering'),
+        ('maintenance_repair', 'Maintenance/Repair'),
     ]
 
     BID_QUARTER_CHOICES = [

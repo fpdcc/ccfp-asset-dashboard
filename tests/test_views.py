@@ -240,7 +240,7 @@ def test_project_phase_form(client, project, user):
     assert response.status_code == 200
 
     form_data = {
-        'phase_type': 'design',
+        'phase_type': 'design_engineering',
         'estimated_bid_quarter': 'Q2',
         'status': 'ongoing',
         'year': 2022
