@@ -30,12 +30,15 @@ def test_project_score_total_method(project, score_weights):
 
     # calculate the score "by hand" (within this test)
     total_score = 0
+    weights_sum = 0
     for index, score_field_name in enumerate(updated_scores):
         weight_field_value = getattr(score_weights, score_field_name)
+        weights_sum += weight_field_value
+        
         score_field_value = getattr(project_score_instance, score_field_name)
         total_score += score_field_value * weight_field_value
 
-    assert project_score_instance.total_score == total_score
+    assert pytest.approx(project_score_instance.total_score) == total_score / weights_sum
 
     # test that an error will raise if there is no score weight
     with pytest.raises(ValueError):
