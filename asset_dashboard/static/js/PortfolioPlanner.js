@@ -455,16 +455,26 @@ class PortfolioPlanner extends React.Component {
     
     this.state.portfolio.projects.forEach(project => {
       const costByZone = this.getCostByZone(project)
-      delete project.cost_by_zone
-      delete project.funded_amount_by_year
 
       let row = {
-        ...project,
-        ...costByZone,
+        'name': project.name,
+        'description': project.description,
+        'section': project.section,
+        'category': project.category,
+        'budget': project.budget,
+        'score': project.score,
+        'phase': project.phase,
+        'key': project.key,
+        'year': project.year,
+        'estimated_bid_quarter': project.estimated_bid_quarter,
+        'status': project.status,
+        'project_manager': project.manager,
+        'countywide': project.countywide,
         'zones': project.zones.map(zone => zone.name).join('; '),
         'house_districts': project.house_districts.map(dist => dist.name).join('; '),
         'senate_districts': project.senate_districts.map(dist => dist.name).join('; '),
         'commissioner_districts': project.commissioner_districts.map(dist => dist.name).join('; '),
+        ...costByZone,
       }
 
       if (project.funding_streams.length > 0) {
@@ -479,19 +489,12 @@ class PortfolioPlanner extends React.Component {
             'funding_year': funding['year'],
             'funding_secured': funding['funding_secured']
           }
-          delete row.funding_streams
-          rows.push(row)
         })
-      } else {
-        delete row.funding_streams
-        rows.push(row)
       }
       
-      // Clean up data for export — remove unused columns.
-      
-      
+      rows.push(row)
     })
-    
+
     return rows
   }
   
