@@ -54,7 +54,6 @@ class PortfolioPlanner extends React.Component {
   componentDidMount() {
     // prepare the data so it can be used in the table and exported as CSV
     const projects = JSON.parse(props.projects).map((project) => {
-      console.log('project', project)
       return {
         name: project.name,
         description: project.description || 'No description available.',
