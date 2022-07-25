@@ -147,7 +147,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
             }
 
             project = Project.objects.create(**project_data)
-            
+
             # Default all the score fields to 0 when a Project is created
             ProjectScore.objects.get_or_create(
                 project=project,

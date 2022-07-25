@@ -349,7 +349,7 @@ class ProjectScore(models.Model):
             total_score += score_field_value * weight_field_value
 
         return total_score / weights_sum
-    
+
     @receiver([post_save], sender='asset_dashboard.Project')
     def update_countywide_score(sender, instance, **kwargs):
         if instance.countywide:
