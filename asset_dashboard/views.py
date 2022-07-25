@@ -147,7 +147,17 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
             }
 
             project = Project.objects.create(**project_data)
-            ProjectScore.objects.get_or_create(project=project)
+            
+            # Default all the score fields to 0 when a Project is created
+            ProjectScore.objects.get_or_create(
+                project=project,
+                core_mission_score=0,
+                operations_impact_score=0,
+                sustainability_score=0,
+                ease_score=0,
+                geographic_distance_score=0,
+                social_equity_score=0
+            )
 
             messages.success(self.request, 'Project successfully created.')
             return HttpResponseRedirect(reverse('project-detail', kwargs={'pk': project.pk}))
