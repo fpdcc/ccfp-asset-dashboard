@@ -71,7 +71,7 @@
             <td>{{ funding.get_source_type_display }}</td>
             <td>{{ funding.funding_secured }}</td>
             <td><a href="{% url 'update-funding' pk=funding.id %}" class="text-info lead">Edit</a></td>
-            <td style="width: 12%;"><a href="{% url 'delete-funding' pk=phase.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
+            <td style="width: 12%;"><a href="{% url 'delete-funding' pk=funding.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
           </tr>
           {% endfor %}
         </tbody>
