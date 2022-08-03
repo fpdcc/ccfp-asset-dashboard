@@ -112,7 +112,15 @@ def project(section_owner, project_category):
             project_info.update(kwargs)
 
             project = models.Project.objects.create(**project_info)
-            models.ProjectScore.objects.create(project=project)
+            models.ProjectScore.objects.create(
+                project=project,
+                core_mission_score=0,
+                operations_impact_score=0,
+                sustainability_score=0,
+                ease_score=0,
+                geographic_distance_score=0,
+                social_equity_score=0
+            )
             models.Phase.objects.create(
                 project=project,
                 phase_type='planning_feasibility',

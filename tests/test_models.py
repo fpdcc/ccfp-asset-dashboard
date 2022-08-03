@@ -12,8 +12,8 @@ def test_project_score_total_method(project, score_weights):
     project = project.build()
     project_score_instance = project.projectscore
 
-    # at this point in the code, the ProjectScore fields have no data.
-    # so, test that total_score = 0 if there is a missing score
+    # When a project is created, all of the ProjectScore fields equal 0.
+    # So, test that total_score = 0.
     assert project_score_instance.total_score == 0
 
     updated_scores = {

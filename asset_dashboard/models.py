@@ -356,6 +356,14 @@ class ProjectScore(models.Model):
 
         return total_score / weights_sum
 
+    @receiver([post_save], sender='asset_dashboard.Project')
+    def update_countywide_score(sender, instance, **kwargs):
+        if instance.countywide:
+            score = ProjectScore.objects.get(project=instance)
+            score.geographic_distance_score = 5
+            score.social_equity_score = 5
+            score.save()
+
     @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
     def save_project_scores(sender, instance, **kwargs):
         phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
