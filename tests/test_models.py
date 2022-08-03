@@ -27,8 +27,6 @@ def test_project_score_total_method(project, score_weights):
 
     project_score_instance.__dict__.update(updated_scores)
     project_score_instance.save()
-    
-    print('project_score_instance', project_score_instance)
 
     # calculate the score "by hand" (within this test)
     total_score = 0
