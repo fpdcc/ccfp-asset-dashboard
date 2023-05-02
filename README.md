@@ -20,11 +20,6 @@ docker-compose up
 The app will be available at http://localhost:8000. The database will be exposed
 on port 32001.
 
-Run the app with a debugger:
-```
-docker-compose run --rm -p 8000:8000 app
-```
-
 Load the development data:
 ```bash
 docker-compose run --rm app python manage.py loaddata asset_dashboard/fixtures/data.json
@@ -36,12 +31,14 @@ docker-compose run --rm app make districts
 ```
 
 ### Restore the FPDCC database
-Download the database from Dropbox and save the tar file in this repo's root directory.
+Download the database from Dropbox and save the tar file in this repo's root directory. You'll need to have postgres installed on your machine to run the command.
 
 Load the database:
 ```
 pg_restore -U postgres -h localhost -p 32002 -d fpdcc -O FPDCC_DataMade_backup112221.tar
 ```
+
+The password is `postgres` (as defined in `docker-compose.yml`).
 
 Connect to the database with `psql`:
 ```
@@ -57,6 +54,12 @@ fpdcc=# \dt *.*
 ```
 
 You should see a list of all the tables.
+
+### Debugging
+Run the app with a debugger:
+```
+docker-compose run --rm -p 8000:8000 app
+```
 
 ### Compiling Sass to CSS
 
@@ -108,7 +111,7 @@ docker-compose run --rm app python manage.py dumpdata \
 ```
 
 ## Tech Stack
-This application is a Django app with Postgres. It's managed with Docker. Parts of the user interface were built with React (such as all map interfaces and the CIP planner page). 
+This application is a Django app with Postgres. It's managed with Docker. Parts of the user interface were built with React (such as all map interfaces and the CIP planner page).
 
 You'll need Docker on your machine for local development, otherwise Docker will take care of all the dependencies. Read [DataMade's how-to documentation](https://github.com/datamade/how-to/blob/main/docker/local-development.md) for details on the Docker configuration.
 
@@ -156,9 +159,9 @@ The forms that are within HTML use the Django form classes, and they're located 
 The Django Rest serializers are located at `asset_dashboard/serializers.py`. These serializers are only used with the `asset_dashboard/endpoints.py` file. Together, these pieces of the Django Rest Framework manage ajax requests from the React code. **Any GET or POST requests in the React code happen outside of the typical Django view/template and are managed on the backend with Django Rest Framework.**
 
 ### React
-As mentioned, parts of this codebase use React. You'll need to dive into the React code if you're dealing with anything related to the maps and CIP planner. All of the React code is located in `asset_dashboard/static/js`. 
+As mentioned, parts of this codebase use React. You'll need to dive into the React code if you're dealing with anything related to the maps and CIP planner. All of the React code is located in `asset_dashboard/static/js`.
 
-The CIP planner is located in the `~/js/PortfolioPlanner.js` file (and you should be able to find all of the component's local imports through that). 
+The CIP planner is located in the `~/js/PortfolioPlanner.js` file (and you should be able to find all of the component's local imports through that).
 
 The relevant map components are located in:
 - `~/js/components/maps/SelectAssetsMap.js` — this component manages everything about searching for assets, saving/deleting assets for a phase, and copying assets to a new phase. This is the component that renders on that site at the url `<site-name>.com/projects/phases/edit/<phase_id>/assets/`. [The code is "embedded" within the template located at `~/templates/asset_dashboard/asset_create_update.html`](https://github.com/fpdcc/ccfp-asset-dashboard/blob/master/asset_dashboard/templates/asset_dashboard/asset_create_update.html#L22-L33).
