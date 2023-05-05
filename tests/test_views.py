@@ -1,6 +1,6 @@
 import pytest
 from django.urls import reverse
-from asset_dashboard.models import Project, ProjectScore, ProjectCategory, User, Phase, LocalAsset
+from asset_dashboard.models import Project, ProjectScore, ProjectCategory, User, Phase
 from django.forms.models import model_to_dict
 import json
 from django.utils.html import escape
@@ -280,7 +280,8 @@ def test_funding_stream_form(client, project, user):
     form_response = client.post(create_funding_stream_url, data=form_data)
     assert form_response.status_code == 302
 
-    funding_stream = Phase.objects.get(id=phase.id).funding_streams.all()[0]
+    # Two funding streams are created by default, so the one just created is the 3rd
+    funding_stream = Phase.objects.get(id=phase.id).funding_streams.all()[2]
     assert funding_stream.budget.amount == form_data['budget_0']
     assert funding_stream.year == form_data['year']
     assert funding_stream.funding_secured == form_data['funding_secured']
@@ -328,3 +329,39 @@ def test_login(client):
     response = client.post(reverse('login'), user)
     assert response.status_code == 302
     assert reverse('projects') in response.url
+
+
+@pytest.mark.django_db
+def test_funding_stream_delete_view_redirect(client, project, user):
+    client.force_login(user=user)
+
+    prj = project.build()
+    phase = prj.phases.first()
+
+    # Use the second funding stream since it has a different pk from the phase
+    funding_stream = phase.funding_streams.all()[1]
+    url = reverse('delete-funding', kwargs={'pk': funding_stream.pk})
+
+    response = client.post(url)
+    expected_redirect = reverse('edit-phase', kwargs={'pk': phase.pk})
+
+    # Check the response url
+    assert expected_redirect == response._headers['location'][1]
+
+
+@pytest.mark.django_db
+def test_phase_delete_view_redirect(client, project, user):
+    client.force_login(user=user)
+
+    prj1 = project.build()
+    prj2 = project.build()
+
+    # Use the second project since it has a different pk from the phase
+    phase = prj2.phases.first()
+    url = reverse('delete-phase', kwargs={'pk': phase.pk})
+
+    response = client.post(url)
+    expected_redirect = reverse('project-detail', kwargs={'pk': prj2.pk})
+
+    # Check the response url
+    assert expected_redirect == response._headers['location'][1]
