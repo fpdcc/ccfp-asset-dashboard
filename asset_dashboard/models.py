@@ -186,12 +186,13 @@ class PhaseZoneDistribution(models.Model):
             assets = LocalAsset.objects.filter(phase=instance.phase)
 
             if assets.count() == 1 or assets.count() == 0:
-                # This is the last asset for the phase (case #3). Return early,
-                # since the Phase deletion will delete the associated PhaseZoneDistribution.
-                # This prevents an IntegrityError that happens in the deletion of the Phase,
-                # when the last asset is deleted (since the Phase doesn't exist and
-                # this logic runs after the Phase is deleted.)
-                # Also just go ahead and delete
+                # This is the last asset for the phase (case #3).
+                #
+                # Go ahead and delete the PhaseZoneDistributions in case all of the assets
+                # for a phase are deleted, but not the Phase.
+                #
+                # This also prevents an IntegrityError that happens in the deletion of the Phase,
+                # when the last asset is deleted.
                 PhaseZoneDistribution.objects.filter(phase=instance.phase).delete()
                 return
 
