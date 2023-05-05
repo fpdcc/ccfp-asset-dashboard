@@ -169,28 +169,30 @@ class PhaseZoneDistribution(models.Model):
     zone = models.ForeignKey('Zone', on_delete=models.CASCADE, related_name='zone')
     zone_distribution_proportion = models.FloatField(null=True, blank=True)
 
-    @receiver([post_save, pre_delete], sender='asset_dashboard.LocalAsset')
+    @receiver([post_save], sender='asset_dashboard.LocalAsset')
     def save_zone_distribution(sender, instance, **kwargs):
-        if kwargs['signal'] == pre_delete:
-            PhaseZoneDistribution.objects.filter(phase=instance.phase).delete()
-        else:
-            phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
+        phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
 
-            total_distribution_area = phase_geoms.area
+        total_distribution_area = phase_geoms.area
 
-            distributions_by_zone = LocalAsset.get_distribution_by_zone(phase_geoms)
+        distributions_by_zone = LocalAsset.get_distribution_by_zone(phase_geoms)
 
-            zone_proportions = PhaseZoneDistribution.calculate_zone_proportion(
-                distributions_by_zone, total_distribution_area
+        zone_proportions = PhaseZoneDistribution.calculate_zone_proportion(
+            distributions_by_zone, total_distribution_area
+        )
+
+        for zone, proportion in zone_proportions.items():
+            zone_distribution, _ = PhaseZoneDistribution.objects.get_or_create(
+                phase=instance.phase, zone=zone
             )
 
-            for zone, proportion in zone_proportions.items():
-                zone_distribution, _ = PhaseZoneDistribution.objects.get_or_create(
-                    phase=instance.phase, zone=zone
-                )
+            zone_distribution.zone_distribution_proportion = proportion
+            zone_distribution.save()
 
-                zone_distribution.zone_distribution_proportion = proportion
-                zone_distribution.save()
+    @receiver([pre_delete], sender='asset_dashboard.LocalAsset')
+    def delete_zone_distribution(sender, instance, **kwargs):
+        PhaseZoneDistribution.objects.filter(phase=instance.phase).delete()
+        return
 
     @classmethod
     def calculate_zone_proportion(cls, distributions_by_zone, total_distribution_area):
