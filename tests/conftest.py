@@ -112,6 +112,16 @@ def project(section_owner, project_category):
             project_info.update(kwargs)
 
             project = models.Project.objects.create(**project_info)
+            funding1 = models.FundingStream.objects.create(
+                year=2023,
+                funding_secured=True,
+            )
+            funding2 = models.FundingStream.objects.create(
+                year=2024,
+                funding_secured=False,
+            )
+            funding_list = [funding1, funding2]
+
             models.ProjectScore.objects.create(
                 project=project,
                 core_mission_score=0,
@@ -126,8 +136,8 @@ def project(section_owner, project_category):
                 phase_type='planning_feasibility',
                 estimated_bid_quarter='Q1',
                 status='ongoing'
-            )
-
+            ).funding_streams.set(funding_list)
+            
             return project
 
     return ProjectFactory()
