@@ -7,6 +7,7 @@ from django.db.models.signals import post_save, post_delete, pre_delete
 from django.dispatch import receiver
 from django.contrib.gis.geos import GEOSGeometry, GeometryCollection
 from django.conf import settings
+from django.db import IntegrityError
 
 from djmoney.models.fields import MoneyField
 
@@ -169,8 +170,36 @@ class PhaseZoneDistribution(models.Model):
     zone = models.ForeignKey('Zone', on_delete=models.CASCADE, related_name='zone')
     zone_distribution_proportion = models.FloatField(null=True, blank=True)
 
-    @receiver([post_save], sender='asset_dashboard.LocalAsset')
+    @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
     def save_zone_distribution(sender, instance, **kwargs):
+        """
+            This signal needs to handle these cases:
+
+            1. Calculate the distribution whenever a new local asset is saved,
+               based on all of the phase's existing assets + the new one.
+            2. Recalculate the distribution whenever a local asset is deleted,
+               but only if there will be existing assets in the phase (hence the signal
+               being called on both post_save and post_delete, rather than separating them).
+            3. Delete all of the zone distributions when the phase is deleted.
+
+            It can be called whenever a local asset is created or deleted, or when a phase is deleted.
+            There's no way to determine whether the signal is called because a phase is deleted.
+        """
+
+        if kwargs['signal'] == post_delete:
+            assets = LocalAsset.objects.filter(phase=instance.phase)
+
+            if assets.count() == 1 or assets.count() == 0:
+                # This is the last asset for the phase (case #3). Return early,
+                # since the Phase deletion will delete the associated PhaseZoneDistribution.
+                # This prevents an IntegrityError that happens in the deletion of the Phase,
+                # when the last asset is deleted (since the Phase doesn't exist and
+                # this logic runs after the Phase is deleted.)
+                # Also just go ahead and delete
+                PhaseZoneDistribution.objects.filter(phase=instance.phase).delete()
+                return
+
+        # The following code covers case #1 and #2 (creation or deletion of local assets)
         phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
 
         total_distribution_area = phase_geoms.area
@@ -188,11 +217,6 @@ class PhaseZoneDistribution(models.Model):
 
             zone_distribution.zone_distribution_proportion = proportion
             zone_distribution.save()
-
-    @receiver([pre_delete], sender='asset_dashboard.LocalAsset')
-    def delete_zone_distribution(sender, instance, **kwargs):
-        PhaseZoneDistribution.objects.filter(phase=instance.phase).delete()
-        return
 
     @classmethod
     def calculate_zone_proportion(cls, distributions_by_zone, total_distribution_area):
