@@ -172,17 +172,14 @@ class PhaseZoneDistribution(models.Model):
     @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
     def save_zone_distribution(sender, instance, **kwargs):
         """
-            This signal needs to handle these cases:
+            This signal can be called whenever a local asset is created or deleted,
+            or when a phase is deleted. It needs to handle these cases:
 
             1. Calculate the distribution whenever a new local asset is saved,
                based on all of the phase's existing assets + the new one.
             2. Recalculate the distribution whenever a local asset is deleted,
-               but only if there will be existing assets in the phase (hence the signal
-               being called on both post_save and post_delete, rather than separating them).
+               but only if there will be existing assets in the phase.
             3. Delete all of the zone distributions when the phase is deleted.
-
-            It can be called whenever a local asset is created or deleted, or when a phase is deleted.
-            There's no way to determine whether the signal is called because a phase is deleted.
         """
 
         if kwargs['signal'] == post_delete:
