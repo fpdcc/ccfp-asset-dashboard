@@ -1,5 +1,7 @@
 import json
 import pytest
+from django.db import IntegrityError
+
 from asset_dashboard.models import ScoreWeights, Portfolio, PortfolioPhase, \
     LocalAsset, SenateDistrict, Phase, PhaseZoneDistribution, FundingStream
 
@@ -34,7 +36,7 @@ def test_project_score_total_method(project, score_weights):
     for index, score_field_name in enumerate(updated_scores):
         weight_field_value = getattr(score_weights, score_field_name)
         weights_sum += weight_field_value
-        
+
         score_field_value = getattr(project_score_instance, score_field_name)
         total_score += score_field_value * weight_field_value
 
@@ -114,36 +116,56 @@ def test_local_asset_signal(project, districts, trails_geojson, socio_economic_z
         )
 
         assert asset.phase.project.senate_districts.all()[0] in senate_districts
-    
+
 @pytest.mark.django_db(databases=['default', 'fp_postgis'])
-def test_phase_zone_distribution_signal(project, zones, signs_geojson, trails_geojson, socio_economic_zones):
+def test_phase_zone_distribution_post_save_signal(
+    project, zones, signs_geojson, trails_geojson, socio_economic_zones
+):
     prj = project.build()
     phase = Phase.objects.filter(project=prj)[0]
-    
+
     for feature in signs_geojson['features']:
         asset = LocalAsset.objects.create(
-            phase=phase,
-            geom=json.dumps(feature['geometry'])
+            phase=phase, geom=json.dumps(feature['geometry'])
         )
-    
-    phase_zone_distributions = PhaseZoneDistribution.objects.filter(phase=phase)
-    assert sum([dist.zone_distribution_proportion for dist in phase_zone_distributions]) == 1.0
 
-    zone_with_all_geos = list(filter(lambda d: d.zone_distribution_proportion > 0, phase_zone_distributions))
+    phase.refresh_from_db()
+
+    phase_zone_distributions = PhaseZoneDistribution.objects.filter(phase=phase)
+    assert (
+        sum([dist.zone_distribution_proportion for dist in phase_zone_distributions])
+        == 1.0
+    )
+
+    zone_with_all_geos = list(
+        filter(lambda d: d.zone_distribution_proportion > 0, phase_zone_distributions)
+    )
     assert len(zone_with_all_geos) == 1
-    
+
     # Add some more assets, which should change the distribution.
     for feature in trails_geojson['features']:
         asset = LocalAsset.objects.create(
-            phase=phase,
-            geom=json.dumps(feature['geometry'])
+            phase=phase, geom=json.dumps(feature['geometry'])
         )
 
     # Query the new distributions. They should've changed when the new assets were created.
     phase_zone_distributions_reload = PhaseZoneDistribution.objects.filter(phase=phase)
-    zones_with_geos = list(filter(lambda d: d.zone_distribution_proportion > 0, phase_zone_distributions_reload))
+    zones_with_geos = list(
+        filter(
+            lambda d: d.zone_distribution_proportion > 0,
+            phase_zone_distributions_reload,
+        )
+    )
     assert len(zones_with_geos) > 1
-    assert sum([round(dist.zone_distribution_proportion) for dist in phase_zone_distributions_reload]) == 1.0
+    assert (
+        sum(
+            [
+                round(dist.zone_distribution_proportion)
+                for dist in phase_zone_distributions_reload
+            ]
+        )
+        == 1.0
+    )
 
     # Add an estimated cost to the phase so we can test the total cost by zone.
     funding_stream = FundingStream.objects.create(
@@ -158,14 +180,40 @@ def test_phase_zone_distribution_signal(project, zones, signs_geojson, trails_ge
         cost = phase.cost_by_zone.get(distribution.zone.name)
         assert cost == 250000 * distribution.zone_distribution_proportion
 
-
     # Test delete signal
     assets = LocalAsset.objects.filter(phase=phase)
     for asset in assets:
         asset.delete()
-    
+
+    phase.refresh_from_db()
     phase_zone_distributions = PhaseZoneDistribution.objects.filter(phase=phase)
+    assets = LocalAsset.objects.filter(phase=phase)
     for zone_dist in phase_zone_distributions:
         assert zone_dist.zone_distribution_proportion == 0.0
 
-        
+
+@pytest.mark.django_db(databases=['default', 'fp_postgis'])
+def test_phase_zone_distribution_delete_phase(
+    project, assets, phase_funding, zones
+):
+    prj = project.build()
+    phase = Phase.objects.filter(project=prj)[0]
+    assets.build(phase=phase)
+    phase_funding.build(phase=phase)
+
+    # Get a record of these, because we'll test their existence after the phase is deleted
+    distributions = PhaseZoneDistribution.objects.filter(phase=phase)
+
+    for phase in prj.phases.all():
+        phase.delete()
+
+    prj.refresh_from_db()
+    phases = prj.phases.all()
+    assert len(phases) == 0
+
+    for distribution in distributions:
+        # try to get the distribution with the key. it should not exist
+        with pytest.raises(IntegrityError):
+            PhaseZoneDistribution.objects.get(pk=distribution.pk)
+
+

@@ -144,6 +144,31 @@ def project(section_owner, project_category):
 
 
 @pytest.fixture
+def assets(trails_geojson, signs_geojson, socio_economic_zones):
+    class AssetsFactory:
+        def build(self, phase, **kwargs):
+            for feature in trails_geojson['features']:
+                asset = models.LocalAsset.objects.create(
+                    phase=phase, geom=json.dumps(feature['geometry'])
+                )
+
+            for feature in signs_geojson['features']:
+                asset = models.LocalAsset.objects.create(
+                    phase=phase, geom=json.dumps(feature['geometry'])
+                )
+
+    return AssetsFactory()
+
+
+@pytest.fixture
+def phase_funding():
+    class PhaseFundingFactory:
+        def build(self, phase, **kwargs):
+            return models.FundingStream.objects.create(phase=phase, **kwargs)
+
+    return PhaseFundingFactory()
+
+@pytest.fixture
 def project_list():
     """
     Creates and returns a QuerySet of all projects.
@@ -203,7 +228,7 @@ def districts():
 def zones():
     with open(f'{os.path.dirname(os.path.abspath(__file__))}/geojson/zones.geojson') as f:
         geojson = json.load(f)
-    
+
     for zone in geojson['features']:
         models.Zone.objects.create(
             name=zone['properties']['zone'],
@@ -231,7 +256,7 @@ def nature_preserves():
 def socio_economic_zones():
     with open(f'{os.path.dirname(os.path.abspath(__file__))}/geojson/socio_economic_zone.geojson') as f:
         zone = json.load(f)
-    
+
     geo_feature = zone['features'][0]
 
     return models.SocioEconomicZones.objects.create(

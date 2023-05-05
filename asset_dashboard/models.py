@@ -171,6 +171,32 @@ class PhaseZoneDistribution(models.Model):
 
     @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
     def save_zone_distribution(sender, instance, **kwargs):
+        """
+            This signal can be called whenever a local asset is created or deleted,
+            or when a phase is deleted. It needs to handle these cases:
+
+            1. Calculate the distribution whenever a new local asset is saved,
+               based on all of the phase's existing assets + the new one.
+            2. Recalculate the distribution whenever a local asset is deleted,
+               but only if there will be existing assets in the phase.
+            3. Delete all of the zone distributions when the phase is deleted.
+        """
+
+        if kwargs['signal'] == post_delete:
+            assets = LocalAsset.objects.filter(phase=instance.phase)
+
+            if assets.count() == 1 or assets.count() == 0:
+                # This is the last asset for the phase (case #3).
+                #
+                # Go ahead and delete the PhaseZoneDistributions in case all of the assets
+                # for a phase are deleted, but not the Phase.
+                #
+                # This also prevents an IntegrityError that happens in the deletion of the Phase,
+                # when the last asset is deleted.
+                PhaseZoneDistribution.objects.filter(phase=instance.phase).delete()
+                return
+
+        # The following code covers case #1 and #2 (creation or deletion of local assets)
         phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
 
         total_distribution_area = phase_geoms.area
@@ -178,14 +204,12 @@ class PhaseZoneDistribution(models.Model):
         distributions_by_zone = LocalAsset.get_distribution_by_zone(phase_geoms)
 
         zone_proportions = PhaseZoneDistribution.calculate_zone_proportion(
-            distributions_by_zone,
-            total_distribution_area
+            distributions_by_zone, total_distribution_area
         )
 
         for zone, proportion in zone_proportions.items():
             zone_distribution, _ = PhaseZoneDistribution.objects.get_or_create(
-                phase=instance.phase,
-                zone=zone
+                phase=instance.phase, zone=zone
             )
 
             zone_distribution.zone_distribution_proportion = proportion
