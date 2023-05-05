@@ -1,5 +1,7 @@
 import json
 import pytest
+from django.db import IntegrityError
+
 from asset_dashboard.models import ScoreWeights, Portfolio, PortfolioPhase, \
     LocalAsset, SenateDistrict, Phase, PhaseZoneDistribution, FundingStream
 
@@ -184,17 +186,14 @@ def test_phase_zone_distribution_post_save_signal(
         asset.delete()
 
     phase.refresh_from_db()
-    print(phase.__dict__)
     phase_zone_distributions = PhaseZoneDistribution.objects.filter(phase=phase)
-    print(phase_zone_distributions.__dict__)
     assets = LocalAsset.objects.filter(phase=phase)
-    print(assets)
     for zone_dist in phase_zone_distributions:
         assert zone_dist.zone_distribution_proportion == 0.0
 
 
 @pytest.mark.django_db(databases=['default', 'fp_postgis'])
-def test_phase_zone_distribution_pre_delete_signal(
+def test_phase_zone_distribution_delete_phase(
     project, assets, phase_funding, zones
 ):
     prj = project.build()
@@ -202,9 +201,19 @@ def test_phase_zone_distribution_pre_delete_signal(
     assets.build(phase=phase)
     phase_funding.build(phase=phase)
 
+    # Get a record of these, because we'll test their existence after the phase is deleted
+    distributions = PhaseZoneDistribution.objects.filter(phase=phase)
+
     for phase in prj.phases.all():
         phase.delete()
 
     prj.refresh_from_db()
     phases = prj.phases.all()
     assert len(phases) == 0
+
+    for distribution in distributions:
+        # try to get the distribution with the key. it should not exist
+        with pytest.raises(IntegrityError):
+            PhaseZoneDistribution.objects.get(pk=distribution.pk)
+
+
