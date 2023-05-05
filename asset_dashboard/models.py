@@ -427,7 +427,7 @@ class ProjectScore(models.Model):
         if total_phase_geoms.area == 0.0:
             disinvested_proportion = 0
         else:
-            disinvested_areas = SocioEconomicZones.objects.get(displaygro='Both')
+            disinvested_areas = SocioEconomicZones.objects.filter(displaygro='Both').first()
 
             buffer = 0.00001
             phase_assets = LocalAsset.objects.filter(phase=instance.phase)
