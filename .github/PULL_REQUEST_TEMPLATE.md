@@ -20,7 +20,7 @@ to your review app after it initializes:
 
 ```bash
 # From your local command line
-heroku addons:attach -a ${REVIEW_APP} quotaguardstatic
+heroku addons:attach -a ${REVIEW_APP} quotaguardstatic-concave-84177
 ```
 
 * How to test this PR
