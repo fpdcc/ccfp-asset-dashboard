@@ -27,7 +27,12 @@ export default function PromotePhaseForm({ phases, currentPhase, setAjaxMessage 
         <select className='form-control col' value={selectedPhase} onChange={(e) => onPhaseChange(e.target.value)}>
           {
             phases.map(phase => {
-              const phaseName = `${phase.phase_type} - ${phase.estimated_bid_quarter} - ${phase.year} - ${phase.status}`
+              let phaseName = ''
+              if (phase.estimated_bid_quarter) {
+                phaseName = `${phase.phase_type} - ${phase.estimated_bid_quarter} - ${phase.year} - ${phase.status}`
+              } else {
+                phaseName = `${phase.phase_type} - ${phase.year} - ${phase.status}`
+              }
               return (
                 <option value={phase.id} key={phase.id}>{phaseName}</option>
               )

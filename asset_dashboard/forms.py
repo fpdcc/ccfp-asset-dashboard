@@ -100,3 +100,6 @@ class PhaseForm(StyledFormMixin, ModelForm):
 
         for field_name, field in self.fields.items():
             field.widget.attrs['required'] = True
+
+            if field_name == 'estimated_bid_quarter':
+                field.widget.attrs['required'] = False

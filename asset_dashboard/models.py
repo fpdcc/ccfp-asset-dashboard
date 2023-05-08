@@ -330,7 +330,11 @@ class Phase(SequencedModel):
         return str(self)
 
     def __str__(self):
-        return f'{self.phase_type} - {self.estimated_bid_quarter} - {self.year} -  {self.status}'
+        if self.estimated_bid_quarter:
+            return f'{self.phase_type} - {self.estimated_bid_quarter} - {self.year} -  {self.status}'
+        
+        # If there is no bid quarter, omit it from the name
+        return f'{self.phase_type} - {self.year} -  {self.status}'
 
 
 class ScoreField(models.IntegerField):
