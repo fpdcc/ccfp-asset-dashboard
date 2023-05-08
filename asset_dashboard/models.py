@@ -12,7 +12,6 @@ from djmoney.models.fields import MoneyField
 
 
 class SequencedModel(models.Model):
-
     class Meta:
         abstract = True
 
@@ -20,36 +19,36 @@ class SequencedModel(models.Model):
 
     @property
     def sequenced_instances(self):
-        '''
+        """
         Queryset of instances belonging to the same sequence.
-        '''
+        """
         raise NotImplementedError(
             'Property "sequenced_instances" must be defined on subclass'
         )
 
     @property
     def relative_position(self):
-        '''
+        """
         The zero-index position of a given sequenced instance, in a list of all
         sequenced instances. Order incoming instances without a specified
         sequence last.
-        '''
+        """
         if self.sequence is not None:
             return self.sequence - 1
         else:
-            return self.sequenced_instances.aggregate(Max('sequence'))['sequence__max']
+            return self.sequenced_instances.aggregate(Max("sequence"))["sequence__max"]
 
     def save(self, *args, **kwargs):
-        '''
+        """
         Given a new sequenced instance, update sequence across all instances to
         account for arbitrary sequencing of new instance.
 
         For example, if we have two (instance, sequence) pairs (A, 1) and (B, 2),
         and we insert a new pair (C, 2), insert C with a sequence of 2 and update
         B to have a sequence of 3.
-        '''
+        """
         if self.sequenced_instances.exists():
-            instances = list(self.sequenced_instances.order_by('sequence'))
+            instances = list(self.sequenced_instances.order_by("sequence"))
             instances.insert(self.relative_position, self)
 
             for_update = []
@@ -64,7 +63,7 @@ class SequencedModel(models.Model):
 
             # Update the sequence of all changed instances. N.b., bulk_update()
             # does not call the save() method of updated instances.
-            type(self).objects.bulk_update(for_update, ['sequence'])
+            type(self).objects.bulk_update(for_update, ["sequence"])
 
         else:
             # If there are no other sequenced instances, default to 1
@@ -81,12 +80,10 @@ class Section(models.Model):
 
 class Staff(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    section = models.ForeignKey(Section,
-                                null=True,
-                                on_delete=models.SET_NULL)
+    section = models.ForeignKey(Section, null=True, on_delete=models.SET_NULL)
 
     class Meta:
-        verbose_name_plural = 'Staff'
+        verbose_name_plural = "Staff"
 
 
 class Portfolio(models.Model):
@@ -99,8 +96,12 @@ class Portfolio(models.Model):
 
 class PortfolioPhase(SequencedModel):
 
-    portfolio = models.ForeignKey('Portfolio', related_name='phases', on_delete=models.CASCADE)
-    phase = models.ForeignKey('Phase', related_name='portfolios', on_delete=models.CASCADE)
+    portfolio = models.ForeignKey(
+        "Portfolio", related_name="phases", on_delete=models.CASCADE
+    )
+    phase = models.ForeignKey(
+        "Phase", related_name="portfolios", on_delete=models.CASCADE
+    )
 
     @property
     def sequenced_instances(self):
@@ -111,26 +112,24 @@ class Project(models.Model):
 
     name = models.TextField()
     description = models.TextField()
-    category = models.ForeignKey('ProjectCategory',
-                                 null=True,
-                                 on_delete=models.SET_NULL)
-    section_owner = models.ForeignKey(Section,
-                                      null=True,
-                                      on_delete=models.SET_NULL)
+    category = models.ForeignKey(
+        "ProjectCategory", null=True, on_delete=models.SET_NULL
+    )
+    section_owner = models.ForeignKey(Section, null=True, on_delete=models.SET_NULL)
 
-    house_districts = models.ManyToManyField('HouseDistrict', blank=True)
-    senate_districts = models.ManyToManyField('SenateDistrict', blank=True)
-    commissioner_districts = models.ManyToManyField('CommissionerDistrict', blank=True)
-    zones = models.ManyToManyField('Zone', blank=True)
+    house_districts = models.ManyToManyField("HouseDistrict", blank=True)
+    senate_districts = models.ManyToManyField("SenateDistrict", blank=True)
+    commissioner_districts = models.ManyToManyField("CommissionerDistrict", blank=True)
+    zones = models.ManyToManyField("Zone", blank=True)
 
     project_manager = models.CharField(max_length=100, null=True, blank=True)
 
     countywide = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name or ''
+        return self.name or ""
 
-    @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
+    @receiver([post_save, post_delete], sender="asset_dashboard.LocalAsset")
     def save_zones_and_districts(sender, instance, **kwargs):
         phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
         instance.phase.project.update_project_zones(instance, phase_geoms)
@@ -148,9 +147,9 @@ class Project(models.Model):
 
     def update_project_districts(self, instance, phase_geoms):
         district_models = [
-            ('commissioner_districts', CommissionerDistrict),
-            ('senate_districts', SenateDistrict),
-            ('house_districts', HouseDistrict)
+            ("commissioner_districts", CommissionerDistrict),
+            ("senate_districts", SenateDistrict),
+            ("house_districts", HouseDistrict),
         ]
 
         for attribute, model in district_models:
@@ -165,24 +164,24 @@ class Project(models.Model):
 
 
 class PhaseZoneDistribution(models.Model):
-    phase = models.ForeignKey('Phase', on_delete=models.CASCADE, related_name='phase')
-    zone = models.ForeignKey('Zone', on_delete=models.CASCADE, related_name='zone')
+    phase = models.ForeignKey("Phase", on_delete=models.CASCADE, related_name="phase")
+    zone = models.ForeignKey("Zone", on_delete=models.CASCADE, related_name="zone")
     zone_distribution_proportion = models.FloatField(null=True, blank=True)
 
-    @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
+    @receiver([post_save, post_delete], sender="asset_dashboard.LocalAsset")
     def save_zone_distribution(sender, instance, **kwargs):
         """
-            This signal can be called whenever a local asset is created or deleted,
-            or when a phase is deleted. It needs to handle these cases:
+        This signal can be called whenever a local asset is created or deleted,
+        or when a phase is deleted. It needs to handle these cases:
 
-            1. Calculate the distribution whenever a new local asset is saved,
-               based on all of the phase's existing assets + the new one.
-            2. Recalculate the distribution whenever a local asset is deleted,
-               but only if there will be existing assets in the phase.
-            3. Delete all of the zone distributions when the phase is deleted.
+        1. Calculate the distribution whenever a new local asset is saved,
+           based on all of the phase's existing assets + the new one.
+        2. Recalculate the distribution whenever a local asset is deleted,
+           but only if there will be existing assets in the phase.
+        3. Delete all of the zone distributions when the phase is deleted.
         """
 
-        if kwargs['signal'] == post_delete:
+        if kwargs["signal"] == post_delete:
             assets = LocalAsset.objects.filter(phase=instance.phase)
 
             if assets.count() == 1 or assets.count() == 0:
@@ -235,50 +234,54 @@ class Phase(SequencedModel):
     """
 
     PHASE_TYPE_CHOICES = [
-        ('planning_feasibility', 'Planning/Feasibility'),
-        ('preliminary_engineering', 'Preliminary Engineering'),
-        ('design_engineering', 'Design Engineering'),
-        ('construction', 'Construction'),
-        ('construction_engineering', 'Construction Engineering'),
-        ('maintenance_repair', 'Maintenance/Repair'),
+        ("planning_feasibility", "Planning/Feasibility"),
+        ("preliminary_engineering", "Preliminary Engineering"),
+        ("design_engineering", "Design Engineering"),
+        ("construction", "Construction"),
+        ("construction_engineering", "Construction Engineering"),
+        ("maintenance_repair", "Maintenance/Repair"),
     ]
 
-    BID_QUARTER_CHOICES = [
-        ('Q1', 'Q1'),
-        ('Q2', 'Q2'),
-        ('Q3', 'Q3'),
-        ('Q4', 'Q4')
-    ]
+    BID_QUARTER_CHOICES = [("Q1", "Q1"), ("Q2", "Q2"), ("Q3", "Q3"), ("Q4", "Q4")]
 
     STATUS_CHOICES = [
-        ('new', 'New'),
-        ('ongoing', 'Ongoing'),
-        ('complete', 'Complete'),
+        ("new", "New"),
+        ("ongoing", "Ongoing"),
+        ("complete", "Complete"),
     ]
 
-    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='phases')
+    project = models.ForeignKey(
+        "Project", on_delete=models.CASCADE, related_name="phases"
+    )
     phase_type = models.TextField(choices=PHASE_TYPE_CHOICES, null=True, blank=True)
-    estimated_bid_quarter = models.TextField(choices=BID_QUARTER_CHOICES, null=True, blank=True)
-    status = models.TextField(choices=STATUS_CHOICES, default='new')
+    estimated_bid_quarter = models.TextField(
+        choices=BID_QUARTER_CHOICES, null=True, blank=True
+    )
+    status = models.TextField(choices=STATUS_CHOICES, default="new")
 
-    funding_streams = models.ManyToManyField('FundingStream')
+    funding_streams = models.ManyToManyField("FundingStream")
 
     year = models.IntegerField(null=True, blank=True)
 
     @property
     def total_budget(self):
-        total = self.funding_streams.all().values(
-            'budget'
-        ).aggregate(Sum('budget'))['budget__sum']
+        total = (
+            self.funding_streams.all()
+            .values("budget")
+            .aggregate(Sum("budget"))["budget__sum"]
+        )
 
         return total if total else 0
 
     @property
     def total_funded_amount(self):
         # Only total where funding_secured = True
-        total = self.funding_streams.all().values(
-            'budget', 'funding_secured'
-        ).filter(funding_secured=True).aggregate(Sum('budget'))['budget__sum']
+        total = (
+            self.funding_streams.all()
+            .values("budget", "funding_secured")
+            .filter(funding_secured=True)
+            .aggregate(Sum("budget"))["budget__sum"]
+        )
 
         return total if total else 0
 
@@ -286,12 +289,16 @@ class Phase(SequencedModel):
     def funded_amount_by_year(self):
         total_by_year = {}
 
-        funded_sources = self.funding_streams.all().values(
-            'budget', 'funding_secured', 'year'
-        ).filter(funding_secured=True)
+        funded_sources = (
+            self.funding_streams.all()
+            .values("budget", "funding_secured", "year")
+            .filter(funding_secured=True)
+        )
 
         for source in funded_sources:
-            total_by_year[source['year']] = total_by_year.get(source['year'], 0) + source['budget']
+            total_by_year[source["year"]] = (
+                total_by_year.get(source["year"], 0) + source["budget"]
+            )
 
         return total_by_year
 
@@ -316,7 +323,8 @@ class Phase(SequencedModel):
         for distribution in zone_distributions:
             zone_name = distribution.zone.name
             funded_by_zone[zone_name] = (
-                float(self.total_funded_amount) * distribution.zone_distribution_proportion
+                float(self.total_funded_amount)
+                * distribution.zone_distribution_proportion
             )
 
         return funded_by_zone
@@ -330,18 +338,22 @@ class Phase(SequencedModel):
         return str(self)
 
     def __str__(self):
-        return f'{self.phase_type} - {self.estimated_bid_quarter} - {self.year} -  {self.status}'
+        if self.estimated_bid_quarter:
+            return f"{self.phase_type} - {self.estimated_bid_quarter} - {self.year} -  {self.status}"
+
+        # If there is no bid quarter, omit it from the name
+        return f"{self.phase_type} - {self.year} -  {self.status}"
 
 
 class ScoreField(models.IntegerField):
     def __init__(self, *args, **kwargs):
 
-        if 'null' not in kwargs:
-            kwargs['null'] = True
-        if 'blank' not in kwargs:
-            kwargs['blank'] = True
-        if 'validators' not in kwargs:
-            kwargs['validators'] = [MinValueValidator(1), MaxValueValidator(5)]
+        if "null" not in kwargs:
+            kwargs["null"] = True
+        if "blank" not in kwargs:
+            kwargs["blank"] = True
+        if "validators" not in kwargs:
+            kwargs["validators"] = [MinValueValidator(1), MaxValueValidator(5)]
 
         super().__init__(*args, **kwargs)
 
@@ -362,7 +374,7 @@ class ProjectScore(models.Model):
 
         # there should be one, and only one row in score weights.
         # this tuple unpacking will throw an error if that's not so
-        score_weights, = ScoreWeights.objects.all()
+        (score_weights,) = ScoreWeights.objects.all()
         total_score = 0
         weights_sum = 0
 
@@ -379,7 +391,7 @@ class ProjectScore(models.Model):
 
         return total_score / weights_sum
 
-    @receiver([post_save], sender='asset_dashboard.Project')
+    @receiver([post_save], sender="asset_dashboard.Project")
     def update_countywide_score(sender, instance, **kwargs):
         if instance.countywide:
             score = ProjectScore.objects.get(project=instance)
@@ -387,7 +399,7 @@ class ProjectScore(models.Model):
             score.social_equity_score = 5
             score.save()
 
-    @receiver([post_save, post_delete], sender='asset_dashboard.LocalAsset')
+    @receiver([post_save, post_delete], sender="asset_dashboard.LocalAsset")
     def save_project_scores(sender, instance, **kwargs):
         phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
 
@@ -396,8 +408,7 @@ class ProjectScore(models.Model):
         distributions_by_zone = LocalAsset.get_distribution_by_zone(phase_geoms)
 
         zone_proportions = PhaseZoneDistribution.calculate_zone_proportion(
-            distributions_by_zone,
-            total_distribution_area
+            distributions_by_zone, total_distribution_area
         )
 
         ProjectScore.save_geographic_distance_scores(zone_proportions, instance)
@@ -405,9 +416,7 @@ class ProjectScore(models.Model):
 
     @classmethod
     def save_geographic_distance_scores(cls, zone_proportions, instance):
-        project_score, _ = cls.objects.get_or_create(
-            project=instance.phase.project
-        )
+        project_score, _ = cls.objects.get_or_create(project=instance.phase.project)
 
         zone_score = 0
 
@@ -420,19 +429,21 @@ class ProjectScore(models.Model):
 
     @classmethod
     def save_social_equity_score(cls, total_phase_geoms, instance):
-        project_score, _ = cls.objects.get_or_create(
-            project=instance.phase.project
-        )
+        project_score, _ = cls.objects.get_or_create(project=instance.phase.project)
 
         if total_phase_geoms.area == 0.0:
             disinvested_proportion = 0
         else:
-            disinvested_areas = SocioEconomicZones.objects.filter(displaygro='Both').first()
+            disinvested_areas = SocioEconomicZones.objects.filter(
+                displaygro="Both"
+            ).first()
 
             buffer = 0.00001
             phase_assets = LocalAsset.objects.filter(phase=instance.phase)
             phase_polygons = LocalAsset.aggregate_polygons(phase_assets, buffer=buffer)
-            phase_linestrings = LocalAsset.aggregate_linestrings(phase_assets, buffer=buffer)
+            phase_linestrings = LocalAsset.aggregate_linestrings(
+                phase_assets, buffer=buffer
+            )
             phase_points = LocalAsset.aggregate_points(phase_assets, buffer=buffer)
 
             disinvested_area = 0
@@ -451,37 +462,40 @@ class ProjectScore(models.Model):
         return self.project.name
 
     class Meta:
-        verbose_name_plural = 'Project Scores'
+        verbose_name_plural = "Project Scores"
 
 
 class FundingStream(models.Model):
     SOURCE_TYPE_CHOICES = [
-        ('capital_improvement_fund', 'Capital Improvement Fund'),
-        ('bonds', 'General Obligation Bonds'),
-        ('construction_development', 'Construction & Development'),
-        ('grants_fees_other', 'Grants, Fees, & Other'),
-        ('rollover', 'Rollover')
+        ("capital_improvement_fund", "Capital Improvement Fund"),
+        ("bonds", "General Obligation Bonds"),
+        ("construction_development", "Construction & Development"),
+        ("grants_fees_other", "Grants, Fees, & Other"),
+        ("rollover", "Rollover"),
     ]
 
-    budget = MoneyField(default_currency='USD',
-                        default=0,
-                        decimal_places=0,
-                        max_digits=11)
+    budget = MoneyField(
+        default_currency="USD", default=0, decimal_places=0, max_digits=11
+    )
     year = models.IntegerField(null=True, blank=True)
     funding_secured = models.BooleanField(default=False)
-    source_type = models.TextField(choices=SOURCE_TYPE_CHOICES, default='capital_improvement_fund')
-    actual_cost = MoneyField(default_currency='USD',
-                             default=0,
-                             decimal_places=0,
-                             max_digits=11,
-                             blank=True,
-                             null=True)
+    source_type = models.TextField(
+        choices=SOURCE_TYPE_CHOICES, default="capital_improvement_fund"
+    )
+    actual_cost = MoneyField(
+        default_currency="USD",
+        default=0,
+        decimal_places=0,
+        max_digits=11,
+        blank=True,
+        null=True,
+    )
 
     def __str__(self):
-        return f'{self.budget} - {self.source_type} - {self.year}'
+        return f"{self.budget} - {self.source_type} - {self.year}"
 
     class Meta:
-        verbose_name_plural = 'Phase Funding Stream'
+        verbose_name_plural = "Phase Funding Stream"
 
 
 class LocalAsset(models.Model):
@@ -489,7 +503,7 @@ class LocalAsset(models.Model):
     We save a local copy of a geo asset with this model.
     """
 
-    phase = models.ForeignKey('Phase', on_delete=models.CASCADE)
+    phase = models.ForeignKey("Phase", on_delete=models.CASCADE)
 
     geom = models.GeometryField(srid=3435)
 
@@ -516,11 +530,7 @@ class LocalAsset(models.Model):
         phase_linestrings = LocalAsset.aggregate_linestrings(phase_assets)
         phase_points = LocalAsset.aggregate_points(phase_assets)
 
-        geoms = (
-            phase_polygons,
-            phase_linestrings,
-            phase_points
-        )
+        geoms = (phase_polygons, phase_linestrings, phase_points)
 
         # filter out None
         filtered_geoms = tuple([geom for geom in filter(None, geoms)])
@@ -529,10 +539,14 @@ class LocalAsset(models.Model):
 
     @classmethod
     def aggregate_polygons(cls, qs: QuerySet, buffer=None) -> Union[GEOSGeometry, None]:
-        assets = qs.extra(where=["""
+        assets = qs.extra(
+            where=[
+                """
                                     geometrytype(geom) LIKE 'POLYGON'
                                         OR geometrytype(geom) LIKE 'MULTIPOLYGON'
-                                 """]).aggregate(models.Union('geom'))['geom__union']
+                                 """
+            ]
+        ).aggregate(models.Union("geom"))["geom__union"]
 
         if assets:
             if buffer:
@@ -542,15 +556,20 @@ class LocalAsset(models.Model):
         return None
 
     @classmethod
-    def aggregate_linestrings(cls, qs: QuerySet, buffer=None) -> Union[GEOSGeometry, None]:
+    def aggregate_linestrings(
+        cls, qs: QuerySet, buffer=None
+    ) -> Union[GEOSGeometry, None]:
         if buffer is None:
             buffer = settings.GEOM_BUFFER
 
         assets = qs.extra(
-            where=["""
+            where=[
+                """
                     geometrytype(geom) LIKE 'LINESTRING'
                         OR geometrytype(geom) LIKE 'MULTILINESTRING'
-                   """]).aggregate(models.Union('geom'))['geom__union']
+                   """
+            ]
+        ).aggregate(models.Union("geom"))["geom__union"]
 
         if assets:
             # Return a buffered geometry so we can use the area of the buffer.
@@ -566,9 +585,13 @@ class LocalAsset(models.Model):
         if buffer is None:
             buffer = settings.GEOM_BUFFER
 
-        assets = qs.extra(where=["""
+        assets = qs.extra(
+            where=[
+                """
                                     geometrytype(geom) LIKE 'POINT'
-                                 """]).aggregate(models.Union('geom'))['geom__union']
+                                 """
+            ]
+        ).aggregate(models.Union("geom"))["geom__union"]
 
         if assets:
             return assets.buffer(settings.GEOM_BUFFER)
@@ -583,7 +606,7 @@ class ProjectCategory(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = 'Project Categories'
+        verbose_name_plural = "Project Categories"
 
 
 class HouseDistrict(models.Model):
@@ -594,7 +617,7 @@ class HouseDistrict(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = 'House Districts'
+        verbose_name_plural = "House Districts"
 
 
 class SenateDistrict(models.Model):
@@ -605,7 +628,7 @@ class SenateDistrict(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = 'Senate Districts'
+        verbose_name_plural = "Senate Districts"
 
 
 class CommissionerDistrict(models.Model):
@@ -616,7 +639,7 @@ class CommissionerDistrict(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = 'Commissioner Districts'
+        verbose_name_plural = "Commissioner Districts"
 
 
 class Zone(models.Model):
@@ -629,38 +652,39 @@ class Zone(models.Model):
 
 class ScoreWeights(models.Model):
 
-    core_mission_score = models.FloatField(default=1.0,
-                                           validators=[MinValueValidator(0.0),
-                                                       MaxValueValidator(1.0)])
-    operations_impact_score = models.FloatField(default=1.0,
-                                                validators=[MinValueValidator(0.0),
-                                                            MaxValueValidator(1.0)])
-    sustainability_score = models.FloatField(default=1.0,
-                                             validators=[MinValueValidator(0.0),
-                                                         MaxValueValidator(1.0)])
-    ease_score = models.FloatField(default=1.0,
-                                   validators=[MinValueValidator(0.0),
-                                               MaxValueValidator(1.0)])
-    geographic_distance_score = models.FloatField(default=1.0,
-                                                  validators=[MinValueValidator(0.0),
-                                                              MaxValueValidator(1.0)])
-    social_equity_score = models.FloatField(default=1.0,
-                                            validators=[MinValueValidator(0.0),
-                                                        MaxValueValidator(1.0)])
+    core_mission_score = models.FloatField(
+        default=1.0, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)]
+    )
+    operations_impact_score = models.FloatField(
+        default=1.0, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)]
+    )
+    sustainability_score = models.FloatField(
+        default=1.0, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)]
+    )
+    ease_score = models.FloatField(
+        default=1.0, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)]
+    )
+    geographic_distance_score = models.FloatField(
+        default=1.0, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)]
+    )
+    social_equity_score = models.FloatField(
+        default=1.0, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)]
+    )
 
     class Meta:
-        verbose_name_plural = 'Score Weights'
+        verbose_name_plural = "Score Weights"
 
 
 class DummyProject(models.Model):
     """A Project model, based on the columns from ~/raw/simplified.csv. This is for testing."""
+
     name = models.CharField(max_length=100)
     project_description = models.CharField(max_length=1000)
     budget = models.IntegerField()
     zone = models.CharField(max_length=30)
 
     def __str__(self):
-        """"String for representing the model object"""
+        """ "String for representing the model object"""
         return self.name
 
 
@@ -679,7 +703,7 @@ class GISModel(models.Model):
     class Meta:
         abstract = True
         managed = False
-        app_label = 'asset_dashboard_gis'
+        app_label = "asset_dashboard_gis"
 
 
 class Buildings(GISModel):
@@ -689,18 +713,11 @@ class Buildings(GISModel):
         db_table = '"quercus"."buildings"'
 
     class Search:
-        or_fields = (
-            ('fpd_uid', int),
-            ('building_name', str),
-            ('complex', str)
-        )
+        or_fields = (("fpd_uid", int), ("building_name", str), ("complex", str))
 
-        and_fields = (
-            ('ownership', 'fpdcc'),
-            ('demolished', 'no')
-        )
+        and_fields = (("ownership", "fpdcc"), ("demolished", "no"))
 
-    id = models.AutoField(primary_key=True, db_column='buildings_id')
+    id = models.AutoField(primary_key=True, db_column="buildings_id")
     geom = models.PolygonField(srid=3435)
     building_number = models.CharField(max_length=10)
     building_comments = models.CharField(max_length=75)
@@ -749,7 +766,7 @@ class Holdings(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"quercus"."holdings"'
 
-    id = models.AutoField(primary_key=True, db_column='holdings_id')
+    id = models.AutoField(primary_key=True, db_column="holdings_id")
 
     geom = models.MultiPolygonField(srid=3435)
     pin14 = models.CharField(max_length=14)
@@ -832,7 +849,7 @@ class LicenseIGA(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"quercus"."license_iga"'
 
-    id = models.AutoField(primary_key=True, db_column='license_iga_id')
+    id = models.AutoField(primary_key=True, db_column="license_iga_id")
     geom = models.GeometryField(srid=3435, spatial_index=True)
 
     license_no = models.CharField(max_length=32)
@@ -856,7 +873,7 @@ class MowAreaDB(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"quercus"."mow_area_db"'
 
-    id = models.AutoField(primary_key=True, db_column='id')
+    id = models.AutoField(primary_key=True, db_column="id")
 
     geom = models.MultiPolygonField(srid=3435)
 
@@ -877,7 +894,7 @@ class MwrdFpdLease(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"quercus"."mwrd_fpd_lease"'
 
-    id = models.AutoField(primary_key=True, db_column='id')
+    id = models.AutoField(primary_key=True, db_column="id")
 
     geom = models.PolygonField(srid=3435, spatial_index=True)
 
@@ -895,10 +912,10 @@ class Names(GISModel):
         db_table = '"quercus"."names"'
 
         constraints = [
-            models.UniqueConstraint(fields=['name'], name='unique_nameid_constraint')
+            models.UniqueConstraint(fields=["name"], name="unique_nameid_constraint")
         ]
 
-    id = models.AutoField(primary_key=True, db_column='nameid')
+    id = models.AutoField(primary_key=True, db_column="nameid")
 
     name = models.CharField(max_length=100)
 
@@ -909,7 +926,7 @@ class NaturePreserves(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"quercus"."nature_preserves"'
 
-    id = models.AutoField(primary_key=True, db_column='nature_preserves_id')
+    id = models.AutoField(primary_key=True, db_column="nature_preserves_id")
 
     geom = models.MultiPolygonField(srid=3435, spatial_index=True)
 
@@ -936,7 +953,7 @@ class ParkingEntrance(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"quercus"."parking_entrance"'
 
-    id = models.AutoField(primary_key=True, db_column='parking_entrance_id')
+    id = models.AutoField(primary_key=True, db_column="parking_entrance_id")
     geom = models.PointField(srid=3435, spatial_index=True)
 
 
@@ -946,13 +963,11 @@ class ParkingEntranceInfo(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"quercus"."parking_entrance_info"'
 
-        indexes = [
-            models.Index(fields=['parking_entrance_id'])
-        ]
+        indexes = [models.Index(fields=["parking_entrance_id"])]
 
-    id = models.AutoField(primary_key=True, db_column='parking_info_id')
+    id = models.AutoField(primary_key=True, db_column="parking_info_id")
 
-    parking_entrance = models.ForeignKey('ParkingEntrance', on_delete=models.RESTRICT)
+    parking_entrance = models.ForeignKey("ParkingEntrance", on_delete=models.RESTRICT)
 
     multi_entrance = models.CharField(max_length=10)
     private_lot = models.CharField(max_length=10)
@@ -969,7 +984,7 @@ class ParkingEval17(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"quercus"."parking_eval17"'
 
-    id = models.AutoField(primary_key=True, db_column='parking_eval17_id')
+    id = models.AutoField(primary_key=True, db_column="parking_eval17_id")
 
     # In postgres, these are all "character varying" with no character limit.
     # I them all TextFields since max_length is required for CharField.
@@ -1019,10 +1034,11 @@ class ParkingEval17(GISModel):
 
 class ParkingLots(GISModel):
     """Parking lot polygons, for all public and non-public lots."""
+
     class Meta(GISModel.Meta):
         db_table = '"acer"."parking_lots_union_mv"'
 
-    id = models.AutoField(primary_key=True, db_column='lot_id')
+    id = models.AutoField(primary_key=True, db_column="lot_id")
     geom = models.PolygonField(srid=3435, spatial_index=True)
     name = models.CharField(max_length=100)
     lot_access = models.CharField(max_length=25)
@@ -1044,15 +1060,11 @@ class PicnicGroves(GISModel):
         db_table = '"quercus"."picnicgroves"'
 
     class Search:
-        or_fields = (
-            ('fpd_uid', int),
-            ('poi_info__nameid__name', str),
-            ('grove', int)
-        )
+        or_fields = (("fpd_uid", int), ("poi_info__nameid__name", str), ("grove", int))
 
-    id = models.AutoField(primary_key=True, db_column='picnicgrove_id')
+    id = models.AutoField(primary_key=True, db_column="picnicgrove_id")
 
-    poi_info = models.ForeignKey('PoiInfo', on_delete=models.SET_NULL)
+    poi_info = models.ForeignKey("PoiInfo", on_delete=models.SET_NULL)
 
     geom = models.PointField(srid=3435)
 
@@ -1077,12 +1089,10 @@ class PoiAmenity(GISModel):
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."poi_amenity"'
-        indexes = [
-            models.Index(fields=['poi_info_id'])
-        ]
+        indexes = [models.Index(fields=["poi_info_id"])]
 
-    id = models.AutoField(primary_key=True, db_column='poi_amenity_id')
-    poi_info = models.ForeignKey('PoiInfo', on_delete=models.CASCADE)
+    id = models.AutoField(primary_key=True, db_column="poi_amenity_id")
+    poi_info = models.ForeignKey("PoiInfo", on_delete=models.CASCADE)
 
     ada = models.IntegerField()
     bike_parking = models.IntegerField()
@@ -1153,16 +1163,14 @@ class PoiAmenity(GISModel):
 
 class PoiDesc(GISModel):
     """Table of POI description for a select group of POIs.
-     Mainly used for the webmap. Foreign Key reference poi_info.poi_info_id."""
+    Mainly used for the webmap. Foreign Key reference poi_info.poi_info_id."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."poi_desc"'
-        indexes = [
-            models.Index(fields=['poi_info_id'])
-        ]
+        indexes = [models.Index(fields=["poi_info_id"])]
 
-    id = models.AutoField(primary_key=True, db_column='poi_desc_id')
-    poi_info = models.ForeignKey('PoiInfo', on_delete=models.CASCADE)
+    id = models.AutoField(primary_key=True, db_column="poi_desc_id")
+    poi_info = models.ForeignKey("PoiInfo", on_delete=models.CASCADE)
 
     hours1 = models.CharField(max_length=150)
     hours2 = models.CharField(max_length=150)
@@ -1188,33 +1196,33 @@ class PoiDesc(GISModel):
 
 class PoiInfo(GISModel):
     """Main table to the point of interest (POI) containing
-     the main attributes for those points."""
+    the main attributes for those points."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."poi_info"'
         indexes = [
-            models.Index(fields=['nameid']),
-            models.Index(fields=['parking_connection_id']),
-            models.Index(fields=['parking_info_id']),
-            models.Index(fields=['pointsofinterest_id'])
+            models.Index(fields=["nameid"]),
+            models.Index(fields=["parking_connection_id"]),
+            models.Index(fields=["parking_info_id"]),
+            models.Index(fields=["pointsofinterest_id"]),
         ]
 
     class Search:
         or_fields = (
-            ('fpd_uid', int),
-            ('nameid__name', str),
+            ("fpd_uid", int),
+            ("nameid__name", str),
         )
 
-        and_fields = (
-            ('parking_info_id__isnull', False),
-        )
+        and_fields = (("parking_info_id__isnull", False),)
 
-    id = models.AutoField(primary_key=True, db_column='poi_info_id')
+    id = models.AutoField(primary_key=True, db_column="poi_info_id")
 
     parking_info = models.ForeignKey(ParkingEntranceInfo, on_delete=models.RESTRICT)
-    parking_connection = models.ForeignKey(ParkingEntranceInfo, on_delete=models.RESTRICT)
+    parking_connection = models.ForeignKey(
+        ParkingEntranceInfo, on_delete=models.RESTRICT
+    )
 
-    nameid = models.ForeignKey(Names, on_delete=models.RESTRICT, db_column='nameid')
+    nameid = models.ForeignKey(Names, on_delete=models.RESTRICT, db_column="nameid")
 
     point_type = models.CharField(max_length=50)
     addr = models.CharField(max_length=100)
@@ -1250,8 +1258,8 @@ class PoiToTrails(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"quercus"."poi_to_trails"'
         indexes = [
-            models.Index(fields=['poi_info_id']),
-            models.Index(fields=['trail_info_id'])
+            models.Index(fields=["poi_info_id"]),
+            models.Index(fields=["trail_info_id"]),
         ]
 
     # This table has no pk specified, but it is indexed by these fields.
@@ -1259,45 +1267,49 @@ class PoiToTrails(GISModel):
     # Otherwise, without a PK set, this model won't work.
     # See https://stackoverflow.com/a/28516276
     # and https://stackoverflow.com/q/55127195
-    poi_info = models.ForeignKey('PoiInfo', on_delete=models.DO_NOTHING, primary_key=True)
-    trail_info = models.ForeignKey('TrailsInfo', on_delete=models.DO_NOTHING, primary_key=True)
+    poi_info = models.ForeignKey(
+        "PoiInfo", on_delete=models.DO_NOTHING, primary_key=True
+    )
+    trail_info = models.ForeignKey(
+        "TrailsInfo", on_delete=models.DO_NOTHING, primary_key=True
+    )
     distance = models.FloatField()
 
 
 class PointsOfInterest(GISModel):
     """Geometry table to the points of interest.
-     Foreign Key Reference poi_info.poi_info_id."""
+    Foreign Key Reference poi_info.poi_info_id."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."pointsofinterest"'
 
-    id = models.AutoField(primary_key=True, db_column='pointsofinterest_id')
+    id = models.AutoField(primary_key=True, db_column="pointsofinterest_id")
     geom = models.PointField(srid=3435, spatial_index=True)
     web_map_geom = models.PointField(srid=4326)
-    poi_info = models.ForeignKey('PoiInfo', on_delete=models.CASCADE)
+    poi_info = models.ForeignKey("PoiInfo", on_delete=models.CASCADE)
 
 
 class Regions(GISModel):
     """This table has been moved to pinus.regoins.
-     Should be removed from quercus in the future."""
+    Should be removed from quercus in the future."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."regions"'
 
-    id = models.AutoField(primary_key=True, db_column='region_id')
+    id = models.AutoField(primary_key=True, db_column="region_id")
     region_number = models.IntegerField()
     geom = models.MultiPolygonField(srid=3435)
 
 
 class Signage(GISModel):
     """Point table of misc. features on FPDCC property.
-     Including; signs, markers, utilities, monuments,
-     manhole covers, culverts, bridges, etc."""
+    Including; signs, markers, utilities, monuments,
+    manhole covers, culverts, bridges, etc."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."signage"'
 
-    id = models.AutoField(primary_key=True, db_column='signage_id')
+    id = models.AutoField(primary_key=True, db_column="signage_id")
     geom = models.PointField(srid=3435, spatial_index=True)
 
     type = models.CharField(max_length=254)
@@ -1328,7 +1340,9 @@ class TrailSubsystemLu(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"quercus"."trail_subsystem_lu"'
 
-    trail_subsystem = models.CharField(primary_key=True, max_length=140, db_column='trail_subsystem')
+    trail_subsystem = models.CharField(
+        primary_key=True, max_length=140, db_column="trail_subsystem"
+    )
     trail_subsystem_id = models.IntegerField()
 
 
@@ -1350,9 +1364,9 @@ class TrailsAmenity(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"quercus"."trails_amenity"'
 
-    id = models.AutoField(primary_key=True, db_column='trails_amenities_id')
+    id = models.AutoField(primary_key=True, db_column="trails_amenities_id")
 
-    trail_info = models.ForeignKey('TrailsInfo', on_delete=models.DO_NOTHING)
+    trail_info = models.ForeignKey("TrailsInfo", on_delete=models.DO_NOTHING)
 
     # For the following group of fields, the type is
     # `quercus.bin_1_0_dom`, an integer that can only be 1 or 0.
@@ -1369,12 +1383,12 @@ class TrailsAmenity(GISModel):
 
 class TrailsDesc(GISModel):
     """Table of all amenities associated with a trail segment.
-     Foreign Key reference trail_info.trail_info_id."""
+    Foreign Key reference trail_info.trail_info_id."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."trails_desc"'
 
-    id = models.AutoField(primary_key=True, db_column='trail_desc_id')
+    id = models.AutoField(primary_key=True, db_column="trail_desc_id")
     trail_subsystem = models.CharField(max_length=100)
     alt_name = models.CharField(max_length=50)
     trail_desc = models.CharField(max_length=250)
@@ -1392,18 +1406,18 @@ class TrailsDesc(GISModel):
 
 class TrailsInfo(GISModel):
     """Table of trail descriptions for a select group of trails.
-     Mainly used for the webmap. Foreign Key reference trail_info.trail_info_id."""
+    Mainly used for the webmap. Foreign Key reference trail_info.trail_info_id."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."trails_info"'
 
     class Search:
         or_fields = (
-            ('trails', int),
-            ('trail_subsystem', str),
+            ("trails", int),
+            ("trail_subsystem", str),
         )
 
-    id = models.AutoField(primary_key=True, db_column='trail_info_id')
+    id = models.AutoField(primary_key=True, db_column="trail_info_id")
     trails = models.ForeignKey(Trails, on_delete=models.RESTRICT)
 
     trail_system = models.CharField(max_length=100)
@@ -1435,13 +1449,13 @@ class TrailsInfo(GISModel):
 
 class TrailsMaintenance(GISModel):
     """Table of attributes to identify maintenance responsibilities for trails
-     not only on FPDCC property but within the county trail system directly linked to the FPDCC.
-     Forgein Key reference trail_info.trail_info_id."""
+    not only on FPDCC property but within the county trail system directly linked to the FPDCC.
+    Forgein Key reference trail_info.trail_info_id."""
 
     class Meta(GISModel.Meta):
         db_table = '"quercus"."trails_maintenance"'
 
-    id = models.AutoField(primary_key=True, db_column='trails_maintenance_id')
+    id = models.AutoField(primary_key=True, db_column="trails_maintenance_id")
     poi_info = models.ForeignKey(TrailsInfo, on_delete=models.DO_NOTHING)
     iga_number = models.IntegerField()
     iga_doc = models.CharField(max_length=250)
@@ -1452,7 +1466,7 @@ class FPDCCZones(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"pinus"."zones"'
 
-    id = models.AutoField(primary_key=True, db_column='id')
+    id = models.AutoField(primary_key=True, db_column="id")
     zone = models.CharField(max_length=10)
     geom = models.MultiPolygonField(srid=3435)
     abbr = models.CharField(max_length=10)
@@ -1462,7 +1476,7 @@ class SocioEconomicZones(GISModel):
     class Meta(GISModel.Meta):
         db_table = '"pinus"."cmap_cook_econ_disadvantaged_areas"'
 
-    id = models.AutoField(primary_key=True, db_column='id')
+    id = models.AutoField(primary_key=True, db_column="id")
     geom = models.MultiPolygonField(srid=3435)
     displaygro = models.CharField(max_length=50)
     shape_leng = models.FloatField()
