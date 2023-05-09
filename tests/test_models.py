@@ -3,7 +3,8 @@ import pytest
 from django.db import IntegrityError
 
 from asset_dashboard.models import ScoreWeights, Portfolio, PortfolioPhase, \
-    LocalAsset, SenateDistrict, Phase, PhaseZoneDistribution, FundingStream
+    LocalAsset, SenateDistrict, Phase, PhaseZoneDistribution, FundingStream, ProjectScore, \
+        HouseDistrict, CommissionerDistrict
 
 
 @pytest.mark.django_db
@@ -119,10 +120,11 @@ def test_local_asset_signal(project, districts, trails_geojson, socio_economic_z
 
 @pytest.mark.django_db(databases=['default', 'fp_postgis'])
 def test_phase_zone_distribution_post_save_signal(
-    project, zones, signs_geojson, trails_geojson, socio_economic_zones
+    project, zones, signs_geojson, trails_geojson, socio_economic_zones, districts
 ):
     prj = project.build()
     phase = Phase.objects.filter(project=prj)[0]
+    print('zones', zones)
 
     for feature in signs_geojson['features']:
         asset = LocalAsset.objects.create(
@@ -132,6 +134,7 @@ def test_phase_zone_distribution_post_save_signal(
     phase.refresh_from_db()
 
     phase_zone_distributions = PhaseZoneDistribution.objects.filter(phase=phase)
+    print('test: phase_zone_distributions', phase_zone_distributions)
     assert (
         sum([dist.zone_distribution_proportion for dist in phase_zone_distributions])
         == 1.0
@@ -217,3 +220,38 @@ def test_phase_zone_distribution_delete_phase(
             PhaseZoneDistribution.objects.get(pk=distribution.pk)
 
 
+@pytest.mark.django_db(databases=['default', 'fp_postgis'])
+def test_assets_calculation_robustly(project, phase_assets, zones, socio_economic_zones, districts, score_weights):
+    """
+    Regression test for a bug that would crash when calculating all of the GIS totals for a phase.
+    Occured when the GIS assets were located far away from each other. This test uses phase_assets
+    that are located across the entire county, in order to make sure the datbase doesn't crash.
+    """
+    prj = project.build()
+    phase = Phase.objects.filter(project=prj)[0]
+    phase_assets.build(phase=phase)
+
+    phase_zone_distributions = PhaseZoneDistribution.objects.filter(phase=phase)
+    assert phase_zone_distributions
+
+    prj.refresh_from_db()
+    # project_score = ProjectScore.objects.get(project=prj)
+    print(prj.projectscore.__dict__)
+    assert prj.projectscore.total_score > 0
+
+    senate_districts = SenateDistrict.objects.all()
+    assert senate_districts.count() > 0
+
+    house_districts = HouseDistrict.objects.all()
+    assert house_districts.count() > 0
+
+    commissioner_districts = CommissionerDistrict.objects.all()
+    assert commissioner_districts.count() > 0
+
+
+
+    # see what districts we have
+
+# TODO:
+# test delete project
+# test project scores

@@ -137,7 +137,7 @@ def project(section_owner, project_category):
                 estimated_bid_quarter='Q1',
                 status='ongoing'
             ).funding_streams.set(funding_list)
-            
+
             return project
 
     return ProjectFactory()
@@ -313,3 +313,17 @@ def building():
         **geo_feature['properties'],
         geom=GEOSGeometry(json.dumps(geo_feature['geometry']))
     )
+
+@pytest.fixture
+def phase_assets():
+    class PhaseAssetsFactory:
+        def build(self, phase, **kwargs):
+            with open('tests/geojson/phase_a_assets.geojson') as f:
+                assets_geojson = json.load(f)
+
+            for index, feature in enumerate(assets_geojson['features']):
+                asset = models.LocalAsset.objects.create(
+                    phase=phase, geom=json.dumps(feature['geometry']), asset_model='Buildings', asset_name=f'Building {index}'
+                )
+
+    return PhaseAssetsFactory()
