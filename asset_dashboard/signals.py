@@ -91,7 +91,6 @@ class ProjectGISProcessor:
         self.project.commissioner_districts.all().delete()
 
     def reset_project_geo_scores(self):
-        print('resetting project geo scores', self.project.__dict__)
         try:
             project_score = self.project.projectscore
             project_score.geographic_distance_score = 0
@@ -134,6 +133,8 @@ def calculate_gis(sender, instance, **kwargs):
             gis_processor.reset_project_geo_scores()
             return
 
+    # this logic will occur if it's a post_save signal, or if
+    # it's a post_delete signal and there are still assets in the phase
     gis_processor.save_phase_zone_distributions()
     gis_processor.save_project_zones()
     gis_processor.save_project_districts()

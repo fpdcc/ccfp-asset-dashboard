@@ -363,7 +363,6 @@ class ProjectScore(models.Model):
 
     @classmethod
     def save_social_equity_score(cls, total_phase_geoms, project, geoms):
-        print(project.__dict__)
         project_score, _ = cls.objects.get_or_create(project=project)
 
         if total_phase_geoms.area == 0.0:
@@ -465,7 +464,6 @@ class LocalAsset(models.Model):
         # filter out None
         filtered_geoms = tuple([geom for geom in filter(None, geoms)])
 
-        # TODO try SRID
         return GeometryCollection(filtered_geoms)
 
     @classmethod
