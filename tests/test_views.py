@@ -364,4 +364,4 @@ def test_phase_delete_view_redirect(client, project, user):
     expected_redirect = reverse('project-detail', kwargs={'pk': prj2.pk})
 
     # Check the response url
-    assert expected_redirect == response._headers['location'][1]
+    assert expected_redirect == response.headers['Location']
