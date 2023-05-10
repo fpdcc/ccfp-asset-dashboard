@@ -104,7 +104,7 @@ def test_sequenced_model(user, project):
     assert phase_a.sequence == 3
 
 @pytest.mark.django_db(databases=['default', 'fp_postgis'])
-def test_local_asset_signal(project, districts, trails_geojson, socio_economic_zones):
+def test_local_asset_signal(project, districts, trails_geojson, socio_economic_zones, score_weights, zones):
     senate_districts = SenateDistrict.objects.all()
     project_a = project.build()
 
@@ -116,7 +116,13 @@ def test_local_asset_signal(project, districts, trails_geojson, socio_economic_z
             geom=json.dumps(feature['geometry'])
         )
 
-        assert asset.phase.project.senate_districts.all()[0] in senate_districts
+    project_a.refresh_from_db()
+
+    assert project_a.projectscore.total_score > 0
+    assert project_a.senate_districts.all().count() > 0
+    assert project_a.house_districts.all().count() > 0
+    assert project_a.commissioner_districts.all().count() > 0
+    assert project_a.zones.count() > 0
 
 @pytest.mark.django_db(databases=['default', 'fp_postgis'])
 def test_phase_zone_distribution_post_save_signal(
@@ -124,7 +130,6 @@ def test_phase_zone_distribution_post_save_signal(
 ):
     prj = project.build()
     phase = Phase.objects.filter(project=prj)[0]
-    print('zones', zones)
 
     for feature in signs_geojson['features']:
         asset = LocalAsset.objects.create(
@@ -134,7 +139,6 @@ def test_phase_zone_distribution_post_save_signal(
     phase.refresh_from_db()
 
     phase_zone_distributions = PhaseZoneDistribution.objects.filter(phase=phase)
-    print('test: phase_zone_distributions', phase_zone_distributions)
     assert (
         sum([dist.zone_distribution_proportion for dist in phase_zone_distributions])
         == 1.0
