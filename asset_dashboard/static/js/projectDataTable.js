@@ -31,11 +31,17 @@ $(document).ready(function() {
                 targets: [3]
             },
             {
+                name: 'project_manager',
+                orderable: true,
+                searchable: true,
+                targets: [4]
+            },
+            {
                 name: 'id',
                 orderable: false,
                 searchable: false,
                 visible: false,
-                targets: [4]
+                targets: [5]
             },
         ],
 
