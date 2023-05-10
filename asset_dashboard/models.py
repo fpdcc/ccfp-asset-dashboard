@@ -350,7 +350,6 @@ class ProjectScore(models.Model):
 
     @classmethod
     def save_geographic_distance_scores(cls, zone_proportions, project):
-        print('save_geographic_distance_scores')
         project_score, _ = cls.objects.get_or_create(project=project)
 
         zone_score = 0
@@ -364,8 +363,8 @@ class ProjectScore(models.Model):
 
     @classmethod
     def save_social_equity_score(cls, total_phase_geoms, project, geoms):
-        print('save_social_equity_score')
-        project_score, _ = cls.objects.get_or_create(project)
+        print(project.__dict__)
+        project_score, _ = cls.objects.get_or_create(project=project)
 
         if total_phase_geoms.area == 0.0:
             disinvested_proportion = 0
@@ -378,7 +377,6 @@ class ProjectScore(models.Model):
             disinvested_area = 0
 
             for geom in geoms:
-                print('geom', geom)
                 if geom:
                     geometries_with_buffer = geom.buffer(buffer)
                     if geometries_with_buffer:

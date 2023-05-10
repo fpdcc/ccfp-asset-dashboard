@@ -6,23 +6,24 @@ from django.contrib.gis.geos import GeometryCollection
 from .models import LocalAsset, PhaseZoneDistribution, ProjectScore
 
 
-class ProjectGISCalculator:
+class ProjectGISProcessor:
     """
-    A helper class for calculating GIS information for a project's GIS assets.
+    A helper class for calculating information about a Project's GIS assets.
+    Intended to be used in a Django signal that is triggered whenever a LocalAsset
+    is saved or deleted, or when a Phase is deleted.
 
-    Each project can have zero or more phases. Each phase can have zero or more LocalAssets.
-    Given a Phase, this class calculates the distribution of LocalAssets across the Forest Preserves'
-    "zones", as well as the proportion of area that each zone covers within the phase.
-    These calculations are saved as PhaseZoneDistribution objects.
+    Each Project can have zero or more Phases. Each Phase can have zero or more LocalAssets.
+    Given a Phase, this class calculates various things about a Phase's GIS assets. It also
+    uses the Phase's GIS assets to calculate the Project's score.
 
-    This class also saves geographic distance scores and social equity scores to the ProjectScore
-    model based on the distribution of LocalAssets within the phase.
-
-    Finally, this class finds what CCFP zones and Illinois political districts where a phase has
-    GIS assets.
-
-    This class is intended to be used as a helper in a Django signal that is triggered whenever
-    a LocalAsset object is saved or deleted, or when a Phase object is deleted.
+    Calculations include:
+    1. Finds what CCFP zones and Illinois political districts where a phase has GIS assets.
+    2. Calculates the distribution of LocalAssets across the Forest Preserves' Zones
+    2. Calculates he proportion of area that all of the LocalAssets occur within the Zones.
+        These calculations are saved as PhaseZoneDistribution objects and used to determine a
+        Phase's cost by Zone.
+    3. Calculates the geographic distance scores and social equity scores for the ProjectScore
+        model based on the distribution of LocalAssets.
     """
     def __init__(self, phase):
         self.project = phase.project
@@ -47,12 +48,10 @@ class ProjectGISCalculator:
 
     @cached_property
     def zone_distributions(self) -> dict:
-        print('calling zone distributions', self.__dict__)
         return LocalAsset.get_distribution_by_zone(self.phase_geometries)
 
     @cached_property
     def zone_proportions(self) -> dict:
-        print('calling zone proportions', self.__dict__)
         return PhaseZoneDistribution.calculate_zone_proportion(
             self.zone_distributions, self.phase_geometries.area
         )
@@ -83,21 +82,40 @@ class ProjectGISCalculator:
     def delete_zone_distributions(self):
         return PhaseZoneDistribution.objects.filter(phase=self.phase).delete()
 
+    def delete_project_zones(self):
+        return self.project.zones.all().delete()
+
+    def delete_project_districts(self):
+        self.project.house_districts.all().delete()
+        self.project.senate_districts.all().delete()
+        self.project.commissioner_districts.all().delete()
+
+    def reset_project_geo_scores(self):
+        print('resetting project geo scores', self.project.__dict__)
+        try:
+            project_score = self.project.projectscore
+            project_score.geographic_distance_score = 0
+            project_score.social_equity_score = 0
+            project_score.save()
+        except ProjectScore.DoesNotExist:
+            pass
+
 
 @receiver([post_save, post_delete], sender="asset_dashboard.LocalAsset")
 def calculate_gis(sender, instance, **kwargs):
     """
-    This signal can be called whenever a local asset is created or deleted,
-    or when a phase is deleted. It needs to handle these cases:
+    This signal can be called whenever a LocalAsset is created or deleted,
+    or when a Phase is deleted (due to the Phase/LocalAsset relationship).
 
-    1. Calculate the distribution whenever a new local asset is saved,
-        based on all of the phase's existing assets + the new one.
-    2. Recalculate the distribution whenever a local asset is deleted,
-        but only if there will be existing assets in the phase.
-    3. Delete all of the zone distributions when the phase is deleted.
+    It needs to handle these cases:
+    1. Measure the GIS assets whenever a new LocalAsset is saved,
+        based on all of the Phase's existing assets + the new one.
+    2. Recalculate the measurements whenever a LocalAsset is deleted,
+        but only if there will be existing LocalAssets in the Phase.
+    3. Delete all of the measurements when all of the LocalAssets are deleted.
     """
 
-    gis_calculator = ProjectGISCalculator(phase=instance.phase)
+    gis_processor = ProjectGISProcessor(phase=instance.phase)
 
     if kwargs["signal"] == post_delete:
         assets = LocalAsset.objects.filter(phase=instance.phase)
@@ -110,12 +128,13 @@ def calculate_gis(sender, instance, **kwargs):
             #
             # This also prevents an IntegrityError that happens in the deletion of the Phase,
             # when the last asset is deleted.
-            gis_calculator.delete_zone_distributions()
+            gis_processor.delete_zone_distributions()
+            gis_processor.delete_project_zones()
+            gis_processor.delete_project_districts()
+            gis_processor.reset_project_geo_scores()
             return
 
-    gis_calculator.save_phase_zone_distributions()
-
-    # TODO how does this work upon delete
-    gis_calculator.save_project_zones()
-    gis_calculator.save_project_districts()
-    gis_calculator.save_project_scores()
+    gis_processor.save_phase_zone_distributions()
+    gis_processor.save_project_zones()
+    gis_processor.save_project_districts()
+    gis_processor.save_project_scores()
