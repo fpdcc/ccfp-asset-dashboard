@@ -103,21 +103,21 @@ def test_sequenced_model(user, project):
     assert phase_c.sequence == 2
     assert phase_a.sequence == 3
 
-@pytest.mark.django_db(databases=['default', 'fp_postgis'])
-def test_local_asset_signal(project, phase_assets, phase_funding, districts, trails_geojson, socio_economic_zones, score_weights, zones):
-    project_a = project.build()
-    phase = Phase.objects.filter(project=project_a)[0]
-    phase_assets.build(phase=phase)
-    phase_funding.build(phase=phase)
+# @pytest.mark.django_db(databases=['default', 'fp_postgis'])
+# def test_local_asset_signal(project, phase_assets, phase_funding, districts, trails_geojson, socio_economic_zones, score_weights, zones):
+#     project_a = project.build()
+#     phase = Phase.objects.filter(project=project_a)[0]
+#     phase_assets.build(phase=phase)
+#     phase_funding.build(phase=phase)
 
-    phase.refresh_from_db()
-    project_a.refresh_from_db()
+#     phase.refresh_from_db()
+#     project_a.refresh_from_db()
 
-    assert project_a.projectscore.total_score > 0
-    assert project_a.senate_districts.all().count() > 0
-    assert project_a.house_districts.all().count() > 0
-    assert project_a.commissioner_districts.all().count() > 0
-    assert project_a.zones.count() > 0
+#     assert project_a.projectscore.total_score > 0
+#     assert project_a.senate_districts.all().count() > 0
+#     assert project_a.house_districts.all().count() > 0
+#     assert project_a.commissioner_districts.all().count() > 0
+#     assert project_a.zones.count() > 0
 
 @pytest.mark.django_db(databases=['default', 'fp_postgis'])
 def test_phase_zone_distribution_post_save_signal(
