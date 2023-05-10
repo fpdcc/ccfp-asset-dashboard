@@ -10,7 +10,7 @@ class ProjectGISProcessor:
     """
     A helper class for calculating information about a Project's GIS assets.
     Intended to be used in a Django signal that is triggered whenever a LocalAsset
-    is saved or deleted, or when a Phase is deleted.
+    is saved or deleted, when a Phase is deleted, or when a Project is deleted.
 
     Each Project can have zero or more Phases. Each Phase can have zero or more LocalAssets.
     Given a Phase, this class calculates various things about a Phase's GIS assets. It also
