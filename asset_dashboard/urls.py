@@ -22,7 +22,7 @@ from asset_dashboard.endpoints import PortfolioViewSet, UserViewSet, \
     PortfolioPhaseViewSet, PhaseViewSet, ProjectViewSet, AssetViewSet, LocalAssetViewSet, \
     PromotePhaseView, CountywideView
 from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreateView, \
-                                    ProjectUpdateView, ProjectListJson, \
+                                    ProjectUpdateView, ProjectListJson, ProjectDeleteView, \
                                     ProjectsByDistrictListView, ProjectsByDistrictListJson, \
                                     PhaseCreateView, PhaseUpdateView, \
                                     AssetAddEditView, FundingStreamCreateView, FundingStreamUpdateView, \
@@ -44,6 +44,7 @@ urlpatterns = [
     path('projects/json/', ProjectListJson.as_view(), name='project-list-json'),
     path('projects/add-project/', ProjectCreateView.as_view(), name='add-project'),
     path('projects/<int:pk>/', ProjectUpdateView.as_view(), name='project-detail'),
+    path('projects/delete/<int:pk>/', ProjectDeleteView.as_view(), name='delete-project'),
     path('projects/<int:pk>/phases/create/', PhaseCreateView.as_view(), name='create-phase'),
     path('projects/phases/edit/<int:pk>/', PhaseUpdateView.as_view(), name='edit-phase'),
     path('projects/phases/delete/<int:pk>/', PhaseDeleteView.as_view(), name='delete-phase'),

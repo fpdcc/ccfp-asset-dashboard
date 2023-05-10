@@ -146,4 +146,10 @@
           </div>
       </div>
   </form>
+  <div class="ml-auto">
+    <a class="mx-2 btn btn-outline-danger" id="delete-project" href="{% url 'delete-project'  pk=project.pk %}">
+      <i class='fas fa-trash'></i> 
+      Delete Project
+    </a>
+  </div>
 </section>
