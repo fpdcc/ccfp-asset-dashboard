@@ -73,7 +73,7 @@ $(document).ready(function() {
         
         // make each row clickable for redirecting to the detail page
         fnRowCallback: function (row, data) {
-            const projectId = data[4]
+            const projectId = data[5]
 
             // add the id as an attribute to the <tr> element
             $(row).data('project-id', projectId)
