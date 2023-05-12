@@ -273,13 +273,17 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
 
         for funding in context['funding_streams']:
             context['existing_funding_forms'].append(
-                FundingStreamForm(initial={
-                    'budget': funding.budget,
-                    'year': funding.year,
-                    'funding_secured': funding.funding_secured,
-                    'source_type': funding.source_type,
-                    'actual_cost': funding.actual_cost,
-                })
+                {
+                    'id': funding.id,
+                    'funding': FundingStreamForm(initial={
+                        'budget': funding.budget,
+                        'year': funding.year,
+                        'funding_secured': funding.funding_secured,
+                        'source_type': funding.source_type,
+                        'actual_cost': funding.actual_cost,
+                    }) 
+                }
+                
             )
         context['range'] = range(1, 3)
 
