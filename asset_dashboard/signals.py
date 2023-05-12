@@ -14,15 +14,16 @@ class ProjectGISProcessor:
 
     Each Project can have zero or more Phases. Each Phase can have zero or more LocalAssets.
     Given a Phase, this class calculates various things about a Phase's GIS assets. It also
-    uses the Phase's GIS assets to calculate the Project's score.
+    uses the Phase's GIS assets to calculate the Project's geographic distance and
+    social equity scores.
 
-    Calculations include:
+    Logic includes:
     1. Finds what CCFP zones and Illinois political districts where a phase has GIS assets.
-    2. Calculates the distribution of LocalAssets across the Forest Preserves' Zones
-    2. Calculates he proportion of area that all of the LocalAssets occur within the Zones.
+    2. Calculates the distribution of a Phase's LocalAssets across the Forest Preserves' Zones.
+    2. Calculates the proportion of area that all of the LocalAssets occur within the Zones.
         These calculations are saved as PhaseZoneDistribution objects and used to determine a
         Phase's cost by Zone.
-    3. Calculates the geographic distance scores and social equity scores for the ProjectScore
+    3. Calculates the geographic distance and social equity scores for the ProjectScore
         model based on the distribution of LocalAssets.
     """
     def __init__(self, phase):
