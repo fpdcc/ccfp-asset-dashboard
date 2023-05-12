@@ -105,7 +105,7 @@ class ProjectGISProcessor:
 def calculate_gis(sender, instance, **kwargs):
     """
     This signal can be called whenever a LocalAsset is created or deleted,
-    or when a Phase is deleted (due to the Phase/LocalAsset relationship).
+    or when a Phase or Project is deleted (due to the Project/Phase/LocalAsset relationships).
 
     It needs to handle these cases:
     1. Measure the GIS assets whenever a new LocalAsset is saved,
