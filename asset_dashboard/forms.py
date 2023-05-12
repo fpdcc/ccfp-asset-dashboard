@@ -101,3 +101,5 @@ class PhaseForm(StyledFormMixin, ModelForm):
 
             if field_name == "estimated_bid_quarter":
                 field.widget.attrs["required"] = False
+
+    funding_streams = FundingStreamForm

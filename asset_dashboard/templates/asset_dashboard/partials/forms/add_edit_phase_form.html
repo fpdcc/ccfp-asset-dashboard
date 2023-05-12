@@ -8,90 +8,98 @@
 
 {% block project %}
 <section class="m-2">
-<div class="row">
-  <div class="border border-secondary rounded shadow-sm col m-2 p-3 card">
-  
-    <form method="post">
-      {% csrf_token %}
+<form method="post">
+  {% csrf_token %}
+  <div class="row">
+    <div class="border border-secondary rounded shadow-sm col m-2 p-3 card">
+      
+        {{ form.errors }}
     
-      {{ form.errors }}
-  
-      <div class="row col justify-content-between">
-        <h3>{% if phase %}Update Phase{% else %}Create Phase{% endif %}</h3>
-        <input type="submit" value="Save Phase" class="btn btn-info">
-      </div>
+        <div class="row col justify-content-between">
+          {% if phase %}
+            <h3>Update Phase</h3>
+            <input type="submit" value="Save All Changes" class="btn btn-info">
+          {% else %}
+            <h3>Create Phase</h3>
+            <input type="submit" value="Save Phase" class="btn btn-info">
+          {% endif %}
+        </div>
 
-      <div class="row my-4">
-        <div class="col">
-          <strong>Phase</strong>
-          {{ form.phase_type }}
+        <div class="row my-4">
+          <div class="col">
+            <strong>Phase</strong>
+            {{ form.phase_type }}
+          </div>
+          <div class="col">
+            <strong>Status</strong>
+            {{ form.status }}
+          </div>
+          <div class="col">
+            <strong>Bid Quarter</strong>
+            {{ form.estimated_bid_quarter }}
+          </div>
+          <div class="col">
+            <strong>Year</strong>
+            {{ form.year }}
+          </div>
         </div>
-        <div class="col">
-          <strong>Status</strong>
-          {{ form.status }}
-        </div>
-        <div class="col">
-          <strong>Bid Quarter</strong>
-          {{ form.estimated_bid_quarter }}
-        </div>
-        <div class="col">
-          <strong>Year</strong>
-          {{ form.year }}
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col border border-secondary rounded shadow-sm p-3 m-2 card">
-    <div class="d-flex justify-content-between m-3">
-      <h3>Phase Funding</h3>
-      {% if phase %}
-        <a href="{% url 'create-funding' pk=phase.id %}" class="text-info lead">Add funding ></a>
-      {% endif %}
     </div>
-    {% if funding_streams %}
-      <table class="table table-hover table-border py-4">
-        <thead>
-          <tr>
-            <th>Year</th>
-            <th>Funds</th>
-            <th>Source</th>
-            <th>Secured</th>
-            <th></th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for funding in funding_streams %}
-          <tr>
-            <td>{{ funding.year }}</td>
-            <td>{{ funding.budget }}</td>
-            <td>{{ funding.get_source_type_display }}</td>
-            <td>{{ funding.funding_secured }}</td>
-            <td><a href="{% url 'update-funding' pk=funding.id %}" class="text-info lead">Edit</a></td>
-            <td style="width: 12%;"><a href="{% url 'delete-funding' pk=funding.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <div>
-        <p class="lead">Estimated Cost: ${{ phase.total_budget|intcomma }}</p>
-        <p class="lead">Funded Amount: ${{ phase.total_funded_amount|intcomma }}</p>
-      </div>
-    {% else %}
-      <p>
-        {% if phase and not funding_stream %}
-          This phase has no funding.
-        {% else %}
-          Create the phase so you can add funding.
-        {% endif %}
-      </p>
-    {% endif %}
   </div>
-</div>
 
+  <div class="row">
+    <div class="col border border-secondary rounded shadow-sm p-3 m-2 card">
+      <div class="d-flex justify-content-between m-3">
+        <h3>Phase Funding</h3>
+        {% if phase %}
+          <a href="{% url 'create-funding' pk=phase.id %}" class="text-info lead">Add funding ></a>
+        {% endif %}
+      </div>
+      {% if funding_streams %}
+        <table class="table table-hover table-border py-4">
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>Funds</th>
+              <th>Actual Cost</th>
+              <th>Source</th>
+              <th>Secured</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="phase_funding">
+            {% for form in existing_funding_forms %}
+              <tr>
+                <td class="pl-2">{{ form.year }}</td>
+                <td class="pl-2">{{ form.budget }}</td>
+                <td class="pl-2">{{ form.actual_cost }}</td>
+                <td class="pl-2">{{ form.source_type }}</td>
+                <td class="pl-2">{{ form.funding_secured }}</td>
+                <td style="width: 12%;"><a href="/" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if phase %}
+          <div>
+            <p class="lead">Estimated Cost: ${{ phase.total_budget|intcomma }}</p>
+            <p class="lead">Funded Amount: ${{ phase.total_funded_amount|intcomma }}</p>
+          </div>
+        {% endif %}
+      {% else %}
+        <p>
+          {% if phase and not funding_stream %}
+            This phase has no funding.
+          {% else %}
+            Create the phase so you can add funding.
+          {% endif %}
+        </p>
+      {% endif %}
+      <div>
+        <a href="#phase_funding" class="text-info lead" onclick="addSource()">+ Add a source</a>
+      </div>
+    </div>
+  </div>
+</form>
 
 <div class="row">
   <div class="col border border-secondary rounded shadow-sm p-3 m-2 card">
@@ -129,6 +137,19 @@
   <script type="text/javascript">
     window.props = JSON.parse(document.getElementById('props').textContent)
     window.reactMount = document.getElementById('map')
+
+    function addSource() {
+      fundingTable = document.getElementById("phase_funding")
+      new_row =  `<tr>
+          <td class='pl-2'>{{ form.funding_streams.year }}</td>
+          <td class='pl-2'>{{ form.funding_streams.budget }}</td>
+          <td class='pl-2'>{{ form.funding_streams.actual_cost }}</td>
+          <td class='pl-2'>{{ form.funding_streams.source_type }}</td>
+          <td class='pl-2'>{{ form.funding_streams.funding_secured }}</td>
+          <td style='width: 12%;'><a href='#' class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
+        </tr>`
+      fundingTable.innerHTML += new_row
+    }
   </script>
   {% compress js %}
     <script type="text/jsx" src="{% static 'js/components/PhaseDetailAssetTable.js' %}"></script>
