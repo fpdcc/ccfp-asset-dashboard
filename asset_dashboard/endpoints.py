@@ -9,12 +9,12 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
-    LocalAsset, Buildings, TrailsInfo, PoiInfo, PicnicGroves
+    LocalAsset, Buildings, TrailsInfo, PoiInfo, PicnicGroves, FundingStream
 from asset_dashboard.serializers import PortfolioSerializer, UserSerializer, \
     PortfolioPhaseSerializer, PhaseSerializer, ProjectSerializer, \
     BuildingsSerializer, TrailsSerializer, LocalAssetWriteSerializer, LocalAssetReadSerializer, \
     PointsOfInterestSerializer, PicnicGrovesSerializer, ParkingLotsSerializer, \
-    PromotePhaseSerializer, CountywideSerializer
+    PromotePhaseSerializer, CountywideSerializer, FundingStreamSerializer
 
 
 class PortfolioViewSet(viewsets.ModelViewSet):
@@ -144,8 +144,24 @@ class CountywideView(APIView):
 
     def post(self, request, format=None):
         serializer = CountywideSerializer(data=request.data)
-        print('data', request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class FundingStreamView(APIView):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if request.data.get("id"):
+            qs = FundingStream.objects.get(id=request.data["id"])
+            serializer = FundingStreamSerializer(qs, data=request.data)
+        else:
+            serializer = FundingStreamSerializer(data=request.data)
+
+        if serializer.is_valid():
+            funding_stream = serializer.save()
+            return Response(funding_stream, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

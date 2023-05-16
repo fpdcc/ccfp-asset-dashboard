@@ -8,98 +8,103 @@
 
 {% block project %}
 <section class="m-2">
-<form method="post">
-  {% csrf_token %}
-  <div class="row">
-    <div class="border border-secondary rounded shadow-sm col m-2 p-3 card">
-      
-        {{ form.errors }}
-    
-        <div class="row col justify-content-between">
-          {% if phase %}
-            <h3>Update Phase</h3>
-            <input type="submit" value="Save All Changes" class="btn btn-info">
-          {% else %}
-            <h3>Create Phase</h3>
-            <input type="submit" value="Save Phase" class="btn btn-info">
-          {% endif %}
-        </div>
+<div class="row">
+  <div class="border border-secondary rounded shadow-sm col m-2 p-3 card">
 
-        <div class="row my-4">
-          <div class="col">
-            <strong>Phase</strong>
-            {{ form.phase_type }}
-          </div>
-          <div class="col">
-            <strong>Status</strong>
-            {{ form.status }}
-          </div>
-          <div class="col">
-            <strong>Bid Quarter</strong>
-            {{ form.estimated_bid_quarter }}
-          </div>
-          <div class="col">
-            <strong>Year</strong>
-            {{ form.year }}
-          </div>
-        </div>
-    </div>
-  </div>
+    <form method="post">
+      {% csrf_token %}
 
-  <div class="row">
-    <div class="col border border-secondary rounded shadow-sm p-3 m-2 card">
-      <div class="d-flex justify-content-between m-3">
-        <h3>Phase Funding</h3>
-        {% if phase %}
-          <a href="{% url 'create-funding' pk=phase.id %}" class="text-info lead">Add funding ></a>
-        {% endif %}
+      {{ form.errors }}
+  
+      <div class="row col justify-content-between">
+        <h3>{% if phase %}Update Phase{% else %}Create Phase{% endif %}</h3>
+        <input type="submit" value="Save Phase" class="btn btn-info">
       </div>
-      {% if funding_streams %}
-        <table class="table table-hover table-border py-4">
-          <thead>
-            <tr>
-              <th>Year</th>
-              <th>Funds</th>
-              <th>Actual Cost</th>
-              <th>Source</th>
-              <th>Secured</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="phase_funding">
-            {% for form in existing_funding_forms %}
-              <tr>
-                <td class="pl-2">{{ form.funding.year }}</td>
-                <td class="pl-2">{{ form.funding.budget }}</td>
-                <td class="pl-2">{{ form.funding.actual_cost }}</td>
-                <td class="pl-2">{{ form.funding.source_type }}</td>
-                <td class="pl-2">{{ form.funding.funding_secured }}</td>
-                <td style="width: 12%;"><a href="{% url 'delete-funding' pk=form.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% if phase %}
-          <div>
-            <p class="lead">Estimated Cost: ${{ phase.total_budget|intcomma }}</p>
-            <p class="lead">Funded Amount: ${{ phase.total_funded_amount|intcomma }}</p>
-          </div>
-        {% endif %}
-      {% else %}
-        <p>
-          {% if phase and not funding_stream %}
-            This phase has no funding.
-          {% else %}
-            Create the phase so you can add funding.
-          {% endif %}
-        </p>
+
+      <div class="row my-4">
+        <div class="col">
+          <strong>Phase</strong>
+          {{ form.phase_type }}
+        </div>
+        <div class="col">
+          <strong>Status</strong>
+          {{ form.status }}
+        </div>
+        <div class="col">
+          <strong>Bid Quarter</strong>
+          {{ form.estimated_bid_quarter }}
+        </div>
+        <div class="col">
+          <strong>Year</strong>
+          {{ form.year }}
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col border border-secondary rounded shadow-sm p-3 m-2 card">
+    <div class="d-flex justify-content-between m-3">
+      <h3>Phase Funding</h3>
+      {% if phase %}
+        <a href='#' class='btn btn-info' onclick='submitFundingForms()'>Update Funding</a>
       {% endif %}
-      <div>
-        <a href="#phase_funding" class="text-info lead" onclick="addSource()">+ Add a source</a>
-      </div>
+    </div>
+      <table class="table table-hover table-border py-4">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Funds</th>
+            <th>Actual Cost</th>
+            <th>Source</th>
+            <th>Secured</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="funding_list">
+        {% for form in existing_funding_forms %}
+          <tr>
+            <td colspan="100%">
+              <form method="post" class="funding" id="{{ form.id }}">
+                <table>
+                  <tbody>
+                    <td class="pl-2">
+                      <div>{{ form.funding.year }}</div>
+                      <div class="year-error" aria-hidden="true">Please enter a valid year</div>
+                    </td>
+                    <td class="pl-2">
+                      <div>{{ form.funding.budget }}</div>
+                      <div class="budget-error" aria-hidden="true">Please enter a valid amount</div>
+                    </td>
+                    <td class="pl-2">
+                      <div>{{ form.funding.actual_cost }}</div>
+                      <div class="cost-error" aria-hidden="true">Please enter a valid amount</div>
+                    </td>
+                    <td class="pl-2">{{ form.funding.source_type }}</td>
+                    <td class="pl-2">{{ form.funding.funding_secured }}</td>
+                    <td class="pl-2">{{ form.id.as_hidden }}</td>
+                    <td style="width: 12%;"><a href="{% url 'delete-funding' pk=form.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
+                  </tbody>
+                </table>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>      
+      {% if phase %}
+        <div>
+          <p class="lead">Estimated Cost: ${{ phase.total_budget|intcomma }}</p>
+          <p class="lead">Funded Amount: ${{ phase.total_funded_amount|intcomma }}</p>
+        </div>
+      {% endif %}
+    <div>
+      <a href="#funding_list" class="text-info lead" onclick="addSource()">+ Add a source</a>
     </div>
   </div>
-</form>
+</div>
+
 
 <div class="row">
   <div class="col border border-secondary rounded shadow-sm p-3 m-2 card">
@@ -127,7 +132,7 @@
     {% endif %}
   </div>
 </div>
-</section
+</section>
 {% endblock %}
 
 {% block extra_js %}
@@ -139,19 +144,125 @@
     window.reactMount = document.getElementById('map')
 
     function addSource() {
-      fundingTable = document.getElementById("phase_funding")
+      fundingTable = document.getElementById("funding_list")
       new_row =  `<tr>
-          <td class='pl-2'>{{ form.funding_streams.year }}</td>
-          <td class='pl-2'>{{ form.funding_streams.budget }}</td>
-          <td class='pl-2'>{{ form.funding_streams.actual_cost }}</td>
-          <td class='pl-2'>{{ form.funding_streams.source_type }}</td>
-          <td class='pl-2'>{{ form.funding_streams.funding_secured }}</td>
-          <td style='width: 12%;'>
-            <a href='#' class='btn btn-sm btn-info'><i class='fas fa-save'></i> Save</a>
-            <a href='#' class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i></a>
+          <td colspan="100%">
+            <form method="post" class="funding">
+              <table>
+                <tbody>
+                  <td class='pl-2'>
+                    {{ form.funding_streams.year }}
+                    <div class="year-error" aria-hidden="true">Please enter a valid year</div>
+                  </td>
+                  <td class='pl-2'>
+                    {{ form.funding_streams.budget }}
+                    <div class="budget-error" aria-hidden="true">Please enter a valid amount</div>
+                  </td>
+                  <td class='pl-2'>
+                    {{ form.funding_streams.actual_cost }}
+                    <div class="cost-error" aria-hidden="true">Please enter a valid amount</div>
+                  </td>
+                  <td class='pl-2'>{{ form.funding_streams.source_type }}</td>
+                  <td class='pl-2'>{{ form.funding_streams.funding_secured }}</td>
+                  <td style='width: 12%;'>
+                    <a href='#' class='btn btn-sm btn-outline-danger' onclick='removeForm()'><i class='fas fa-times'></i> Remove</a>
+                  </td>
+                </tbody>
+              </table>
+            </form>
           </td>
         </tr>`
+
       fundingTable.innerHTML += new_row
+    }
+
+    function removeForm() {
+      // TODO: delete the current unsaved form element
+      return
+    }
+
+    function submitFundingForms() {
+      fundings = document.getElementsByClassName("funding")
+      let valid = true
+
+      // Submit/validate each form on the page
+      for (i = 0; i < fundings.length; i++) {
+        let funding = fundings[i]
+
+        let year = funding[0].value
+        let budget = funding[1].value
+        let actual_cost = funding[3].value
+
+        const yearError = funding[0].nextElementSibling
+        const budgetError = funding[1].nextElementSibling.nextElementSibling
+        const costError = funding[3].nextElementSibling.nextElementSibling
+        
+        // Validate year, budget, and actual cost inputs, displaying errors
+        if (year.toString().length != 4 || !year){
+          valid = false
+          yearError.classList.add("visible")
+        } else if (yearError) {
+          yearError.classList.remove("visible")
+        }
+
+        if (budget <= 0){
+          valid = false
+          budgetError.classList.add("visible")
+        } else if (budgetError) {
+          budgetError.classList.remove("visible")
+        }
+
+        if (actual_cost <= 0){
+          valid = false
+          costError.classList.add("visible")
+        } else if (costError) {
+          costError.classList.remove("visible")
+        }
+
+        if (!valid){
+          console.log("Not valid")
+          return
+        } else {
+          console.log("all good")
+        }
+
+        let data = {
+          'year': funding[0].value,
+          'budget': funding[1].value,
+          'actual_cost': funding[3].value,
+          'source_type': funding[5].value,
+          'funding_secured': funding[6].value,
+          'phase': props.phase_id,
+          'id': funding.id ? funding.id : null
+        }
+
+        fetch(`/projects/phases/fundingstream/`, {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          mode: 'same-origin' 
+        }).then((response)=> {
+          console.log(response)
+        })
+        // TODO: handle/display errors and return
+      }
+
+      if (valid) {
+        location.reload()
+      }
+    }
+
+    const getCookie = (name) => {
+        const match = document.cookie.split(';').map(el => { let [key,value] = el.split('='); return { [key.trim()]: value }})
+        const filteredMatch = match.filter(e => Object.keys(e)[0] === name)
+
+        let matchLength = filteredMatch.length
+
+        return filteredMatch[matchLength - 1][name]
     }
   </script>
   {% compress js %}
