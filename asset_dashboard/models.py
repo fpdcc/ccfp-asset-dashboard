@@ -148,7 +148,7 @@ class Project(models.Model):
         ]
 
         for attribute, model in district_models:
-            districts = model.objects.filter(boundary__dwithin=(phase_geoms, D(m=1))).filter(boundary__intersects=phase_geoms)
+            districts = model.objects.filter(boundary__intersects=phase_geoms)
 
             project_district = getattr(self, attribute)
             project_district.clear()
