@@ -8,32 +8,38 @@
             <input type="submit" value="Save Project" class="btn btn-info">
         </div>
       </div>
-      
-      <div class="row">
-        <div class="col-4">
-          <div class="my-3">
-              <label for="Project Name"><strong>Project Name</strong></label>
-              {{ form.name }}
-          </div>
 
-          <div class="my-3">
-              <label for="Section Owner"><strong>Section Owner</strong></label>
-              {{ form.section_owner }}
-          </div>
-          
-          <div class="my-3">
-              <label for="Project Manager"><strong>Project Manager</strong></label>
-              {{ form.project_manager }}
-          </div>
-          
-          <div class="my-3">
-              <label for="Project Category"><strong>Project Category</strong></label>
-              {{ form.category }}
-          </div>
+      <div class="row my-3">
+        <div class="col-3">
+            <label for="Project Name"><strong>Project Name</strong></label>
+            {{ form.name }}
         </div>
-        <div class="col-8 my-3">
+
+        <div class="col-3">
+            <label for="Section Owner"><strong>Section Owner</strong></label>
+            {{ form.section_owner }}
+        </div>
+
+        <div class="col-3">
+            <label for="Project Manager"><strong>Project Manager</strong></label>
+            {{ form.project_manager }}
+        </div>
+
+        <div class="col-3">
+            <label for="Project Category"><strong>Project Category</strong></label>
+            {{ form.category }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 my-3">
           <label for="Project Description"><strong>Description</strong></label>
           {{ form.description }}
+        </div>
+
+        <div class="col-6 my-3">
+          <label for="Notes"><strong>Notes</strong></label>
+          {{ form.notes }}
         </div>
       </div>
 
@@ -95,35 +101,35 @@
                         </th>
                         <td>{{ score_form.core_mission_score }}</td>
                       </tr>
-                      
+
                       <tr>
                         <th>
                           <label for="Operations impact score"><strong>Operations impact score:</strong></label>
                         </th>
                         <td>{{ score_form.operations_impact_score }}</td>
                       </tr>
-                      
+
                       <tr>
                         <th>
                           <label for="Sustainability score"><strong>Sustainability score:</strong></label>
                         </th>
                         <td>{{ score_form.sustainability_score }}</td>
                       </tr>
-                      
+
                       <tr>
                         <th>
                           <label for="Ease score"><strong>Ease score:</strong></label>
                         </th>
                         <td>{{ score_form.ease_score }}</td>
                       </tr>
-                      
+
                       <tr>
                         <th>
                           <strong>Geographic distance score:</strong>
                         </th>
                         <td>{{ project.projectscore.geographic_distance_score }}</td>
                       </tr>
-                      
+
                       <tr>
                         <th>
                           <strong>Social equity score:</strong>
