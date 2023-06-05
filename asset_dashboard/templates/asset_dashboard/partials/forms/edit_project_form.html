@@ -9,34 +9,35 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="col-4">
-          <div class="my-3">
-              <label for="Project Name"><strong>Project Name</strong></label>
-              {{ form.name }}
-          </div>
-
-          <div class="my-3">
-              <label for="Section Owner"><strong>Section Owner</strong></label>
-              {{ form.section_owner }}
-          </div>
-
-          <div class="my-3">
-              <label for="Project Manager"><strong>Project Manager</strong></label>
-              {{ form.project_manager }}
-          </div>
-
-          <div class="my-3">
-              <label for="Project Category"><strong>Project Category</strong></label>
-              {{ form.category }}
-          </div>
+      <div class="row my-3">
+        <div class="col-3">
+            <label for="Project Name"><strong>Project Name</strong></label>
+            {{ form.name }}
         </div>
-        <div class="col-8 my-3">
+
+        <div class="col-3">
+            <label for="Section Owner"><strong>Section Owner</strong></label>
+            {{ form.section_owner }}
+        </div>
+
+        <div class="col-3">
+            <label for="Project Manager"><strong>Project Manager</strong></label>
+            {{ form.project_manager }}
+        </div>
+
+        <div class="col-3">
+            <label for="Project Category"><strong>Project Category</strong></label>
+            {{ form.category }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6 my-3">
           <label for="Project Description"><strong>Description</strong></label>
           {{ form.description }}
         </div>
 
-        <div class="col-8 my-3">
+        <div class="col-6 my-3">
           <label for="Notes"><strong>Notes</strong></label>
           {{ form.notes }}
         </div>
