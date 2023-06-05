@@ -112,6 +112,7 @@ class Project(models.Model):
 
     name = models.TextField()
     description = models.TextField()
+    notes = models.TextField(null=True, blank=True)
     category = models.ForeignKey(
         "ProjectCategory", null=True, on_delete=models.SET_NULL
     )
