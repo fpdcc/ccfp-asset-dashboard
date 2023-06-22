@@ -178,7 +178,7 @@ class TrailsSerializer(SourceAssetSerializer):
         fields = ('identifier', 'name', 'geom', 'source')
         geo_field = 'geom'
 
-    identifier = serializers.IntegerField(source='trails_id')
+    identifier = serializers.IntegerField(source='id')
     name = serializers.CharField(source='trail_subsystem')
     geom = GeometrySerializerMethodField()
 
