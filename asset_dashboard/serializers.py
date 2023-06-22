@@ -187,7 +187,7 @@ class TrailsSerializer(SourceAssetSerializer):
         This is heavy, might want to consider pre-fetching related Trails obj
         in viewset -> get_queryset
         '''
-        return Trails.objects.get(trails_info=obj).geom.transform(4326, clone=True)
+        return Trails.objects.get(trail_info=obj).geom.transform(4326, clone=True)
 
 
 class PointsOfInterestSerializer(SourceAssetSerializer):
