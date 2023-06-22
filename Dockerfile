@@ -4,14 +4,14 @@
 # version number in the pilot. YMMV. See this post for a discussion of
 # some options and their pros and cons:
 # https://pythonspeed.com/articles/base-image-python-docker-images/
-FROM python:3.8
+FROM python:3.8-bullseye
 
 # Give ourselves some credit
 LABEL maintainer "DataMade <info@datamade.us>"
 
 # Add the NodeSource PPA
 # (see: https://github.com/nodesource/distributions/blob/master/README.md)
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
 
 # Install any additional OS-level packages you need via apt-get. RUN statements
 # add additional layers to your image, increasing its final size. Keep your
@@ -22,7 +22,8 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
 #
 # Read more on Dockerfile best practices at the source:
 # https://docs.docker.com/develop/develop-images/dockerfile_best-practices
-RUN apt-get install -y --no-install-recommends postgresql-client nodejs binutils libproj-dev gdal-bin
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends postgresql-client nodejs binutils libproj-dev gdal-bin
 
 # Inside the container, create an app directory and switch into it
 RUN mkdir /app
