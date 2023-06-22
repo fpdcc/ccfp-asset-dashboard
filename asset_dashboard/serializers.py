@@ -5,7 +5,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
     LocalAsset, Buildings, TrailsInfo, PoiInfo, PointsOfInterest, PicnicGroves, \
-    ParkingLots, PhaseZoneDistribution
+    ParkingLots, PhaseZoneDistribution, Trails
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -187,10 +187,7 @@ class TrailsSerializer(SourceAssetSerializer):
         This is heavy, might want to consider pre-fetching related Trails obj
         in viewset -> get_queryset
         '''
-        return obj.trails.geom.transform(4326, clone=True)
-
-    def get_identifier(self, obj):
-        return obj.trails__id
+        return Trails.objects.get(trails_info=obj).geom.transform(4326, clone=True)
 
 
 class PointsOfInterestSerializer(SourceAssetSerializer):
