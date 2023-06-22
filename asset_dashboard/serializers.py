@@ -238,7 +238,10 @@ class ParkingLotsSerializer(SourceAssetSerializer):
     geom = GeometrySerializerMethodField()
 
     def get_geom(self, obj):
-        return ParkingLots.objects.get(id=obj.parking_info.lot_id).geom.transform(4326, clone=True)
+        try:
+            return ParkingLots.objects.get(id=obj.parking_info.lot_id).geom.transform(4326, clone=True)
+        except ParkingLots.DoesNotExist:
+            return None
 
     def get_name(self, obj):
         return obj.nameid.name

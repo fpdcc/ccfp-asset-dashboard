@@ -1214,7 +1214,10 @@ class PoiInfo(GISModel):
             ("nameid__name", str),
         )
 
-        and_fields = (("parking_info_id__isnull", False),)
+        and_fields = (
+            ("parking_info_id__isnull", False),
+            ("pointsofinterest_id__isnull", False)
+        )
 
     id = models.AutoField(primary_key=True, db_column="poi_info_id")
 
