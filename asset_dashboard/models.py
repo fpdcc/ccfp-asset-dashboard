@@ -1355,7 +1355,7 @@ class Trails(GISModel):
 
     trails_id = models.AutoField(primary_key=True)
     geom = models.LineStringField(srid=3435, spatial_index=True)
-    trails_info = models.ForeignKey('TrailsInfo', on_delete=models.DO_NOTHING)
+    trail_info = models.ForeignKey('TrailsInfo', on_delete=models.DO_NOTHING)
 
 
 class TrailsAmenity(GISModel):
