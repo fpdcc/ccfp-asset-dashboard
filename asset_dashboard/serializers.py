@@ -189,6 +189,9 @@ class TrailsSerializer(SourceAssetSerializer):
         '''
         return obj.trails.geom.transform(4326, clone=True)
 
+    def get_identifier(self, obj):
+        return obj.trails__id
+
 
 class PointsOfInterestSerializer(SourceAssetSerializer):
     class Meta:
