@@ -1214,7 +1214,10 @@ class PoiInfo(GISModel):
             ("nameid__name", str),
         )
 
-        and_fields = (("parking_info_id__isnull", False),)
+        and_fields = (
+            ("parking_info_id__isnull", False),
+            ("pointsofinterest_id__isnull", False)
+        )
 
     id = models.AutoField(primary_key=True, db_column="poi_info_id")
 
@@ -1355,8 +1358,7 @@ class Trails(GISModel):
 
     trails_id = models.AutoField(primary_key=True)
     geom = models.LineStringField(srid=3435, spatial_index=True)
-
-    # topogeom isn't implemented
+    trail_info = models.ForeignKey('TrailsInfo', on_delete=models.DO_NOTHING)
 
 
 class TrailsAmenity(GISModel):
@@ -1414,12 +1416,12 @@ class TrailsInfo(GISModel):
 
     class Search:
         or_fields = (
-            ("trails", int),
             ("trail_subsystem", str),
+            ("trail_name", str),
+            ("regional_trail_name", str)
         )
 
     id = models.AutoField(primary_key=True, db_column="trail_info_id")
-    trails = models.ForeignKey(Trails, on_delete=models.RESTRICT)
 
     trail_system = models.CharField(max_length=100)
     trail_subsystem = models.CharField(max_length=100)
