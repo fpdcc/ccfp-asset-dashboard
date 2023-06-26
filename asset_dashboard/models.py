@@ -131,7 +131,7 @@ class Project(models.Model):
         return self.name or ""
 
     def update_project_zones(self, phase_geoms):
-        zones = Zone.objects.filter(boundary__dwithin=(phase_geoms, D(m=0.25))).filter(boundary__intersects=phase_geoms)
+        zones = Zone.objects.filter(boundary__intersects=phase_geoms)
 
         # Delete existing relationships so we can have a fresh start.
         self.zones.clear()
@@ -148,7 +148,7 @@ class Project(models.Model):
         ]
 
         for attribute, model in district_models:
-            districts = model.objects.filter(boundary__dwithin=(phase_geoms, D(m=0.25))).filter(boundary__intersects=phase_geoms)
+            districts = model.objects.filter(boundary__intersects=phase_geoms)
 
             project_district = getattr(self, attribute)
             project_district.clear()
