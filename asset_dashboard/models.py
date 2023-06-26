@@ -6,7 +6,6 @@ from django.db.models import Max, Sum, QuerySet
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.gis.geos import GEOSGeometry, GeometryCollection
-from django.contrib.gis.measure import D
 from django.conf import settings
 
 from djmoney.models.fields import MoneyField
