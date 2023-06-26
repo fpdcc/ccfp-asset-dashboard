@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.gis.db import models
 from django.db.models import Max, Sum, QuerySet
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.gis.geos import GEOSGeometry, GeometryCollection
 from django.conf import settings
@@ -130,23 +130,17 @@ class Project(models.Model):
     def __str__(self):
         return self.name or ""
 
-    @receiver([post_save, post_delete], sender="asset_dashboard.LocalAsset")
-    def save_zones_and_districts(sender, instance, **kwargs):
-        phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
-        instance.phase.project.update_project_zones(instance, phase_geoms)
-        instance.phase.project.update_project_districts(instance, phase_geoms)
-
-    def update_project_zones(self, instance, phase_geoms):
+    def update_project_zones(self, phase_geoms):
         zones = Zone.objects.filter(boundary__intersects=phase_geoms)
 
         # Delete existing relationships so we can have a fresh start.
-        instance.phase.project.zones.clear()
+        self.zones.clear()
 
         for zone in zones:
-            instance.phase.project.zones.add(zone)
-            instance.phase.project.save()
+            self.zones.add(zone)
+            self.save()
 
-    def update_project_districts(self, instance, phase_geoms):
+    def update_project_districts(self, phase_geoms):
         district_models = [
             ("commissioner_districts", CommissionerDistrict),
             ("senate_districts", SenateDistrict),
@@ -156,64 +150,18 @@ class Project(models.Model):
         for attribute, model in district_models:
             districts = model.objects.filter(boundary__intersects=phase_geoms)
 
-            project_district = getattr(instance.phase.project, attribute)
+            project_district = getattr(self, attribute)
             project_district.clear()
 
             for district in districts:
                 project_district.add(district)
-                instance.phase.project.save()
+                self.save()
 
 
 class PhaseZoneDistribution(models.Model):
     phase = models.ForeignKey("Phase", on_delete=models.CASCADE, related_name="phase")
     zone = models.ForeignKey("Zone", on_delete=models.CASCADE, related_name="zone")
     zone_distribution_proportion = models.FloatField(null=True, blank=True)
-
-    @receiver([post_save, post_delete], sender="asset_dashboard.LocalAsset")
-    def save_zone_distribution(sender, instance, **kwargs):
-        """
-        This signal can be called whenever a local asset is created or deleted,
-        or when a phase is deleted. It needs to handle these cases:
-
-        1. Calculate the distribution whenever a new local asset is saved,
-           based on all of the phase's existing assets + the new one.
-        2. Recalculate the distribution whenever a local asset is deleted,
-           but only if there will be existing assets in the phase.
-        3. Delete all of the zone distributions when the phase is deleted.
-        """
-
-        if kwargs["signal"] == post_delete:
-            assets = LocalAsset.objects.filter(phase=instance.phase)
-
-            if assets.count() == 1 or assets.count() == 0:
-                # This is the last asset for the phase (case #3).
-                #
-                # Go ahead and delete the PhaseZoneDistributions in case all of the assets
-                # for a phase are deleted, but not the Phase.
-                #
-                # This also prevents an IntegrityError that happens in the deletion of the Phase,
-                # when the last asset is deleted.
-                PhaseZoneDistribution.objects.filter(phase=instance.phase).delete()
-                return
-
-        # The following code covers case #1 and #2 (creation or deletion of local assets)
-        phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
-
-        total_distribution_area = phase_geoms.area
-
-        distributions_by_zone = LocalAsset.get_distribution_by_zone(phase_geoms)
-
-        zone_proportions = PhaseZoneDistribution.calculate_zone_proportion(
-            distributions_by_zone, total_distribution_area
-        )
-
-        for zone, proportion in zone_proportions.items():
-            zone_distribution, _ = PhaseZoneDistribution.objects.get_or_create(
-                phase=instance.phase, zone=zone
-            )
-
-            zone_distribution.zone_distribution_proportion = proportion
-            zone_distribution.save()
 
     @classmethod
     def calculate_zone_proportion(cls, distributions_by_zone, total_distribution_area):
@@ -400,24 +348,9 @@ class ProjectScore(models.Model):
             score.social_equity_score = 5
             score.save()
 
-    @receiver([post_save, post_delete], sender="asset_dashboard.LocalAsset")
-    def save_project_scores(sender, instance, **kwargs):
-        phase_geoms = LocalAsset.get_aggregated_assets_by_phase(instance.phase)
-
-        total_distribution_area = phase_geoms.area
-
-        distributions_by_zone = LocalAsset.get_distribution_by_zone(phase_geoms)
-
-        zone_proportions = PhaseZoneDistribution.calculate_zone_proportion(
-            distributions_by_zone, total_distribution_area
-        )
-
-        ProjectScore.save_geographic_distance_scores(zone_proportions, instance)
-        ProjectScore.save_social_equity_score(phase_geoms, instance)
-
     @classmethod
-    def save_geographic_distance_scores(cls, zone_proportions, instance):
-        project_score, _ = cls.objects.get_or_create(project=instance.phase.project)
+    def save_geographic_distance_scores(cls, zone_proportions, project):
+        project_score, _ = cls.objects.get_or_create(project=project)
 
         zone_score = 0
 
@@ -429,8 +362,8 @@ class ProjectScore(models.Model):
         project_score.save()
 
     @classmethod
-    def save_social_equity_score(cls, total_phase_geoms, instance):
-        project_score, _ = cls.objects.get_or_create(project=instance.phase.project)
+    def save_social_equity_score(cls, total_phase_geoms, project, geoms):
+        project_score, _ = cls.objects.get_or_create(project=project)
 
         if total_phase_geoms.area == 0.0:
             disinvested_proportion = 0
@@ -440,19 +373,14 @@ class ProjectScore(models.Model):
             ).first()
 
             buffer = 0.00001
-            phase_assets = LocalAsset.objects.filter(phase=instance.phase)
-            phase_polygons = LocalAsset.aggregate_polygons(phase_assets, buffer=buffer)
-            phase_linestrings = LocalAsset.aggregate_linestrings(
-                phase_assets, buffer=buffer
-            )
-            phase_points = LocalAsset.aggregate_points(phase_assets, buffer=buffer)
-
             disinvested_area = 0
 
-            for geoms in [phase_polygons, phase_linestrings, phase_points]:
-                if geoms:
-                    intersection = disinvested_areas.geom.intersection(geoms)
-                    disinvested_area += intersection.area
+            for geom in geoms:
+                if geom:
+                    geometries_with_buffer = geom.buffer(buffer)
+                    if geometries_with_buffer:
+                        intersection = disinvested_areas.geom.intersection(geometries_with_buffer)
+                        disinvested_area += intersection.area
 
             disinvested_proportion = disinvested_area / total_phase_geoms.area
 

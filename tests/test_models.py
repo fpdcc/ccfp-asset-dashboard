@@ -3,7 +3,8 @@ import pytest
 from django.db import IntegrityError
 
 from asset_dashboard.models import ScoreWeights, Portfolio, PortfolioPhase, \
-    LocalAsset, SenateDistrict, Phase, PhaseZoneDistribution, FundingStream
+    LocalAsset, SenateDistrict, Phase, PhaseZoneDistribution, FundingStream, Project, \
+    ProjectScore
 
 
 @pytest.mark.django_db
@@ -119,7 +120,7 @@ def test_local_asset_signal(project, districts, trails_geojson, socio_economic_z
 
 @pytest.mark.django_db(databases=['default', 'fp_postgis'])
 def test_phase_zone_distribution_post_save_signal(
-    project, zones, signs_geojson, trails_geojson, socio_economic_zones
+    project, zones, signs_geojson, trails_geojson, socio_economic_zones, districts, score_weights
 ):
     prj = project.build()
     phase = Phase.objects.filter(project=prj)[0]
@@ -194,7 +195,7 @@ def test_phase_zone_distribution_post_save_signal(
 
 @pytest.mark.django_db(databases=['default', 'fp_postgis'])
 def test_phase_zone_distribution_delete_phase(
-    project, assets, phase_funding, zones
+    project, assets, phase_funding, zones, socio_economic_zones, districts, score_weights
 ):
     prj = project.build()
     phase = Phase.objects.filter(project=prj)[0]
@@ -215,5 +216,58 @@ def test_phase_zone_distribution_delete_phase(
         # try to get the distribution with the key. it should not exist
         with pytest.raises(IntegrityError):
             PhaseZoneDistribution.objects.get(pk=distribution.pk)
+
+
+@pytest.mark.django_db(databases=['default', 'fp_postgis'])
+def test_assets_calculation_robustly(project, phase_assets, zones, socio_economic_zones, districts, score_weights):
+    """
+    Regression test for a bug that would sometimes crash postgres when calculating all of the GIS totals for a phase.
+    Occurred when the GIS assets were located far away from each other. This test uses phase_assets
+    that are located across the entire county, in order to make sure the database doesn't crash.
+    """
+    prj = project.build()
+    phase = Phase.objects.filter(project=prj)[0]
+    phase_assets.build(phase=phase)
+
+    phase_zone_distributions = PhaseZoneDistribution.objects.filter(phase=phase)
+    assert phase_zone_distributions
+
+    prj.refresh_from_db()
+    assert prj.projectscore.total_score > 0
+    assert prj.senate_districts.all().count() > 0
+    assert prj.house_districts.all().count() > 0
+    assert prj.commissioner_districts.all().count() > 0
+    assert prj.zones.count() > 0
+
+
+@pytest.mark.django_db(databases=['default', 'fp_postgis'])
+def test_project_delete(project, phase_assets, zones, socio_economic_zones, districts, score_weights):
+    prj = project.build()
+    phase = Phase.objects.filter(project=prj)[0]
+    phase_assets.build(phase=phase)
+
+    # get these ids before deleting the project,
+    # so later we can test they don't exist anymore
+    project_id = prj.id
+    project_score_id = prj.projectscore.id
+    phase_id = phase.id
+    phase_asset_ids = [asset.id for asset in LocalAsset.objects.filter(phase=phase)]
+
+    # should work without a problem
+    prj.delete()
+
+    # test these things don't exist anymore
+    with pytest.raises(Project.DoesNotExist):
+        Project.objects.get(id=project_id)
+
+    with pytest.raises(ProjectScore.DoesNotExist):
+        ProjectScore.objects.get(id=project_score_id)
+
+    with pytest.raises(Phase.DoesNotExist):
+        Phase.objects.get(id=phase_id)
+
+    for asset_id in phase_asset_ids:
+        with pytest.raises(LocalAsset.DoesNotExist):
+            LocalAsset.objects.get(id=asset_id)
 
 
