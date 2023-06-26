@@ -57,6 +57,7 @@ class PortfolioPlanner extends React.Component {
       return {
         name: project.name,
         description: project.description || 'No description available.',
+        notes: project.notes || '',
         section: project.section,
         category: project.category,
         budget: parseFloat(project.total_budget) || 0,
@@ -319,15 +320,15 @@ class PortfolioPlanner extends React.Component {
       totalEstimatedZoneCostByYear: this.calculateZoneCostByYear(portfolio)
     }
   }
-  
+
   calculateEstimatedCostByKey(rows, accumulatorKey, addendField) {
     let results = {}
-    
+
     rows.forEach(project => {
       const key = project[accumulatorKey] ? project[accumulatorKey] : 'N/A' // test data has no key value...
-      
+
       let total = results[key] ? results[key] : 0
-      
+
       results = {
         ...results,
         [key]: total += parseFloat(project[addendField])
@@ -337,13 +338,13 @@ class PortfolioPlanner extends React.Component {
 
     return results
   }
-  
+
   calculateFundedAmountByYear(portfolio) {
     let results = {}
 
     portfolio.forEach(phase => {
       const year = phase['year']
-      
+
       if (!results[year] && year !== null) {
         results[year] = 0
       }
@@ -359,7 +360,7 @@ class PortfolioPlanner extends React.Component {
 
     return results
   }
-  
+
   calculateZoneCostByYear(portfolio) {
     let yearTotals = {}
 
@@ -369,7 +370,7 @@ class PortfolioPlanner extends React.Component {
       if (!yearTotals[year] && year !== null) {
         yearTotals[year] = {}
       }
-      
+
       for (const [key, value] of Object.entries(phase.cost_by_zone)) {
         let total = yearTotals[year][key] ? yearTotals[year][key] : 0
 
@@ -411,7 +412,7 @@ class PortfolioPlanner extends React.Component {
       portfolio: {...state.portfolio, unsavedChanges: true}
     }))
   }
-  
+
   changeSection(e) {
     const newSection = e.target.value
     this.setState(prevState => {
@@ -421,11 +422,11 @@ class PortfolioPlanner extends React.Component {
       }
     })
   }
-  
+
   within(source, target) {
      return source.toLowerCase().includes(target.toLowerCase())
   }
-  
+
   filterSection(project) {
     if (this.state.selectedSection) {
       return this.within(project.section, this.state.selectedSection)
@@ -433,32 +434,33 @@ class PortfolioPlanner extends React.Component {
       return project
     }
   }
-  
+
   filterRemainingProjects(projects) {
     return projects.filter(project => {
       return this.within(project.name, this.state.filterText)
     }).filter(this.filterSection)
   }
-  
+
   filterPortfolio(projects) {
     return projects.filter(this.filterSection)
   }
-  
+
   getExportFileName() {
     const date = new Date(new Date().toString().split('GMT')[0]+' UTC').toISOString().split('T')[0]
     const portfolioName = this.state.portfolio.name.replace(' ', '-')
     return `${portfolioName}-${date}.csv`
   }
-  
+
   makeExportData() {
     let rows = []
-    
+
     this.state.portfolio.projects.forEach(project => {
       const costByZone = this.getCostByZone(project)
 
       let row = {
         'name': project.name,
         'description': project.description,
+        'notes': project.notes,
         'section': project.section,
         'category': project.category,
         'budget': project.budget,
@@ -478,9 +480,9 @@ class PortfolioPlanner extends React.Component {
       }
 
       if (project.funding_streams.length > 0) {
-        // If there are funding streams, then treat each 
+        // If there are funding streams, then treat each
         // funding stream instance as an individual row.
-        
+
         project.funding_streams.forEach(funding => {
           row = {
             ...row,
@@ -491,23 +493,23 @@ class PortfolioPlanner extends React.Component {
           }
         })
       }
-      
+
       rows.push(row)
     })
 
     return rows
   }
-  
+
   getCostByZone(project) {
     let costByZone = {}
-    
+
     Object.entries(project['cost_by_zone']).forEach(([zone, cost]) => {
       costByZone = {
         ...costByZone,
         [`cost_by_${zone.toLowerCase()}_zone`]: Math.round(cost)
       }
     })
-    
+
     return costByZone
   }
 
@@ -527,7 +529,7 @@ class PortfolioPlanner extends React.Component {
               activePortfolio={this.state.portfolio}
               changePortfolio={this.selectPortfolio}
             />
-            <SectionPicker 
+            <SectionPicker
               sections={this.state.sections}
               activeSection={this.state.selectedSection}
               changeSection={this.changeSection}
@@ -548,7 +550,7 @@ class PortfolioPlanner extends React.Component {
                   allProjects={projectTableRows}
                   onAddToPortfolio={this.addProjectToPortfolio}
                   searchInput={<SearchInput
-                    onFilter={this.searchProjects} 
+                    onFilter={this.searchProjects}
                     filterText={this.state.filterText} />} />
               </>
           </div>

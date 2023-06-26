@@ -5,7 +5,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
     LocalAsset, Buildings, TrailsInfo, PoiInfo, PointsOfInterest, PicnicGroves, \
-    ParkingLots, PhaseZoneDistribution
+    ParkingLots, PhaseZoneDistribution, Trails
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -178,7 +178,7 @@ class TrailsSerializer(SourceAssetSerializer):
         fields = ('identifier', 'name', 'geom', 'source')
         geo_field = 'geom'
 
-    identifier = serializers.IntegerField(source='trails_id')
+    identifier = serializers.IntegerField(source='id')
     name = serializers.CharField(source='trail_subsystem')
     geom = GeometrySerializerMethodField()
 
@@ -187,7 +187,7 @@ class TrailsSerializer(SourceAssetSerializer):
         This is heavy, might want to consider pre-fetching related Trails obj
         in viewset -> get_queryset
         '''
-        return obj.trails.geom.transform(4326, clone=True)
+        return Trails.objects.get(trail_info=obj).geom.transform(4326, clone=True)
 
 
 class PointsOfInterestSerializer(SourceAssetSerializer):
@@ -238,7 +238,10 @@ class ParkingLotsSerializer(SourceAssetSerializer):
     geom = GeometrySerializerMethodField()
 
     def get_geom(self, obj):
-        return ParkingLots.objects.get(id=obj.parking_info.lot_id).geom.transform(4326, clone=True)
+        try:
+            return ParkingLots.objects.get(id=obj.parking_info.lot_id).geom.transform(4326, clone=True)
+        except ParkingLots.DoesNotExist:
+            return None
 
     def get_name(self, obj):
         return obj.nameid.name

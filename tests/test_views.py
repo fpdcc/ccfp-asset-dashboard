@@ -169,6 +169,7 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
     valid_form_data.update({
         'name': 'trail maintenance',
         'description': 'fixing erosion',
+        'notes': 'this is an internal note about this project',
         'category': project_category.id,
         'section_owner': section_owner.id,
         'project_manager': 'Sylvia Manager',

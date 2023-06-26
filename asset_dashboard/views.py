@@ -61,6 +61,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
                 'phase_type': phase.phase_type,
                 'name': phase.project.name,
                 'description': phase.project.description,
+                'notes': phase.project.notes,
                 'section': section,
                 'category': category,
                 'total_score': phase.project.projectscore.total_score,
@@ -111,8 +112,8 @@ class ProjectListView(LoginRequiredMixin, ListView):
 
 class ProjectListJson(LoginRequiredMixin, BaseDatatableView):
     model = Project
-    columns = ['name', 'description', 'section_owner', 'category', 'id']
-    order_columns = ['name', 'description', 'section_owner__name', 'category__name']
+    columns = ['name', 'description', 'section_owner', 'category', 'project_manager', 'id']
+    order_columns = ['name', 'description', 'section_owner__name', 'category__name', 'project_manager']
     max_display_length = 500
 
     def filter_queryset(self, qs):
@@ -121,7 +122,7 @@ class ProjectListJson(LoginRequiredMixin, BaseDatatableView):
         category = self.request.GET.get('columns[3][search][value]', None)
 
         if search:
-            qs = qs.filter(Q(name__icontains=search) | Q(description__icontains=search))
+            qs = qs.filter(Q(name__icontains=search) | Q(description__icontains=search) | Q(project_manager__icontains=search))
 
         if section:
             qs = qs.filter(section_owner__name=section)
