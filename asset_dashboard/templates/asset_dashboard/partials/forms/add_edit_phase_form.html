@@ -51,7 +51,7 @@
         <a href='#' class='btn btn-info' onclick='submitFundingForms()'>Update Funding</a>
       {% endif %}
     </div>
-      <table class="table table-hover table-border py-4">
+      <table class="table table-hover table-border funding-table py-4">
         <thead>
           <tr>
             <th>Year</th>
@@ -59,12 +59,12 @@
             <th>Actual Cost</th>
             <th>Source</th>
             <th>Secured</th>
-            <th></th>
+            <th aria-hidden="true"></th>
           </tr>
         </thead>
         <tbody id="funding_list">
         {% for form in existing_funding_forms %}
-          <tr>
+          <tr class="existing-tr">
             <td colspan="100%">
               <form method="post" class="funding" id="{{ form.id }}">
                 <table>
@@ -83,8 +83,8 @@
                     </td>
                     <td class="pl-2">{{ form.funding.source_type }}</td>
                     <td class="pl-2">{{ form.funding.funding_secured }}</td>
-                    <td class="pl-2">{{ form.id.as_hidden }}</td>
-                    <td style="width: 12%;"><a href="{% url 'delete-funding' pk=form.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
+                    <td class="pl-2 d-none" aria-hidden="true">{{ form.id.as_hidden }}</td>
+                    <td><a href="{% url 'delete-funding' pk=form.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
                   </tbody>
                 </table>
               </form>
@@ -145,7 +145,7 @@
 
     function addSource() {
       fundingTable = document.getElementById("funding_list")
-      new_row =  `<tr>
+      new_row =  `<tr class="new-tr">
           <td colspan="100%">
             <form method="post" class="funding">
               <table>
@@ -164,8 +164,8 @@
                   </td>
                   <td class='pl-2'>{{ form.funding_streams.source_type }}</td>
                   <td class='pl-2'>{{ form.funding_streams.funding_secured }}</td>
-                  <td style='width: 12%;'>
-                    <a href='#' class='btn btn-sm btn-outline-danger' onclick='removeForm()'><i class='fas fa-times'></i> Remove</a>
+                  <td>
+                    <a href='#/' class='btn btn-sm btn-outline-danger' onclick='removeForm(this);'><i class='fas fa-times' aria-hidden="true"></i> Remove</a>
                   </td>
                 </tbody>
               </table>
@@ -176,9 +176,8 @@
       fundingTable.innerHTML += new_row
     }
 
-    function removeForm() {
-      // TODO: delete the current unsaved form element
-      return
+    function removeForm(target) {
+      target.closest('.new-tr').remove()
     }
 
     function submitFundingForms() {

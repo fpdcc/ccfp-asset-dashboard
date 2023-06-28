@@ -37,3 +37,16 @@ input[type="checkbox"] {
 .year-error.visible, .budget-error.visible, .cost-error.visible {
     display: block;
 }
+
+.existing-tr>td, .new-tr>td {
+    padding: 0px;
+    border: 0px;
+}
+
+.existing-tr tr:hover, .new-tr tr:hover {
+    background-color: transparent !important;
+}
+
+.funding-table th:nth-child(-n+5), .funding td:nth-child(-n+5){
+    width: 17%;
+}
