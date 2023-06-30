@@ -28,13 +28,13 @@ input[type="checkbox"] {
     height: 40vh;
 }
 
-.year-error, .budget-error, .cost-error {
+#server-error, .year-error, .budget-error, .cost-error {
     display: none;
     font-size: 0.8em;
     color: red;
 }
 
-.year-error.visible, .budget-error.visible, .cost-error.visible {
+#server-error.visible, .year-error.visible, .budget-error.visible, .cost-error.visible {
     display: block;
 }
 

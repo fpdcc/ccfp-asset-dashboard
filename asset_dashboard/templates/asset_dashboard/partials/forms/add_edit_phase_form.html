@@ -48,8 +48,11 @@
     <div class="d-flex justify-content-between m-3">
       <h3>Phase Funding</h3>
       {% if phase %}
-        <a href='#' class='btn btn-info' onclick='submitFundingForms()'>Update Funding</a>
+        <a href='#/' class='btn btn-info' onclick='submitFundingForms()'>Update Funding</a>
       {% endif %}
+    </div>
+    <div class="" id="server-error">
+      <p>* Something went wrong! Check the rows below for errors or try again later.</p>
     </div>
       <table class="table table-hover table-border funding-table py-4">
         <thead>
@@ -182,9 +185,10 @@
 
     function submitFundingForms() {
       fundings = document.getElementsByClassName("funding")
+      serverError = document.getElementById("server-error")
       let valid = true
 
-      // Submit/validate each form on the page
+      // Front end validation for each form on the page
       for (i = 0; i < fundings.length; i++) {
         let funding = fundings[i]
 
@@ -192,11 +196,12 @@
         let budget = funding[1].value
         let actual_cost = funding[3].value
 
-        const yearError = funding[0].nextElementSibling
-        const budgetError = funding[1].nextElementSibling.nextElementSibling
-        const costError = funding[3].nextElementSibling.nextElementSibling
+        const yearError = funding[0].parentNode.nextElementSibling
+        const budgetError = funding[1].parentNode.nextElementSibling.nextElementSibling
+        const costError = funding[3].parentNode.nextElementSibling.nextElementSibling
         
         // Validate year, budget, and actual cost inputs, displaying errors
+        // TODO: set the aria hidden to false if it's visible
         if (year.toString().length != 4 || !year){
           valid = false
           yearError.classList.add("visible")
@@ -217,41 +222,58 @@
         } else if (costError) {
           costError.classList.remove("visible")
         }
-
-        if (!valid){
-          console.log("Not valid")
-          return
-        } else {
-          console.log("all good")
-        }
-
-        let data = {
-          'year': funding[0].value,
-          'budget': funding[1].value,
-          'actual_cost': funding[3].value,
-          'source_type': funding[5].value,
-          'funding_secured': funding[6].value,
-          'phase': props.phase_id,
-          'id': funding.id ? funding.id : null
-        }
-
-        fetch(`/projects/phases/fundingstream/`, {
-          method: 'POST',
-          body: JSON.stringify(data),
-          headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-          mode: 'same-origin' 
-        }).then((response)=> {
-          console.log(response)
-        })
-        // TODO: handle/display errors and return
       }
 
+      // Back end validation and submission of forms
       if (valid) {
-        location.reload()
+        let backendValid = true
+        let fetches = []
+
+        for (i = 0; i < fundings.length; i++) {
+          let funding = fundings[i]
+          let data = {
+            'year': funding[0].value,
+            // 'year': 22222,  // TODO: this is to test backend validation
+            'budget': funding[1].value,
+            'actual_cost': funding[3].value,
+            'source_type': funding[5].value,
+            'funding_secured': funding[6].value,
+            'phase': props.phase_id,
+            'id': funding.id ? funding.id : null
+          }
+
+          fetches.push(
+            fetch(`/projects/phases/fundingstream/`, {
+              method: 'POST',
+              body: JSON.stringify(data),
+              headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              mode: 'same-origin' 
+            }).then((response)=> {
+              console.log(response.status)
+              if (response.status != 201) {
+                backendValid = false
+              }
+              return response
+            })
+          )
+        }
+
+        // Wait until all forms are submitted, then show errors or reload page
+        Promise.all(fetches).then(function() {
+          console.log('backend is: ' + backendValid)
+          if (!backendValid) {
+            // TODO: handle/display errors and return
+            serverError.classList.add('visible')
+          } else {
+            serverError.classList.remove('visible')
+            window.removeEventListener('beforeunload', redirectDialog)
+            location.reload()
+          }
+        })    
       }
     }
 
@@ -262,6 +284,26 @@
         let matchLength = filteredMatch.length
 
         return filteredMatch[matchLength - 1][name]
+    }
+
+    window.addEventListener('beforeunload', redirectDialog(e))
+
+    function redirectDialog(e){
+      e.preventDefault();
+      let hasUnsavedForms = false
+      let newFormsContainer = document.getElementsByClassName('new-tr')
+
+      for(i = 0; i < newFormsContainer.length; i++ ){
+        let yearInput = newFormsContainer[i].querySelector('#id_year').value
+        let budgetInput = newFormsContainer[i].querySelector('#id_budget_0').value
+        let costInput = newFormsContainer[i].querySelector('#id_actual_cost_0').value
+        
+        if(yearInput || budgetInput > 0 || costInput > 0) {
+          // Ask user if they want to leave page, if there are unsaved funding inputs
+          e.returnValue = ""
+        }
+          
+      }
     }
   </script>
   {% compress js %}
