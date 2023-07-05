@@ -73,15 +73,15 @@
                 <table>
                   <tbody>
                     <td class="pl-2">
-                      <div>{{ form.funding.year }}</div>
+                      {{ form.funding.year }}
                       <div class="year-error" aria-hidden="true">Please enter a valid year</div>
                     </td>
                     <td class="pl-2">
-                      <div>{{ form.funding.budget }}</div>
+                      {{ form.funding.budget }}
                       <div class="budget-error" aria-hidden="true">Please enter a valid amount</div>
                     </td>
                     <td class="pl-2">
-                      <div>{{ form.funding.actual_cost }}</div>
+                      {{ form.funding.actual_cost }}
                       <div class="cost-error" aria-hidden="true">Please enter a valid amount</div>
                     </td>
                     <td class="pl-2">{{ form.funding.source_type }}</td>
@@ -196,9 +196,9 @@
         let budget = funding[1].value
         let actual_cost = funding[3].value
 
-        const yearError = funding[0].parentNode.nextElementSibling
-        const budgetError = funding[1].parentNode.nextElementSibling.nextElementSibling
-        const costError = funding[3].parentNode.nextElementSibling.nextElementSibling
+        const yearError = funding[0].nextElementSibling
+        const budgetError = funding[1].nextElementSibling.nextElementSibling
+        const costError = funding[3].nextElementSibling.nextElementSibling
         
         // Validate year, budget, and actual cost inputs, displaying errors
         // TODO: set the aria hidden to false if it's visible
@@ -286,7 +286,7 @@
         return filteredMatch[matchLength - 1][name]
     }
 
-    window.addEventListener('beforeunload', redirectDialog(e))
+    window.addEventListener('beforeunload', redirectDialog)
 
     function redirectDialog(e){
       e.preventDefault();
