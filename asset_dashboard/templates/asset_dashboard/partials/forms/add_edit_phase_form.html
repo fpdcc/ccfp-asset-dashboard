@@ -51,7 +51,7 @@
         <a href='#/' class='btn btn-info' onclick='submitFundingForms()'>Update Funding</a>
       {% endif %}
     </div>
-    <div class="" id="server-error">
+    <div class="" id="server-error" aria-hidden="true">
       <p>* Something went wrong! Check the rows below for errors or try again later.</p>
     </div>
       <table class="table table-hover table-border funding-table py-4">
@@ -201,26 +201,31 @@
         const costError = funding[3].nextElementSibling.nextElementSibling
         
         // Validate year, budget, and actual cost inputs, displaying errors
-        // TODO: set the aria hidden to false if it's visible
         if (year.toString().length != 4 || !year){
           valid = false
           yearError.classList.add("visible")
+          yearError.setAttribute("aria-hidden","false")
         } else if (yearError) {
           yearError.classList.remove("visible")
+          yearError.setAttribute("aria-hidden","true")
         }
 
         if (budget <= 0){
           valid = false
           budgetError.classList.add("visible")
+          budgetError.setAttribute("aria-hidden","false")
         } else if (budgetError) {
           budgetError.classList.remove("visible")
+          budgetError.setAttribute("aria-hidden","true")
         }
 
         if (actual_cost <= 0){
           valid = false
           costError.classList.add("visible")
+          costError.setAttribute("aria-hidden","false")
         } else if (costError) {
           costError.classList.remove("visible")
+          costError.setAttribute("aria-hidden","true")
         }
       }
 
@@ -268,8 +273,10 @@
           if (!backendValid) {
             // TODO: handle/display errors and return
             serverError.classList.add('visible')
+            serverError.setAttribute("aria-hidden","false")
           } else {
             serverError.classList.remove('visible')
+            serverError.setAttribute("aria-hidden","true")
             window.removeEventListener('beforeunload', redirectDialog)
             location.reload()
           }
