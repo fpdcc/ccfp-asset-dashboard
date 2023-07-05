@@ -147,36 +147,43 @@
     window.reactMount = document.getElementById('map')
 
     function addSource() {
-      fundingTable = document.getElementById("funding_list")
-      new_row =  `<tr class="new-tr">
-          <td colspan="100%">
-            <form method="post" class="funding">
-              <table>
-                <tbody>
-                  <td class='pl-2'>
-                    {{ form.funding_streams.year }}
-                    <div class="year-error" aria-hidden="true">Please enter a valid year</div>
-                  </td>
-                  <td class='pl-2'>
-                    {{ form.funding_streams.budget }}
-                    <div class="budget-error" aria-hidden="true">Please enter a valid amount</div>
-                  </td>
-                  <td class='pl-2'>
-                    {{ form.funding_streams.actual_cost }}
-                    <div class="cost-error" aria-hidden="true">Please enter a valid amount</div>
-                  </td>
-                  <td class='pl-2'>{{ form.funding_streams.source_type }}</td>
-                  <td class='pl-2'>{{ form.funding_streams.funding_secured }}</td>
-                  <td>
-                    <a href='#/' class='btn btn-sm btn-outline-danger' onclick='removeForm(this);'><i class='fas fa-times' aria-hidden="true"></i> Remove</a>
-                  </td>
-                </tbody>
-              </table>
-            </form>
-          </td>
-        </tr>`
+      const fundingTable = document.getElementById("funding_list")
+      const newForm =  `<form method="post" class="funding">
+          <table>
+            <tbody>
+              <td class='pl-2'>
+                {{ form.funding_streams.year }}
+                <div class="year-error" aria-hidden="true">Please enter a valid year</div>
+              </td>
+              <td class='pl-2'>
+                {{ form.funding_streams.budget }}
+                <div class="budget-error" aria-hidden="true">Please enter a valid amount</div>
+              </td>
+              <td class='pl-2'>
+                {{ form.funding_streams.actual_cost }}
+                <div class="cost-error" aria-hidden="true">Please enter a valid amount</div>
+              </td>
+              <td class='pl-2'>{{ form.funding_streams.source_type }}</td>
+              <td class='pl-2'>{{ form.funding_streams.funding_secured }}</td>
+              <td>
+                <a href='#/' class='btn btn-sm btn-outline-danger' onclick='removeForm(this);'><i class='fas fa-times' aria-hidden="true"></i> Remove</a>
+              </td>
+            </tbody>
+          </table>
+        </form>`
 
-      fundingTable.innerHTML += new_row
+      // Create a new form node from a string
+      const range = document.createRange()
+      const fragment = range.createContextualFragment(newForm)
+      let newTr = document.createElement("tr")
+      let newTd = document.createElement("td")
+      newTr.classList.add('new-tr')
+      newTd.setAttribute('colspan', '100%')
+
+      // Prevent previous unsaved inputs from being cleared when adding a new form
+      newTd.appendChild(fragment)
+      newTr.appendChild(newTd)
+      fundingTable.appendChild(newTr)
     }
 
     function removeForm(target) {
