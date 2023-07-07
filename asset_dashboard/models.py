@@ -490,6 +490,10 @@ class FundingStream(models.Model):
         blank=True,
         null=True,
     )
+        
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.budget} - {self.source_type} - {self.year}"

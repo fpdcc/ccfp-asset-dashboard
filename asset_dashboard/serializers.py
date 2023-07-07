@@ -299,6 +299,44 @@ class FundingStreamSerializer(serializers.Serializer):
             'source_type',
             'actual_cost'
         ]
+    
+    def validate_year(self, value):
+        if not len(str(value)) == 4 or not isinstance(value, int) or value < 1900:
+            raise serializers.ValidationError(
+                "Please enter a valid year past 1900, '{}' is not valid.".format(value)  
+            )
+        return value
+    
+    def validate_budget(self, value):
+        print("BUDGET:", value)
+        if len(str(value)) > 11:
+            raise serializers.ValidationError(
+                "Please enter a valid whole dollar amount, no more than 11 digits long. '{}' is not valid.".format(value)
+            )
+        return value
+        
+    def validate_actual_cost(self, value):
+        print("ACTUAL COST:", value)
+        if len(str(value)) > 11:
+            raise serializers.ValidationError(
+                "Please enter a valid whole dollar amount, no more than 11 digits long. '{}' is not valid.".format(value)
+            )
+        return value
+    
+    def validate_source_type(self, value):
+        choices = [
+            "capital_improvement_fund",
+            "bonds",
+            "construction_development",
+            "grants_fees_other",
+            "rollover",
+        ]
+        if value not in choices:
+            print('SOURCE TYPE ERROR')
+            raise serializers.ValidationError(
+                "Please enter a valid choice, '{}' is not valid.".format(value)
+            )
+        return value
 
     def save(self):
         data = {i:self.validated_data[i] for i in self.validated_data if i!='phase'}

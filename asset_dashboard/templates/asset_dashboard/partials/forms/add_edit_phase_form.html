@@ -245,7 +245,6 @@
           let funding = fundings[i]
           let data = {
             'year': funding[0].value,
-            // 'year': 22222,  // TODO: this is to test backend validation
             'budget': funding[1].value,
             'actual_cost': funding[3].value,
             'source_type': funding[5].value,
@@ -265,11 +264,13 @@
               },
               mode: 'same-origin' 
             }).then((response)=> {
-              console.log(response.status)
               if (response.status != 201) {
                 backendValid = false
               }
-              return response
+              return response.json()
+            }).then(data => {
+              // TODO: assign errors here to appropriate forms
+              console.log(data)
             })
           )
         }
