@@ -285,7 +285,6 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
                     })
                 }
             )
-        context['range'] = range(1, 3)
 
         return context
 
