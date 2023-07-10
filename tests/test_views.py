@@ -259,36 +259,6 @@ def test_project_phase_form(client, project, user):
 
 
 @pytest.mark.django_db
-def test_funding_stream_form(client, project, user):
-    client.force_login(user=user)
-    prj = project.build()
-
-    phase = Phase.objects.filter(project=prj)[0]
-
-    create_funding_stream_url = reverse('create-funding', kwargs={'pk': phase.id})
-    response = client.get(create_funding_stream_url)
-    assert response.status_code == 200
-
-    form_data = {
-        'budget_0': 1000000,
-        'budget_1': 'USD',
-        'year': 2022,
-        'funding_secured': False,
-        'source_type': 'capital_improvement_fund'
-    }
-
-    form_response = client.post(create_funding_stream_url, data=form_data)
-    assert form_response.status_code == 302
-
-    # Two funding streams are created by default, so the one just created is the 3rd
-    funding_stream = Phase.objects.get(id=phase.id).funding_streams.all()[2]
-    assert funding_stream.budget.amount == form_data['budget_0']
-    assert funding_stream.year == form_data['year']
-    assert funding_stream.funding_secured == form_data['funding_secured']
-    assert funding_stream.source_type == form_data['source_type']
-
-
-@pytest.mark.django_db
 def test_unauthenticated_user_cannot_access_site(client):
     get_urls = [
         'projects',

@@ -308,61 +308,6 @@ class PhaseDeleteView(LoginRequiredMixin, DeleteView):
         return reverse('project-detail', kwargs={'pk': context['phase'].project.id})
 
 
-class FundingStreamCreateView(LoginRequiredMixin, CreateView):
-    template_name = 'asset_dashboard/partials/forms/create_update_funding_stream_form.html'
-    model = FundingStream
-    form_class = FundingStreamForm
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        phase = Phase.objects.get(id=self.kwargs['pk'])
-
-        context.update({
-            'phase': phase,
-            'project': Project.objects.filter(phases=phase)[0]
-        })
-
-        return context
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-
-        phase = context['phase']
-
-        if form.is_valid():
-            funding_stream = form.save()
-            phase.funding_streams.add(funding_stream)
-
-            messages.success(self.request, 'Funding Stream successfully created.')
-            return HttpResponseRedirect(reverse('edit-phase', kwargs={'pk': phase.id}))
-        else:
-            return super().form_invalid(form)
-
-
-class FundingStreamUpdateView(LoginRequiredMixin, UpdateView):
-    template_name = 'asset_dashboard/partials/forms/create_update_funding_stream_form.html'
-    form_class = FundingStreamForm
-    model = FundingStream
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        phase = self.object.phase_set.get()
-
-        context.update({
-            'phase': phase,
-            'project': Project.objects.filter(phases=phase)[0]
-        })
-
-        return context
-
-    def get_success_url(self):
-        context = self.get_context_data()
-        messages.success(self.request, 'Funding Stream successfully updated.')
-        return reverse('edit-phase', kwargs={'pk': context['phase'].id})
-
-
 class FundingStreamDeleteView(LoginRequiredMixin, DeleteView):
     model = FundingStream
 
