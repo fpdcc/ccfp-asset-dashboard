@@ -5,11 +5,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer, \
 
 from asset_dashboard.models import Phase, Portfolio, PortfolioPhase, Project, \
     LocalAsset, Buildings, TrailsInfo, PoiInfo, PointsOfInterest, PicnicGroves, \
-<<<<<<< HEAD
-    ParkingLots, PhaseZoneDistribution, FundingStream
-=======
-    ParkingLots, PhaseZoneDistribution, Trails
->>>>>>> master
+    ParkingLots, PhaseZoneDistribution, Trails, FundingStream
 
 
 class UserSerializer(serializers.ModelSerializer):
