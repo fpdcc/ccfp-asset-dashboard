@@ -47,6 +47,17 @@ input[type="checkbox"] {
     background-color: transparent !important;
 }
 
+/* Set the width of all column cells except those for delete/remove btns */
 .funding-table th:nth-child(-n+5), .funding td:nth-child(-n+5){
     width: 17%;
+    min-width: 115px;
+}
+
+.funding-table {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.funding-table table {
+    width: 100%;
 }

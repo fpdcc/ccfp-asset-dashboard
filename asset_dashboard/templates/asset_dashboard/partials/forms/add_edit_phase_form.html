@@ -54,7 +54,7 @@
     <div class="" id="server-error" aria-hidden="true">
       <p>* Something went wrong! Check below for errors.</p>
     </div>
-      <table class="table table-hover table-border funding-table py-4">
+      <table class="table table-hover table-border funding-table d-block d-md-table py-4">
         <thead>
           <tr>
             <th>Year</th>
@@ -332,12 +332,12 @@
     function redirectDialog(e){
       e.preventDefault();
       let hasUnsavedForms = false
-      let newFormsContainer = document.getElementsByClassName('new-tr')
+      let newFormsContainers = document.getElementsByClassName('new-tr')
 
-      for(i = 0; i < newFormsContainer.length; i++ ){
-        let yearInput = newFormsContainer[i].querySelector('#id_year').value
-        let budgetInput = newFormsContainer[i].querySelector('#id_budget_0').value
-        let costInput = newFormsContainer[i].querySelector('#id_actual_cost_0').value
+      for(i = 0; i < newFormsContainers.length; i++ ){
+        let yearInput = newFormsContainers[i].querySelector('#id_year').value
+        let budgetInput = newFormsContainers[i].querySelector('#id_budget_0').value
+        let costInput = newFormsContainers[i].querySelector('#id_actual_cost_0').value
         
         if(yearInput || budgetInput > 0 || costInput > 0) {
           // Ask user if they want to leave page, if there are unsaved funding inputs
