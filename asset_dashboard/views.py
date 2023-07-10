@@ -61,6 +61,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
                 'phase_type': phase.phase_type,
                 'name': phase.project.name,
                 'description': phase.project.description,
+                'notes': phase.project.notes,
                 'section': section,
                 'category': category,
                 'total_score': phase.project.projectscore.total_score,

@@ -20,6 +20,7 @@ class ProjectForm(StyledFormMixin, ModelForm):
         fields = [
             "name",
             "description",
+            "notes",
             "section_owner",
             "project_manager",
             "category",

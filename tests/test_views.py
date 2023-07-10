@@ -169,6 +169,7 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
     valid_form_data.update({
         'name': 'trail maintenance',
         'description': 'fixing erosion',
+        'notes': 'this is an internal note about this project',
         'category': project_category.id,
         'section_owner': section_owner.id,
         'project_manager': 'Sylvia Manager',
@@ -316,7 +317,7 @@ def test_funding_stream_delete_view_redirect(client, project, user):
     expected_redirect = reverse('edit-phase', kwargs={'pk': phase.pk})
 
     # Check the response url
-    assert expected_redirect == response._headers['location'][1]
+    assert expected_redirect == response.headers['Location']
 
 
 @pytest.mark.django_db
@@ -334,4 +335,4 @@ def test_phase_delete_view_redirect(client, project, user):
     expected_redirect = reverse('project-detail', kwargs={'pk': prj2.pk})
 
     # Check the response url
-    assert expected_redirect == response._headers['location'][1]
+    assert expected_redirect == response.headers['Location']
