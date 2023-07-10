@@ -282,9 +282,8 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
                         'funding_secured': funding.funding_secured,
                         'source_type': funding.source_type,
                         'actual_cost': funding.actual_cost,
-                    }) 
+                    })
                 }
-                
             )
         context['range'] = range(1, 3)
 

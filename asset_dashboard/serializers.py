@@ -290,7 +290,7 @@ class FundingStreamSerializer(serializers.Serializer):
     funding_secured = serializers.BooleanField(required=True)
     source_type = serializers.CharField(required=True)
     actual_cost = serializers.IntegerField(required=True)
-    
+
     class Meta:
         model = FundingStream
         fields = [
@@ -302,28 +302,28 @@ class FundingStreamSerializer(serializers.Serializer):
             'source_type',
             'actual_cost'
         ]
-    
+
     def validate_year(self, value):
         if not len(str(value)) == 4 or not isinstance(value, int) or value < 1900:
             raise serializers.ValidationError(
-                "Please enter a valid year past 1900, '{}' is not valid.".format(value)  
+                "Please enter a valid year past 1900, '{}' is not valid.".format(value)
             )
         return value
-    
+
     def validate_budget(self, value):
         if len(str(value)) > 11:
             raise serializers.ValidationError(
                 "Please enter a valid whole dollar amount, no more than 11 digits long. '{}' is not valid.".format(value)
             )
         return value
-        
+
     def validate_actual_cost(self, value):
         if len(str(value)) > 11:
             raise serializers.ValidationError(
                 "Please enter a valid whole dollar amount, no more than 11 digits long. '{}' is not valid.".format(value)
             )
         return value
-    
+
     def validate_source_type(self, value):
         choices = [
             "capital_improvement_fund",
@@ -339,7 +339,7 @@ class FundingStreamSerializer(serializers.Serializer):
         return value
 
     def save(self):
-        data = {i:self.validated_data[i] for i in self.validated_data if i!='phase'}
+        data = {i: self.validated_data[i] for i in self.validated_data if i != 'phase'}
         phase = Phase.objects.get(id=self.validated_data["phase"].id)
         funding_stream, created = FundingStream.objects.update_or_create(
             id=self.validated_data["id"],
