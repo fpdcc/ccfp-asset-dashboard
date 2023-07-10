@@ -52,7 +52,7 @@
       {% endif %}
     </div>
     <div class="" id="server-error" aria-hidden="true">
-      <p>* Something went wrong! Check the rows below for errors or try again later.</p>
+      <p>* Something went wrong! Check below for errors.</p>
     </div>
       <table class="table table-hover table-border funding-table py-4">
         <thead>
@@ -74,18 +74,24 @@
                   <tbody>
                     <td class="pl-2">
                       {{ form.funding.year }}
-                      <div class="year-error" aria-hidden="true">Please enter a valid year</div>
+                      <div class="year-error" aria-hidden="true"></div>
                     </td>
                     <td class="pl-2">
                       {{ form.funding.budget }}
-                      <div class="budget-error" aria-hidden="true">Please enter a valid amount</div>
+                      <div class="budget-error" aria-hidden="true"></div>
                     </td>
                     <td class="pl-2">
                       {{ form.funding.actual_cost }}
-                      <div class="cost-error" aria-hidden="true">Please enter a valid amount</div>
+                      <div class="cost-error" aria-hidden="true"></div>
                     </td>
-                    <td class="pl-2">{{ form.funding.source_type }}</td>
-                    <td class="pl-2">{{ form.funding.funding_secured }}</td>
+                    <td class="pl-2">
+                      {{ form.funding.source_type }}
+                      <div class="source-error" aria-hidden="true"></div>
+                    </td>
+                    <td class="pl-2">
+                      {{ form.funding.funding_secured }}
+                      <div class="secured-error" aria-hidden="true"></div>
+                    </td>
                     <td class="pl-2 d-none" aria-hidden="true">{{ form.id.as_hidden }}</td>
                     <td><a href="{% url 'delete-funding' pk=form.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
                   </tbody>
@@ -163,8 +169,14 @@
                 {{ form.funding_streams.actual_cost }}
                 <div class="cost-error" aria-hidden="true">Please enter a valid amount</div>
               </td>
-              <td class='pl-2'>{{ form.funding_streams.source_type }}</td>
-              <td class='pl-2'>{{ form.funding_streams.funding_secured }}</td>
+              <td class='pl-2'>
+                {{ form.funding_streams.source_type }}
+                <div class="source-error" aria-hidden="true"></div>
+              </td>
+              <td class='pl-2'>
+                {{ form.funding_streams.funding_secured }}
+                <div class="secured-error" aria-hidden="true"></div>
+              </td>
               <td>
                 <a href='#/' class='btn btn-sm btn-outline-danger' onclick='removeForm(this);'><i class='fas fa-times' aria-hidden="true"></i> Remove</a>
               </td>
@@ -198,7 +210,6 @@
       // Front end validation for each form on the page
       for (i = 0; i < fundings.length; i++) {
         let funding = fundings[i]
-
         let year = funding[0].value
         let budget = funding[1].value
         let actual_cost = funding[3].value
@@ -206,33 +217,36 @@
         const yearError = funding[0].nextElementSibling
         const budgetError = funding[1].nextElementSibling.nextElementSibling
         const costError = funding[3].nextElementSibling.nextElementSibling
+        const sourceError = funding[5].nextElementSibling
+        const securedError = funding[6].nextElementSibling
+
+        // Hide the errors that front end validation doesn't consider, 
+        // in case they're visible from a previously failed attempt
+        hideError(sourceError)
+        hideError(securedError)
         
-        // Validate year, budget, and actual cost inputs, displaying errors
         if (year.toString().length != 4 || !year){
           valid = false
-          yearError.classList.add("visible")
-          yearError.setAttribute("aria-hidden","false")
-        } else if (yearError) {
-          yearError.classList.remove("visible")
-          yearError.setAttribute("aria-hidden","true")
+          yearError.innerHTML = 'Please enter a valid year'
+          showError(yearError)
+        } else {
+          hideError(yearError)
         }
 
         if (budget <= 0){
           valid = false
-          budgetError.classList.add("visible")
-          budgetError.setAttribute("aria-hidden","false")
-        } else if (budgetError) {
-          budgetError.classList.remove("visible")
-          budgetError.setAttribute("aria-hidden","true")
+          budgetError.innerHTML = 'Please enter a valid amount'
+          showError(budgetError)
+        } else {
+          hideError(budgetError)
         }
 
         if (actual_cost <= 0){
           valid = false
-          costError.classList.add("visible")
-          costError.setAttribute("aria-hidden","false")
-        } else if (costError) {
-          costError.classList.remove("visible")
-          costError.setAttribute("aria-hidden","true")
+          costError.innerHTML = 'Please enter a valid amount'
+          showError(costError)
+        } else {
+          hideError(costError)
         }
       }
 
@@ -243,6 +257,19 @@
 
         for (i = 0; i < fundings.length; i++) {
           let funding = fundings[i]
+          const yearError = funding[0].nextElementSibling
+          const budgetError = funding[1].nextElementSibling.nextElementSibling
+          const costError = funding[3].nextElementSibling.nextElementSibling
+          const sourceError = funding[5].nextElementSibling
+          const securedError = funding[6].nextElementSibling
+
+          const errors = [yearError, budgetError, costError, sourceError, securedError]
+          errors.forEach(error => {
+            // Hide errors at the start of submission
+            error.classList.remove("visible")
+            error.setAttribute("aria-hidden","true")
+          })
+
           let data = {
             'year': funding[0].value,
             'budget': funding[1].value,
@@ -250,9 +277,11 @@
             'source_type': funding[5].value,
             'funding_secured': funding[6].value,
             'phase': props.phase_id,
-            'id': funding.id ? funding.id : null
+            'id': funding.id ? funding.id : null,
           }
 
+          // Get all fetches into an array, so we can wait to check
+          // if they were successful after they're all done
           fetches.push(
             fetch(`/projects/phases/fundingstream/`, {
               method: 'POST',
@@ -269,22 +298,19 @@
               }
               return response.json()
             }).then(data => {
-              // TODO: assign errors here to appropriate forms
-              console.log(data)
+              if (!backendValid) {
+                showBackendErrors(data, ...errors)
+              }
             })
           )
         }
 
-        // Wait until all forms are submitted, then show errors or reload page
+        // Wait until all fetches run, then either show serverError or reload page
         Promise.all(fetches).then(function() {
-          console.log('backend is: ' + backendValid)
           if (!backendValid) {
-            // TODO: handle/display errors and return
-            serverError.classList.add('visible')
-            serverError.setAttribute("aria-hidden","false")
+            showError(serverError)
           } else {
-            serverError.classList.remove('visible')
-            serverError.setAttribute("aria-hidden","true")
+            hideError(serverError)
             window.removeEventListener('beforeunload', redirectDialog)
             location.reload()
           }
@@ -319,6 +345,44 @@
         }
           
       }
+    }
+
+    function showBackendErrors(data, yearError, budgetError, costError, sourceError, securedError) {
+      let keys = Object.keys(data)
+      keys.forEach(key => {
+        switch(key) {
+          case 'year':
+            yearError.innerHTML = data.year.join(' ')
+            showError(yearError)
+            break;
+          case 'budget':
+            budgetError.innerHTML = data.budget.join(' ')
+            showError(budgetError)
+            break;
+          case 'actual_cost':
+            costError.innerHTML = data.actual_cost.join(' ')
+            showError(costError)
+            break;
+          case 'source_type':
+            sourceError.innerHTML = data.source_type.join(' ')
+            showError(sourceError)
+            break;
+          case 'funding_secured':
+            securedError.innerHTML = data.funding_secured.join(' ')
+            showError(securedError)
+            break;
+        }
+      })
+    }
+
+    function showError(error){
+      error.classList.add("visible")
+      error.setAttribute("aria-hidden","false")
+    }
+
+    function hideError(error){
+      error.classList.remove("visible")
+      error.setAttribute("aria-hidden","true")
     }
   </script>
   {% compress js %}

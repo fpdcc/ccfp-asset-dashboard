@@ -308,7 +308,6 @@ class FundingStreamSerializer(serializers.Serializer):
         return value
     
     def validate_budget(self, value):
-        print("BUDGET:", value)
         if len(str(value)) > 11:
             raise serializers.ValidationError(
                 "Please enter a valid whole dollar amount, no more than 11 digits long. '{}' is not valid.".format(value)
@@ -316,7 +315,6 @@ class FundingStreamSerializer(serializers.Serializer):
         return value
         
     def validate_actual_cost(self, value):
-        print("ACTUAL COST:", value)
         if len(str(value)) > 11:
             raise serializers.ValidationError(
                 "Please enter a valid whole dollar amount, no more than 11 digits long. '{}' is not valid.".format(value)
@@ -332,7 +330,6 @@ class FundingStreamSerializer(serializers.Serializer):
             "rollover",
         ]
         if value not in choices:
-            print('SOURCE TYPE ERROR')
             raise serializers.ValidationError(
                 "Please enter a valid choice, '{}' is not valid.".format(value)
             )
