@@ -51,6 +51,9 @@
         <a href='#/' class='btn btn-info' onclick='submitFundingForms()'>Update Funding</a>
       {% endif %}
     </div>
+    {% if not phase %}
+      <p>Create the phase so you can add/update funding streams.</p>
+    {% endif %}
     <div class="" id="server-error" aria-hidden="true">
       <p>* Something went wrong! Check below for errors.</p>
     </div>
@@ -103,14 +106,14 @@
         </tbody>
       </table>      
       {% if phase %}
+        <div class="mb-4">
+          <a href="#funding_list" class="text-info lead" onclick="addSource()">+ Add a source</a>
+        </div>
         <div>
           <p class="lead">Estimated Cost: ${{ phase.total_budget|intcomma }}</p>
           <p class="lead">Funded Amount: ${{ phase.total_funded_amount|intcomma }}</p>
         </div>
       {% endif %}
-    <div>
-      <a href="#funding_list" class="text-info lead" onclick="addSource()">+ Add a source</a>
-    </div>
   </div>
 </div>
 
