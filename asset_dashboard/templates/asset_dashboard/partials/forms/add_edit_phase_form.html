@@ -350,8 +350,7 @@
     }
 
     function showBackendErrors(data, yearError, budgetError, costError, sourceError, securedError) {
-      let keys = Object.keys(data)
-      keys.forEach(key => {
+      Object.keys(data).forEach(key => {
         switch(key) {
           case 'year':
             yearError.innerHTML = data.year.join(' ')
