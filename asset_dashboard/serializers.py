@@ -325,13 +325,8 @@ class FundingStreamSerializer(serializers.Serializer):
         return value
 
     def validate_source_type(self, value):
-        choices = [
-            "capital_improvement_fund",
-            "bonds",
-            "construction_development",
-            "grants_fees_other",
-            "rollover",
-        ]
+        choices = [choice[0] for choice in FundingStream.SOURCE_TYPE_CHOICES]
+
         if value not in choices:
             raise serializers.ValidationError(
                 "Please enter a valid choice, '{}' is not valid.".format(value)
