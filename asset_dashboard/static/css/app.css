@@ -55,7 +55,7 @@ input[type="checkbox"] {
 
 .funding-table {
     overflow-x: auto;
-    white-space: nowrap;
+    white-space: normal;
 }
 
 .funding-table table {
