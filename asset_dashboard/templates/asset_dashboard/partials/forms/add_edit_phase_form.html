@@ -48,7 +48,7 @@
     <div class="d-flex justify-content-between m-3">
       <h3>Phase Funding</h3>
       {% if phase %}
-        <a href='#/' class='btn btn-info' onclick='submitFundingForms()'>Update Funding</a>
+        <btn id="update-funding" class='btn btn-info'>Update Funding</btn>
       {% endif %}
     </div>
     {% if not phase %}
@@ -107,7 +107,7 @@
       </table>      
       {% if phase %}
         <div class="mb-4">
-          <a href="#funding_list" class="text-info lead" onclick="addSource()">+ Add a source</a>
+          <a href="#funding_list" id="add-source" class="text-info lead">+ Add a source</a>
         </div>
         <div>
           <p class="lead">Estimated Cost: ${{ phase.total_budget|intcomma }}</p>
@@ -155,6 +155,8 @@
     window.props = JSON.parse(document.getElementById('props').textContent)
     window.reactMount = document.getElementById('map')
 
+    let addSourceBtn = document.getElementById('add-source')
+    addSourceBtn.addEventListener('click', addSource)
     function addSource() {
       const fundingTable = document.getElementById("funding_list")
       const newForm =  `<form method="post" class="funding">
@@ -181,7 +183,7 @@
                 <div class="secured-error" aria-hidden="true"></div>
               </td>
               <td>
-                <a href='#/' class='btn btn-sm btn-outline-danger' onclick='removeForm(this);'><i class='fas fa-times' aria-hidden="true"></i> Remove</a>
+                <btn class='btn btn-sm btn-outline-danger'><i class='fas fa-times' aria-hidden="true"></i> Remove</btn>
               </td>
             </tbody>
           </table>
@@ -195,16 +197,21 @@
       newTr.classList.add('new-tr')
       newTd.setAttribute('colspan', '100%')
 
-      // Prevent previous unsaved inputs from being cleared when adding a new form
       newTd.appendChild(fragment)
+      let removeBtn = newTd.getElementsByClassName('btn-outline-danger')[0]
+      removeBtn.addEventListener('click', removeForm)
+
+      // Prevent previous unsaved inputs from being cleared when adding a new form
       newTr.appendChild(newTd)
       fundingTable.appendChild(newTr)
     }
 
-    function removeForm(target) {
-      target.closest('.new-tr').remove()
+    function removeForm() {
+      this.closest('.new-tr').remove()
     }
 
+    let updateFundingBtn = document.getElementById('update-funding')
+    updateFundingBtn.addEventListener('click', submitFundingForms)
     function submitFundingForms() {
       fundings = document.getElementsByClassName("funding")
       serverError = document.getElementById("server-error")
