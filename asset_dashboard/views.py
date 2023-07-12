@@ -225,7 +225,6 @@ class ProjectDeleteView(LoginRequiredMixin, DeleteView):
     model = Project
 
     def get_success_url(self):
-        context = self.get_context_data()
         messages.success(self.request, 'Project successfully deleted.')
         return reverse('projects')
 
