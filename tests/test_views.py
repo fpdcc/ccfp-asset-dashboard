@@ -220,7 +220,7 @@ def test_project_detail_view(client, project, project_list, section_owner, distr
     assert invalid_project_response.context['form'].errors
 
     # test the ProjectScore validation
-    invalid_score_form = {**valid_form_data, **{'name': 'name', 'description': 'desc', 'core_mission_score': 0}}
+    invalid_score_form = {**valid_form_data, **{'name': 'name', 'description': 'desc', 'core_mission_score': 6}}
     invalid_score_response = client.post(project_detail_url, data=invalid_score_form)
     assert invalid_score_response.context['score_form'].errors
 
