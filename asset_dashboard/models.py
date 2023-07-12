@@ -302,7 +302,7 @@ class ScoreField(models.IntegerField):
         if "blank" not in kwargs:
             kwargs["blank"] = True
         if "validators" not in kwargs:
-            kwargs["validators"] = [MinValueValidator(1), MaxValueValidator(5)]
+            kwargs["validators"] = [MinValueValidator(0), MaxValueValidator(5)]
 
         super().__init__(*args, **kwargs)
 
