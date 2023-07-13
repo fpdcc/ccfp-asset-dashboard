@@ -10,10 +10,10 @@
 <section class="m-2">
 <div class="row">
   <div class="border border-secondary rounded shadow-sm col m-2 p-3 card">
-  
+
     <form method="post">
       {% csrf_token %}
-    
+
       {{ form.errors }}
   
       <div class="row col justify-content-between">
@@ -48,47 +48,72 @@
     <div class="d-flex justify-content-between m-3">
       <h3>Phase Funding</h3>
       {% if phase %}
-        <a href="{% url 'create-funding' pk=phase.id %}" class="text-info lead">Add funding ></a>
+        <btn id="update-funding" class='btn btn-info'>Update Funding</btn>
       {% endif %}
     </div>
-    {% if funding_streams %}
-      <table class="table table-hover table-border py-4">
+    {% if not phase %}
+      <p>Create the phase so you can add/update funding streams.</p>
+    {% endif %}
+    <div class="" id="server-error" aria-hidden="true">
+      <p>* Something went wrong! Check below for errors.</p>
+    </div>
+      <table class="table table-hover table-border funding-table d-block d-md-table py-4">
         <thead>
           <tr>
             <th>Year</th>
             <th>Funds</th>
+            <th>Actual Cost</th>
             <th>Source</th>
             <th>Secured</th>
-            <th></th>
-            <th></th>
+            <th aria-hidden="true"></th>
           </tr>
         </thead>
-        <tbody>
-          {% for funding in funding_streams %}
-          <tr>
-            <td>{{ funding.year }}</td>
-            <td>{{ funding.budget }}</td>
-            <td>{{ funding.get_source_type_display }}</td>
-            <td>{{ funding.funding_secured }}</td>
-            <td><a href="{% url 'update-funding' pk=funding.id %}" class="text-info lead">Edit</a></td>
-            <td style="width: 12%;"><a href="{% url 'delete-funding' pk=funding.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
+        <tbody id="funding_list">
+        {% for form in existing_funding_forms %}
+          <tr class="existing-tr">
+            <td colspan="100%">
+              <form method="post" class="funding" id="{{ form.id }}">
+                <table>
+                  <tbody>
+                    <td class="pl-2">
+                      {{ form.funding.year }}
+                      <div class="year-error" aria-hidden="true"></div>
+                    </td>
+                    <td class="pl-2">
+                      {{ form.funding.budget }}
+                      <div class="budget-error" aria-hidden="true"></div>
+                    </td>
+                    <td class="pl-2">
+                      {{ form.funding.actual_cost }}
+                      <div class="cost-error" aria-hidden="true"></div>
+                    </td>
+                    <td class="pl-2">
+                      {{ form.funding.source_type }}
+                      <div class="source-error" aria-hidden="true"></div>
+                    </td>
+                    <td class="pl-2">
+                      {{ form.funding.funding_secured }}
+                      <div class="secured-error" aria-hidden="true"></div>
+                    </td>
+                    <td class="pl-2 d-none" aria-hidden="true">{{ form.id.as_hidden }}</td>
+                    <td><a href="{% url 'delete-funding' pk=form.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
+                  </tbody>
+                </table>
+              </form>
+            </td>
           </tr>
-          {% endfor %}
+        {% endfor %}
         </tbody>
-      </table>
-      <div>
-        <p class="lead">Estimated Cost: ${{ phase.total_budget|intcomma }}</p>
-        <p class="lead">Funded Amount: ${{ phase.total_funded_amount|intcomma }}</p>
-      </div>
-    {% else %}
-      <p>
-        {% if phase and not funding_stream %}
-          This phase has no funding.
-        {% else %}
-          Create the phase so you can add funding.
-        {% endif %}
-      </p>
-    {% endif %}
+      </table>      
+      {% if phase %}
+        <div class="mb-4">
+          <a href="#funding_list" id="add-source" class="text-info lead">+ Add a source</a>
+        </div>
+        <div>
+          <p class="lead">Estimated Cost: ${{ phase.total_budget|intcomma }}</p>
+          <p class="lead">Funded Amount: ${{ phase.total_funded_amount|intcomma }}</p>
+        </div>
+      {% endif %}
   </div>
 </div>
 
@@ -119,7 +144,7 @@
     {% endif %}
   </div>
 </div>
-</section
+</section>
 {% endblock %}
 
 {% block extra_js %}
@@ -129,6 +154,244 @@
   <script type="text/javascript">
     window.props = JSON.parse(document.getElementById('props').textContent)
     window.reactMount = document.getElementById('map')
+
+    let addSourceBtn = document.getElementById('add-source')
+    addSourceBtn.addEventListener('click', addSource)
+    function addSource() {
+      const fundingTable = document.getElementById("funding_list")
+      const newForm =  `<form method="post" class="funding">
+          <table>
+            <tbody>
+              <td class='pl-2'>
+                {{ form.funding_streams.year }}
+                <div class="year-error" aria-hidden="true">Please enter a valid year</div>
+              </td>
+              <td class='pl-2'>
+                {{ form.funding_streams.budget }}
+                <div class="budget-error" aria-hidden="true">Please enter a valid amount</div>
+              </td>
+              <td class='pl-2'>
+                {{ form.funding_streams.actual_cost }}
+                <div class="cost-error" aria-hidden="true">Please enter a valid amount</div>
+              </td>
+              <td class='pl-2'>
+                {{ form.funding_streams.source_type }}
+                <div class="source-error" aria-hidden="true"></div>
+              </td>
+              <td class='pl-2'>
+                {{ form.funding_streams.funding_secured }}
+                <div class="secured-error" aria-hidden="true"></div>
+              </td>
+              <td>
+                <btn class='btn btn-sm btn-outline-danger'><i class='fas fa-times' aria-hidden="true"></i> Remove</btn>
+              </td>
+            </tbody>
+          </table>
+        </form>`
+
+      // Create a new form node from a string
+      const range = document.createRange()
+      const fragment = range.createContextualFragment(newForm)
+      let newTr = document.createElement("tr")
+      let newTd = document.createElement("td")
+      newTr.classList.add('new-tr')
+      newTd.setAttribute('colspan', '100%')
+
+      newTd.appendChild(fragment)
+      let removeBtn = newTd.getElementsByClassName('btn-outline-danger')[0]
+      removeBtn.addEventListener('click', removeForm)
+
+      // Prevent previous unsaved inputs from being cleared when adding a new form
+      newTr.appendChild(newTd)
+      fundingTable.appendChild(newTr)
+    }
+
+    function removeForm() {
+      this.closest('.new-tr').remove()
+    }
+
+    let updateFundingBtn = document.getElementById('update-funding')
+    updateFundingBtn.addEventListener('click', submitFundingForms)
+    function submitFundingForms() {
+      fundings = document.getElementsByClassName("funding")
+      serverError = document.getElementById("server-error")
+      let valid = true
+
+      // Front end validation for each form on the page
+      for (i = 0; i < fundings.length; i++) {
+        let funding = fundings[i]
+        let year = funding[0].value
+        let budget = funding[1].value
+        let actual_cost = funding[3].value
+
+        const yearError = funding[0].nextElementSibling
+        const budgetError = funding[1].nextElementSibling.nextElementSibling
+        const costError = funding[3].nextElementSibling.nextElementSibling
+        const sourceError = funding[5].nextElementSibling
+        const securedError = funding[6].nextElementSibling
+
+        // Hide the errors that front end validation doesn't consider, 
+        // in case they're visible from a previously failed attempt
+        hideError(sourceError)
+        hideError(securedError)
+        
+        if (year.toString().length != 4 || !year){
+          valid = false
+          yearError.innerHTML = 'Please enter a valid year'
+          showError(yearError)
+        } else {
+          hideError(yearError)
+        }
+
+        if (budget < 0){
+          valid = false
+          budgetError.innerHTML = 'Please enter a valid amount'
+          showError(budgetError)
+        } else {
+          hideError(budgetError)
+        }
+
+        if (actual_cost < 0){
+          valid = false
+          costError.innerHTML = 'Please enter a valid amount'
+          showError(costError)
+        } else {
+          hideError(costError)
+        }
+      }
+
+      // Back end validation and submission of forms
+      if (valid) {
+        let backendValid = true
+        let fetches = []
+
+        for (i = 0; i < fundings.length; i++) {
+          let funding = fundings[i]
+          const yearError = funding[0].nextElementSibling
+          const budgetError = funding[1].nextElementSibling.nextElementSibling
+          const costError = funding[3].nextElementSibling.nextElementSibling
+          const sourceError = funding[5].nextElementSibling
+          const securedError = funding[6].nextElementSibling
+
+          const errors = [yearError, budgetError, costError, sourceError, securedError]
+          errors.forEach(error => {
+            // Hide errors at the start of submission
+            error.classList.remove("visible")
+            error.setAttribute("aria-hidden","true")
+          })
+
+          let data = {
+            'year': funding[0].value,
+            'budget': funding[1].value,
+            'actual_cost': funding[3].value,
+            'source_type': funding[5].value,
+            'funding_secured': funding[6].value,
+            'phase': props.phase_id,
+            'id': funding.id ? funding.id : null,
+          }
+
+          // Get all fetches into an array, so we can wait to check
+          // if they were successful after they're all done
+          fetches.push(
+            fetch(`/projects/phases/fundingstream/`, {
+              method: 'POST',
+              body: JSON.stringify(data),
+              headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              mode: 'same-origin' 
+            }).then((response)=> {
+              if (response.status != 201) {
+                backendValid = false
+              }
+              return response.json()
+            }).then(data => {
+              if (!backendValid) {
+                showBackendErrors(data, ...errors)
+              }
+            })
+          )
+        }
+
+        // Wait until all fetches run, then either show serverError or reload page
+        Promise.all(fetches).then(function() {
+          if (!backendValid) {
+            showError(serverError)
+          } else {
+            hideError(serverError)
+            window.removeEventListener('beforeunload', redirectDialog)
+            location.reload()
+          }
+        })    
+      }
+    }
+
+    const getCookie = (name) => {
+        const match = document.cookie.split(';').map(el => { let [key,value] = el.split('='); return { [key.trim()]: value }})
+        const filteredMatch = match.filter(e => Object.keys(e)[0] === name)
+
+        let matchLength = filteredMatch.length
+
+        return filteredMatch[matchLength - 1][name]
+    }
+
+    window.addEventListener('beforeunload', redirectDialog)
+
+    function redirectDialog(e){
+      let hasUnsavedForms = false
+      let newFormsContainers = document.getElementsByClassName('new-tr')
+
+      for(i = 0; i < newFormsContainers.length; i++ ){
+        let yearInput = newFormsContainers[i].querySelector('#id_year').value
+        let budgetInput = newFormsContainers[i].querySelector('#id_budget_0').value
+        let costInput = newFormsContainers[i].querySelector('#id_actual_cost_0').value
+        
+        if(yearInput || budgetInput > 0 || costInput > 0) {
+          // Ask user if they want to leave page, if there are unsaved funding inputs
+          e.preventDefault();
+          e.returnValue = ""
+        }   
+      }
+    }
+
+    function showBackendErrors(data, yearError, budgetError, costError, sourceError, securedError) {
+      Object.keys(data).forEach(key => {
+        switch(key) {
+          case 'year':
+            yearError.innerHTML = data.year.join(' ')
+            showError(yearError)
+            break;
+          case 'budget':
+            budgetError.innerHTML = data.budget.join(' ')
+            showError(budgetError)
+            break;
+          case 'actual_cost':
+            costError.innerHTML = data.actual_cost.join(' ')
+            showError(costError)
+            break;
+          case 'source_type':
+            sourceError.innerHTML = data.source_type.join(' ')
+            showError(sourceError)
+            break;
+          case 'funding_secured':
+            securedError.innerHTML = data.funding_secured.join(' ')
+            showError(securedError)
+            break;
+        }
+      })
+    }
+
+    function showError(error){
+      error.classList.add("visible")
+      error.setAttribute("aria-hidden","false")
+    }
+
+    function hideError(error){
+      error.classList.remove("visible")
+      error.setAttribute("aria-hidden","true")
+    }
   </script>
   {% compress js %}
     <script type="text/jsx" src="{% static 'js/components/PhaseDetailAssetTable.js' %}"></script>
