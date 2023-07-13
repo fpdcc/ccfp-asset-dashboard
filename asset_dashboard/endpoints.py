@@ -103,7 +103,9 @@ class AssetViewSet(viewsets.ModelViewSet):
                 # model.Search doesn't have 'and_fields' attribute
                 pass
 
-        return self.model_cls.get('model').objects.filter(search_filter)
+            return self.model_cls.get('model').objects.filter(search_filter)
+        else:
+            return self.model_cls.get('model').objects.all()
 
 
 class LocalAssetViewSet(viewsets.ModelViewSet):
