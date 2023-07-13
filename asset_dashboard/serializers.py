@@ -311,14 +311,14 @@ class FundingStreamSerializer(serializers.Serializer):
         return value
 
     def validate_budget(self, value):
-        if len(str(value)) > 11:
+        if len(str(value)) > 11 or value < 0:
             raise serializers.ValidationError(
                 "Please enter a valid whole dollar amount, no more than 11 digits long. '{}' is not valid.".format(value)
             )
         return value
 
     def validate_actual_cost(self, value):
-        if len(str(value)) > 11:
+        if len(str(value)) > 11 or value < 0:
             raise serializers.ValidationError(
                 "Please enter a valid whole dollar amount, no more than 11 digits long. '{}' is not valid.".format(value)
             )

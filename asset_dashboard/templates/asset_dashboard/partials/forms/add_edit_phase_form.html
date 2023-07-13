@@ -243,7 +243,7 @@
           hideError(yearError)
         }
 
-        if (budget <= 0){
+        if (budget < 0){
           valid = false
           budgetError.innerHTML = 'Please enter a valid amount'
           showError(budgetError)
@@ -251,7 +251,7 @@
           hideError(budgetError)
         }
 
-        if (actual_cost <= 0){
+        if (actual_cost < 0){
           valid = false
           costError.innerHTML = 'Please enter a valid amount'
           showError(costError)
