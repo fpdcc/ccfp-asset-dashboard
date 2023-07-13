@@ -1,0 +1,24 @@
+{% extends 'asset_dashboard/base.html' %}
+{% load static %}
+{% load static widget_tweaks i18n %}
+
+{% block title %}Delete Project{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 bg-white p-3 border rounded shadow-sm">
+                <h2 class="text-center">Delete Project</h2>
+                <form method="POST">{% csrf_token %}
+                  <p class="text-center">Are you sure you want to delete <strong>{{ object }}</strong> project from the list of projects?</p>
+                  {{ form }}
+
+                  <div class="text-center m-2">
+                    <input type="submit" value="Confirm" class="btn btn-danger">
+                  </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}

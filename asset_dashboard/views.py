@@ -221,6 +221,14 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
+class ProjectDeleteView(LoginRequiredMixin, DeleteView):
+    model = Project
+
+    def get_success_url(self):
+        messages.success(self.request, 'Project successfully deleted.')
+        return reverse('projects')
+
+
 class PhaseCreateView(LoginRequiredMixin, CreateView):
     template_name = 'asset_dashboard/partials/forms/add_edit_phase_form.html'
     form_class = PhaseForm
