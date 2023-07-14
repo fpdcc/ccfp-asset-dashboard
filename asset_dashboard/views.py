@@ -318,10 +318,15 @@ class PhaseDeleteView(LoginRequiredMixin, DeleteView):
 class FundingStreamDeleteView(LoginRequiredMixin, DeleteView):
     model = FundingStream
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['funding_phase'] = context['object'].phase_set.get()
+        return context
+
     def get_success_url(self):
         context = self.get_context_data()
         messages.success(self.request, 'Funding Stream successfully deleted.')
-        return reverse('edit-phase', kwargs={'pk': context['fundingstream'].phase_set.get().id})
+        return reverse('edit-phase', kwargs={'pk': context['funding_phase'].id})
 
 
 class AssetAddEditView(LoginRequiredMixin, TemplateView):
