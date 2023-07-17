@@ -121,6 +121,11 @@ function SelectAssetsMap(props) {
   function searchAssets() {
     setIsLoading(true)
 
+    if (searchText.length == 0) {
+      setAjaxMessage({text: 'Please enter a search query.', tag: 'danger'})
+      return
+    }
+
     const url = `/assets/?` + new URLSearchParams({
       'q': searchText,
       'asset_type': searchAssetType
