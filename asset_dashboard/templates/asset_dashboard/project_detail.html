@@ -40,6 +40,44 @@
       <script type="text/javascript">
         window.props = JSON.parse(document.getElementById('props').textContent)
         window.reactMount = document.getElementById('map')
+
+        let projectForm = document.querySelector('form')
+        let formTimeout
+        projectForm.addEventListener('change', autoSave)
+
+        function autoSave(event) {
+          clearTimeout(formTimeout)
+
+          formTimeout = setTimeout(() => {
+            console.log(this)
+            console.log(event)
+            // TODO: submit the form for saving
+            // fetch(`/projects/{{project.pk}}`, {
+            //   method: 'POST',
+            //   body: JSON.stringify(data),
+            //   headers: {
+            //     'X-CSRFToken': getCookie('csrftoken'),
+            //     'Accept': 'application/json',
+            //     'Content-Type': 'application/json',
+            //   },
+            //   mode: 'same-origin'
+            // }).then((response)=> {
+            //   return response.json()
+            // })
+            const messageDiv = document.getElementById('messages')
+            const messageText =`<div class="alert alert-success auto-save-msg notify" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                Project successfully saved.
+              </div>`
+
+            messageDiv.innerHTML = ''
+            messageDiv.insertAdjacentHTML('beforeend', messageText)
+            let messageContent = messageDiv.getElementsByClassName('auto-save-msg notify')
+
+            // "Wait" to draw the element, so that this transition works
+            setTimeout(function() { messageContent[0].classList.remove('notify') }, 0);
+          }, 500)
+        }
       </script>
       {% compress js %}
         <script type="text/jsx" src="{% static 'js/components/ProjectDetailAssetTable.js' %}"></script>

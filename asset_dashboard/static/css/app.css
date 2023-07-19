@@ -61,3 +61,11 @@ input[type="checkbox"] {
 .funding-table table {
     width: 100%;
 }
+
+.auto-save-msg {
+    transition: all 1s;
+}
+
+.auto-save-msg.notify {
+    background-color: white !important;
+}
