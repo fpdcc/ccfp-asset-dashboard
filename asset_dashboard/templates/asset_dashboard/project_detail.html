@@ -40,6 +40,40 @@
       <script type="text/javascript">
         window.props = JSON.parse(document.getElementById('props').textContent)
         window.reactMount = document.getElementById('map')
+
+        const projectForm = document.getElementsByTagName('form')[0]
+        window.addEventListener('beforeunload', saveOnUnload)
+
+        function saveOnUnload(event) {
+          event.preventDefault()
+
+          let valid = projectForm.reportValidity()
+          if(!valid) {
+            event.returnValue = ""
+            // "Wait" zero time after the warning dialog so the forms errors display properly
+            setTimeout(() => {projectForm.reportValidity()}, 0)
+            return
+          }
+
+          let formDataObj = new FormData(projectForm)
+          fetch(`/projects/{{project.pk}}/`, {
+            method: 'POST',
+            body: formDataObj,
+            headers: {
+              'X-CSRFToken': getCookie('csrftoken'),
+            },
+            mode: 'same-origin'
+          })
+        }
+
+        const getCookie = (name) => {
+          const match = document.cookie.split(';').map(el => { let [key,value] = el.split('='); return { [key.trim()]: value }})
+          const filteredMatch = match.filter(e => Object.keys(e)[0] === name)
+
+          let matchLength = filteredMatch.length
+
+          return filteredMatch[matchLength - 1][name]
+        }
       </script>
       {% compress js %}
         <script type="text/jsx" src="{% static 'js/components/ProjectDetailAssetTable.js' %}"></script>
