@@ -42,28 +42,30 @@
         window.reactMount = document.getElementById('map')
 
         const projectForm = document.getElementsByTagName('form')[0]
-        window.addEventListener('beforeunload', saveOnUnload)
+        window.addEventListener("visibilitychange", saveOnVisChange)
+        window.addEventListener('beforeunload', redirectDialog)
 
-        function saveOnUnload(event) {
-          event.preventDefault()
+        function saveOnVisChange(event) {
+          if (document.visibilityState === 'hidden') {
+            // Checking the validity here ensures that this doesn't get
+            // submitted if the user still chooses to leave the page with errors.
+            let valid = projectForm.reportValidity()
+            if(valid) {
+              let formDataObj = new FormData(projectForm)
+              navigator.sendBeacon(`/projects/{{project.pk}}/`, formDataObj)
+            }
+          }
+        }
 
+        function redirectDialog(event) {
           let valid = projectForm.reportValidity()
           if(!valid) {
+            event.preventDefault()
             event.returnValue = ""
-            // "Wait" zero time after the warning dialog so the forms errors display properly
+            // "Wait" zero time after the warning dialog so the form errors display properly
             setTimeout(() => {projectForm.reportValidity()}, 0)
             return
           }
-
-          let formDataObj = new FormData(projectForm)
-          fetch(`/projects/{{project.pk}}/`, {
-            method: 'POST',
-            body: formDataObj,
-            headers: {
-              'X-CSRFToken': getCookie('csrftoken'),
-            },
-            mode: 'same-origin'
-          })
         }
 
         const getCookie = (name) => {
@@ -71,7 +73,7 @@
           const filteredMatch = match.filter(e => Object.keys(e)[0] === name)
 
           let matchLength = filteredMatch.length
-
+ 
           return filteredMatch[matchLength - 1][name]
         }
       </script>
