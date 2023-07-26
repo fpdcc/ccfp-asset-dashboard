@@ -24,7 +24,7 @@ const BaseTable = ({ rows = [], columns, getTrProps = props => props, rowClassNa
     setPageSize,
     visibleColumns,
     state: { pageIndex, pageSize, expanded },
-  } = useTable({ columns, data, initialState: { pageIndex: 0, pageSize: sizeOfPage }}, useSortBy, useExpanded, usePagination)
+  } = useTable({ columns, data, autoResetSortBy: false, initialState: { pageIndex: 0, pageSize: sizeOfPage }}, useSortBy, useExpanded, usePagination)
 
   return (
     <div className="table-responsive">
