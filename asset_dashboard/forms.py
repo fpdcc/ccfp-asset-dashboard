@@ -87,6 +87,10 @@ class FundingStreamForm(StyledFormMixin, ModelForm):
     class Meta:
         model = FundingStream
         fields = ["budget", "year", "source_type", "funding_secured", "actual_cost"]
+        widgets = {
+            'budget': TextInput,
+            'actual_cost': TextInput,
+        }
 
 
 class PhaseForm(StyledFormMixin, ModelForm):

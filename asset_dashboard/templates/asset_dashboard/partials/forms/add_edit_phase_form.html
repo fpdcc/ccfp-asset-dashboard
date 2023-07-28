@@ -221,14 +221,14 @@
       for (i = 0; i < fundings.length; i++) {
         let funding = fundings[i]
         let year = funding[0].value
-        let budget = funding[1].value
-        let actual_cost = funding[3].value
+        let budget = funding[1].value.replaceAll(/\$|,/g, '')  // Remove all dollar signs and commas
+        let actual_cost = funding[2].value.replaceAll(/\$|,/g, '')
 
         const yearError = funding[0].nextElementSibling
-        const budgetError = funding[1].nextElementSibling.nextElementSibling
-        const costError = funding[3].nextElementSibling.nextElementSibling
-        const sourceError = funding[5].nextElementSibling
-        const securedError = funding[6].nextElementSibling
+        const budgetError = funding[1].nextElementSibling
+        const costError = funding[2].nextElementSibling
+        const sourceError = funding[3].nextElementSibling
+        const securedError = funding[4].nextElementSibling
 
         // Hide the errors that front end validation doesn't consider, 
         // in case they're visible from a previously failed attempt
@@ -243,17 +243,17 @@
           hideError(yearError)
         }
 
-        if (budget < 0){
+        if (budget.includes('.') || Number(budget) < 0 || isNaN(budget)){
           valid = false
-          budgetError.innerHTML = 'Please enter a valid amount'
+          budgetError.innerHTML = 'Please enter a valid whole dollar amount'
           showError(budgetError)
         } else {
           hideError(budgetError)
         }
 
-        if (actual_cost < 0){
+        if (actual_cost.includes('.') || Number(actual_cost) < 0 || isNaN(actual_cost)){
           valid = false
-          costError.innerHTML = 'Please enter a valid amount'
+          costError.innerHTML = 'Please enter a valid whole dollar amount'
           showError(costError)
         } else {
           hideError(costError)
@@ -268,10 +268,10 @@
         for (i = 0; i < fundings.length; i++) {
           let funding = fundings[i]
           const yearError = funding[0].nextElementSibling
-          const budgetError = funding[1].nextElementSibling.nextElementSibling
-          const costError = funding[3].nextElementSibling.nextElementSibling
-          const sourceError = funding[5].nextElementSibling
-          const securedError = funding[6].nextElementSibling
+          const budgetError = funding[1].nextElementSibling
+          const costError = funding[2].nextElementSibling
+          const sourceError = funding[3].nextElementSibling
+          const securedError = funding[4].nextElementSibling
 
           const errors = [yearError, budgetError, costError, sourceError, securedError]
           errors.forEach(error => {
@@ -282,10 +282,10 @@
 
           let data = {
             'year': funding[0].value,
-            'budget': funding[1].value,
-            'actual_cost': funding[3].value,
-            'source_type': funding[5].value,
-            'funding_secured': funding[6].value,
+            'budget': Number(funding[1].value.replaceAll(/\$|,/g, '')),
+            'actual_cost': Number(funding[2].value.replaceAll(/\$|,/g, '')),
+            'source_type': funding[3].value,
+            'funding_secured': funding[4].value,
             'phase': props.phase_id,
             'id': funding.id ? funding.id : null,
           }
