@@ -22,23 +22,31 @@
       </div>
 
       <div class="row my-4">
-        <div class="col">
+        <div class="col-sm-3">
           <strong>Phase</strong>
           {{ form.phase_type }}
         </div>
-        <div class="col">
+        <div class="col-sm-3">
           <strong>Status</strong>
           {{ form.status }}
         </div>
-        <div class="col">
+        <div class="col-sm-3">
           <strong>Bid Quarter</strong>
           {{ form.estimated_bid_quarter }}
         </div>
-        <div class="col">
+        <div class="col-sm-3">
           <strong>Year</strong>
           {{ form.year }}
         </div>
       </div>
+
+      <div class="row">
+        <div class="col">
+          <label for="Notes"><strong>Notes</strong></label>
+          {{ form.notes }}
+        </div>
+      </div>
+
     </form>
   </div>
 </div>

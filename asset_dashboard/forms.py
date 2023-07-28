@@ -92,15 +92,15 @@ class FundingStreamForm(StyledFormMixin, ModelForm):
 class PhaseForm(StyledFormMixin, ModelForm):
     class Meta:
         model = Phase
-        fields = ["phase_type", "estimated_bid_quarter", "status", "year"]
+        fields = ["phase_type", "estimated_bid_quarter", "status", "year", "notes"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         for field_name, field in self.fields.items():
-            field.widget.attrs["required"] = True
-
-            if field_name == "estimated_bid_quarter":
+            if field_name not in ["estimated_bid_quarter", "notes"]:
+                field.widget.attrs["required"] = True
+            else:
                 field.widget.attrs["required"] = False
 
     funding_streams = FundingStreamForm
