@@ -201,6 +201,11 @@
       let removeBtn = newTd.getElementsByClassName('btn-outline-danger')[0]
       removeBtn.addEventListener('click', removeForm)
 
+      let newMoneyInputs = newTd.querySelectorAll('[name="budget"], [name="actual_cost"]')
+      newMoneyInputs.forEach((input)=>{
+        input.addEventListener('keyup', formatMoney)
+      })
+
       // Prevent previous unsaved inputs from being cleared when adding a new form
       newTr.appendChild(newTd)
       fundingTable.appendChild(newTr)
@@ -221,8 +226,8 @@
       for (i = 0; i < fundings.length; i++) {
         let funding = fundings[i]
         let year = funding[0].value
-        let budget = funding[1].value.replaceAll(/\$|,/g, '')  // Remove all dollar signs and commas
-        let actual_cost = funding[2].value.replaceAll(/\$|,/g, '')
+        let budget = unformatMoney(funding[1].value)
+        let actual_cost = unformatMoney(funding[2].value)
 
         const yearError = funding[0].nextElementSibling
         const budgetError = funding[1].nextElementSibling
@@ -282,8 +287,8 @@
 
           let data = {
             'year': funding[0].value,
-            'budget': Number(funding[1].value.replaceAll(/\$|,/g, '')),
-            'actual_cost': Number(funding[2].value.replaceAll(/\$|,/g, '')),
+            'budget': Number(unformatMoney(funding[1].value)),
+            'actual_cost': Number(unformatMoney(funding[2].value)),
             'source_type': funding[3].value,
             'funding_secured': funding[4].value,
             'phase': props.phase_id,
@@ -328,6 +333,30 @@
       }
     }
 
+    let moneyInputs = document.querySelectorAll('[name="budget"], [name="actual_cost"]')
+    moneyInputs.forEach((input)=>{
+      input.addEventListener('keyup', formatMoney)
+    })
+    function formatMoney(e) {
+      // Skip for arrow keys
+      if(e.keyCode >= 37 && e.keyCode <= 40){
+        return
+      }
+
+      let val = e.target.value
+      val = Number(unformatMoney(val))
+      // Only format if there is a value, to allow for empty boxes
+      if(val > 0){
+        val = val.toLocaleString()
+        e.target.value = '$' + val
+      }
+    }
+    
+    function unformatMoney(strValue) {
+      // Remove all dollar signs and commas
+      return strValue.replaceAll(/\$|,/g, '')
+    }
+
     const getCookie = (name) => {
         const match = document.cookie.split(';').map(el => { let [key,value] = el.split('='); return { [key.trim()]: value }})
         const filteredMatch = match.filter(e => Object.keys(e)[0] === name)
@@ -345,11 +374,11 @@
 
       for(i = 0; i < newFormsContainers.length; i++ ){
         let yearInput = newFormsContainers[i].querySelector('#id_year').value
-        let budgetInput = newFormsContainers[i].querySelector('#id_budget_0').value
-        let costInput = newFormsContainers[i].querySelector('#id_actual_cost_0').value
-        
-        if(yearInput || budgetInput > 0 || costInput > 0) {
-          // Ask user if they want to leave page, if there are unsaved funding inputs
+        let budgetInput = unformatMoney(newFormsContainers[i].querySelector('#id_budget').value)
+        let costInput = unformatMoney(newFormsContainers[i].querySelector('#id_actual_cost').value)
+
+        if(yearInput || Number(budgetInput) > 0 || Number(costInput) > 0) {
+          // Ask user if they want to leave page if there are unsaved, non-empty, positive inputs
           e.preventDefault();
           e.returnValue = ""
         }   
