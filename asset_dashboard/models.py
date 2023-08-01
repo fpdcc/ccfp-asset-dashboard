@@ -212,6 +212,8 @@ class Phase(SequencedModel):
 
     year = models.IntegerField(null=True, blank=True)
 
+    notes = models.TextField(null=True, blank=True)
+
     @property
     def total_budget(self):
         total = (
