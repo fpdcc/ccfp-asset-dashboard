@@ -147,4 +147,15 @@ EditControl.propTypes = {
   }),
 };
 
+// Change language for shape buttons' tooltips
+const drawBtns = leaflet.drawLocal.draw.toolbar.buttons
+const editBtns = leaflet.drawLocal.edit.toolbar.buttons
+
+for (var btn in drawBtns) {
+  drawBtns[btn] = drawBtns[btn].replace('Draw a', 'Select using')
+}
+for (var btn in editBtns) {
+  editBtns[btn] = editBtns[btn].replace('layers', 'selection')
+}
+
 export default EditControl;
