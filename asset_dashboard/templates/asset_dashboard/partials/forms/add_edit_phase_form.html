@@ -226,8 +226,8 @@
       for (i = 0; i < fundings.length; i++) {
         let funding = fundings[i]
         let year = funding[0].value
-        let budget = unformatMoney(funding[1].value)
-        let actual_cost = unformatMoney(funding[2].value)
+        let budget = moneyToNum(funding[1].value)
+        let actual_cost = moneyToNum(funding[2].value)
 
         const yearError = funding[0].nextElementSibling
         const budgetError = funding[1].nextElementSibling
@@ -248,7 +248,7 @@
           hideError(yearError)
         }
 
-        if (budget.includes('.') || Number(budget) < 0 || isNaN(budget)){
+        if (!Number.isInteger(budget) || budget < 0){
           valid = false
           budgetError.innerHTML = 'Please enter a valid whole dollar amount'
           showError(budgetError)
@@ -256,7 +256,7 @@
           hideError(budgetError)
         }
 
-        if (actual_cost.includes('.') || Number(actual_cost) < 0 || isNaN(actual_cost)){
+        if (!Number.isInteger(actual_cost) || actual_cost < 0){
           valid = false
           costError.innerHTML = 'Please enter a valid whole dollar amount'
           showError(costError)
@@ -287,8 +287,8 @@
 
           let data = {
             'year': funding[0].value,
-            'budget': Number(unformatMoney(funding[1].value)),
-            'actual_cost': Number(unformatMoney(funding[2].value)),
+            'budget': moneyToNum(funding[1].value),
+            'actual_cost': moneyToNum(funding[2].value),
             'source_type': funding[3].value,
             'funding_secured': funding[4].value,
             'phase': props.phase_id,
@@ -344,17 +344,24 @@
       }
 
       let val = e.target.value
-      val = Number(unformatMoney(val))
+      val = moneyToNum(val)
       // Only format if there is a value, to allow for empty boxes
       if(val > 0){
-        val = val.toLocaleString()
-        e.target.value = '$' + val
+        e.target.value = val.toLocaleString("en-US", {
+          style: "currency",
+          currency: "USD",
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        })
       }
     }
     
-    function unformatMoney(strValue) {
-      // Remove all dollar signs and commas
-      return strValue.replaceAll(/\$|,/g, '')
+    function moneyToNum(strValue) {
+      if (strValue == '' || strValue == '$') {
+        return null
+      }
+      // Remove all dollar signs and commas before converting
+      return Number(strValue.replaceAll(/\$|,/g, ''))
     }
 
     const getCookie = (name) => {
@@ -374,10 +381,10 @@
 
       for(i = 0; i < newFormsContainers.length; i++ ){
         let yearInput = newFormsContainers[i].querySelector('#id_year').value
-        let budgetInput = unformatMoney(newFormsContainers[i].querySelector('#id_budget').value)
-        let costInput = unformatMoney(newFormsContainers[i].querySelector('#id_actual_cost').value)
+        let budgetInput = moneyToNum(newFormsContainers[i].querySelector('#id_budget').value)
+        let costInput = moneyToNum(newFormsContainers[i].querySelector('#id_actual_cost').value)
 
-        if(yearInput || Number(budgetInput) > 0 || Number(costInput) > 0) {
+        if(yearInput || budgetInput > 0 || costInput > 0) {
           // Ask user if they want to leave page if there are unsaved, non-empty, positive inputs
           e.preventDefault();
           e.returnValue = ""
