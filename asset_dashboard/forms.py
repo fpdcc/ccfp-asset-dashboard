@@ -98,7 +98,7 @@ class PhaseForm(StyledFormMixin, ModelForm):
         super().__init__(*args, **kwargs)
 
         for field_name, field in self.fields.items():
-            if field_name not in ["estimated_bid_quarter", "notes"]:
+            if field_name not in {"estimated_bid_quarter", "notes"}:
                 field.widget.attrs["required"] = True
             else:
                 field.widget.attrs["required"] = False
