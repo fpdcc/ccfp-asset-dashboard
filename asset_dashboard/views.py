@@ -294,6 +294,10 @@ class PhaseUpdateView(LoginRequiredMixin, UpdateView):
                 }
             )
 
+        # Set the initial values to something more readable than the default: [Decimal('0'), 'USD']
+        context['form'].funding_streams.base_fields['budget'].initial = '$0'
+        context['form'].funding_streams.base_fields['actual_cost'].initial = '$0'
+
         return context
 
     def form_valid(self, form):
