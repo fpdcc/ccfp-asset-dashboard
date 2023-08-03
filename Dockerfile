@@ -23,7 +23,7 @@ RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
 # Read more on Dockerfile best practices at the source:
 # https://docs.docker.com/develop/develop-images/dockerfile_best-practices
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends postgresql-client nodejs binutils libproj-dev geos gdal-bin
+    apt-get install -y --no-install-recommends postgresql-client nodejs libgeos++-dev binutils libproj-dev gdal-bin
 
 # Inside the container, create an app directory and switch into it
 RUN mkdir /app
