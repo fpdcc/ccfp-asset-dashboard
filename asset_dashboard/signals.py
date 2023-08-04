@@ -36,9 +36,17 @@ class ProjectGISProcessor:
 
     @cached_property
     def phase_geometries(self) -> GeometryCollection:
-        self.phase_polygons = LocalAsset.aggregate_polygons(self.phase_assets)
-        self.phase_linestrings = LocalAsset.aggregate_linestrings(self.phase_assets)
-        self.phase_points = LocalAsset.aggregate_points(self.phase_assets)
+        polygons = LocalAsset.aggregate_polygons(self.phase_assets)
+        polys_prepared = polygons.prepared
+        self.phase_polygons = polys_prepared
+
+        linestrings = LocalAsset.aggregate_linestrings(self.phase_assets)
+        linestrings_prepared = linestrings.prepared
+        self.phase_linestrings = linestrings_prepared
+
+        points = LocalAsset.aggregate_points(self.phase_assets)
+        points_prepared = points.prepared
+        self.phase_points = points_prepared
 
         geoms = (self.phase_polygons, self.phase_linestrings, self.phase_points)
 
