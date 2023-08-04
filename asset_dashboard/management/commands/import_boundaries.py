@@ -45,9 +45,10 @@ class Command(BaseCommand):
             if not district:
                 district = feature['properties'].get('District_1')
 
+            geometry = GEOSGeometry(json.dumps(feature['geometry']))
             model.objects.filter(
                 name=f'District {district}',
-            ).update(boundary=GEOSGeometry(json.dumps(feature['geometry'])).prepared)
+            ).update(boundary=geometry.simplify(0.0001))
 
     def _get_model(self, file_path: str) -> models.Model:
         models = {
