@@ -142,8 +142,8 @@ class Project(models.Model):
 
     def update_project_districts(self, phase_geoms):
         district_models = [
-            ("commissioner_districts", CommissionerDistrict),
             ("senate_districts", SenateDistrict),
+            ("commissioner_districts", CommissionerDistrict),
             ("house_districts", HouseDistrict),
         ]
 
@@ -481,7 +481,7 @@ class LocalAsset(models.Model):
 
         if assets:
             if buffer:
-                assets.buffer(buffer)
+                assets.buffer(buffer).prepared
             return assets
 
         return None
@@ -507,7 +507,7 @@ class LocalAsset(models.Model):
             # The Geometries are in degrees, so use the 6th decimal place for
             # creating the buffer. See https://gis.stackexchange.com/a/8674
             # and https://docs.djangoproject.com/en/3.1/ref/contrib/gis/geos/#django.contrib.gis.geos.GEOSGeometry.buffer
-            return assets.buffer(buffer)
+            return assets.buffer(buffer).prepared
 
         return None
 
@@ -525,7 +525,7 @@ class LocalAsset(models.Model):
         ).aggregate(models.Union("geom"))["geom__union"]
 
         if assets:
-            return assets.buffer(settings.GEOM_BUFFER)
+            return assets.buffer(settings.GEOM_BUFFER).prepared
 
         return None
 
