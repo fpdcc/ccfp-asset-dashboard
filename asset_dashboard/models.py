@@ -6,6 +6,7 @@ from django.db.models import Max, Sum, QuerySet
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.gis.geos import GEOSGeometry, GeometryCollection
+from django.contrib.gis.measure import D
 from django.conf import settings
 
 from djmoney.models.fields import MoneyField
@@ -131,7 +132,7 @@ class Project(models.Model):
         return self.name or ""
 
     def update_project_zones(self, phase_geoms):
-        zones = Zone.objects.filter(boundary__intersects=phase_geoms)
+        zones = Zone.objects.filter(boundary__dwithin=(phase_geoms, D(m=0.25))).filter(boundary__intersects=phase_geoms)
 
         # Delete existing relationships so we can have a fresh start.
         self.zones.clear()
@@ -148,7 +149,7 @@ class Project(models.Model):
         ]
 
         for attribute, model in district_models:
-            districts = model.objects.filter(boundary__intersects=phase_geoms)
+            districts = model.objects.filter(boundary__dwithin=(phase_geoms, D(m=0.25))).filter(boundary__intersects=phase_geoms)
 
             project_district = getattr(self, attribute)
             project_district.clear()
