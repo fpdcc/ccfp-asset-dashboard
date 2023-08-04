@@ -47,7 +47,7 @@ class Command(BaseCommand):
 
             model.objects.filter(
                 name=f'District {district}',
-            ).update(boundary=GEOSGeometry(json.dumps(feature['geometry'])))
+            ).update(boundary=GEOSGeometry(json.dumps(feature['geometry'])).prepared)
 
     def _get_model(self, file_path: str) -> models.Model:
         models = {
