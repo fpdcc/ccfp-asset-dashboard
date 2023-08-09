@@ -30,9 +30,11 @@ class Command(BaseCommand):
         self.stdout.write(f'Importing {Zone} boundaries from {file_path}.')
 
         for zone in geojson['features']:
-            Zone.objects.filter(
+            geometry = GEOSGeometry(json.dumps(zone['geometry']))
+            z, _ = Zone.objects.update_or_create(
                 name=zone['properties']['zone'],
-            ).update(boundary=GEOSGeometry(json.dumps(zone['geometry'])))
+                defaults={'boundary': geometry}
+            )
 
     def load_districts(self, geojson: dict, file_path: str):
         model = self._get_model(file_path)
@@ -45,9 +47,10 @@ class Command(BaseCommand):
             if not district:
                 district = feature['properties'].get('District_1')
 
-            model.objects.filter(
+            d, _ = model.objects.update_or_create(
                 name=f'District {district}',
-            ).update(boundary=GEOSGeometry(json.dumps(feature['geometry'])))
+                defaults={'boundary': GEOSGeometry(json.dumps(feature['geometry']))}
+            )
 
     def _get_model(self, file_path: str) -> models.Model:
         models = {

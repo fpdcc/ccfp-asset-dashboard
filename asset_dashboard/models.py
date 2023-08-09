@@ -155,7 +155,8 @@ class Project(models.Model):
 
             for district in districts:
                 project_district.add(district)
-                self.save()
+
+            self.save()
 
 
 class PhaseZoneDistribution(models.Model):
