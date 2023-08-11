@@ -129,8 +129,18 @@ Whenever you open a new PR, the Heroku integration is setup to create a new revi
 
 ## Details about how databases are connected
 The application uses two databases:
-1. A Postgres instance managed by Heroku. This is a standard Django database connection with a Heroku Postgres resource.
-2. The Forest Preserves of Cook County's GIS database. We've setup a remote connection with the FPDCC's database. Since Heroku doesn't have static IP addresses, the [quotagaurd static add-on](https://elements.heroku.com/addons/quotaguardstatic) helps establish a connection with the remote GIS database. For details on how this works, see [PR #91](https://github.com/fpdcc/ccfp-asset-dashboard/pull/91) and [PR #70](https://github.com/fpdcc/ccfp-asset-dashboard/pull/70), as well as discussions in issues [#59](https://github.com/fpdcc/ccfp-asset-dashboard/issues/59) and [#60](https://github.com/fpdcc/ccfp-asset-dashboard/issues/60).
+1. A Postgres instance on AWS RDS. This is the application's main database that we write to.
+
+The RDS instance is named `ccfp-asset-dashboard`. We created three databases within the instance:
+1. `production`
+2. `staging`
+3. `review`
+
+Each app in the Heroku pipeline is configured to connect with the corresponding environment's database.
+
+The RDS security group is configured to accept connections from the application on Heroku. Since Heroku doesn't have static IP addresses, the [quotagaurd static add-on](https://elements.heroku.com/addons/quotaguardstatic) helps establish a connection with the remote database. For details on how this works, see [PR #91](https://github.com/fpdcc/ccfp-asset-dashboard/pull/91) and [PR #70](https://github.com/fpdcc/ccfp-asset-dashboard/pull/70), as well as discussions in issues [#59](https://github.com/fpdcc/ccfp-asset-dashboard/issues/59) and [#60](https://github.com/fpdcc/ccfp-asset-dashboard/issues/60).
+
+2. The Forest Preserves of Cook County's GIS database. We've setup a remote connection with the FPDCC's database. This connection also requires QuotaGuard Static.
 
 ## What you can set in admin account
 In the admin interface located on the website path `/admin`, an admin user can do these things:

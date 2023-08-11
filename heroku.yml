@@ -6,7 +6,7 @@ build:
     web: Dockerfile
 release:
   command:
-    - ./scripts/release.sh
+    - bin/qgtunnel ./scripts/release.sh
   image: web
 run:
   web: ./scripts/run-app.sh
