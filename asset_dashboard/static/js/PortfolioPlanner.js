@@ -75,12 +75,14 @@ class PortfolioPlanner extends React.Component {
           funding_amount: parseFloat(funding['budget']) || 0,
           funding_year: funding['year'] || 'N/A',
           funding_secured: funding['funding_secured'] ? 'Yes' : 'No',
-          year: project.year,
+          phase_year: project.phase_year,
           estimated_bid_quarter: project.estimated_bid_quarter,
           status: project.status,
           project_manager: project.project_manager,
           countywide: project.countywide,
           assets: project.assets,
+          project_id: project.project_id,
+          phase_id: project.pk,
         }
       })
     })
@@ -321,7 +323,7 @@ class PortfolioPlanner extends React.Component {
   calculateTotals(portfolio) {
     return {
       budgetImpact: portfolio.reduce((total, project) => { return total + project.budget }, 0),
-      totalEstimatedCostByYear: this.calculateEstimatedCostByKey(portfolio, 'year', 'budget'),
+      totalEstimatedCostByYear: this.calculateEstimatedCostByKey(portfolio, 'phase_year', 'budget'),
       totalFundedAmountByYear: this.calculateFundedAmountByYear(portfolio),
       totalEstimatedZoneCostByYear: this.calculateZoneCostByYear(portfolio)
     }
@@ -349,7 +351,7 @@ class PortfolioPlanner extends React.Component {
     let results = {}
 
     portfolio.forEach(phase => {
-      const year = phase['year']
+      const year = phase['phase_year']
 
       if (!results[year] && year !== null) {
         results[year] = 0
@@ -371,7 +373,7 @@ class PortfolioPlanner extends React.Component {
     let yearTotals = {}
 
     portfolio.forEach(phase => {
-      const year = phase['year']
+      const year = phase['phase_year']
 
       if (!yearTotals[year] && year !== null) {
         yearTotals[year] = {}
@@ -482,8 +484,8 @@ class PortfolioPlanner extends React.Component {
         'project_manager': project.manager,
         'phase': project.phase,
         'status': project.status,
-        'description': project.description,
-        'notes': project.notes,
+        'description': project.description.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' '),
+        'notes': project.notes.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' '),
         'score': project.score,
         'countywide': project.countywide,
         'zones': project.zones.map(zone => zone.name).join(';'),
@@ -492,7 +494,9 @@ class PortfolioPlanner extends React.Component {
         'commissioner_districts': project.commissioner_districts.map(dist => dist.name).join(';'),
         ...assetsByType,
         ...costByZone,
-        'key': project.key
+        'phase_funding_id': project.key,
+        'project_id': project.project_id,
+        'phase_id': project.phase_id
       }
 
       rows.push(row)
