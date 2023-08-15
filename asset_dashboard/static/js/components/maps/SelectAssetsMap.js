@@ -70,15 +70,32 @@ function SelectAssetsMap(props) {
   }
 
   function saveGeometries() {
-    const data = geomsToSave['features'].map(feature => {
-      return {
-        'asset_id': feature['properties']['identifier'],
-        'asset_type': searchAssetType,
-        'asset_name': feature['properties']['name'],
-        'geom': feature['geometry'],
-        'phase': phaseId
-      }
-    }) 
+    let existingIDs = []
+    existingGeoms.features.forEach(geom => {
+      existingIDs.push(geom.properties.asset_id)
+    })
+
+    let data = geomsToSave['features']
+      .map(feature => {
+        // Only include feature if it doesn't already exist
+        if (!existingIDs.includes(feature.properties.identifier.toString())) {
+          return {
+            'asset_id': feature['properties']['identifier'],
+            'asset_type': searchAssetType,
+            'asset_name': feature['properties']['name'],
+            'geom': feature['geometry'],
+            'phase': phaseId
+          }
+        }
+      }).filter(feature => {
+        // map() adds 'undefined' if the conditional fails, so filter those out
+        return feature !== undefined
+      })
+
+    if (data.length == 0) {
+      setAjaxMessage({text: 'All selected assets already exist', tag: 'danger'})
+      return
+    }
     
     setIsSavingAssets(true)
 
