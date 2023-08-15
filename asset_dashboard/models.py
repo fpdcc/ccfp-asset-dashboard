@@ -444,6 +444,17 @@ class LocalAsset(models.Model):
     asset_name = models.CharField(max_length=600)
 
     @classmethod
+    def group_assets_by_type(self, qs) -> dict:
+        grouped_assets = {}
+
+        for asset in qs:
+            if asset['asset_model'] not in grouped_assets:
+                grouped_assets[asset['asset_model']] = []
+            grouped_assets[asset['asset_model']].append(asset['asset_id'])
+
+        return grouped_assets
+
+    @classmethod
     def get_distribution_by_zone(cls, phase_geoms: GEOSGeometry) -> dict:
         distributions_by_zone = {}
 

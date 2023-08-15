@@ -22,8 +22,39 @@ const projectColumns = (selector) => {
       accessor: 'name'
     },
     {
-      Header: 'Description',
-      accessor: 'description', 
+      Header: 'Estimated Cost',
+      accessor: 'budget',
+      Cell: props => props.value.toLocaleString() // adds commas
+    },
+    {
+      Header: 'Funded Amount',
+      accessor: 'funded_amount',
+      Cell: props => props.value.toLocaleString()
+    },
+    {
+      Header: 'Funding source',
+      id: 'funding_source',
+      accessor: 'funding_source'
+    },
+    {
+      Header: 'Funding amount',
+      id: 'funding_amount',
+      accessor: 'funding_amount',
+      Cell: props => props.value.toLocaleString()
+    },
+    {
+      Header: 'Funding year',
+      id: 'funding_year',
+      accessor: 'funding_year'
+    },
+    {
+      Header: 'Funding secured',
+      id: 'funding_secured',
+      accessor: 'funding_secured',
+    },
+    {
+      Header: 'Quarter',
+      accessor: 'estimated_bid_quarter'
     },
     {
       Header: 'Zones',
@@ -35,56 +66,31 @@ const projectColumns = (selector) => {
       accessor: 'phase'
     },
     {
-      Header: 'Year',
-      accessor: 'year'
-    },
-    {
-      Header: 'Quarter',
-      accessor: 'estimated_bid_quarter'
-    },
-    {
       Header: 'Score',
       accessor: 'score',
     },
     {
-      Header: 'Estimated Cost',
-      accessor: 'budget',
-      Cell: props => props.value.toLocaleString() // adds commas
-    },
-    {
-      Header: 'Funded Amount',
-      accessor: 'funded_amount',
-      Cell: props => props.value.toLocaleString()
-    },
-    {
-      Header: 'Funding',
-      id: 'funding_streams',
-      accessor: 'funding_streams',
-      Cell: ({ row }) => (
-        <span {...row.getToggleRowExpandedProps()}>
-          {
-            row.isExpanded ? 
-              <button
-                className='btn'
-                type='button'
-                aria-label="Hide funding">
-                  <i className="fa fa-chevron-circle-up fa-lg"></i> 
-              </button>
-            : <button
-                className='btn'
-                type='button'
-                aria-label="Show funding">
-                  <i className="fa fa-chevron-circle-down fa-lg"></i>
-            </button>
-          }
-        </span>
-      ),
+      Header: 'Description',
+      accessor: 'description',
+      Cell: props => (
+        <>
+          <button className="btn btn-outline-primary" type="button" data-toggle="collapse" data-target={`#toggleDescription-${props.row.id}`} aria-expanded="false" aria-controls="toggleDescription">
+            Show/hide
+          </button>
+
+          <div className="collapse" id={`toggleDescription-${props.row.id}`}>
+            <div className="card card-body">
+              {props.value}
+            </div>
+          </div>
+        </>
+      )
     },
     {
       Header: () => null,
       accessor: 'key',
       disableSortBy: true,
-      Cell: props => <a href={`/projects/phases/edit/${props.value}/`}  
+      Cell: props => <a href={`/projects/phases/edit/${props.value}/`}
                         onClick={e => e.stopPropagation()}
                         className='btn btn-outline-dark btn-sm'
                         target="_blank">View Phase</a>

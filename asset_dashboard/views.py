@@ -71,7 +71,8 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
                 'cost_by_zone': phase.cost_by_zone,
                 'house_districts': list(phase.project.house_districts.all().values('name')),
                 'senate_districts': list(phase.project.senate_districts.all().values('name')),
-                'commissioner_districts': list(phase.project.commissioner_districts.all().values('name'))
+                'commissioner_districts': list(phase.project.commissioner_districts.all().values('name')),
+                'assets': LocalAsset.group_assets_by_type(phase.localasset_set.all().values('asset_id', 'asset_model')),
             })
 
         context['props'] = {
