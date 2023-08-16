@@ -50,7 +50,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
 
             project_phases.append({
                 'pk': phase.id,
-                'phase': phase.phase_type,
+                'phase': phase.get_phase_type_display(),
                 'total_budget': phase.total_budget,
                 'funded_amount': phase.total_funded_amount,
                 'funded_amount_by_year': phase.funded_amount_by_year,
@@ -58,7 +58,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
                 'phase_year': phase.year,
                 'estimated_bid_quarter': phase.estimated_bid_quarter,
                 'status': phase.status,
-                'phase_type': phase.phase_type,
+                'phase_type': phase.get_phase_type_display(),
                 'name': phase.project.name,
                 'description': phase.project.description,
                 'notes': phase.project.notes,
