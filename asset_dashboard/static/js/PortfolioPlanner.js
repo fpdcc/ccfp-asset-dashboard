@@ -154,7 +154,6 @@ class PortfolioPlanner extends React.Component {
   removeProjectFromPortfolio(row) {
     // remove the row from the existing portfolio
     const updatedPortfolio = this.state.portfolio.projects.filter((project) => {
-      // TODO: parse out based on the phase_funding id...
       if (project.key != row.key) {
         return project
       }
