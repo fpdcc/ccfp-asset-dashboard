@@ -88,7 +88,7 @@ const projectColumns = (selector) => {
     },
     {
       Header: () => null,
-      accessor: 'key',
+      accessor: 'phase_id',
       disableSortBy: true,
       Cell: props => <a href={`/projects/phases/edit/${props.value}/`}
                         onClick={e => e.stopPropagation()}

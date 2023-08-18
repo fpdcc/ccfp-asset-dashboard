@@ -392,7 +392,7 @@ class PortfolioPlanner extends React.Component {
   }
 
   hydratePortfolio(portfolio, projects) {
-    const selectedProjectIds = portfolio.phases.map(phase => phase.phase)
+    const selectedProjectIds = portfolio.phases.map(phase => phase.phase_funding_stream)
 
     const portfolioProjects = projects.filter(
       project => selectedProjectIds.includes(project.key)
@@ -483,8 +483,8 @@ class PortfolioPlanner extends React.Component {
         'project_manager': project.manager,
         'phase': project.phase,
         'status': project.status,
-        'description': project.description.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' '),
-        'notes': project.notes.replace('\r\n', ' ').replace('\n', ' ').replace('\r', ' '),
+        'description': project.description.replace(/\r\n/g, ' ').replace(/\n/g, ' ').replace(/\r/g, ' '),
+        'notes': project.notes.replace(/\r\n/g, ' ').replace(/\n/g, ' ').replace(/\r/g, ' '),
         'score': project.score,
         'countywide': project.countywide,
         'zones': project.zones.map(zone => zone.name).join(';'),

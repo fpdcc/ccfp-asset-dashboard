@@ -61,6 +61,9 @@ class PortfolioSerializer(serializers.ModelSerializer):
 
         phase_data = validated_data.get('phases', [])
 
+        print('phase_data', phase_data)
+        print('instance', instance)
+
         if phase_data:
             for_create = []
             for_update = []
