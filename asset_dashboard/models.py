@@ -102,6 +102,13 @@ class PortfolioPhase(SequencedModel):
     phase = models.ForeignKey(
         "Phase", related_name="portfolios", on_delete=models.CASCADE
     )
+    phase_funding_stream = models.ForeignKey(
+        "FundingStream",
+        related_name="portfolios",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
 
     @property
     def sequenced_instances(self):

@@ -63,7 +63,7 @@ class PortfolioPlanner extends React.Component {
           budget: parseFloat(project.total_budget) || 0,
           funded_amount: parseFloat(project.funded_amount) || 0,
           funded_amount_by_year: project.funded_amount_by_year,
-          score: project.total_score || 'N/A',
+          score: project.total_score.toFixed(2) || 'N/A',
           phase: project.phase || 'N/A',
           zones: project.zones || 'N/A',
           cost_by_zone: project.cost_by_zone,
@@ -232,7 +232,7 @@ class PortfolioPlanner extends React.Component {
       name: this.state.portfolio.name,
       user: props.userId,
       phases: this.state.portfolio.projects.map((phase, index) => {
-        return {'phase': phase.key, 'sequence': index + 1}
+        return {'phase_funding_stream': phase.key, 'sequence': index + 1, 'phase': phase.phase_id}
       })
     }
 
