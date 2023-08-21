@@ -50,15 +50,15 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
 
             project_phases.append({
                 'pk': phase.id,
-                'phase': phase.phase_type,
+                'phase': phase.get_phase_type_display(),
                 'total_budget': phase.total_budget,
                 'funded_amount': phase.total_funded_amount,
                 'funded_amount_by_year': phase.funded_amount_by_year,
                 'funding_streams': list(funding_streams.values()) if funding_streams else [],
-                'year': phase.year,
+                'phase_year': phase.year,
                 'estimated_bid_quarter': phase.estimated_bid_quarter,
                 'status': phase.status,
-                'phase_type': phase.phase_type,
+                'phase_type': phase.get_phase_type_display(),
                 'name': phase.project.name,
                 'description': phase.project.description,
                 'notes': phase.project.notes,
@@ -71,7 +71,9 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
                 'cost_by_zone': phase.cost_by_zone,
                 'house_districts': list(phase.project.house_districts.all().values('name')),
                 'senate_districts': list(phase.project.senate_districts.all().values('name')),
-                'commissioner_districts': list(phase.project.commissioner_districts.all().values('name'))
+                'commissioner_districts': list(phase.project.commissioner_districts.all().values('name')),
+                'assets': LocalAsset.group_assets_by_type(phase.localasset_set.all().values('asset_id', 'asset_model')),
+                'project_id': phase.project.id,
             })
 
         context['props'] = {

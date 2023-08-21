@@ -30,7 +30,7 @@ class PhaseSerializer(serializers.ModelSerializer):
 class PortfolioPhaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = PortfolioPhase
-        fields = ('phase', 'sequence',)
+        fields = ('phase', 'sequence', 'phase_funding_stream')
 
 
 class PortfolioSerializer(serializers.ModelSerializer):
@@ -48,6 +48,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
         for phase in phase_data:
             PortfolioPhase.objects.create(
                 portfolio=portfolio,
+                phase_funding_stream=phase['phase_funding_stream'],
                 phase=phase['phase'],
                 sequence=phase['sequence']
             )
@@ -72,11 +73,13 @@ class PortfolioSerializer(serializers.ModelSerializer):
                 try:
                     portfolio_phase = PortfolioPhase.objects.get(
                         portfolio=instance,
-                        phase=phase['phase']
+                        phase=phase['phase'],
+                        phase_funding_stream=phase['phase_funding_stream']
                     )
                 except PortfolioPhase.DoesNotExist:
                     portfolio_phase = PortfolioPhase(
                         portfolio=instance,
+                        phase_funding_stream=phase['phase_funding_stream'],
                         phase=phase['phase'],
                         sequence=phase['sequence']
                     )

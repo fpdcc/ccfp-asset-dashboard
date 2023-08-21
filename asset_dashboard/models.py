@@ -102,6 +102,13 @@ class PortfolioPhase(SequencedModel):
     phase = models.ForeignKey(
         "Phase", related_name="portfolios", on_delete=models.CASCADE
     )
+    phase_funding_stream = models.ForeignKey(
+        "FundingStream",
+        related_name="portfolios",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
 
     @property
     def sequenced_instances(self):
@@ -442,6 +449,17 @@ class LocalAsset(models.Model):
     asset_id = models.TextField(null=True, blank=True)
     asset_model = models.CharField(max_length=100)
     asset_name = models.CharField(max_length=600)
+
+    @classmethod
+    def group_assets_by_type(self, qs) -> dict:
+        grouped_assets = {}
+
+        for asset in qs:
+            if asset['asset_model'] not in grouped_assets:
+                grouped_assets[asset['asset_model']] = []
+            grouped_assets[asset['asset_model']].append(asset['asset_id'])
+
+        return grouped_assets
 
     @classmethod
     def get_distribution_by_zone(cls, phase_geoms: GEOSGeometry) -> dict:

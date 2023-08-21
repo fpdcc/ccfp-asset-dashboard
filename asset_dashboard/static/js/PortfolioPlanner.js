@@ -52,32 +52,39 @@ class PortfolioPlanner extends React.Component {
   }
 
   componentDidMount() {
-    // prepare the data so it can be used in the table and exported as CSV
-    const projects = JSON.parse(props.projects).map((project) => {
-      return {
-        name: project.name,
-        description: project.description || 'No description available.',
-        notes: project.notes || '',
-        section: project.section,
-        category: project.category,
-        budget: parseFloat(project.total_budget) || 0,
-        funded_amount: parseFloat(project.funded_amount) || 0,
-        funded_amount_by_year: project.funded_amount_by_year,
-        score: project.total_score || 'N/A',
-        phase: project.phase || 'N/A',
-        zones: project.zones || 'N/A',
-        cost_by_zone: project.cost_by_zone,
-        house_districts: project.house_districts,
-        senate_districts: project.senate_districts,
-        commissioner_districts: project.commissioner_districts,
-        key: project.pk,
-        funding_streams: project.funding_streams,
-        year: project.year,
-        estimated_bid_quarter: project.estimated_bid_quarter,
-        status: project.status,
-        project_manager: project.project_manager,
-        countywide: project.countywide,
-      }
+    const projects = JSON.parse(props.projects).flatMap((project) => {
+      return project.funding_streams.map((funding) => {
+        return {
+          name: project.name,
+          description: project.description || 'No description available.',
+          notes: project.notes || '',
+          section: project.section,
+          category: project.category,
+          budget: parseFloat(project.total_budget) || 0,
+          funded_amount: parseFloat(project.funded_amount) || 0,
+          funded_amount_by_year: project.funded_amount_by_year,
+          score: project.total_score.toFixed(2) || 'N/A',
+          phase: project.phase || 'N/A',
+          zones: project.zones || 'N/A',
+          cost_by_zone: project.cost_by_zone,
+          house_districts: project.house_districts,
+          senate_districts: project.senate_districts,
+          commissioner_districts: project.commissioner_districts,
+          key: funding.id,
+          funding_source: funding['source_type'],
+          funding_amount: parseFloat(funding['budget']) || 0,
+          funding_year: funding['year'] || 'N/A',
+          funding_secured: funding['funding_secured'] ? 'Yes' : 'No',
+          phase_year: project.phase_year,
+          estimated_bid_quarter: project.estimated_bid_quarter,
+          status: project.status,
+          project_manager: project.project_manager,
+          countywide: project.countywide,
+          assets: project.assets,
+          project_id: project.project_id,
+          phase_id: project.pk,
+        }
+      })
     })
 
     let state = {
@@ -225,7 +232,7 @@ class PortfolioPlanner extends React.Component {
       name: this.state.portfolio.name,
       user: props.userId,
       phases: this.state.portfolio.projects.map((phase, index) => {
-        return {'phase': phase.key, 'sequence': index + 1}
+        return {'phase_funding_stream': phase.key, 'sequence': index + 1, 'phase': phase.phase_id}
       })
     }
 
@@ -315,7 +322,7 @@ class PortfolioPlanner extends React.Component {
   calculateTotals(portfolio) {
     return {
       budgetImpact: portfolio.reduce((total, project) => { return total + project.budget }, 0),
-      totalEstimatedCostByYear: this.calculateEstimatedCostByKey(portfolio, 'year', 'budget'),
+      totalEstimatedCostByYear: this.calculateEstimatedCostByKey(portfolio, 'phase_year', 'budget'),
       totalFundedAmountByYear: this.calculateFundedAmountByYear(portfolio),
       totalEstimatedZoneCostByYear: this.calculateZoneCostByYear(portfolio)
     }
@@ -343,7 +350,7 @@ class PortfolioPlanner extends React.Component {
     let results = {}
 
     portfolio.forEach(phase => {
-      const year = phase['year']
+      const year = phase['phase_year']
 
       if (!results[year] && year !== null) {
         results[year] = 0
@@ -365,7 +372,7 @@ class PortfolioPlanner extends React.Component {
     let yearTotals = {}
 
     portfolio.forEach(phase => {
-      const year = phase['year']
+      const year = phase['phase_year']
 
       if (!yearTotals[year] && year !== null) {
         yearTotals[year] = {}
@@ -385,7 +392,7 @@ class PortfolioPlanner extends React.Component {
   }
 
   hydratePortfolio(portfolio, projects) {
-    const selectedProjectIds = portfolio.phases.map(phase => phase.phase)
+    const selectedProjectIds = portfolio.phases.map(phase => phase.phase_funding_stream)
 
     const portfolioProjects = projects.filter(
       project => selectedProjectIds.includes(project.key)
@@ -457,41 +464,38 @@ class PortfolioPlanner extends React.Component {
     this.state.portfolio.projects.forEach(project => {
       const costByZone = this.getCostByZone(project)
 
+      const assetsByType = {}
+
+      Object.entries(project.assets).forEach(([assetType, assets]) => {
+        assetsByType[assetType] = assets.join(';')
+      })
+
       let row = {
         'name': project.name,
-        'description': project.description,
-        'notes': project.notes,
+        funding_year: project.funding_year,
+        funding_amount: parseFloat(project.funding_amount) || 0,
+        funding_source: project.funding_source,
+        funding_secured: project.funding_secured,
+        'budget': project.budget,
+        'estimated_bid_quarter': project.estimated_bid_quarter,
         'section': project.section,
         'category': project.category,
-        'budget': project.budget,
-        'score': project.score,
-        'phase': project.phase,
-        'key': project.key,
-        'year': project.year,
-        'estimated_bid_quarter': project.estimated_bid_quarter,
-        'status': project.status,
         'project_manager': project.manager,
+        'phase': project.phase,
+        'status': project.status,
+        'description': project.description.replace(/\r\n/g, ' ').replace(/\n/g, ' ').replace(/\r/g, ' '),
+        'notes': project.notes.replace(/\r\n/g, ' ').replace(/\n/g, ' ').replace(/\r/g, ' '),
+        'score': project.score,
         'countywide': project.countywide,
-        'zones': project.zones.map(zone => zone.name).join('; '),
-        'house_districts': project.house_districts.map(dist => dist.name).join('; '),
-        'senate_districts': project.senate_districts.map(dist => dist.name).join('; '),
-        'commissioner_districts': project.commissioner_districts.map(dist => dist.name).join('; '),
+        'zones': project.zones.map(zone => zone.name).join(';'),
+        'house_districts': project.house_districts.map(dist => dist.name).join(';'),
+        'senate_districts': project.senate_districts.map(dist => dist.name).join(';'),
+        'commissioner_districts': project.commissioner_districts.map(dist => dist.name).join(';'),
+        ...assetsByType,
         ...costByZone,
-      }
-
-      if (project.funding_streams.length > 0) {
-        // If there are funding streams, then treat each
-        // funding stream instance as an individual row.
-
-        project.funding_streams.forEach(funding => {
-          row = {
-            ...row,
-            'funding_amount': funding['budget'],
-            'funding_source': funding['source_type'],
-            'funding_year': funding['year'],
-            'funding_secured': funding['funding_secured']
-          }
-        })
+        'phase_funding_id': project.key,
+        'project_id': project.project_id,
+        'phase_id': project.phase_id
       }
 
       rows.push(row)
