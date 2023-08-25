@@ -5,7 +5,7 @@ import { CSVLink } from 'react-csv'
 import Cookies from 'js-cookie'
 
 import ProjectsTable from './components/ProjectsTable'
-import PortfolioTable from './components/PortfolioTable'
+import { PortfolioTable, PortfolioControl } from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
 import PortfolioPicker from './components/PortfolioPicker'
 import SectionPicker from './components/SectionPicker'
@@ -605,58 +605,56 @@ class PortfolioPlanner extends React.Component {
 
     return (
       <div className="m-5">
-        <div className="row">
-          <div className="col">
-            <h1>Build a 5-Year Plan</h1>
-          </div>
-
-          <div className="row col">
-            <PortfolioPicker
-              portfolios={this.state.allPortfolios}
-              activePortfolio={this.state.portfolio}
-              changePortfolio={this.selectPortfolio}
-            />
-
-            <TableFilter
-              options={this.state.sections}
-              value={this.state.selectedSection}
-              onChange={this.changeSection}
-              fieldName="section"
-            />
-
-            <TableFilter
-              options={this.yearFilterOptions()}
-              value={this.state.selectedYear}
-              onChange={this.changeYear}
-              fieldName="year"
-            />
-
-            <TableFilter
-              options={this.props.fundingSourceOptions}
-              value={this.state.selectedFundingSource}
-              onChange={this.changeFundingSource}
-              fieldName="funding_source"
-            />
-
-            <TableFilter
-              options={[{value: 'Yes', label: 'Yes'}, {value: 'No', label: 'No'}]}
-              value={this.state.selectedFundingSecured}
-              onChange={this.changeFundingSecured}
-              fieldName="funding_secured"
-            />
-
-          </div>
+        <div className='row'>
+          <PortfolioControl
+            portfolio={this.state.portfolio}
+            savePortfolio={this.savePortfolio}
+            savePortfolioName={this.savePortfolioName}
+            createNewPortfolio={this.createNewPortfolio}
+            changePortfolio={this.selectPortfolio}
+            portfolios={this.state.allPortfolios}
+          />
         </div>
         <div className="row">
-          <div className="container col card shadow-sm mt-5 ml-3 col-9">
+          <div className="container col card shadow-sm mt-5 col-12">
               <>
-                <PortfolioTable
-                  portfolio={this.state.portfolio}
-                  rows={portfolioTableRows}
-                  onRemoveFromPortfolio={this.removeProjectFromPortfolio}
-                  savePortfolio={this.savePortfolio}
-                  savePortfolioName={this.savePortfolioName}
-                  createNewPortfolio={this.createNewPortfolio} />
+                <div className="mb-5 mt-5">
+                  <div className="row col">
+                      <TableFilter
+                        options={this.state.sections}
+                        value={this.state.selectedSection}
+                        onChange={this.changeSection}
+                        fieldName="section"
+                      />
+
+                      <TableFilter
+                        options={this.yearFilterOptions()}
+                        value={this.state.selectedYear}
+                        onChange={this.changeYear}
+                        fieldName="year"
+                      />
+
+                      <TableFilter
+                        options={this.props.fundingSourceOptions}
+                        value={this.state.selectedFundingSource}
+                        onChange={this.changeFundingSource}
+                        fieldName="funding_source"
+                      />
+
+                      <TableFilter
+                        options={[{value: 'Yes', label: 'Yes'}, {value: 'No', label: 'No'}]}
+                        value={this.state.selectedFundingSecured}
+                        onChange={this.changeFundingSecured}
+                        fieldName="funding_secured"
+                      />
+                    </div>
+
+                    <PortfolioTable
+                      rows={portfolioTableRows}
+                      onRemoveFromPortfolio={this.removeProjectFromPortfolio}
+                    />
+                </div>
+
                 <ProjectsTable
                   allProjects={projectTableRows}
                   onAddToPortfolio={this.addProjectToPortfolio}
