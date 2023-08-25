@@ -10,6 +10,7 @@ import PortfolioTotals from './components/PortfolioTotals'
 import PortfolioPicker from './components/PortfolioPicker'
 import SectionPicker from './components/SectionPicker'
 import SearchInput from './components/SearchInput'
+import TableFilter from './components/TableFilter'
 
 class PortfolioPlanner extends React.Component {
   constructor(props) {
@@ -32,7 +33,10 @@ class PortfolioPlanner extends React.Component {
         unsavedChanges: false
       },
       filterText: '',
-      selectedSection: ''
+      selectedSection: '',
+      selectedFundingSecured: '',
+      selectedFundingSource: '',
+      selectedYear: ''
     }
 
     this.searchProjects = this.searchProjects.bind(this)
@@ -48,6 +52,12 @@ class PortfolioPlanner extends React.Component {
     this.confirmDestroy = this.confirmDestroy.bind(this)
     this.changeSection = this.changeSection.bind(this)
     this.filterSection = this.filterSection.bind(this)
+    this.filterYear = this.filterYear.bind(this)
+    this.filterFundingSource = this.filterFundingSource.bind(this)
+    this.filterFundingSecured = this.filterFundingSecured.bind(this)
+    this.changeYear = this.changeYear.bind(this)
+    this.changeFundingSource = this.changeFundingSource.bind(this)
+    this.changeFundingSecured = this.changeFundingSecured.bind(this)
     this.makeExportData = this.makeExportData.bind(this)
   }
 
@@ -87,12 +97,17 @@ class PortfolioPlanner extends React.Component {
       })
     })
 
+    console.log('projects', projects)
+
+
     let state = {
       allProjects: projects,
       remainingProjects: projects,
       allPortfolios: props.portfolios,
-      sections: [...new Set(projects.map(project => { return project.section }))]
+      sections: [...new Set(projects.map(project => { return project.section }))].map(section => ({ value: section, label: section })),
     }
+
+    console.log('state', state.sections)
 
     // Rehydate state from last edited portfolio, if one exists
     if (props.selectedPortfolio) {
@@ -115,6 +130,14 @@ class PortfolioPlanner extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('beforeunload', this.alertUser)
+  }
+
+  yearFilterOptions() {
+    const nextYear = new Date().getFullYear() + 1
+    const years = Array.from({ length: 5 }, (_, index) => nextYear + index)
+    const options = years.map(year => ({ value: year.toString(), label: year.toString() }))
+    console.log('options', options)
+    return options
   }
 
   // Project methods
@@ -430,6 +453,36 @@ class PortfolioPlanner extends React.Component {
     })
   }
 
+  changeYear(e) {
+    const newYear = e.target.value
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        selectedYear: newYear
+      }
+    })
+  }
+
+  changeFundingSource(e) {
+    const newFundingSource = e.target.value
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        selectedFundingSource: newFundingSource
+      }
+    })
+  }
+
+  changeFundingSecured(e) {
+    const newFundingSecured = e.target.value
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        selectedFundingSecured: newFundingSecured
+      }
+    })
+  }
+
   within(source, target) {
      return source.toLowerCase().includes(target.toLowerCase())
   }
@@ -442,14 +495,42 @@ class PortfolioPlanner extends React.Component {
     }
   }
 
+  filterYear(project) {
+    if (this.state.selectedYear) {
+      return this.within(project.funding_year.toString(), this.state.selectedYear)
+    } else {
+      return project
+    }
+  }
+
+  filterFundingSource(project) {
+    if (this.state.selectedFundingSource) {
+      return this.within(project.funding_source, this.state.selectedFundingSource)
+    } else {
+      return project
+    }
+  }
+
+  filterFundingSecured(project) {
+    if (this.state.selectedFundingSecured) {
+      return this.within(project.funding_secured, this.state.selectedFundingSecured)
+    } else {
+      return project
+    }
+  }
+
   filterRemainingProjects(projects) {
-    return projects.filter(project => {
+    return this.filterChain(projects).filter(project => {
       return this.within(project.name, this.state.filterText)
-    }).filter(this.filterSection)
+    })
   }
 
   filterPortfolio(projects) {
-    return projects.filter(this.filterSection)
+    return this.filterChain(projects)
+  }
+
+  filterChain(projects) {
+    return projects.filter(this.filterSection).filter(this.filterYear).filter(this.filterFundingSource).filter(this.filterFundingSecured)
   }
 
   getExportFileName() {
@@ -518,6 +599,7 @@ class PortfolioPlanner extends React.Component {
   }
 
   render() {
+    console.log('this.filterYear', this.filterYear)
     const portfolioTableRows = this.filterPortfolio(this.state.portfolio.projects)
     const projectTableRows = this.filterRemainingProjects(this.state.remainingProjects)
 
@@ -527,17 +609,42 @@ class PortfolioPlanner extends React.Component {
           <div className="col">
             <h1>Build a 5-Year Plan</h1>
           </div>
+
           <div className="row col">
             <PortfolioPicker
               portfolios={this.state.allPortfolios}
               activePortfolio={this.state.portfolio}
               changePortfolio={this.selectPortfolio}
             />
-            <SectionPicker
-              sections={this.state.sections}
-              activeSection={this.state.selectedSection}
-              changeSection={this.changeSection}
+
+            <TableFilter
+              options={this.state.sections}
+              value={this.state.selectedSection}
+              onChange={this.changeSection}
+              fieldName="section"
             />
+
+            <TableFilter
+              options={this.yearFilterOptions()}
+              value={this.state.selectedYear}
+              onChange={this.changeYear}
+              fieldName="year"
+            />
+
+            <TableFilter
+              options={this.props.fundingSourceOptions}
+              value={this.state.selectedFundingSource}
+              onChange={this.changeFundingSource}
+              fieldName="funding_source"
+            />
+
+            <TableFilter
+              options={[{value: 'Yes', label: 'Yes'}, {value: 'No', label: 'No'}]}
+              value={this.state.selectedFundingSecured}
+              onChange={this.changeFundingSecured}
+              fieldName="funding_secured"
+            />
+
           </div>
         </div>
         <div className="row">
