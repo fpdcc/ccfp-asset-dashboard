@@ -97,17 +97,12 @@ class PortfolioPlanner extends React.Component {
       })
     })
 
-    console.log('projects', projects)
-
-
     let state = {
       allProjects: projects,
       remainingProjects: projects,
       allPortfolios: props.portfolios,
       sections: [...new Set(projects.map(project => { return project.section }))].map(section => ({ value: section, label: section })),
     }
-
-    console.log('state', state.sections)
 
     // Rehydate state from last edited portfolio, if one exists
     if (props.selectedPortfolio) {
@@ -136,7 +131,6 @@ class PortfolioPlanner extends React.Component {
     const nextYear = new Date().getFullYear() + 1
     const years = Array.from({ length: 5 }, (_, index) => nextYear + index)
     const options = years.map(year => ({ value: year.toString(), label: year.toString() }))
-    console.log('options', options)
     return options
   }
 
@@ -599,7 +593,6 @@ class PortfolioPlanner extends React.Component {
   }
 
   render() {
-    console.log('this.filterYear', this.filterYear)
     const portfolioTableRows = this.filterPortfolio(this.state.portfolio.projects)
     const projectTableRows = this.filterRemainingProjects(this.state.remainingProjects)
 
@@ -618,8 +611,23 @@ class PortfolioPlanner extends React.Component {
         <div className="row">
           <div className="container col card shadow-sm mt-5 col-12">
               <>
-                <div className="mb-5 mt-5">
-                  <div className="row col">
+                <div className="mb-5 mt-2">
+                  <div className="row d-flex justify-content-end align-items-center mx-2 my-2">
+                  {
+                    this.state.portfolio.projects.length > 0
+                      ? <div>
+                          <CSVLink
+                            data={this.makeExportData()}
+                            filename={this.getExportFileName()}
+                            className='btn btn-info mx-auto'
+                            >
+                              Export as CSV
+                          </CSVLink>
+                        </div>
+                      : null
+                  }
+                  </div>
+                  <div className="row">
                       <TableFilter
                         options={this.state.sections}
                         value={this.state.selectedSection}
@@ -663,21 +671,9 @@ class PortfolioPlanner extends React.Component {
                     filterText={this.state.filterText} />} />
               </>
           </div>
-          <div className="col">
-            <PortfolioTotals totals={this.state.portfolio.totals} />
-            { this.state.portfolio.projects.length > 0
-             ? <div className="d-flex justify-content-center mt-3">
-                  <CSVLink
-                    data={this.makeExportData()}
-                    filename={this.getExportFileName()}
-                    className='btn btn-info mx-auto'
-                    >
-                      Export as CSV
-                  </CSVLink>
-                </div>
-            : null }
-          </div>
         </div>
+
+        <PortfolioTotals totals={this.state.portfolio.totals} />
       </div>
     )
   }

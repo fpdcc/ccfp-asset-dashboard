@@ -72,20 +72,21 @@ export function PortfolioControl({ portfolio, savePortfolioName, savePortfolio, 
                 </div>
               </div>
               <div className='row'>
-                <Button
-                  variant={portfolio.unsavedChanges ? 'primary' : 'link'}
-                  size="sm"
-                  type="button"
-                  id="save-portfolio-contents"
-                  disabled={portfolio.unsavedChanges ? false : true}
-                  className="mr-2 px-3"
-                  onClick={savePortfolio}>
-                  {portfolio.unsavedChanges
-                    ? 'Save portfolio'
-                    : 'All changes saved'
-                  }
-                </Button>
-
+                {portfolio.unsavedChanges
+                  ? (
+                    <Button
+                      variant='primary'
+                      size="lg"
+                      type="button"
+                      id="save-portfolio-contents"
+                      disabled={portfolio.unsavedChanges ? false : true}
+                      className="mr-2 px-3"
+                      onClick={savePortfolio}>
+                      Save portfolio
+                    </Button>
+                  )
+                  : (<p className="text-secondary">All changes saved</p>)
+                }
               </div>
             </div>
           }
@@ -96,14 +97,15 @@ export function PortfolioControl({ portfolio, savePortfolioName, savePortfolio, 
               activePortfolio={portfolio}
               changePortfolio={changePortfolio}
             />
-            <Button
-                  variant="secondary"
-                  size="sm"
-                  type="link"
-                  id="new-portfolio"
-                  onClick={_createNewPortfolio}>
-                  New portfolio
-                </Button>
+            <div className="d-flex align-items-end h-100">
+              <Button
+                variant="secondary"
+                type="link"
+                id="new-portfolio"
+                onClick={_createNewPortfolio}>
+                New portfolio
+              </Button>
+            </div>
          </div>
         </>
       }
