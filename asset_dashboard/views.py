@@ -37,7 +37,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
             ).data
             selected_portfolio = portfolios[0]
 
-        phases = Phase.objects.all().select_related('project')
+        phases = Phase.objects.all().select_related('project').prefetch_related('funding_streams')
 
         project_phases = []
         for phase in phases:

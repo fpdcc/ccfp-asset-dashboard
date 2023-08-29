@@ -519,10 +519,6 @@ class PortfolioPlanner extends React.Component {
     })
   }
 
-  filterPortfolio(projects) {
-    return this.filterChain(projects)
-  }
-
   filterChain(projects) {
     return projects.filter(this.filterSection).filter(this.filterYear).filter(this.filterFundingSource).filter(this.filterFundingSecured)
   }
@@ -593,9 +589,6 @@ class PortfolioPlanner extends React.Component {
   }
 
   render() {
-    const portfolioTableRows = this.state.portfolio.projects
-    const projectTableRows = this.filterRemainingProjects(this.state.remainingProjects)
-
     return (
       <div className="m-5">
         <div className='row'>
@@ -628,7 +621,7 @@ class PortfolioPlanner extends React.Component {
               </div>
 
               <PortfolioTable
-                rows={portfolioTableRows}
+                rows={this.state.portfolio.projects}
                 onRemoveFromPortfolio={this.removeProjectFromPortfolio}
               />
             </div>
@@ -677,7 +670,7 @@ class PortfolioPlanner extends React.Component {
             </div>
 
             <ProjectsTable
-              allProjects={projectTableRows}
+              allProjects={this.filterRemainingProjects(this.state.remainingProjects)}
               onAddToPortfolio={this.addProjectToPortfolio}
             />
           </div>
