@@ -1,10 +1,10 @@
 import React from 'react'
 
-const TableFilter = ({ options, value, onChange, fieldName }) => {
+const TableFilter = ({ options, value, onChange, fieldName, label }) => {
   return (
     <div className="form-group col">
       <label htmlFor={`${fieldName}-select`}>
-        <h5>Filter by {fieldName}</h5>
+        <h5>{label}</h5>
       </label>
       <select
         id={`${fieldName}-select`}

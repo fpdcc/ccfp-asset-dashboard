@@ -128,8 +128,8 @@ class PortfolioPlanner extends React.Component {
   }
 
   yearFilterOptions() {
-    const nextYear = new Date().getFullYear() + 1
-    const years = Array.from({ length: 5 }, (_, index) => nextYear + index)
+    const thisYear = new Date().getFullYear()
+    const years = Array.from({ length: 6 }, (_, index) => thisYear + index)
     const options = years.map(year => ({ value: year.toString(), label: year.toString() }))
     return options
   }
@@ -593,7 +593,7 @@ class PortfolioPlanner extends React.Component {
   }
 
   render() {
-    const portfolioTableRows = this.filterPortfolio(this.state.portfolio.projects)
+    const portfolioTableRows = this.state.portfolio.projects
     const projectTableRows = this.filterRemainingProjects(this.state.remainingProjects)
 
     return (
@@ -610,66 +610,76 @@ class PortfolioPlanner extends React.Component {
         </div>
         <div className="row">
           <div className="container col card shadow-sm mt-5 col-12">
-              <>
-                <div className="mb-5 mt-2">
-                  <div className="row d-flex justify-content-end align-items-center mx-2 my-2">
-                  {
-                    this.state.portfolio.projects.length > 0
-                      ? <div>
-                          <CSVLink
-                            data={this.makeExportData()}
-                            filename={this.getExportFileName()}
-                            className='btn btn-info mx-auto'
-                            >
-                              Export as CSV
-                          </CSVLink>
-                        </div>
-                      : null
-                  }
-                  </div>
-                  <div className="row">
-                      <TableFilter
-                        options={this.state.sections}
-                        value={this.state.selectedSection}
-                        onChange={this.changeSection}
-                        fieldName="section"
-                      />
+            <div className="mb-5 mt-2">
+              <div className="row d-flex justify-content-end align-items-center mx-2 my-2">
+                {
+                  this.state.portfolio.projects.length > 0
+                    ? <div>
+                        <CSVLink
+                          data={this.makeExportData()}
+                          filename={this.getExportFileName()}
+                          className='btn btn-info mx-auto'
+                          >
+                            Export as CSV
+                        </CSVLink>
+                      </div>
+                    : null
+                }
+              </div>
 
-                      <TableFilter
-                        options={this.yearFilterOptions()}
-                        value={this.state.selectedYear}
-                        onChange={this.changeYear}
-                        fieldName="year"
-                      />
+              <PortfolioTable
+                rows={portfolioTableRows}
+                onRemoveFromPortfolio={this.removeProjectFromPortfolio}
+              />
+            </div>
+          </div>
+          <div className="container col card shadow-sm mt-5 col-12">
+            <div className="d-flex justify-content-start py-3 align-items-center">
+              <h2 className='text-primary mb-0'>ALL PROJECTS</h2>
 
-                      <TableFilter
-                        options={this.props.fundingSourceOptions}
-                        value={this.state.selectedFundingSource}
-                        onChange={this.changeFundingSource}
-                        fieldName="funding_source"
-                      />
+              <SearchInput
+                onFilter={this.searchProjects}
+                filterText={this.state.filterText} />
+            </div>
 
-                      <TableFilter
-                        options={[{value: 'Yes', label: 'Yes'}, {value: 'No', label: 'No'}]}
-                        value={this.state.selectedFundingSecured}
-                        onChange={this.changeFundingSecured}
-                        fieldName="funding_secured"
-                      />
-                    </div>
+            <div className="row mb-5 mt-2">
+              <TableFilter
+                options={this.state.sections}
+                value={this.state.selectedSection}
+                onChange={this.changeSection}
+                fieldName="section"
+                label="Filter by section"
+              />
 
-                    <PortfolioTable
-                      rows={portfolioTableRows}
-                      onRemoveFromPortfolio={this.removeProjectFromPortfolio}
-                    />
-                </div>
+              <TableFilter
+                options={this.yearFilterOptions()}
+                value={this.state.selectedYear}
+                onChange={this.changeYear}
+                fieldName="year"
+                label="Filter by funding year"
+              />
 
-                <ProjectsTable
-                  allProjects={projectTableRows}
-                  onAddToPortfolio={this.addProjectToPortfolio}
-                  searchInput={<SearchInput
-                    onFilter={this.searchProjects}
-                    filterText={this.state.filterText} />} />
-              </>
+              <TableFilter
+                options={this.props.fundingSourceOptions}
+                value={this.state.selectedFundingSource}
+                onChange={this.changeFundingSource}
+                fieldName="funding_source"
+                label="Filter by funding source"
+              />
+
+              <TableFilter
+                options={[{value: 'Yes', label: 'Yes'}, {value: 'No', label: 'No'}]}
+                value={this.state.selectedFundingSecured}
+                onChange={this.changeFundingSecured}
+                fieldName="funding_secured"
+                label="Filter by funding secured"
+              />
+            </div>
+
+            <ProjectsTable
+              allProjects={projectTableRows}
+              onAddToPortfolio={this.addProjectToPortfolio}
+            />
           </div>
         </div>
 
