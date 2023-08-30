@@ -19,13 +19,14 @@ const TextField = styled.input`
 
 const SearchInput = ({ filterText, onFilter }) => {
   return (
-    <div className="mb-4">
-      <TextField 
-        id="search" 
-        type="text" 
-        placeholder="Search for projects by name" 
-        aria-label="Search Input" 
-        value={filterText} 
+    <div className="input-group col-6">
+      <input
+        id="search"
+        type="text"
+        className='form-control'
+        placeholder="Search for projects by name"
+        aria-label="Search Input"
+        value={filterText}
         onChange={onFilter} />
     </div>
   )

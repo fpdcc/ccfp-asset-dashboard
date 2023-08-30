@@ -37,7 +37,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
             ).data
             selected_portfolio = portfolios[0]
 
-        phases = Phase.objects.all().select_related('project')
+        phases = Phase.objects.all().select_related('project').prefetch_related('funding_streams')
 
         project_phases = []
         for phase in phases:
@@ -81,6 +81,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
             'portfolios': portfolios,
             'selectedPortfolio': selected_portfolio,
             'userId': self.request.user.id,
+            'fundingSourceOptions': [{'value': type[0], 'label': type[1]} for type in FundingStream.SOURCE_TYPE_CHOICES],
         }
         return context
 

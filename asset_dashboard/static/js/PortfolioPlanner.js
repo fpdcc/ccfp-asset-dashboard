@@ -5,11 +5,12 @@ import { CSVLink } from 'react-csv'
 import Cookies from 'js-cookie'
 
 import ProjectsTable from './components/ProjectsTable'
-import PortfolioTable from './components/PortfolioTable'
+import { PortfolioTable, PortfolioControl } from './components/PortfolioTable'
 import PortfolioTotals from './components/PortfolioTotals'
 import PortfolioPicker from './components/PortfolioPicker'
 import SectionPicker from './components/SectionPicker'
 import SearchInput from './components/SearchInput'
+import TableFilter from './components/TableFilter'
 
 class PortfolioPlanner extends React.Component {
   constructor(props) {
@@ -32,7 +33,10 @@ class PortfolioPlanner extends React.Component {
         unsavedChanges: false
       },
       filterText: '',
-      selectedSection: ''
+      selectedSection: '',
+      selectedFundingSecured: '',
+      selectedFundingSource: '',
+      selectedYear: ''
     }
 
     this.searchProjects = this.searchProjects.bind(this)
@@ -48,6 +52,12 @@ class PortfolioPlanner extends React.Component {
     this.confirmDestroy = this.confirmDestroy.bind(this)
     this.changeSection = this.changeSection.bind(this)
     this.filterSection = this.filterSection.bind(this)
+    this.filterYear = this.filterYear.bind(this)
+    this.filterFundingSource = this.filterFundingSource.bind(this)
+    this.filterFundingSecured = this.filterFundingSecured.bind(this)
+    this.changeYear = this.changeYear.bind(this)
+    this.changeFundingSource = this.changeFundingSource.bind(this)
+    this.changeFundingSecured = this.changeFundingSecured.bind(this)
     this.makeExportData = this.makeExportData.bind(this)
   }
 
@@ -91,7 +101,7 @@ class PortfolioPlanner extends React.Component {
       allProjects: projects,
       remainingProjects: projects,
       allPortfolios: props.portfolios,
-      sections: [...new Set(projects.map(project => { return project.section }))]
+      sections: [...new Set(projects.map(project => { return project.section }))].map(section => ({ value: section, label: section })),
     }
 
     // Rehydate state from last edited portfolio, if one exists
@@ -115,6 +125,13 @@ class PortfolioPlanner extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('beforeunload', this.alertUser)
+  }
+
+  yearFilterOptions() {
+    const thisYear = new Date().getFullYear()
+    const years = Array.from({ length: 6 }, (_, index) => thisYear + index)
+    const options = years.map(year => ({ value: year.toString(), label: year.toString() }))
+    return options
   }
 
   // Project methods
@@ -430,6 +447,36 @@ class PortfolioPlanner extends React.Component {
     })
   }
 
+  changeYear(e) {
+    const newYear = e.target.value
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        selectedYear: newYear
+      }
+    })
+  }
+
+  changeFundingSource(e) {
+    const newFundingSource = e.target.value
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        selectedFundingSource: newFundingSource
+      }
+    })
+  }
+
+  changeFundingSecured(e) {
+    const newFundingSecured = e.target.value
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        selectedFundingSecured: newFundingSecured
+      }
+    })
+  }
+
   within(source, target) {
      return source.toLowerCase().includes(target.toLowerCase())
   }
@@ -442,14 +489,38 @@ class PortfolioPlanner extends React.Component {
     }
   }
 
-  filterRemainingProjects(projects) {
-    return projects.filter(project => {
-      return this.within(project.name, this.state.filterText)
-    }).filter(this.filterSection)
+  filterYear(project) {
+    if (this.state.selectedYear) {
+      return this.within(project.funding_year.toString(), this.state.selectedYear)
+    } else {
+      return project
+    }
   }
 
-  filterPortfolio(projects) {
-    return projects.filter(this.filterSection)
+  filterFundingSource(project) {
+    if (this.state.selectedFundingSource) {
+      return this.within(project.funding_source, this.state.selectedFundingSource)
+    } else {
+      return project
+    }
+  }
+
+  filterFundingSecured(project) {
+    if (this.state.selectedFundingSecured) {
+      return this.within(project.funding_secured, this.state.selectedFundingSecured)
+    } else {
+      return project
+    }
+  }
+
+  filterRemainingProjects(projects) {
+    return this.filterChain(projects).filter(project => {
+      return this.within(project.name, this.state.filterText)
+    })
+  }
+
+  filterChain(projects) {
+    return projects.filter(this.filterSection).filter(this.filterYear).filter(this.filterFundingSource).filter(this.filterFundingSecured)
   }
 
   getExportFileName() {
@@ -518,61 +589,94 @@ class PortfolioPlanner extends React.Component {
   }
 
   render() {
-    const portfolioTableRows = this.filterPortfolio(this.state.portfolio.projects)
-    const projectTableRows = this.filterRemainingProjects(this.state.remainingProjects)
-
     return (
       <div className="m-5">
+        <div className='row'>
+          <PortfolioControl
+            portfolio={this.state.portfolio}
+            savePortfolio={this.savePortfolio}
+            savePortfolioName={this.savePortfolioName}
+            createNewPortfolio={this.createNewPortfolio}
+            changePortfolio={this.selectPortfolio}
+            portfolios={this.state.allPortfolios}
+          />
+        </div>
         <div className="row">
-          <div className="col">
-            <h1>Build a 5-Year Plan</h1>
+          <div className="container col card shadow-sm mt-5 col-12">
+            <div className="mb-5 mt-2">
+              <div className="row d-flex justify-content-end align-items-center mx-2 my-2">
+                {
+                  this.state.portfolio.projects.length > 0
+                    ? <div>
+                        <CSVLink
+                          data={this.makeExportData()}
+                          filename={this.getExportFileName()}
+                          className='btn btn-info mx-auto'
+                          >
+                            Export as CSV
+                        </CSVLink>
+                      </div>
+                    : null
+                }
+              </div>
+
+              <PortfolioTable
+                rows={this.state.portfolio.projects}
+                onRemoveFromPortfolio={this.removeProjectFromPortfolio}
+              />
+            </div>
           </div>
-          <div className="row col">
-            <PortfolioPicker
-              portfolios={this.state.allPortfolios}
-              activePortfolio={this.state.portfolio}
-              changePortfolio={this.selectPortfolio}
-            />
-            <SectionPicker
-              sections={this.state.sections}
-              activeSection={this.state.selectedSection}
-              changeSection={this.changeSection}
+          <div className="container col card shadow-sm mt-5 col-12">
+            <div className="d-flex justify-content-start py-3 align-items-center">
+              <h2 className='text-primary mb-0'>ALL PROJECTS</h2>
+
+              <SearchInput
+                onFilter={this.searchProjects}
+                filterText={this.state.filterText} />
+            </div>
+
+            <div className="row mb-5 mt-2">
+              <TableFilter
+                options={this.state.sections}
+                value={this.state.selectedSection}
+                onChange={this.changeSection}
+                fieldName="section"
+                label="Filter by section"
+              />
+
+              <TableFilter
+                options={this.yearFilterOptions()}
+                value={this.state.selectedYear}
+                onChange={this.changeYear}
+                fieldName="year"
+                label="Filter by funding year"
+              />
+
+              <TableFilter
+                options={this.props.fundingSourceOptions}
+                value={this.state.selectedFundingSource}
+                onChange={this.changeFundingSource}
+                fieldName="funding_source"
+                label="Filter by funding source"
+              />
+
+              <TableFilter
+                options={[{value: 'Yes', label: 'Yes'}, {value: 'No', label: 'No'}]}
+                value={this.state.selectedFundingSecured}
+                onChange={this.changeFundingSecured}
+                fieldName="funding_secured"
+                label="Filter by funding secured"
+              />
+            </div>
+
+            <ProjectsTable
+              allProjects={this.filterRemainingProjects(this.state.remainingProjects)}
+              onAddToPortfolio={this.addProjectToPortfolio}
             />
           </div>
         </div>
-        <div className="row">
-          <div className="container col card shadow-sm mt-5 ml-3 col-9">
-              <>
-                <PortfolioTable
-                  portfolio={this.state.portfolio}
-                  rows={portfolioTableRows}
-                  onRemoveFromPortfolio={this.removeProjectFromPortfolio}
-                  savePortfolio={this.savePortfolio}
-                  savePortfolioName={this.savePortfolioName}
-                  createNewPortfolio={this.createNewPortfolio} />
-                <ProjectsTable
-                  allProjects={projectTableRows}
-                  onAddToPortfolio={this.addProjectToPortfolio}
-                  searchInput={<SearchInput
-                    onFilter={this.searchProjects}
-                    filterText={this.state.filterText} />} />
-              </>
-          </div>
-          <div className="col">
-            <PortfolioTotals totals={this.state.portfolio.totals} />
-            { this.state.portfolio.projects.length > 0
-             ? <div className="d-flex justify-content-center mt-3">
-                  <CSVLink
-                    data={this.makeExportData()}
-                    filename={this.getExportFileName()}
-                    className='btn btn-info mx-auto'
-                    >
-                      Export as CSV
-                  </CSVLink>
-                </div>
-            : null }
-          </div>
-        </div>
+
+        <PortfolioTotals totals={this.state.portfolio.totals} />
       </div>
     )
   }
