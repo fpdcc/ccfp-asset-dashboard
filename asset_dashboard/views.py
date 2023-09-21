@@ -1,5 +1,8 @@
 import json
 import re
+from datetime import datetime
+from decimal import *
+
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -9,6 +12,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.html import escape
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
+from django.db.models import Prefetch
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
@@ -16,7 +20,10 @@ from .models import HouseDistrict, LocalAsset, Project, ProjectCategory, Project
     Section, SenateDistrict, CommissionerDistrict, Phase, FundingStream
 from .forms import ProjectForm, ProjectScoreForm, ProjectCategoryForm, \
     FundingStreamForm, PhaseForm
-from .serializers import PortfolioSerializer, LocalAssetReadSerializer
+from .serializers import PortfolioSerializer, LocalAssetReadSerializer, FundingStreamSerializer
+
+from django.db.models import F, Sum, Case, When, FloatField
+
 
 
 class CipPlannerView(LoginRequiredMixin, TemplateView):
@@ -37,53 +44,153 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
             ).data
             selected_portfolio = portfolios[0]
 
-        phases = Phase.objects.all().select_related('project').prefetch_related('funding_streams')
+        # phases = Phase.objects.all().select_related('project').prefetch_related('funding_streams')
+        # funding_streams = FundingStream.objects.filter(year__gte=datetime.now().year).prefetch_related(
+        #     'phase__project__section_owner',
+        #     'phase__project__house_districts',
+        #     'phase__project__senate_districts',
+        #     'phase__project__commissioner_districts',
+        #     'phase__project__zones',
+        #     'phase__project__category',
+        #     'phase__localasset_set',
+        #     'phase__project__projectscore',
+        #     'phase__phase_zone_distribution',
+        # )
 
-        project_phases = []
-        for phase in phases:
-            funding_streams = phase.funding_streams.all()
+        # funding_streams = FundingStream.objects.filter(year__gte=datetime.now().year).prefetch_related(
+        #     Prefetch('phase',
+        #              queryset=Phase.objects.select_related('project').prefetch_related(
+        #     'localasset_set',
+        #     'project__house_districts',
+        #     'project__senate_districts',
+        #     'project__commissioner_districts',
+        #     'project__zones',
+        #     'project__projectscore')),
+        # )
 
-            section = phase.project.section_owner.name \
-                if phase.project.section_owner else ''
-            category = phase.project.category.name \
-                if phase.project.category else ''
+        from pprint import pprint
 
-            project_phases.append({
-                'pk': phase.id,
-                'phase': phase.get_phase_type_display(),
-                'total_budget': phase.total_budget,
-                'funded_amount': phase.total_funded_amount,
-                'funded_amount_by_year': phase.funded_amount_by_year,
-                'funding_streams': list(funding_streams.values()) if funding_streams else [],
-                'phase_year': phase.year,
-                'estimated_bid_quarter': phase.estimated_bid_quarter,
-                'status': phase.status,
-                'phase_type': phase.get_phase_type_display(),
-                'name': phase.project.name,
-                'description': phase.project.description,
-                'notes': phase.project.notes,
-                'section': section,
-                'category': category,
-                'total_score': phase.project.projectscore.total_score,
-                'project_manager': phase.project.project_manager,
-                'countywide': phase.project.countywide,
-                'zones': list(phase.project.zones.all().values('name')),
-                'cost_by_zone': phase.cost_by_zone,
-                'house_districts': list(phase.project.house_districts.all().values('name')),
-                'senate_districts': list(phase.project.senate_districts.all().values('name')),
-                'commissioner_districts': list(phase.project.commissioner_districts.all().values('name')),
-                'assets': LocalAsset.group_assets_by_type(phase.localasset_set.all().values('asset_id', 'asset_model')),
-                'project_id': phase.project.id,
-            })
+        # funding_streams = FundingStream.objects.filter(year__gte=datetime.now().year).prefetch_related(
+        #     Prefetch('phase__project',
+        #              queryset=Project.objects.prefetch_related(
+        #                  'section_owner',
+            # 'house_districts',
+            # 'senate_districts',
+            # 'commissioner_districts',
+            # 'zones',
+            # 'projectscore')),
+        #     'phase__localasset_set'
+        # )
 
-        context['props'] = {
-            'projects': json.dumps(project_phases, cls=DjangoJSONEncoder),
-            'portfolios': portfolios,
-            'selectedPortfolio': selected_portfolio,
-            'userId': self.request.user.id,
-            'fundingSourceOptions': [{'value': type[0], 'label': type[1]} for type in FundingStream.SOURCE_TYPE_CHOICES],
-        }
-        return context
+        # for funding in funding_streams:
+        #     print(funding.phase.project.name, funding.localasset_set.all())
+
+        # funding_streams = FundingStream.objects.filter(year__gte=datetime.now().year)
+
+        # data = FundingStreamSerializer(funding_streams, many=True).data
+
+        funding_streams = FundingStream.objects.filter(year__gte=datetime.now().year).prefetch_related(
+            'phase__project__house_districts',
+            'phase__project__senate_districts',
+            'phase__project__commissioner_districts',
+            'phase__project__zones',
+            'phase__project__category',
+            'phase__project__projectscore',
+            'phase__localasset_set',
+            'phase__phase_zone_distribution',
+        ).annotate(
+            total_budget=Sum('budget'),
+            total_funded_amount=Sum(Case(When(funding_secured=True, then=F('budget')))),
+            funded_amount_by_year=Case(
+                When(funding_secured=True, then=F('budget')),
+                default=0,
+                output_field=FloatField(),
+            ),
+        )
+        # ).values(
+        #     'id',
+        #     'source_type',
+        #     'budget',
+        #     'year',
+        #     'funding_secured',
+        #     'phase__id',
+        #     'phase__phase_type',
+        #     'phase__year',
+        #     'phase__estimated_bid_quarter',
+        #     'phase__status',
+        #     'total_budget',
+        #     'total_funded_amount',
+        #     'funded_amount_by_year',
+        #     'phase__project__id',
+        #     'phase__project__name',
+        #     'phase__project__description',
+        #     'phase__project__project_manager',
+        #     'phase__project__notes',
+        #     'phase__project__section_owner',
+        #     'phase__project__category',
+        #     # 'phase__project__projectscore__total_score',
+        #     'phase__project__countywide',
+        #     'phase__project__zones',
+        #     # 'cost_by_zone',
+        #     'phase__project__house_districts',
+        #     'phase__project__senate_districts',
+        #     'phase__project__commissioner_districts',
+        #     'phase__localasset',
+        # )
+
+class DecimalEncoder(DjangoJSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return str(obj)
+        return json.JSONEncoder.default(self, obj)
+
+
+# project_phases = []
+# for funding_stream in funding_streams:
+#     phases = funding_stream.phase.all()
+#     if phases:
+#         phase = phases[0]
+#         project = phase.project
+#         project_phases.append({
+#             'key': funding_stream.id,
+#             'funding_source': funding_stream.source_type,
+#             'funding_amount': int(funding_stream.budget.amount) if funding_stream.budget.amount else 0,
+#             'funding_year': funding_stream.year,
+#             'funding_secured': 'Yes' if funding_stream.funding_secured else 'No',
+#             'phase_id': phase.id,
+#             'phase': phase.phase_type,
+#             'phase_year': phase.year,
+#             'estimated_bid_quarter': phase.estimated_bid_quarter,
+#             'status': phase.status,
+#             'budget': funding_stream.total_budget,
+#             'funded_amount': int(funding_stream.total_funded_amount) if funding_stream.total_funded_amount else 0,
+#             'funded_amount_by_year': int(funding_stream.funded_amount_by_year) if funding_stream.funded_amount_by_year else 0,
+#             'project_id': project.id,
+#             'name': project.name,
+#             'description': project.description,
+#             'project_manager': project.project_manager,
+#             'notes': project.notes,
+#             'section': project.section_owner.name,
+#             'category': project.category,
+#             'score': project.projectscore.total_score,
+#             'countywide': project.countywide,
+#             'house_districts': list(project.house_districts.values('name')),
+#             'senate_districts': list(project.senate_districts.all().values('name')),
+#             'commissioner_districts': list(project.commissioner_districts.all().values('name')),
+#             'zones': project.zones.all().values('name'),
+#             'cost_by_zone': phase.cost_by_zone,
+#             'assets': phase.assets_grouped_by_type
+#         })
+
+
+#         context['props'] = {
+#             'projects': json.dumps(project_phases, cls=DjangoJSONEncoder),
+#             'portfolios': portfolios,
+#             'selectedPortfolio': selected_portfolio,
+#             'userId': self.request.user.id,
+#             'fundingSourceOptions': [{'value': type[0], 'label': type[1]} for type in FundingStream.SOURCE_TYPE_CHOICES],
+#         }
+#         return context
 
 
 def page_not_found(request, exception, template_name='asset_dashboard/404.html'):

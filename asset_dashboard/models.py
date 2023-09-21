@@ -167,8 +167,8 @@ class Project(models.Model):
 
 
 class PhaseZoneDistribution(models.Model):
-    phase = models.ForeignKey("Phase", on_delete=models.CASCADE, related_name="phase")
-    zone = models.ForeignKey("Zone", on_delete=models.CASCADE, related_name="zone")
+    phase = models.ForeignKey("Phase", on_delete=models.CASCADE, related_name='phase_zone_distribution')
+    zone = models.ForeignKey("Zone", on_delete=models.CASCADE, related_name='phase_zone_distribution')
     zone_distribution_proportion = models.FloatField(null=True, blank=True)
 
     @classmethod
@@ -216,7 +216,7 @@ class Phase(SequencedModel):
     )
     status = models.TextField(choices=STATUS_CHOICES, default="new")
 
-    funding_streams = models.ManyToManyField("FundingStream")
+    funding_streams = models.ManyToManyField("FundingStream", related_name='phase')
 
     year = models.IntegerField(null=True, blank=True)
 
@@ -317,6 +317,19 @@ class ScoreField(models.IntegerField):
         super().__init__(*args, **kwargs)
 
 
+# >>> from asset_dashboard.models import *
+# >>> prj = Project.objects.all()[134]
+# >>> s, _ = ProjectScore.objects.get_or_create(project=prj)
+# >>> s.operations_impact_score = 3.4
+# >>> s.geographic_distance_score = 4
+# >>> s.save()
+# args ()
+# kwargs {}
+# score_fields [<asset_dashboard.models.ScoreField: core_mission_score>, <asset_dashboard.models.ScoreField: operations_impact_score>, <asset_dashboard.models.ScoreField: sustainability_score>, <asset_dashboard.models.ScoreField: ease_score>, <asset_dashboard.models.ScoreField: geographic_distance_score>, <asset_dashboard.models.ScoreField: social_equity_score>]
+# self.total_score 1.4000000000000001
+# >>> s.refresh_from_db()
+# >>> s.total_score
+
 class ProjectScore(models.Model):
 
     project = models.OneToOneField(Project, on_delete=models.CASCADE)
@@ -327,9 +340,16 @@ class ProjectScore(models.Model):
     geographic_distance_score = ScoreField()
     social_equity_score = ScoreField()
 
-    @property
-    def total_score(self):
-        score_fields = [f for f in self._meta.get_fields() if type(f) == ScoreField]
+    total_score = models.DecimalField(max_digits=3, decimal_places=2)
+
+    def save(self, *args, **kwargs):
+        self.total_score =  self.calculate_total_score()
+        return super().save(*args, **kwargs)
+
+    @classmethod
+    def calculate_total_score(self):
+        score_fields = [f for f in self._meta.get_fields() if type(f) == ScoreField and not f.name == 'total_score']
+        print('score_fields', score_fields)
 
         # there should be one, and only one row in score weights.
         # this tuple unpacking will throw an error if that's not so
@@ -349,6 +369,30 @@ class ProjectScore(models.Model):
             total_score += score_field_value * weight_field_value
 
         return total_score / weights_sum
+
+
+    # @property
+    # def total_score(self):
+    #     score_fields = [f for f in self._meta.get_fields() if type(f) == ScoreField]
+
+    #     # there should be one, and only one row in score weights.
+    #     # this tuple unpacking will throw an error if that's not so
+    #     (score_weights,) = ScoreWeights.objects.all()
+    #     total_score = 0
+    #     weights_sum = 0
+
+    #     for field in score_fields:
+    #         score_field_value = field.value_from_object(self)
+    #         weight_field_value = field.value_from_object(score_weights)
+    #         weights_sum += weight_field_value
+
+    #         # sets score_field_value to 0 if the field is missing a score
+    #         if score_field_value is None:
+    #             score_field_value = 0
+
+    #         total_score += score_field_value * weight_field_value
+
+    #     return total_score / weights_sum
 
     @receiver([post_save], sender="asset_dashboard.Project")
     def update_countywide_score(sender, instance, **kwargs):
