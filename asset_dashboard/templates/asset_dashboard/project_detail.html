@@ -32,57 +32,59 @@
         </div>
       </div>
     </section>
-
-    {% block extra_js %}
-      {{ block.super }}
-      {% load compress %}
-      {{ props|json_script:"props" }}
-      {% compress js %}
-        <script type="text/jsx" src="{% static 'js/components/ProjectDetailAssetTable.js' %}"></script>
-      {% endcompress %}
-
-      <script type="text/javascript">
-        window.props = JSON.parse(document.getElementById('props').textContent)
-        window.reactMount = document.getElementById('map')
-
-        window.onload = () => {
-          let projectForm = document.getElementsByTagName('form')[0]
-          window.addEventListener("visibilitychange", saveOnVisChange)
-          window.addEventListener('beforeunload', redirectDialog)
-        }
-
-        function saveOnVisChange(event) {
-          if (document.visibilityState === 'hidden') {
-            // Checking the validity here ensures that this doesn't get
-            // submitted if the user still chooses to leave the page with errors.
-            let valid = projectForm.reportValidity()
-            if(valid) {
-              let formDataObj = new FormData(projectForm)
-              navigator.sendBeacon(`/projects/{{project.pk}}/`, formDataObj)
-            }
-          }
-        }
-
-        function redirectDialog(event) {
-          let valid = projectForm.reportValidity()
-          if(!valid) {
-            event.preventDefault()
-            event.returnValue = ""
-            // "Wait" zero time after the warning dialog so the form errors display properly
-            setTimeout(() => {projectForm.reportValidity()}, 0)
-            return
-          }
-        }
-
-        const getCookie = (name) => {
-          const match = document.cookie.split(';').map(el => { let [key,value] = el.split('='); return { [key.trim()]: value }})
-          const filteredMatch = match.filter(e => Object.keys(e)[0] === name)
-
-          let matchLength = filteredMatch.length
-
-          return filteredMatch[matchLength - 1][name]
-        }
-      </script>
-    {% endblock %}
   {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+  {{ block.super }}
+
+  {{ props|json_script:"props" }}
+
+  <script type="text/javascript">
+    function redirectDialog(event, projectForm) {
+        let valid = projectForm.reportValidity()
+        if(!valid) {
+          event.preventDefault()
+          event.returnValue = ""
+          // "Wait" zero time after the warning dialog so the form errors display properly
+          setTimeout(() => {projectForm.reportValidity()}, 0)
+          return
+        }
+      }
+
+      const getCookie = (name) => {
+        const match = document.cookie.split(';').map(el => { let [key,value] = el.split('='); return { [key.trim()]: value }})
+        const filteredMatch = match.filter(e => Object.keys(e)[0] === name)
+
+        let matchLength = filteredMatch.length
+
+        return filteredMatch[matchLength - 1][name]
+      }
+
+      function saveOnVisChange(event, projectForm) {
+        if (document.visibilityState === 'hidden') {
+          // Checking the validity here ensures that this doesn't get
+          // submitted if the user still chooses to leave the page with errors.
+          let valid = projectForm.reportValidity()
+          if(valid) {
+            let formDataObj = new FormData(projectForm)
+            navigator.sendBeacon(`/projects/{{project.pk}}/`, formDataObj)
+          }
+        }
+      }
+
+    window.onload = () => {
+      const projectForm = document.getElementsByTagName('form')[0]
+      window.addEventListener("visibilitychange", (event) => saveOnVisChange(event, projectForm))
+      window.addEventListener('beforeunload', (event) => redirectDialog(event, projectForm))
+    }
+
+    window.props = JSON.parse(document.getElementById('props').textContent)
+    window.reactMount = document.getElementById('map')
+  </script>
+
+  {% load compress %}
+  {% compress js %}
+    <script type="text/jsx" src="{% static 'js/components/ProjectDetailAssetTable.js' %}"></script>
+  {% endcompress %}
 {% endblock %}
