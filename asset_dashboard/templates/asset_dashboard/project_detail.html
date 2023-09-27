@@ -19,7 +19,7 @@
       {% include "asset_dashboard/partials/phase_table.html" %}
     {% endif %}
   </div>
-  
+
   {% if props and not project.countywide %}
     <section class="my-4 mx-2 border border-secondary rounded shadow-sm p-3 tab-content card">
       <div class="col">
@@ -32,18 +32,24 @@
         </div>
       </div>
     </section>
-    
+
     {% block extra_js %}
       {{ block.super }}
       {% load compress %}
       {{ props|json_script:"props" }}
+      {% compress js %}
+        <script type="text/jsx" src="{% static 'js/components/ProjectDetailAssetTable.js' %}"></script>
+      {% endcompress %}
+
       <script type="text/javascript">
         window.props = JSON.parse(document.getElementById('props').textContent)
         window.reactMount = document.getElementById('map')
 
-        const projectForm = document.getElementsByTagName('form')[0]
-        window.addEventListener("visibilitychange", saveOnVisChange)
-        window.addEventListener('beforeunload', redirectDialog)
+        window.onload = () => {
+          let projectForm = document.getElementsByTagName('form')[0]
+          window.addEventListener("visibilitychange", saveOnVisChange)
+          window.addEventListener('beforeunload', redirectDialog)
+        }
 
         function saveOnVisChange(event) {
           if (document.visibilityState === 'hidden') {
@@ -73,13 +79,10 @@
           const filteredMatch = match.filter(e => Object.keys(e)[0] === name)
 
           let matchLength = filteredMatch.length
- 
+
           return filteredMatch[matchLength - 1][name]
         }
       </script>
-      {% compress js %}
-        <script type="text/jsx" src="{% static 'js/components/ProjectDetailAssetTable.js' %}"></script>
-      {% endcompress %}
     {% endblock %}
   {% endif %}
 {% endblock %}
