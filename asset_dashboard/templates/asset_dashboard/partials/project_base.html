@@ -6,7 +6,7 @@
 {% block body %}
   <div class="col">
     <h1 class="display-4 mb-4">{{ project.name }}</h1>
-    
+
     <nav>
       <ul class="nav">
         <li>
@@ -17,9 +17,9 @@
         </li>
       </ul>
     </nav>
-    
+
     {% block project %}{% endblock %}
-    
+
     {% block phase_list %}{% endblock %}
   </div>
 {% endblock %}
@@ -41,7 +41,7 @@
   // Else it is the project overview page. Since all of the path names that use this template
   // will have "projects", we're using "overview" as the default home-like page for a project.
   const elementId = active ? active : "overview"
-  
+
   document.getElementById(elementId).classList.add("btn-primary")
   document.getElementById(elementId).classList.remove('btn-outline-primary')
 </script>
