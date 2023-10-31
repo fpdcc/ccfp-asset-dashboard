@@ -38,9 +38,9 @@ sudo -H -u datamade $VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt -
 
 # OPTIONAL Run migrations and other management commands that should be run with
 # every deployment
-sudo -H -u datamade bash "source $PROJECT_DIR/.env && $VENV_DIR/bin/python $PROJECT_DIR/manage.py migrate"
-sudo -H -u datamade bash "source $PROJECT_DIR/.env && $VENV_DIR/bin/python $PROJECT_DIR/manage.py createcachetable"
-sudo -H -u datamade bash "source $PROJECT_DIR/.env && $VENV_DIR/bin/python $PROJECT_DIR/manage.py collectstatic --no-input"
+sudo -H -u datamade bash -c "source $PROJECT_DIR/.env && $VENV_DIR/bin/python $PROJECT_DIR/manage.py migrate"
+sudo -H -u datamade bash -c "source $PROJECT_DIR/.env && $VENV_DIR/bin/python $PROJECT_DIR/manage.py createcachetable"
+sudo -H -u datamade bash -c "source $PROJECT_DIR/.env && $VENV_DIR/bin/python $PROJECT_DIR/manage.py collectstatic --no-input"
 
 # Echo a simple nginx configuration into the correct place, and tell
 # certbot to request a cert if one does not already exist. 
