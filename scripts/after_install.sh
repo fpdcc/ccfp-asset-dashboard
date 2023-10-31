@@ -14,12 +14,8 @@ VENV_DIR="/home/datamade/.virtualenvs/$DEPLOYMENT_NAME"
 # the deployment specific folder
 mv /home/datamade/asset-dashboard $PROJECT_DIR
 
-# get Access to application environmental variables
+# set up the right .env file
 mv $PROJECT_DIR/configs/.env.$DEPLOYMENT_GROUP_NAME $PROJECT_DIR/.env
-set -a
-. $PROJECT_DIR/.env
-set +a
-
 
 # Create a deployment specific virtual environment
 python3 -m venv $VENV_DIR
@@ -42,9 +38,9 @@ sudo -H -u datamade $VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt -
 
 # OPTIONAL Run migrations and other management commands that should be run with
 # every deployment
-sudo -H -u datamade $VENV_DIR/bin/python $PROJECT_DIR/manage.py migrate
-sudo -H -u datamade $VENV_DIR/bin/python $PROJECT_DIR/manage.py createcachetable
-sudo -H -u datamade $VENV_DIR/bin/python $PROJECT_DIR/manage.py collectstatic --no-input
+sudo -H -u datamade source $PROJECT_DIR/.env && $VENV_DIR/bin/python $PROJECT_DIR/manage.py migrate
+sudo -H -u datamade source $PROJECT_DIR/.env && $VENV_DIR/bin/python $PROJECT_DIR/manage.py createcachetable
+sudo -H -u datamade source $PROJECT_DIR/.env && $VENV_DIR/bin/python $PROJECT_DIR/manage.py collectstatic --no-input
 
 # Echo a simple nginx configuration into the correct place, and tell
 # certbot to request a cert if one does not already exist. 
