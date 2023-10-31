@@ -14,6 +14,10 @@ VENV_DIR="/home/datamade/.virtualenvs/$DEPLOYMENT_NAME"
 # the deployment specific folder
 mv /home/datamade/asset-dashboard $PROJECT_DIR
 
+# get Access to application environmental variables
+mv $PROJECT_DIR/configs/.env.$DEPLOYMENT_GROUP_NAME $PROJECT_DIR/.env
+source $PROJECT_DIR/.env
+
 # Create a deployment specific virtual environment
 python3 -m venv $VENV_DIR
 
@@ -31,6 +35,7 @@ sudo -H -u datamade $VENV_DIR/bin/pip install --upgrade setuptools
 # Install the project requirements into the deployment specific virtual
 # environment.
 sudo -H -u datamade $VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt --upgrade
+
 
 # OPTIONAL Run migrations and other management commands that should be run with
 # every deployment
