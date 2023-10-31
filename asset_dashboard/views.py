@@ -437,3 +437,17 @@ class ProjectsByDistrictListJson(LoginRequiredMixin, BaseDatatableView):
 
         # only return the district's number and comma/space between numbers
         return re.sub('[^0-9, ]', '', district_names)
+
+
+def pong(request):
+    """
+    Zero-downtime deployment config function.
+    """
+    from django.http import HttpResponse
+
+    try:
+        from ..deployment import DEPLOYMENT_ID
+    except ImportError as e:
+        return HttpResponse('Bad deployment: {}'.format(e), status=401)
+
+    return HttpResponse(DEPLOYMENT_ID)
