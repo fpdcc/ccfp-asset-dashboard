@@ -16,7 +16,10 @@ mv /home/datamade/asset-dashboard $PROJECT_DIR
 
 # get Access to application environmental variables
 mv $PROJECT_DIR/configs/.env.$DEPLOYMENT_GROUP_NAME $PROJECT_DIR/.env
-source $PROJECT_DIR/.env
+set -a
+. $PROJECT_DIR/.env
+set +a
+
 
 # Create a deployment specific virtual environment
 python3 -m venv $VENV_DIR
