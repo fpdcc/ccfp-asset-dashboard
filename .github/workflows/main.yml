@@ -24,7 +24,7 @@ jobs:
       - id: deploy
         uses: webfactory/create-aws-codedeploy-deployment@0.2.2
         with:
-          application: asset-dashboard
+          application: ccfp-asset-dashboard
     # name: Run tests
     # runs-on: ubuntu-latest
     # steps:
