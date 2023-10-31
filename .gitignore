@@ -110,3 +110,4 @@ asset_dashboard/static/compressor/*
 FPDCC_DataMade_backup112221.tar/.blackbox/pubring.gpg~
 /.blackbox/pubring.kbx~
 /.blackbox/secring.gpg
+/configs/.env.staging
