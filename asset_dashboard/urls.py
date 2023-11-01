@@ -25,7 +25,7 @@ from asset_dashboard.views import ProjectListView, CipPlannerView, ProjectCreate
                                     ProjectUpdateView, ProjectListJson, ProjectDeleteView, \
                                     ProjectsByDistrictListView, ProjectsByDistrictListJson, \
                                     PhaseCreateView, PhaseUpdateView, \
-                                    AssetAddEditView, PhaseDeleteView, FundingStreamDeleteView\
+                                    AssetAddEditView, PhaseDeleteView, FundingStreamDeleteView, pong\
 
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -59,6 +59,7 @@ urlpatterns = [
     path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
+    path('pong/', pong),
 ]
 
 handler404 = 'asset_dashboard.views.page_not_found'
