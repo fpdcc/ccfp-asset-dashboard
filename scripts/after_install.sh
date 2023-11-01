@@ -21,10 +21,6 @@ echo -e "\nDEPLOYMENT_ID=$DEPLOYMENT_ID" >> $PROJECT_DIR/.env
 # Create a deployment specific virtual environment
 python3 -m venv $VENV_DIR
 
-# Set the ownership of the project files and the virtual environment
-chown -R datamade.www-data $PROJECT_DIR
-chown -R datamade.www-data $VENV_DIR
-
 # Upgrade pip and setuptools. This is needed because sometimes python packages
 # that we rely upon will use more recent packaging methods than the ones
 # understood by the versions of pip and setuptools that ship with the operating
@@ -42,6 +38,10 @@ sudo -H -u datamade $VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt -
 sudo -H -u datamade env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py migrate
 sudo -H -u datamade env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py createcachetable
 sudo -H -u datamade env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py collectstatic --no-input
+
+# Set the ownership of the project files and the virtual environment
+chown -R datamade.www-data $PROJECT_DIR
+chown -R datamade.www-data $VENV_DIR
 
 # Echo a simple nginx configuration into the correct place, and tell
 # certbot to request a cert if one does not already exist. 
