@@ -6,4 +6,4 @@ stdout_logfile_maxbytes=10MB
 stderr_logfile=/var/log/{{ app_name }}-{{ deployment_id }}-err.log
 stderr_logfile_maxbytes=10MB
 directory=/home/datamade/{{ app_name }}-{{ deployment_id }}
-command=env $(cat /home/datamade/{{ app_name }}-{{ deployment_id }}/.env | xargs) /home/datamade/.virtualenvs/{{ app_name }}-{{ deployment_id }}/bin/gunicorn -t 180 --log-level debug -b unix:/tmp/{{ app_name }}-{{ deployment_id }}.sock asset_dashboard.wsgi:application
+command=bash -c "env $(cat /home/datamade/{{ app_name }}-{{ deployment_id }}/.env | xargs) /home/datamade/.virtualenvs/{{ app_name }}-{{ deployment_id }}/bin/gunicorn -t 180 --log-level debug -b unix:/tmp/{{ app_name }}-{{ deployment_id }}.sock asset_dashboard.wsgi:application"
