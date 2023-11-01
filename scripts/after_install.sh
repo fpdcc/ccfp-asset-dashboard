@@ -16,6 +16,7 @@ mv /home/datamade/asset-dashboard $PROJECT_DIR
 
 # set up the right .env file
 mv $PROJECT_DIR/configs/.env.$DEPLOYMENT_GROUP_NAME $PROJECT_DIR/.env
+echo "DEPLOYMENT_ID=$(DEPLOYMENT_ID)" >> $PROJECT_DIR/.env
 
 # Create a deployment specific virtual environment
 python3 -m venv $VENV_DIR

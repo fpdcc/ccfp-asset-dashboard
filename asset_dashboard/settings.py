@@ -222,3 +222,5 @@ GEOM_BUFFER = .000005
 
 # remove decimal places for djmoney
 CURRENCY_DECIMAL_PLACES = 0
+
+DEPLOYMENT_ID = os.getenv("DEPLOYMENT_ID")
