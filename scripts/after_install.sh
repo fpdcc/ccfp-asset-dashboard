@@ -16,7 +16,7 @@ mv /home/datamade/asset-dashboard $PROJECT_DIR
 
 # set up the right .env file
 mv $PROJECT_DIR/configs/.env.$DEPLOYMENT_GROUP_NAME $PROJECT_DIR/.env
-echo "DEPLOYMENT_ID=$(DEPLOYMENT_ID)" >> $PROJECT_DIR/.env
+echo "\nDEPLOYMENT_ID=$DEPLOYMENT_ID" >> $PROJECT_DIR/.env
 
 # Create a deployment specific virtual environment
 python3 -m venv $VENV_DIR
@@ -66,7 +66,3 @@ fi
 # script.
 $VENV_DIR/bin/pip install Jinja2>=2.10
 $VENV_DIR/bin/python $PROJECT_DIR/scripts/render_configs.py $DEPLOYMENT_ID $DEPLOYMENT_GROUP_NAME $DOMAIN $APP_NAME
-
-# Write out the deployment ID to a Python module that can get imported by the
-# app and returned by the /pong/ route (see above).
-echo "DEPLOYMENT_ID='$DEPLOYMENT_ID'" > $PROJECT_DIR/asset_dashboard/deployment.py
