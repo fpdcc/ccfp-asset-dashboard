@@ -184,11 +184,6 @@ COMPRESS_OFFLINE = not DEBUG
 # Make sure Django compressor can generate static paths
 COMPRESS_OFFLINE_CONTEXT = {'static': static}
 
-# Enforce SSL in production
-if DEBUG is False:
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_SSL_REDIRECT = True
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,  # Preserve default loggers
