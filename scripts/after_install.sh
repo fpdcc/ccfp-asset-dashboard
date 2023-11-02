@@ -19,28 +19,28 @@ mv $PROJECT_DIR/configs/.env.$DEPLOYMENT_GROUP_NAME $PROJECT_DIR/.env
 echo -e "\nDEPLOYMENT_ID=$DEPLOYMENT_ID" >> $PROJECT_DIR/.env
 
 # Create a deployment specific virtual environment
-sudo -H -u datamade python3 -m venv $VENV_DIR
+python3 -m venv $VENV_DIR
 
 # Upgrade pip and setuptools. This is needed because sometimes python packages
 # that we rely upon will use more recent packaging methods than the ones
 # understood by the versions of pip and setuptools that ship with the operating
 # system packages.
-sudo -H -u datamade $VENV_DIR/bin/pip install --upgrade pip
-sudo -H -u datamade $VENV_DIR/bin/pip install --upgrade setuptools
+$VENV_DIR/bin/pip install --upgrade pip
+$VENV_DIR/bin/pip install --upgrade setuptools
 
 # Install the project requirements into the deployment specific virtual
 # environment.
-sudo -H -u datamade $VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt --upgrade
+VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt --upgrade
 
 # Install JS dependencies
 ( cd $PROJECT_DIR && npm install )
 
 # OPTIONAL Run migrations and other management commands that should be run with
 # every deployment
-sudo -H -u datamade env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py migrate
-sudo -H -u datamade env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py createcachetable
-sudo -H -u datamade env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py collectstatic --no-input
-sudo -H -u datamade env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py compress
+env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py migrate
+env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py createcachetable
+env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py collectstatic --no-input
+env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py compress
 
 # Set the ownership of the project files and the virtual environment
 chown -R datamade.www-data $PROJECT_DIR
