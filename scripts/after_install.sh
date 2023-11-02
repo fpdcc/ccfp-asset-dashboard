@@ -37,10 +37,13 @@ $VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt --upgrade
 
 # OPTIONAL Run migrations and other management commands that should be run with
 # every deployment
-env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py migrate
-env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py createcachetable
-env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py collectstatic --no-input
-env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py compress
+(
+    cd $PROJECT_DIR
+    env $(cat .env | xargs) $VENV_DIR/bin/python manage.py migrate
+    env $(cat .env | xargs) $VENV_DIR/bin/python manage.py createcachetable
+    env $(cat .env | xargs) $VENV_DIR/bin/python manage.py collectstatic --no-input
+    env $(cat .env | xargs) $VENV_DIR/bin/python manage.py compress
+)
 
 # Set the ownership of the project files and the virtual environment
 chown -R datamade.www-data $PROJECT_DIR
