@@ -42,7 +42,7 @@ $VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt --upgrade
     env $(cat .env | xargs) $VENV_DIR/bin/python manage.py migrate
     env $(cat .env | xargs) $VENV_DIR/bin/python manage.py createcachetable
     env $(cat .env | xargs) $VENV_DIR/bin/python manage.py collectstatic --no-input
-    #env $(cat .env | xargs) $VENV_DIR/bin/python manage.py compress
+    env $(cat .env | xargs) $VENV_DIR/bin/python manage.py compress
 )
 
 # Set the ownership of the project files and the virtual environment

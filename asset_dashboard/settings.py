@@ -27,6 +27,9 @@ SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
 # Set the DJANGO_DEBUG environment variable to False to disable debug mode
 DEBUG = False if os.getenv('DJANGO_DEBUG', True) == 'False' else True
 
+# Are we part of a deployment, and if so what's the ID
+DEPLOYMENT_ID = os.getenv("DEPLOYMENT_ID", False)
+
 # Define DJANGO_ALLOWED_HOSTS as a comma-separated list of valid hosts,
 # e.g. localhost,127.0.0.1,.herokuapp.com
 allowed_hosts = os.getenv('DJANGO_ALLOWED_HOSTS', [])
@@ -178,8 +181,8 @@ COMPRESS_OUTPUT_DIR = 'compressor'
 
 COMPRESS_ENABLED = True
 
-# Enable offline compression in production only
-COMPRESS_OFFLINE = not DEBUG
+# Only use online compression when we are developing locally and debug is on
+COMPRESS_OFFLINE = not DEBUG and not DEPLOYMENT_ID
 
 # Make sure Django compressor can generate static paths
 COMPRESS_OFFLINE_CONTEXT = {'static': static}
@@ -218,4 +221,3 @@ GEOM_BUFFER = .000005
 # remove decimal places for djmoney
 CURRENCY_DECIMAL_PLACES = 0
 
-DEPLOYMENT_ID = os.environ["DEPLOYMENT_ID"]
