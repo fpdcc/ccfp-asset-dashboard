@@ -32,6 +32,8 @@ sudo -H -u datamade $VENV_DIR/bin/pip install --upgrade setuptools
 # environment.
 sudo -H -u datamade $VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt --upgrade
 
+# Install JS dependencies
+( cd $PROJECT_DIR && sudo -H -u datamade npm install )
 
 # OPTIONAL Run migrations and other management commands that should be run with
 # every deployment
