@@ -19,7 +19,7 @@ mv $PROJECT_DIR/configs/.env.$DEPLOYMENT_GROUP_NAME $PROJECT_DIR/.env
 echo -e "\nDEPLOYMENT_ID=$DEPLOYMENT_ID" >> $PROJECT_DIR/.env
 
 # Create a deployment specific virtual environment
-python3 -m venv $VENV_DIR
+sudo -H -u datamade python3 -m venv $VENV_DIR
 
 # Upgrade pip and setuptools. This is needed because sometimes python packages
 # that we rely upon will use more recent packaging methods than the ones
