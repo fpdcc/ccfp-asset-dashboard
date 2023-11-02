@@ -38,6 +38,7 @@ sudo -H -u datamade $VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt -
 sudo -H -u datamade env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py migrate
 sudo -H -u datamade env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py createcachetable
 sudo -H -u datamade env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py collectstatic --no-input
+sudo -H -u datamade env $(cat $PROJECT_DIR/.env | xargs) $VENV_DIR/bin/python $PROJECT_DIR/manage.py compress
 
 # Set the ownership of the project files and the virtual environment
 chown -R datamade.www-data $PROJECT_DIR
