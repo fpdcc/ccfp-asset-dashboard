@@ -182,7 +182,7 @@ COMPRESS_OUTPUT_DIR = 'compressor'
 COMPRESS_ENABLED = True
 
 # Only use online compression when we are developing locally and debug is on
-COMPRESS_OFFLINE = not DEBUG and not DEPLOYMENT_ID
+COMPRESS_OFFLINE = not (DEBUG and not DEPLOYMENT_ID)
 
 # Make sure Django compressor can generate static paths
 COMPRESS_OFFLINE_CONTEXT = {'static': static}
