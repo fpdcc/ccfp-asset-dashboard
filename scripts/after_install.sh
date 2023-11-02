@@ -30,7 +30,7 @@ $VENV_DIR/bin/pip install --upgrade setuptools
 
 # Install the project requirements into the deployment specific virtual
 # environment.
-VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt --upgrade
+$VENV_DIR/bin/pip install -r $PROJECT_DIR/requirements.txt --upgrade
 
 # Install JS dependencies
 ( cd $PROJECT_DIR && npm install )
