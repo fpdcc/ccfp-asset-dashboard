@@ -72,10 +72,8 @@ function SelectAssetsMap(props) {
   function saveGeometries() {
     let existingIDs = []
 
-    if (existingGeoms && existingGeoms.features) {
-      existingGeoms.features.forEach(geom => {
-        existingIDs.push(geom.properties.asset_id)
-      })
+    if (existingGeoms?.features) {
+      existingIDs = existingGeoms.features.map(geom => geom.properties.asset_id)
     }
 
     let data = geomsToSave['features']
