@@ -70,10 +70,7 @@ function SelectAssetsMap(props) {
   }
 
   function saveGeometries() {
-    let existingIDs = []
-    existingGeoms.features.forEach(geom => {
-      existingIDs.push(geom.properties.asset_id)
-    })
+    const existingIDs = existingGeoms?.features ? existingGeoms.features.map(geom => geom.properties.asset_id) : []
 
     let data = geomsToSave['features']
       .map(feature => {
@@ -96,7 +93,7 @@ function SelectAssetsMap(props) {
       setAjaxMessage({text: 'All selected assets already exist', tag: 'danger'})
       return
     }
-    
+
     setIsSavingAssets(true)
 
     fetch('/local-assets/', {
@@ -159,11 +156,11 @@ function SelectAssetsMap(props) {
     }).then((response) => response.json())
     .then((data) => {
       setIsLoading(false)
-      
+
       if (data.features.length == 0) {
         setAjaxMessage({text: 'No assets found with search query.', tag: 'info'})
       }
-      
+
       setSearchGeoms(data)
     })
     .catch(error => {
@@ -187,17 +184,17 @@ function SelectAssetsMap(props) {
       1. By clicking on a row in the search table. This loads up the singleFeature to save.
       2. By clicking on a single geom in the map. This also loads up the singleFeature to save.
       3. By selecting multipleFeatures via the GeometrySelector component, which loads multipleFeatures to save.
-    If a user happens to select multipleFeatures and a singleFeature in one combination of interactions, 
+    If a user happens to select multipleFeatures and a singleFeature in one combination of interactions,
     then we need to save those pieces of states together. We also need to be able to save if they've been
-    selected in separate interactions, like if a user only selects a single geometry features and clicks to 
+    selected in separate interactions, like if a user only selects a single geometry features and clicks to
     save, or if they use the draw tool to select multiple features.
-    
-    In other words, we need to be able to handle when a user selects multipleFeatures and a singleFeature 
+
+    In other words, we need to be able to handle when a user selects multipleFeatures and a singleFeature
     in the same interaction, without first pressing the "save" button when they switch between two types
-    of interaction. 
-    
-    To handle these variations, useEffect listens to changes to the singleFeature and multipleFeature 
-    variables. When either of those variables change, we reset the geomsToSave variable. The data 
+    of interaction.
+
+    To handle these variations, useEffect listens to changes to the singleFeature and multipleFeature
+    variables. When either of those variables change, we reset the geomsToSave variable. The data
     in geomsToSave is what gets POSTed to the API.
   */
   useEffect(() => {
@@ -217,13 +214,13 @@ function SelectAssetsMap(props) {
   const onEachSearchFeature = useCallback(
     (feature, layer) => {
       bindPopup(feature, layer)
-    
+
       layer.on({
         'click': onSearchAssetClick,
         'popupclose': () => {
           setSingleFeature(null)
-          
-          // Reset the fillColor because the layer changed color 
+
+          // Reset the fillColor because the layer changed color
           // whenever it was clicked on.
           if (layer.setStyle) {
             layer.setStyle({
@@ -241,15 +238,15 @@ function SelectAssetsMap(props) {
       bindPopup(feature, layer)
     }, [existingGeoms]
   )
- 
+
   return (
     <>
-      {ajaxMessage 
-        ? <Message 
-            text={ajaxMessage.text} 
-            messageTag={ajaxMessage.tag} 
+      {ajaxMessage
+        ? <Message
+            text={ajaxMessage.text}
+            messageTag={ajaxMessage.tag}
             onCloseMessage={setAjaxMessage}
-          /> 
+          />
         : null
       }
       <div className='row'>
@@ -258,12 +255,12 @@ function SelectAssetsMap(props) {
             <div className='col'>
               <div className='row m-1'>
                 <label htmlFor='asset-search' className='sr-only'>Search for Assets</label>
-                <input 
+                <input
                   type='search'
                   onChange={(e) => setSearchText(e.target.value)}
                   value={searchText}
-                  className='form-control' 
-                  aria-label='Search for assets' 
+                  className='form-control'
+                  aria-label='Search for assets'
                   placeholder='Search for assets' />
               </div>
               <div className='row m-1'>
@@ -274,7 +271,7 @@ function SelectAssetsMap(props) {
                 >
                   <AssetTypeOptions />
                 </select>
-                <button 
+                <button
                   onClick={() => searchAssets()}
                   className='btn btn-warning'>
                     Search
@@ -284,7 +281,7 @@ function SelectAssetsMap(props) {
           </div>
           <div>
             {isLoading ? 'Loading...' : null}
-            {searchGeoms && 
+            {searchGeoms &&
               <AssetSearchTable
                   rows={searchGeoms.features}
                   onSelectRow={setSingleFeature}
@@ -300,9 +297,9 @@ function SelectAssetsMap(props) {
                 </div>
                 <h2 className='card-title'>{props.phase_name}</h2>
                 <div>
-                  {geomsToSave 
+                  {geomsToSave
                     ?
-                      <button 
+                      <button
                         className='btn btn-info'
                         onClick={() => saveGeometries()}>
                         Add Asset to Phase
@@ -310,7 +307,7 @@ function SelectAssetsMap(props) {
                     : <p className='lead'>Click on an asset or use the map toolbar to select and save assets.</p>
                   }
                   {
-                    isSavingAssets 
+                    isSavingAssets
                       ? <div className='mt-3'>
                           <div class="spinner-border text-primary" role="status"></div>
                           <p>Assets are saving...</p>
@@ -320,23 +317,23 @@ function SelectAssetsMap(props) {
                 </div>
             </div>
           </div>
-          
+
           <div className='map-container bg-white border border-secondary rounded shadow-sm' aria-label='Asset Selection Map'>
             <BaseMap
               center={[41.8781, -87.6298]}
               zoom={11}
               whenCreated={onMapCreated}>
-              {searchGeoms && 
+              {searchGeoms &&
                 <>
-                  <GeoJSON 
-                    data={searchGeoms} 
-                    // Hash key tells the geojson to re-render 
+                  <GeoJSON
+                    data={searchGeoms}
+                    // Hash key tells the geojson to re-render
                     // when the state changes: https://stackoverflow.com/a/46593710
-                    key={hash(searchGeoms)} 
+                    key={hash(searchGeoms)}
                     style={{color: 'black', dashArray: '5,10', weight: '2'}}
                     onEachFeature={onEachSearchFeature}
                   />
-                    <GeometrySelector 
+                    <GeometrySelector
                       geoJson={searchGeoms}
                       onGeometriesSelected={onGeometriesSelected}
                     />
@@ -345,9 +342,9 @@ function SelectAssetsMap(props) {
                     {singleFeature && <ShowPopup geojson={singleFeature} />}
                 </>
               }
-              {existingGeoms && 
+              {existingGeoms &&
                 <GeoJSON
-                  data={existingGeoms} 
+                  data={existingGeoms}
                   style={{color: 'green'}}
                   pointToLayer={circleMarker}
                   onEachFeature={onEachExistingAssetFeature} />
@@ -357,12 +354,12 @@ function SelectAssetsMap(props) {
         </div>
       </div>
       <div>
-      
+
       <div className='row mt-3 mx-1'>
         <div className='col bg-white border rounded border-secondary shadow-sm'>
           <h3 className='m-3'>Phase Assets</h3>
           {
-            existingGeoms 
+            existingGeoms
               ? <ExistingAssetsTable
                   rows={existingGeoms.features}
                   setAjaxMessage={setAjaxMessage}
@@ -370,7 +367,7 @@ function SelectAssetsMap(props) {
               : <p className='m-4'>Phase has no assets.</p>
           }
         </div>
-        
+
         <div className='col-4 card bg-white border-secondary shadow-sm ml-3'>
           <div className='card-body'>
             <div className="d-flex flex-column">
@@ -378,9 +375,9 @@ function SelectAssetsMap(props) {
                 <h4 className='card-title'>{props.phase_name}</h4>
               </div>
               <div className="row my-4">
-                <PromotePhaseForm 
+                <PromotePhaseForm
                   phases={JSON.parse(props.phases)}
-                  currentPhase={phaseId} 
+                  currentPhase={phaseId}
                   setAjaxMessage={setAjaxMessage} />
               </div>
             </div>
