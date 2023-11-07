@@ -1,1 +1,2 @@
+configs/.env.production
 configs/.env.staging
