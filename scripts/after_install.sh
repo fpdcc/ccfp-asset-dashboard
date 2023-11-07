@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Make sure the deployment group specific variables are available to this
 # script.
-source /home/datamade/asset-dashboard/configs/$DEPLOYMENT_GROUP_NAME-config.conf
+source /home/datamade/asset-dashboard/configs/.env.$DEPLOYMENT_GROUP_NAME
 
 # Set some useful variables
 DEPLOYMENT_NAME="$APP_NAME-$DEPLOYMENT_ID"
@@ -71,4 +71,4 @@ fi
 # Install Jinja into the virtual environment and run the render_configs.py
 # script.
 $VENV_DIR/bin/pip install Jinja2>=2.10
-$VENV_DIR/bin/python $PROJECT_DIR/scripts/render_configs.py $DEPLOYMENT_ID $DEPLOYMENT_GROUP_NAME $DOMAIN $APP_NAME
+$VENV_DIR/bin/python $PROJECT_DIR/scripts/render_configs.py $DEPLOYMENT_ID $DOMAIN $APP_NAME
