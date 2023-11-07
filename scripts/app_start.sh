@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Make sure the deployment group specific variables are available to this
 # script.
-source ${BASH_SOURCE%/*}/../.env
+source ${BASH_SOURCE%/*}/../configs/.env.$DEPLOYMENT_GROUP_NAME
 
 # Set some useful variables
 PROJECT_DIR="/home/datamade/$APP_NAME-$DEPLOYMENT_ID"
