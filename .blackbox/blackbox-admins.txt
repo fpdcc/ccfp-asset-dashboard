@@ -1,3 +1,4 @@
 asset-dashboard@datamade.us
+asset-dashboard-prod@datamade.us
 fgregg@uchicago.edu
 sam.mcalilly@datamade.us
