@@ -15,8 +15,8 @@ hooks:
     runas: root
 
 branch_config:
-  master:
+  ec2_deploy:
     deploymentGroupName: staging
 
-  ec2_deploy:
+  master:
     deploymentGroupName: production
