@@ -18,5 +18,5 @@ branch_config:
   master:
     deploymentGroupName: staging
 
-  ec2_deploy:
+  deploy:
     deploymentGroupName: production
