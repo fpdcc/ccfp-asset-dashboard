@@ -551,7 +551,7 @@ class PortfolioPlanner extends React.Component {
         'estimated_bid_quarter': project.estimated_bid_quarter,
         'section': project.section,
         'category': project.category,
-        'project_manager': project.manager,
+        'project_manager': project.project_manager,
         'phase': project.phase,
         'status': project.status,
         'description': project.description.replace(/\r\n/g, ' ').replace(/\n/g, ' ').replace(/\r/g, ' '),
