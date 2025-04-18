@@ -82,6 +82,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
             'selectedPortfolio': selected_portfolio,
             'userId': self.request.user.id,
             'fundingSourceOptions': [{'value': type[0], 'label': type[1]} for type in FundingStream.SOURCE_TYPE_CHOICES],
+            'phaseOptions': [{'value': type[0], 'label': type[1]} for type in Phase.PHASE_TYPE_CHOICES]
         }
         return context
 

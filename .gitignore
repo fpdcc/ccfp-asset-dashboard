@@ -112,3 +112,4 @@ FPDCC_DataMade_backup112221.tar/.blackbox/pubring.gpg~
 /.blackbox/secring.gpg
 /configs/.env.staging
 /configs/.env.production
+/static/compressor

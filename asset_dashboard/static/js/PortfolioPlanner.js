@@ -36,7 +36,8 @@ class PortfolioPlanner extends React.Component {
       selectedSection: '',
       selectedFundingSecured: '',
       selectedFundingSource: '',
-      selectedYear: ''
+      selectedYear: '',
+      selectedPhase: ''
     }
 
     this.searchProjects = this.searchProjects.bind(this)
@@ -55,15 +56,21 @@ class PortfolioPlanner extends React.Component {
     this.filterYear = this.filterYear.bind(this)
     this.filterFundingSource = this.filterFundingSource.bind(this)
     this.filterFundingSecured = this.filterFundingSecured.bind(this)
+    this.filterPhase = this.filterPhase.bind(this)
     this.changeYear = this.changeYear.bind(this)
     this.changeFundingSource = this.changeFundingSource.bind(this)
     this.changeFundingSecured = this.changeFundingSecured.bind(this)
+    this.changePhase = this.changePhase.bind(this)
     this.makeExportData = this.makeExportData.bind(this)
   }
 
   componentDidMount() {
     const projects = JSON.parse(props.projects).flatMap((project) => {
       return project.funding_streams.map((funding) => {
+        const fundingSourceLabel = this.props.fundingSourceOptions.filter(
+          (source) => source.value == funding['source_type']
+        )[0].label
+
         return {
           name: project.name,
           description: project.description || 'No description available.',
@@ -81,7 +88,7 @@ class PortfolioPlanner extends React.Component {
           senate_districts: project.senate_districts,
           commissioner_districts: project.commissioner_districts,
           key: funding.id,
-          funding_source: funding['source_type'],
+          funding_source: fundingSourceLabel,
           funding_amount: parseFloat(funding['budget']) || 0,
           funding_year: funding['year'] || 'N/A',
           funding_secured: funding['funding_secured'] ? 'Yes' : 'No',
@@ -477,8 +484,18 @@ class PortfolioPlanner extends React.Component {
     })
   }
 
+  changePhase(e) {
+    const newPhase = e.target.value
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        selectedPhase: newPhase
+      }
+    })
+  }
+
   within(source, target) {
-     return source.toLowerCase().includes(target.toLowerCase())
+    return source.toLowerCase().includes(target.toLowerCase())
   }
 
   filterSection(project) {
@@ -499,7 +516,11 @@ class PortfolioPlanner extends React.Component {
 
   filterFundingSource(project) {
     if (this.state.selectedFundingSource) {
-      return this.within(project.funding_source, this.state.selectedFundingSource)
+      // Ensure we're matching on the source value displayed on the table
+      const selectedOption = this.props.fundingSourceOptions.filter(
+        (source) => source['value'] == this.state.selectedFundingSource
+      )[0]
+      return project.funding_source == selectedOption.label
     } else {
       return project
     }
@@ -513,6 +534,18 @@ class PortfolioPlanner extends React.Component {
     }
   }
 
+  filterPhase(project) {
+    if (this.state.selectedPhase) {
+      // Ensure we're matching on the phase value displayed on the table
+      const selectedOption = this.props.phaseOptions.filter(
+        (source) => source['value'] == this.state.selectedPhase
+      )[0]
+      return project.phase == selectedOption.label
+    } else {
+      return project
+    }
+  }
+
   filterRemainingProjects(projects) {
     return this.filterChain(projects).filter(project => {
       return this.within(project.name, this.state.filterText)
@@ -520,7 +553,7 @@ class PortfolioPlanner extends React.Component {
   }
 
   filterChain(projects) {
-    return projects.filter(this.filterSection).filter(this.filterYear).filter(this.filterFundingSource).filter(this.filterFundingSecured)
+    return projects.filter(this.filterSection).filter(this.filterYear).filter(this.filterFundingSource).filter(this.filterFundingSecured).filter(this.filterPhase)
   }
 
   getExportFileName() {
@@ -666,6 +699,14 @@ class PortfolioPlanner extends React.Component {
                 onChange={this.changeFundingSecured}
                 fieldName="funding_secured"
                 label="Filter by funding secured"
+              />
+
+              <TableFilter
+                options={this.props.phaseOptions}
+                value={this.state.selectedPhase}
+                onChange={this.changePhase}
+                fieldName="phase"
+                label="Filter by phase"
               />
             </div>
 
