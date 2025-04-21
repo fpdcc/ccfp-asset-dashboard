@@ -22,6 +22,10 @@ const projectColumns = (selector) => {
       accessor: 'name'
     },
     {
+      Header: 'ID',
+      accessor: 'project_id'
+    },
+    {
       Header: 'Estimated Cost',
       accessor: 'budget',
       Cell: props => props.value.toLocaleString() // adds commas

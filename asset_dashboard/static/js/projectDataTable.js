@@ -7,40 +7,40 @@ $(document).ready(function() {
         ajax: 'projects/json/',
         columns: [
             {
+                name: 'id',
+                orderable: true,
+                searchable: true,
+                visible: true,
+                targets: [0]
+            },
+            {
                 name: 'name',
                 orderable: true,
                 searchable: true,
-                targets: [0]
+                targets: [1]
             },
             {
                 name: 'description',
                 orderable: true,
                 searchable: true,
-                targets: [1],
+                targets: [2],
             },
             {
                 name: 'section_owner',
                 orderable: true,
                 searchable: false,
-                targets: [2]
+                targets: [3]
             },
             {
                 name: 'category',
                 orderable: true,
                 searchable: false,
-                targets: [3]
+                targets: [4]
             },
             {
                 name: 'project_manager',
                 orderable: true,
                 searchable: true,
-                targets: [4]
-            },
-            {
-                name: 'id',
-                orderable: false,
-                searchable: false,
-                visible: false,
                 targets: [5]
             },
         ],
@@ -73,7 +73,7 @@ $(document).ready(function() {
         
         // make each row clickable for redirecting to the detail page
         fnRowCallback: function (row, data) {
-            const projectId = data[5]
+            const projectId = data[0]
 
             // add the id as an attribute to the <tr> element
             $(row).data('project-id', projectId)
