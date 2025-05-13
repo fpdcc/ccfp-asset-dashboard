@@ -197,6 +197,7 @@ class Phase(SequencedModel):
         ("construction", "Construction"),
         ("construction_engineering", "Construction Engineering"),
         ("maintenance_repair", "Maintenance/Repair"),
+        ("conditions_assessment_inspection", "Conditions Assessment/Inspection"),
     ]
 
     BID_QUARTER_CHOICES = [("Q1", "Q1"), ("Q2", "Q2"), ("Q3", "Q3"), ("Q4", "Q4")]
