@@ -514,10 +514,13 @@ class PortfolioPlanner extends React.Component {
   }
 
   filterRemainingProjects(projects) {
-    return this.filterChain(projects).filter(project => {
-      return this.within(project.name, this.state.filterText)
-    })
-  }
+  return this.filterChain(projects).filter((project) => {
+    return (
+      this.within(project.name, this.state.filterText) ||
+      this.within(String(project.project_id), this.state.filterText)
+    )
+  })
+}
 
   filterChain(projects) {
     return projects.filter(this.filterSection).filter(this.filterYear).filter(this.filterFundingSource).filter(this.filterFundingSecured)
