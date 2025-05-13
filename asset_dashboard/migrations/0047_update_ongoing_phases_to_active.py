@@ -6,7 +6,7 @@ from django.db import migrations
 def forwards_func(apps, schema_editor):
     Phase = apps.get_model("asset_dashboard", "Phase")
     for phase in Phase.objects.all():
-        if phase.status == "ongoing":
+        if phase.status in ("new", "ongoing"):
             phase.status = "active"
             phase.save()
 
