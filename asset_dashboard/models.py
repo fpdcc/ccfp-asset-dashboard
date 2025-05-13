@@ -107,7 +107,7 @@ class PortfolioPhase(SequencedModel):
         related_name="portfolios",
         on_delete=models.CASCADE,
         blank=True,
-        null=True,
+        null=True
     )
 
     @property
@@ -390,9 +390,7 @@ class ProjectScore(models.Model):
                 if geom:
                     geometries_with_buffer = geom.buffer(buffer)
                     if geometries_with_buffer:
-                        intersection = disinvested_areas.geom.intersection(
-                            geometries_with_buffer
-                        )
+                        intersection = disinvested_areas.geom.intersection(geometries_with_buffer)
                         disinvested_area += intersection.area
 
             disinvested_proportion = disinvested_area / total_phase_geoms.area
@@ -458,9 +456,9 @@ class LocalAsset(models.Model):
         grouped_assets = {}
 
         for asset in qs:
-            if asset["asset_model"] not in grouped_assets:
-                grouped_assets[asset["asset_model"]] = []
-            grouped_assets[asset["asset_model"]].append(asset["asset_id"])
+            if asset['asset_model'] not in grouped_assets:
+                grouped_assets[asset['asset_model']] = []
+            grouped_assets[asset['asset_model']].append(asset['asset_id'])
 
         return grouped_assets
 
@@ -1168,7 +1166,7 @@ class PoiInfo(GISModel):
 
         and_fields = (
             ("parking_info_id__isnull", False),
-            ("pointsofinterest_id__isnull", False),
+            ("pointsofinterest_id__isnull", False)
         )
 
     id = models.AutoField(primary_key=True, db_column="poi_info_id")
@@ -1310,7 +1308,7 @@ class Trails(GISModel):
 
     trails_id = models.AutoField(primary_key=True)
     geom = models.LineStringField(srid=3435, spatial_index=True)
-    trail_info = models.ForeignKey("TrailsInfo", on_delete=models.DO_NOTHING)
+    trail_info = models.ForeignKey('TrailsInfo', on_delete=models.DO_NOTHING)
 
 
 class TrailsAmenity(GISModel):
@@ -1370,7 +1368,7 @@ class TrailsInfo(GISModel):
         or_fields = (
             ("trail_subsystem", str),
             ("trail_name", str),
-            ("regional_trail_name", str),
+            ("regional_trail_name", str)
         )
 
     id = models.AutoField(primary_key=True, db_column="trail_info_id")
