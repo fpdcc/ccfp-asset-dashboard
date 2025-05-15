@@ -18,7 +18,7 @@
         {% for phase in phases %}
           <tr>
             <td>{{ phase.get_phase_type_display }}</td>
-            <td>{{ phase.status }}</td>
+            <td>{{ phase.get_status_display }}</td>
             <td>${{ phase.total_budget|intcomma }}</td>
             <td>{{ phase.estimated_bid_quarter }}</td>
             <td>{{ phase.year }}</td>
