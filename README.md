@@ -118,29 +118,31 @@ You'll need Docker on your machine for local development, otherwise Docker will 
 The React code is baked into the Django templates. Read more about this approach in [DataMade's documentation about Django/React integration](https://github.com/datamade/how-to/blob/main/django/django-react-integration.md).
 
 ## How to Deploy
-This application is deployed via Heroku. The Heroku pipeline is setup so that the `master` branch deploys to the staging pipeline, and the `deploy` branch deploys to the production pipeline. This configuration is [documented in DataMade's how-to repo](https://github.com/datamade/how-to/blob/main/deployment/heroku/deploy-a-django-app.md).
+This application is deployed via AWS CodeDeploy and is hosted on EC2 instances owned by CCFP. The pipeline is setup so that the `master` branch deploys to the staging site, and the `deploy` branch deploys to the production site.
 
 There are a few ways to prompt a deployment:
-1. Whenever code is pushed to GitHub and merged to master, Heroku will automatically deploy the master branch to the staging environment. You can prompt this by merging a pull request, or you can push your local `master` to GitHub (`git push origin master`). Once your master branch is ready for production, you can deploy to production from your local command line with this command: `git push origin master:deploy`. This resets the `deploy` branch to mirror `master`, which initiates the deploy action. **This is the preferred way to deploy.**
-2. Via the Heroku dashboard's user interface. You'll only ever do this in the rare case that the GitHub/Heroku integration is broken.
-2. [Using the Heroku CLI](https://devcenter.heroku.com/articles/git#for-an-existing-app). You'll only ever do this in the rare case that the GitHub/Heroku integration is broken.
+1. Whenever code is pushed to GitHub and merged to `master`, CodeDeploy will automatically deploy the `master` branch to the staging environment. 
+    - You can prompt this by merging a pull request, or you can push your local `master` to GitHub (`git push origin master`). Once your master branch is ready for production, you can deploy to production from your local command line with this command: `git push origin master:deploy`. This resets the `deploy` branch to mirror `master`, which initiates the deploy action. **This is the preferred way to deploy.**
 
-Whenever you open a new PR, the Heroku integration is setup to create a new review app. The link for this review app will show up on the GitHub PR page. The PR skeleton description includes instructions for turning on the connection with the remote GIS database (this DB is detailed below).
+2. Via the AWS dashboard's user interface. You'll only ever do this in the rare case that the GitHub/CodeDeploy integration is broken. This may have happened because the user previously assigned to deployments no longer has access to the repo. Currently the user assigned to both production and staging is "xmedr". To fix this:
+    - Log in to CCFP's AWS instance (url and credentials found in Bitwarden under `CCFP Forest Preserve of Cook County AWS creds`)
+    - Go to CodeDeploy > Applications > ccfp-asset-dashboard > either production or staging > Create Deployment
+    - Select the option "My Application is stored on GitHub"
+    - Enter a new GitHub token name (GitHub username), the repository name, and the full commit id of the latest commit in the branch you're looking to deploy (can be found in the commit's url)
+    - Every other option can be left as is. Click Create Deployment, and you're done!
+
+3. [Using the AWS CLI](https://docs.aws.amazon.com/cli/latest/reference/deploy/create-deployment.html). You'll only ever do this in the rare case that the GitHub/CodeDeploy integration is broken.
+
+At time of writing, the AWS environment is not set up to have review apps.
 
 ## Details about how databases are connected
 The application uses two databases:
 1. A Postgres instance on AWS RDS. This is the application's main database that we write to.
+    - The RDS instance is named `asset-dashboard`. We created two databases within the instance: `production` and `staging`.
+    - Each app for the CIP dashboard in EC2 is configured to connect with the corresponding environment's database.
+    - When we were hosting this on Heroku, the RDS security group had to be configured to accept connections from the application on Heroku. Since Heroku doesn't have static IP addresses, the [quotagaurd static add-on](https://elements.heroku.com/addons/quotaguardstatic) helped establish a connection with the remote database. For details on how that worked, see [PR #91](https://github.com/fpdcc/ccfp-asset-dashboard/pull/91) and [PR #70](https://github.com/fpdcc/ccfp-asset-dashboard/pull/70), as well as discussions in issues [#59](https://github.com/fpdcc/ccfp-asset-dashboard/issues/59) and [#60](https://github.com/fpdcc/ccfp-asset-dashboard/issues/60).
 
-The RDS instance is named `ccfp-asset-dashboard`. We created three databases within the instance:
-1. `production`
-2. `staging`
-3. `review`
-
-Each app in the Heroku pipeline is configured to connect with the corresponding environment's database.
-
-The RDS security group is configured to accept connections from the application on Heroku. Since Heroku doesn't have static IP addresses, the [quotagaurd static add-on](https://elements.heroku.com/addons/quotaguardstatic) helps establish a connection with the remote database. For details on how this works, see [PR #91](https://github.com/fpdcc/ccfp-asset-dashboard/pull/91) and [PR #70](https://github.com/fpdcc/ccfp-asset-dashboard/pull/70), as well as discussions in issues [#59](https://github.com/fpdcc/ccfp-asset-dashboard/issues/59) and [#60](https://github.com/fpdcc/ccfp-asset-dashboard/issues/60).
-
-2. The Forest Preserves of Cook County's GIS database. We've setup a remote connection with the FPDCC's database. This connection also requires QuotaGuard Static.
+2. The Forest Preserves of Cook County's GIS database. We've setup a remote connection with the FPDCC's database. This connection also required QuotaGuard Static.
 
 ## What you can set in admin account
 In the admin interface located on the website path `/admin`, an admin user can do these things:
