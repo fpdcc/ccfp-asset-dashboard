@@ -24,7 +24,7 @@ const SearchInput = ({ filterText, onFilter }) => {
         id="search"
         type="text"
         className='form-control'
-        placeholder="Search for projects by name"
+        placeholder="Search for projects by name or ID"
         aria-label="Search Input"
         value={filterText}
         onChange={onFilter} />
