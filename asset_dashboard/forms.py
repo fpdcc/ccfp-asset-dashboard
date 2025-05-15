@@ -25,6 +25,8 @@ class ProjectForm(StyledFormMixin, ModelForm):
             "project_manager",
             "category",
             "countywide",
+            "requester",
+            "status",
         ]
         widgets = {
             "name": TextInput(),
