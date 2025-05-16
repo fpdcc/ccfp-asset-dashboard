@@ -10,24 +10,34 @@
       </div>
 
       <div class="row my-3">
-        <div class="col-3">
-            <label for="Project Name"><strong>Project Name</strong></label>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="{{ form.name.id_for_label }}"><strong>Project Name</strong></label>
             {{ form.name }}
-        </div>
-
-        <div class="col-3">
-            <label for="Section Owner"><strong>Section Owner</strong></label>
-            {{ form.section_owner }}
-        </div>
-
-        <div class="col-3">
-            <label for="Project Manager"><strong>Project Manager</strong></label>
+          </div>
+          <div class="mb-3">
+            <label for="{{ form.project_manager.id_for_label }}"><strong>Project Manager</strong></label>
             {{ form.project_manager }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ form.status.id_for_label }}"><strong>Project Status</strong></label>
+            {{ form.status }}
+          </div>
         </div>
 
-        <div class="col-3">
-            <label for="Project Category"><strong>Project Category</strong></label>
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="{{ form.category.id_for_label }}"><strong>Project Category</strong></label>
             {{ form.category }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ form.section_owner.id_for_label }}"><strong>Section Owner</strong></label>
+            {{ form.section_owner }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ form.requester.id_for_label }}"><strong>Project Requester</strong></label>
+            {{ form.requester }}
+          </div>
         </div>
       </div>
 

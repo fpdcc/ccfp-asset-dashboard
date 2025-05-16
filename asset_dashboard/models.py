@@ -116,6 +116,24 @@ class PortfolioPhase(SequencedModel):
 
 
 class Project(models.Model):
+    REQUESTER_CHOICES=[
+        ("public_individual", "Public (Individual)"),
+        ("public_organization", "Public (Organization)"),
+        ("internal_pd", "Internal (Planning and Development)"),
+        ("internal_rm", "Internal (Resource Management)"),
+        ("internal_lm", "Internal (Landscape Maintenance)"),
+        ("internal_cep", "Internal (Conservation and Experiential Programming)"),
+        ("internal_police", "Internal (Police)"),
+        ("other", "Internal (Other)"),
+        ("elected_official", "Elected Official"),
+    ]
+
+    STATUS_CHOICES = [
+        ("complete", "Complete"),
+        ("active", "Active/In Progress"),
+        ("inactive", "Inactive/On Hold"),
+        ("canceled", "Canceled"),
+    ]
 
     name = models.TextField()
     description = models.TextField()
@@ -133,6 +151,8 @@ class Project(models.Model):
     project_manager = models.CharField(max_length=100, null=True, blank=True)
 
     countywide = models.BooleanField(default=False)
+    requester = models.CharField(choices=REQUESTER_CHOICES, max_length=30, null=True, blank=True)
+    status = models.CharField(choices=STATUS_CHOICES, max_length=30, null=True, blank=True)
 
     def __str__(self):
         return self.name or ""
