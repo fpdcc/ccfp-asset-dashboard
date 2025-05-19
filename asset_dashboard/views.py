@@ -122,8 +122,8 @@ class ProjectListJson(LoginRequiredMixin, BaseDatatableView):
 
     def filter_queryset(self, qs):
         search = self.request.GET.get('search[value]', None)
-        section = self.request.GET.get('columns[2][search][value]', None)
-        category = self.request.GET.get('columns[3][search][value]', None)
+        section = self.request.GET.get('columns[3][search][value]', None)
+        category = self.request.GET.get('columns[4][search][value]', None)
 
         if search:
             qs = qs.filter(Q(id__startswith=search) | Q(name__icontains=search) | Q(description__icontains=search) | Q(project_manager__icontains=search))
