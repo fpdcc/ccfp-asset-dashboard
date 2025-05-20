@@ -57,7 +57,7 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
                 'funding_streams': list(funding_streams.values()) if funding_streams else [],
                 'phase_year': phase.year,
                 'estimated_bid_quarter': phase.estimated_bid_quarter,
-                'status': phase.status,
+                'phase_status': phase.status,
                 'phase_type': phase.get_phase_type_display(),
                 'name': phase.project.name,
                 'description': phase.project.description,
@@ -74,6 +74,8 @@ class CipPlannerView(LoginRequiredMixin, TemplateView):
                 'commissioner_districts': list(phase.project.commissioner_districts.all().values('name')),
                 'assets': LocalAsset.group_assets_by_type(phase.localasset_set.all().values('asset_id', 'asset_model')),
                 'project_id': phase.project.id,
+                'project_status': phase.project.get_status_display(),
+                'project_requester': phase.project.get_requester_display(),
             })
 
         context['props'] = {

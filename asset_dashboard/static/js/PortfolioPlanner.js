@@ -94,12 +94,15 @@ class PortfolioPlanner extends React.Component {
           funding_secured: funding['funding_secured'] ? 'Yes' : 'No',
           phase_year: project.phase_year,
           estimated_bid_quarter: project.estimated_bid_quarter,
-          status: project.status,
+          phase_status: project.phase_status,
+          project_status: project.project_status,
           project_manager: project.project_manager,
           countywide: project.countywide,
           assets: project.assets,
           project_id: project.project_id,
           phase_id: project.pk,
+          actual_cost: funding.actual_cost,
+          project_requester: project.project_requester,
         }
       })
     })
@@ -578,6 +581,9 @@ class PortfolioPlanner extends React.Component {
       })
 
       let row = {
+        'project_id': project.project_id,
+        'phase_id': project.phase_id,
+        'phase_funding_id': project.key,
         'name': project.name,
         funding_year: project.funding_year,
         funding_amount: parseFloat(project.funding_amount) || 0,
@@ -589,7 +595,10 @@ class PortfolioPlanner extends React.Component {
         'category': project.category,
         'project_manager': project.project_manager,
         'phase': project.phase,
-        'status': project.status,
+        'phase_status': project.phase_status,
+        'actual_cost': project.actual_cost,
+        'project_status': project.project_status,
+        'project_requester': project.project_requester,
         'description': project.description.replace(/\r\n/g, ' ').replace(/\n/g, ' ').replace(/\r/g, ' '),
         'notes': project.notes.replace(/\r\n/g, ' ').replace(/\n/g, ' ').replace(/\r/g, ' '),
         'score': project.score,
@@ -600,9 +609,6 @@ class PortfolioPlanner extends React.Component {
         'commissioner_districts': project.commissioner_districts.map(dist => dist.name).join(';'),
         ...assetsByType,
         ...costByZone,
-        'phase_funding_id': project.key,
-        'project_id': project.project_id,
-        'phase_id': project.phase_id
       }
 
       rows.push(row)
