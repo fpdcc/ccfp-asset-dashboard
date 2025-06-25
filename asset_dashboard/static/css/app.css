@@ -61,3 +61,15 @@ input[type="checkbox"] {
 .funding-table table {
     width: 100%;
 }
+
+.input-loading {
+    background-color: rgba(255, 193, 7, .3) !important;
+}
+
+.input-success {
+    background-color: rgba(40, 167, 70, .2) !important;
+}
+
+.input-fail {
+    background-color: rgba(220, 53, 70, .2) !important;
+}
