@@ -21,7 +21,7 @@ function PhaseDetailAssetTable(props) {
       <div className='row d-flex justify-content-between'>
         <div className="d-flex align-items-center justify-content-between m-2 col-4">
           <h3>Phase Assets</h3>
-          <a href={`/projects/phases/edit/${phaseId}/assets`} class="text-info lead" style={isCountywide ? {pointerEvents: "none", opacity: "0.4"} : {}}>Edit Assets ></a>
+          <a href={`/projects/phases/edit/${phaseId}/assets`} className="text-info lead" style={isCountywide ? {pointerEvents: "none", opacity: "0.4"} : {}}>Edit Assets ></a>
         </div>
         {
           isCountywide !== null 
