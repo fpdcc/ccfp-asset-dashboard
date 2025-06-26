@@ -496,6 +496,14 @@
         $(".icon-saved.phase-icon").hide()
       }
     }
+
+    window.addEventListener('beforeunload', (e) => {
+      // Warn the user of unsaved changes if there are errors on the page
+      if ($(".icon-failed").is(":visible")) {
+        e.preventDefault()
+        e.returnValue = ""
+      }
+    })
   </script>
   {% compress js %}
     <script type="text/jsx" src="{% static 'js/components/PhaseDetailAssetTable.js' %}"></script>
