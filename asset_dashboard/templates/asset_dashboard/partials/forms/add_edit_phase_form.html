@@ -194,7 +194,7 @@
 
     let delayTimer
     function trackChanges() {
-      // All visible inputs will keep track of whether any changes have been made
+      // All visible inputs will trigger a save if any they detect any changes
       const allInputs = $(":input:not(.btn.btn-info, :hidden)")
       allInputs.on("change keyup", function(e) {
         // Ignore left and right arrow key inputs
