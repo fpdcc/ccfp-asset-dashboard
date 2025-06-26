@@ -17,7 +17,20 @@
       {{ form.errors }}
 
       <div class="row col justify-content-between">
-        <h3>{% if phase %}Update Phase{% else %}Create Phase{% endif %}</h3>
+        <h3>
+          {% if phase %}
+            Update Phase
+            <div class="icon-loader phase-icon"></div>
+            <div class="icon-saved phase-icon">
+              <i class="fas fa-check-square" title="Saved" aria-label="Saved"></i>
+            </div>
+            <div class="icon-failed phase-icon">
+              <i class="fas fa-exclamation-circle" title="Save Failed" aria-label="Save Failed"></i>
+            </div>
+          {% else %}
+            Create Phase
+          {% endif %}
+        </h3>
         <button id="save-phase" class="btn btn-info">Save Phase</button>
       </div>
 
@@ -54,7 +67,18 @@
 <div class="row">
   <div class="col border border-secondary rounded shadow-sm p-3 m-2 card">
     <div class="d-flex justify-content-between m-3">
-      <h3>Phase Funding</h3>
+      <h3>
+        Phase Funding
+        {% if phase %}
+          <div class="icon-loader funding-icon"></div>
+          <div class="icon-saved funding-icon">
+            <i class="fas fa-check-square" title="Saved" aria-label="Saved"></i>
+          </div>
+          <div class="icon-failed funding-icon">
+            <i class="fas fa-exclamation-circle" title="Save Failed" aria-label="Save Failed"></i>
+          </div>
+        {% endif %}
+      </h3>
       {% if phase %}
         <button id="update-funding" class='btn btn-info'>Update Funding</button>
       {% endif %}
@@ -161,14 +185,14 @@
   <script type="text/javascript">
     window.props = JSON.parse(document.getElementById('props').textContent)
     window.reactMount = document.getElementById('map')
-    let hasUnsavedChanges = false
-    let delayTimer
-
     // Don't worry about auto-saving or funding stream forms if it's a new phase
     if (!`{{ phase }}`) {
       throw new Error("This is a new phase and will need to be saved manually")
     }
 
+    $(".icon-loader, .icon-failed").hide()
+
+    let delayTimer
     function trackChanges() {
       // All visible inputs will keep track of whether any changes have been made
       const allInputs = $(":input:not(.btn.btn-info, :hidden)")
@@ -179,10 +203,8 @@
         }
 
         clearTimeout(delayTimer)
-        hasUnsavedChanges = true
-        // TODO: don't do the success/loading classes. instead, let's display save status somewhere in each box
-        e.target.classList.add("input-loading")
-        e.target.classList.remove("input-success", "input-fail")
+        $(".icon-loader").show()
+        $(".icon-saved, .icon-failed").hide()
         delayTimer = setTimeout(() => {
           submitForms(e)
         }, 500)
@@ -362,14 +384,23 @@
           )
         }
 
-        // Wait until all fetches run, then either show serverError or reload page
+        // Wait until all fetches run, then show errors if appropriate
         Promise.all(fetches).then(function() {
+          $(".icon-loader.funding-icon").hide()
+
           if (!backendValid) {
             showError(serverError)
+            $(".icon-failed.funding-icon").show()
+            $(".icon-saved.funding-icon").hide()
           } else {
             hideError(serverError)
+            $(".icon-saved.funding-icon").show()
+            $(".icon-failed.funding-icon").hide()
           }
         })
+      } else {
+        $(".icon-loader.funding-icon, .icon-saved.funding-icon").hide()
+        $(".icon-failed.funding-icon").show()
       }
     }
 
@@ -451,28 +482,18 @@
     }
 
     function submitForms(e) {
+      submitFundingForms()
+
       const phaseSucceeded = phaseForm.reportValidity()
-
+      $(".icon-loader.phase-icon").hide()
       if (phaseSucceeded) {
-        console.log("submitting...")
-        submitFundingForms()
-
         const formDataObj = new FormData(phaseForm)
         navigator.sendBeacon(`/projects/phases/edit/${window.props.phase_id}/`, formDataObj)
-        console.log("form sent")
-        hasUnsavedChanges = false
-
-        if (e.target.classList.contains("form-control")) {
-          e.target.classList.add("input-success")
-          e.target.classList.remove("input-loading", "input-fail")
-        }
-
-        console.log("done!")
+        $(".icon-saved.phase-icon").show()
+        $(".icon-failed.phase-icon").hide()
       } else {
-        if (e.target.classList.contains("form-control")) {
-          e.target.classList.add("input-fail")
-          e.target.classList.remove("input-success", "input-loading")
-        }
+        $(".icon-failed.phase-icon").show()
+        $(".icon-saved.phase-icon").hide()
       }
     }
   </script>

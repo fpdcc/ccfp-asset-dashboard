@@ -62,14 +62,33 @@ input[type="checkbox"] {
     width: 100%;
 }
 
-.input-loading {
-    background-color: rgba(255, 193, 7, .3) !important;
+.icon-loader, .icon-saved, .icon-failed {
+    display: inline-block;
 }
 
-.input-success {
-    background-color: rgba(40, 167, 70, .2) !important;
+.icon-loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #7e9137;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    animation: spin 2s linear infinite;
 }
 
-.input-fail {
-    background-color: rgba(220, 53, 70, .2) !important;
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-check-square {
+    color: #7e9137;
+}
+
+.fa-exclamation-circle {
+    color: #dc3545;
 }
