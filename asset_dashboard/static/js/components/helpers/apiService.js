@@ -74,7 +74,6 @@ class ApiService {
         method: 'POST',
         body: JSON.stringify(data)
     }).then((response) => {
-      console.log('response')
       if (response.status == 201) {
         this.onResponse({
           text: 'Countywide succesfully changed for phase.',
