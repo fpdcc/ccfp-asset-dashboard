@@ -205,3 +205,13 @@ Some other helpful docker commands:
 - `docker-compose run --rm app python manage.py shell` enters the Django shell
 - `docker-compose run --rm app bash` enters a bash session in the Docker container
 
+## Shell in to EC2 Instance
+We can open a shell directly in the EC2 instance for production or staging in order to investigate live data.
+
+To do so, go to the EC2 instance in the dashboard, then click "Connect" at the top. Leave all the settings as is, and click "Connect" at the bottom. Once the terminal opens up, run `sudo -s` to allow you to move to the project directory. The currently used project directory is the one that matches the id of the most recent deployment in CodeDeploy. So if the most recent id is `d-123ABC` , then the path to the working project directory is `/home/datamade/asset-dashboard-d-123ABC`. Lastly, run the following from the project directory to start a python shell:
+
+```bash
+env $(cat .env | xargs) /home/datamade/.virtualenvs/<PROJECT_DIR_NAME>/bin/python manage.py shell
+```
+
+And you're in! Note that an IAM policy for the user "datamade" exists to allow connecting to prod and staging for both the CIP Planner and Document Search.
