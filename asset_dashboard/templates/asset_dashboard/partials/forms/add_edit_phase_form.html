@@ -11,14 +11,27 @@
 <div class="row">
   <div class="border border-secondary rounded shadow-sm col m-2 p-3 card">
 
-    <form method="post">
+    <form method="post" id="phaseForm" name="phaseForm">
       {% csrf_token %}
 
       {{ form.errors }}
-  
+
       <div class="row col justify-content-between">
-        <h3>{% if phase %}Update Phase{% else %}Create Phase{% endif %}</h3>
-        <input type="submit" value="Save Phase" class="btn btn-info">
+        <h3>
+          {% if phase %}
+            Update Phase
+            <div class="icon-loader phase-icon"></div>
+            <div class="icon-saved phase-icon">
+              <i class="fas fa-check-square" title="Saved" aria-label="Saved"></i>
+            </div>
+            <div class="icon-failed phase-icon">
+              <i class="fas fa-exclamation-circle" title="Save Failed" aria-label="Save Failed"></i>
+            </div>
+          {% else %}
+            Create Phase
+          {% endif %}
+        </h3>
+        <button id="save-phase" class="btn btn-info">Save Phase</button>
       </div>
 
       <div class="row my-4">
@@ -54,9 +67,20 @@
 <div class="row">
   <div class="col border border-secondary rounded shadow-sm p-3 m-2 card">
     <div class="d-flex justify-content-between m-3">
-      <h3>Phase Funding</h3>
+      <h3>
+        Phase Funding
+        {% if phase %}
+          <div class="icon-loader funding-icon"></div>
+          <div class="icon-saved funding-icon">
+            <i class="fas fa-check-square" title="Saved" aria-label="Saved"></i>
+          </div>
+          <div class="icon-failed funding-icon">
+            <i class="fas fa-exclamation-circle" title="Save Failed" aria-label="Save Failed"></i>
+          </div>
+        {% endif %}
+      </h3>
       {% if phase %}
-        <btn id="update-funding" class='btn btn-info'>Update Funding</btn>
+        <button id="update-funding" class='btn btn-info'>Update Funding</button>
       {% endif %}
     </div>
     {% if not phase %}
@@ -103,7 +127,6 @@
                       {{ form.funding.funding_secured }}
                       <div class="secured-error" aria-hidden="true"></div>
                     </td>
-                    <td class="pl-2 d-none" aria-hidden="true">{{ form.id.as_hidden }}</td>
                     <td><a href="{% url 'delete-funding' pk=form.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
                   </tbody>
                 </table>
@@ -162,6 +185,38 @@
   <script type="text/javascript">
     window.props = JSON.parse(document.getElementById('props').textContent)
     window.reactMount = document.getElementById('map')
+    // Don't worry about auto-saving or funding stream forms if it's a new phase
+    if (!`{{ phase }}`) {
+      throw new Error("This is a new phase and will need to be saved manually")
+    }
+
+    $(".icon-loader, .icon-failed").hide()
+
+    let delayTimer
+    function trackChanges() {
+      // All visible inputs will trigger a save if any they detect any changes
+      const allInputs = $(":input:not(.btn.btn-info, :hidden)")
+      allInputs.on("change keyup", function(e) {
+        // Ignore left and right arrow key inputs
+        if (e.keyCode == 37 || e.keyCode == 39){
+          return
+        }
+
+        clearTimeout(delayTimer)
+        $(".icon-loader").show()
+        $(".icon-saved, .icon-failed").hide()
+        delayTimer = setTimeout(() => {
+          submitForms(e)
+        }, 500)
+      })
+    }
+    window.addEventListener("load", (event) => {
+      trackChanges()
+    })
+
+    const phaseForm = document.forms.phaseForm
+    const phaseSubmitBtn = document.getElementById("save-phase")
+    phaseSubmitBtn.addEventListener('click', submitForms)
 
     let addSourceBtn = document.getElementById('add-source')
     addSourceBtn.addEventListener('click', addSource)
@@ -217,6 +272,7 @@
       // Prevent previous unsaved inputs from being cleared when adding a new form
       newTr.appendChild(newTd)
       fundingTable.appendChild(newTr)
+      trackChanges()
     }
 
     function removeForm() {
@@ -224,13 +280,13 @@
     }
 
     let updateFundingBtn = document.getElementById('update-funding')
-    updateFundingBtn.addEventListener('click', submitFundingForms)
+    updateFundingBtn.addEventListener('click', submitForms)
     function submitFundingForms() {
       fundings = document.getElementsByClassName("funding")
       serverError = document.getElementById("server-error")
       let valid = true
 
-      // Front end validation for each form on the page
+      // Front end validation for each funding form on the page
       for (i = 0; i < fundings.length; i++) {
         let funding = fundings[i]
         let year = funding[0].value
@@ -247,7 +303,7 @@
         // in case they're visible from a previously failed attempt
         hideError(sourceError)
         hideError(securedError)
-        
+
         if (year.toString().length != 4 || !year){
           valid = false
           yearError.innerHTML = 'Please enter a valid year'
@@ -328,16 +384,23 @@
           )
         }
 
-        // Wait until all fetches run, then either show serverError or reload page
+        // Wait until all fetches run, then show errors if appropriate
         Promise.all(fetches).then(function() {
+          $(".icon-loader.funding-icon").hide()
+
           if (!backendValid) {
             showError(serverError)
+            $(".icon-failed.funding-icon").show()
+            $(".icon-saved.funding-icon").hide()
           } else {
             hideError(serverError)
-            window.removeEventListener('beforeunload', redirectDialog)
-            location.reload()
+            $(".icon-saved.funding-icon").show()
+            $(".icon-failed.funding-icon").hide()
           }
-        })    
+        })
+      } else {
+        $(".icon-loader.funding-icon, .icon-saved.funding-icon").hide()
+        $(".icon-failed.funding-icon").show()
       }
     }
 
@@ -363,7 +426,7 @@
         })
       }
     }
-    
+
     function moneyToNum(strValue) {
       if (strValue == '' || strValue == '$') {
         return null
@@ -379,25 +442,6 @@
         let matchLength = filteredMatch.length
 
         return filteredMatch[matchLength - 1][name]
-    }
-
-    window.addEventListener('beforeunload', redirectDialog)
-
-    function redirectDialog(e){
-      let hasUnsavedForms = false
-      let newFormsContainers = document.getElementsByClassName('new-tr')
-
-      for(i = 0; i < newFormsContainers.length; i++ ){
-        let yearInput = newFormsContainers[i].querySelector('#id_year').value
-        let budgetInput = moneyToNum(newFormsContainers[i].querySelector('#id_budget').value)
-        let costInput = moneyToNum(newFormsContainers[i].querySelector('#id_actual_cost').value)
-
-        if(yearInput || budgetInput > 0 || costInput > 0) {
-          // Ask user if they want to leave page if there are unsaved, non-empty, positive inputs
-          e.preventDefault();
-          e.returnValue = ""
-        }   
-      }
     }
 
     function showBackendErrors(data, yearError, budgetError, costError, sourceError, securedError) {
@@ -436,6 +480,30 @@
       error.classList.remove("visible")
       error.setAttribute("aria-hidden","true")
     }
+
+    function submitForms(e) {
+      submitFundingForms()
+
+      const phaseSucceeded = phaseForm.reportValidity()
+      $(".icon-loader.phase-icon").hide()
+      if (phaseSucceeded) {
+        const formDataObj = new FormData(phaseForm)
+        navigator.sendBeacon(`/projects/phases/edit/${window.props.phase_id}/`, formDataObj)
+        $(".icon-saved.phase-icon").show()
+        $(".icon-failed.phase-icon").hide()
+      } else {
+        $(".icon-failed.phase-icon").show()
+        $(".icon-saved.phase-icon").hide()
+      }
+    }
+
+    window.addEventListener('beforeunload', (e) => {
+      // Warn the user of unsaved changes if there are errors on the page
+      if ($(".icon-failed").is(":visible")) {
+        e.preventDefault()
+        e.returnValue = ""
+      }
+    })
   </script>
   {% compress js %}
     <script type="text/jsx" src="{% static 'js/components/PhaseDetailAssetTable.js' %}"></script>

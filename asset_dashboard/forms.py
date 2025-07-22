@@ -1,4 +1,4 @@
-from django.forms import ModelForm, TextInput, ChoiceField, BooleanField
+from django.forms import ModelForm, TextInput, ChoiceField, BooleanField, NumberInput
 from .models import Project, FundingStream, ProjectScore, ProjectCategory, Phase
 
 
@@ -99,6 +99,9 @@ class PhaseForm(StyledFormMixin, ModelForm):
     class Meta:
         model = Phase
         fields = ["phase_type", "estimated_bid_quarter", "status", "year", "notes"]
+        widgets = {
+            'year': NumberInput(attrs={'min':1}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -8,11 +8,18 @@ export default function CountywideForm({ currentCountywideValue, phaseId }) {
 
   function onCheckboxChange(event) {
     setIsCountywide(event.currentTarget.checked)
+    saveSelection(event.currentTarget.checked)
   }
   
-  function saveSelection() {
+  function saveSelection(manualVal) {
+    let countywideVal = isCountywide
+    if (manualVal === true || manualVal === false) {
+      // Only use manualVal if it's a true boolean
+      countywideVal = manualVal
+    }
+
     const api = new ApiService({ onResponse: setAjaxMessage })
-    api.saveCountywideSelection(isCountywide, phaseId)
+    api.saveCountywideSelection(countywideVal, phaseId)
   }
 
   return (

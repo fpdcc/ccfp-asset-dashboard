@@ -61,3 +61,34 @@ input[type="checkbox"] {
 .funding-table table {
     width: 100%;
 }
+
+.icon-loader, .icon-saved, .icon-failed {
+    display: inline-block;
+}
+
+.icon-loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #7e9137;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fa-check-square {
+    color: #7e9137;
+}
+
+.fa-exclamation-circle {
+    color: #dc3545;
+}
