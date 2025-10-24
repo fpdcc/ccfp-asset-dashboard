@@ -10,6 +10,7 @@ django-datatables-view==1.19.1
 django-widget-tweaks==1.4.8
 djangorestframework==3.13.1
 djangorestframework-gis==0.18
+django-debug-toolbar>=3.4,<3.5
 tqdm==4.67.1
 
 # Testing requirements

@@ -44,6 +44,20 @@ if os.getenv('SENTRY_DSN'):
         integrations=[DjangoIntegration()],
     )
 
+if DEBUG:
+    import socket
+
+    # Add dynamically generated Docker IP
+    # Don't do this in production!
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[:-1] + "1" for ip in ips] + ["127.0.0.1"]
+
+# Django Debug Toolbar Panel Settings
+DEBUG_TOOLBAR_PANELS = [
+    "debug_toolbar.panels.sql.SQLPanel",
+    "debug_toolbar.panels.cache.CachePanel",
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -60,10 +74,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_gis',
     'django.contrib.humanize',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -220,4 +236,3 @@ GEOM_BUFFER = .000005
 
 # remove decimal places for djmoney
 CURRENCY_DECIMAL_PLACES = 0
-

@@ -345,4 +345,8 @@ class FundingStreamSerializer(serializers.Serializer):
         )
         phase.funding_streams.add(funding_stream)
 
+        # Give the front end access to a new funding's id
+        if created:
+            data["id"] = funding_stream.id
+
         return data

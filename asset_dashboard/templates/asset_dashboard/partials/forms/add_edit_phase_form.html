@@ -127,7 +127,11 @@
                       {{ form.funding.funding_secured }}
                       <div class="secured-error" aria-hidden="true"></div>
                     </td>
-                    <td><a href="{% url 'delete-funding' pk=form.id %}" class='btn btn-sm btn-outline-danger'><i class='fas fa-trash'></i> Delete</a>
+                    <td>
+                      <a href="{% url 'delete-funding' pk=form.id %}" class='btn btn-sm btn-outline-danger'>
+                        <i class='fas fa-trash'></i> Delete
+                      </a>
+                    </td>
                   </tbody>
                 </table>
               </form>
@@ -370,7 +374,7 @@
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
               },
-              mode: 'same-origin' 
+              mode: 'same-origin'
             }).then((response)=> {
               if (response.status != 201) {
                 backendValid = false
@@ -379,6 +383,17 @@
             }).then(data => {
               if (!backendValid) {
                 showBackendErrors(data, ...errors)
+              } else if (!funding.id) {
+                // Associate this new form with its new funding stream
+                funding.id = data["id"]
+
+                // Make the remove button, a delete button
+                const removeTd = funding.querySelector('td:last-child')
+                const deleteBtnFragment = `
+                <a href="/projects/phases/${data["id"]}/funding/delete/" class='btn btn-sm btn-outline-danger'>
+                  <i class='fas fa-trash'></i> Delete
+                </a>`
+                removeTd.innerHTML = deleteBtnFragment
               }
             })
           )
